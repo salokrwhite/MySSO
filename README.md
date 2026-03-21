@@ -372,3 +372,5 @@ Implemented areas include:
 - admin system settings
 - release packaging
 
+![Site Image](./site-image-bule.webp)
+
