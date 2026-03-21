@@ -601,12 +601,12 @@ const locale = {
         "Aktivizējiet divu soli autentifikāciju pēc iespējas ātrāk un saistiet piekļuves atslēgas uz uzticamiem ierīcēm, lai samazinātu vienas paroles izslimšanas risku. Nekad nesaredziet e-pasta kodus, SMS kodus vai MFA kodus ar trešajām pusēm, un nenorakstiet akreditācijas datus lapās, kuras neuzticat. Ja izmantojat vienu un to pašu kontu vairākās ierīcēs, regulāri pārskatiet pēdējos pieslēgšanās, saistītās piekļuves atslēgas un autorizētās lietotnes, un noņemiet ierīces vai autorizācijas, kuras vairs neizmantojat.",
       authIssueTitle: "Autorizācijas problēmas",
       authIssueDesc:
-        "Ja lietotne izskatās nezināma, pieprasa neparastas atļaujas vai jūs domājat, ka tā ļaunprātīgi izmanto jūsu kontu, atveriet autorizētās lietotnes, lai pārskatītu tās autorizācijas laiku, dotās atļaujas un integrācijas detaļas, un, ja nepieciešams,顿时 atcelt to. Pēc atcelšanas lietotne vairs nevarēs piekļūt aizsargātajiem resursiem ar jūsu kontu, līdz velreiz piesakoties un apstiprinot jaunu piekrišanas pieprasījumu. Ja problēma var ietekmēt visu kontu, nevis tikai vienu lietotni, jums arī jāmaina parole, jāverificē MFA iestatījumi un jāpārskata pēdējie pieslēgšanās un piekļuves atslēgu darbības.",
+        "Ja lietotne izskatās nezināma, pieprasa neparastas atļaujas vai jūs domājat, ka tā ļaunprātīgi izmanto jūsu kontu, atveriet autorizētās lietotnes, lai pārskatītu tās autorizācijas laiku, dotās atļaujas un integrācijas detaļas, un, ja nepieciešams, nekavējoties atcelt to. Pēc atcelšanas lietotne vairs nevarēs piekļūt aizsargātajiem resursiem ar jūsu kontu, līdz velreiz piesakoties un apstiprinot jaunu piekrišanas pieprasījumu. Ja problēma var ietekmēt visu kontu, nevis tikai vienu lietotni, jums arī jāmaina parole, jāverificē MFA iestatījumi un jāpārskata pēdējie pieslēgšanās un piekļuves atslēgu darbības.",
       contactTitle: "Sazinieties ar mums",
       contactDesc:
         "Ja jums ir nepieciešama manuāla palīdzība, jūs varat sazināties ar platformas atbalsta kontaktiem zemāk. Ziņojot par problēmu, iekļaujiet konta e-pastu, problēmas gadīšanas laiku, kļūdu paziņojumu ekrānuzņēmumus, izmantoto pieslēgšanās metodi un attiecīgas ierīces vai pārlūkprogrammas detaļas, lai problēma varētu tikt izpētīta ātrāk.",
       contactMainlandTitle: "Ķīnas kontinentālā daļa",
-      contactOverseasTitle: " ārpus疆",
+      contactOverseasTitle: "Ārpus Ķīnas",
       contactPersonLabel: "Kontaktpersona:",
       contactPhoneLabel: "Telefons:",
       contactEmailLabel: "E-pasts:",
