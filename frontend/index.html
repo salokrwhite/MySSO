@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MySSO Console</title>
+    <script>
+      (function () {
+        try {
+          var storedLocale = (window.localStorage.getItem("account_locale") || window.navigator.language || "").toLowerCase();
+          var isChinese = storedLocale.indexOf("zh") === 0;
+          var storedChineseTitle = (window.localStorage.getItem("site_browser_title") || "").trim();
+          var storedEnglishTitle = (window.localStorage.getItem("site_browser_title_en") || "").trim();
+          var storedTitle = isChinese ? storedChineseTitle : storedEnglishTitle;
+          if (storedTitle) {
+            document.title = storedTitle;
+          }
+        } catch (_error) {
+          document.title = "MySSO Console";
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

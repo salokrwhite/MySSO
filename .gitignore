@@ -1,0 +1,14 @@
+.DS_Store
+node_modules/
+dist/
+coverage/
+.idea/
+.vscode/
+*.log
+frontend/node_modules/
+frontend/dist/
+backend/bin/
+backend/.cache/
+backend/.env
+backend/.env.*
+!backend/.env.example
