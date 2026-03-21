@@ -87,7 +87,7 @@ const locale = {
       registerPageSubtitle: "რეგისტრაცია შესაძლებელია ქვეყნის, ელ. ფოსტის და ელ. ფოსტის ვერიფიკაციის კოდით.",
       registerDisabled: "მონაცემთა ბაზა ამჟამად რეგისტრაციას არ იძლევა",
       registerSuccess: "რეგისტრაცია წარმატებით დასრულდა, გთხოვთ გამოიყენოთ პაროლი შესასვლელად.",
-      phoneBindingRequiredAfterRegister: "რეგისტრაცია წარმატებით დასრულდა, გთხოვთ 먼저 შეაბამოთ ტელეფონის ნომერი ანგარიშის გააქტიურებისთვის.",
+      phoneBindingRequiredAfterRegister: "რეგისტრაცია წარმატებით დასრულდა, გთხოვთ ჯერ შეაბამოთ ტელეფონის ნომერი ანგარიშის გააქტიურებისთვის.",
       registerFailed: "რეგისტრაცია ვერ მოხერხდა",
       country: "ქვეყანა",
       countryRequired: "აირჩიეთ ქვეყანა",
@@ -107,7 +107,7 @@ const locale = {
         "ელ. ფოსტის კოდით ვერიფიკაციის შემდეგ, შეგიძლიათ პირდაპირ დააყენოთ ახალი შესვლის პაროლი.",
       forgotPasswordHint:
         "შეიყვანეთ რეგისტრირებული ელ. ფოსტა, ვერიფიკაციის კოდი და ახალი პაროლი. წარმატებული შეტანის შემდეგ, შეგიძლიათ ახალი პაროლი გამოიყენოთ შესასვლელად.",
-      goToOtpLogin: "სადა გადასვლა ელ. ფოსტის კოდით შესვლაზე",
+      goToOtpLogin: "გადასვლა ელ. ფოსტის კოდით შესვლაზე",
       resetCode: "აღდგენის კოდი",
       sendResetCode: "აღდგენის კოდის გაგზავნა",
       sendResetCodeSuccess: "აღდგენის კოდი გაგზავნილია, გთხოვთ შეამოწმოთ ელ. ფოსტა.",
@@ -173,9 +173,9 @@ const locale = {
       sendOtpCodePhoneRequired: "SMS კოდის გაგზავნამდე შეიყვანეთ ტელეფონის ნომერი",
       phoneBindingPageTitle: "ტელეფონის ნომრის ბაინდინგი",
       phoneBindingRegisterDesc:
-        "ამ ანგარიშმა რეგისტრაციის შემდეგ პასუხისმგებლობის წესს შეესაბამება, გთხოვთ 먼저 შეაბამოთ ტელეფონის ნომერი და შემდეგ გააგრძელეთ.",
+        "ამ ანგარიშმა რეგისტრაციის შემდეგ პასუხისმგებლობის წესს შეესაბამება, გთხოვთ ჯერ შეაბამოთ ტელეფონის ნომერი და შემდეგ გააგრძელეთ.",
       phoneBindingLoginDesc:
-        "ამ ანგარიშმა შესვლის პასუხისმგებლობის წესს შეესაბამება, გთხოვთ 먼저 შეაბამოთ ტელეფონის ნომერი და შემდეგ გააგრძელეთ.",
+        "ამ ანგარიშმა შესვლის პასუხისმგებლობის წესს შეესაბამება, გთხოვთ ჯერ შეაბამოთ ტელეფონის ნომერი და შემდეგ გააგრძელეთ.",
       completePhoneBinding: "ბაინდინგის დასრულება და გაგრძელება",
       phoneBindingSuccess: "ტელეფონის ნომერი წარმატებით დაკავშირებულია, ანგარიში უკვე ნორმალურ მდგომარეობაშია.",
       mfaVerifyTitle: " ორჯერ ნდებადი ვერიფიკაცია",
@@ -345,7 +345,7 @@ const locale = {
       bindPhone: "ბაინდირება",
       bindPhoneTitle: "ტელეფონის ნომრის ბაინდირება",
       bindPhoneHint: "ბაინდირებამდე ჯერ უნდა ვერიფიცირდეს ტელეფონის ნომერი, კოდი გაიგზავნება ამ ტელეფონის ნომერზე.",
-      rebindPhoneHint: "ტელეფონის ნომრის შეცვლაrequires first verifying the current bound phone number, then verifying the new one.",
+      rebindPhoneHint: "ტელეფონის ნომრის შეცვლისთვის საჭიროა ჯერ მიმდინარე დაკავშირებული ტელეფონის ნომრის დადასტურება, შემდეგ ახალი ნომრის დადასტურება.",
       currentPhone: "მიმდინარე დაკავშირებული ტელეფონის ნომერი",
       currentPhoneCode: "მიმდინარე ტელეფონის ვერიფიკაციის კოდი",
       currentPhoneCodePlaceholder: "შეიყვანეთ მიმდინარე ტელეფონის ნომერზე გაგზავნილი 6 ციფრიანი კოდი",
@@ -449,20 +449,20 @@ const locale = {
       minimizeDesc:
         "მიმდინარე სისტემა მხოლოდ რეგისტრაციის ქვეყანას, ელ. ფოსტას, ავტორიზაციებს და აუცილებელ შესვლის უსაფრთხოების ინფორმაციას ინახავს.",
       scopeTitle: "მიმდინარე წვდომის დიაპაზონი",
-      scopeDesc: "You can review apps that accessed your account in Authorized Apps and revoke them at any time.",
+      scopeDesc: "ავტორიზებულ აპლიკაციებში შეგიძლიათ იხილოთ აპები, რომლებმაც თქვენს ანგარიშზე მიიღეს წვდომა და ნებისმიერ დროს გააუქმოთ ისინი.",
       statusTitle: "ანგარიშის სტატუსის აღწერა",
-      statusDesc: "If the account is frozen, sign-in will be blocked until an administrator resolves it.",
+      statusDesc: "თუ ანგარიში გაყინულია, შესვლა დაბლოკილი იქნება მანამ, სანამ ადმინისტრატორი არ მოაგვარებს მას.",
       deleteTitle: "ანგარიშის გაუქმება",
       deleteDesc:
-        "If you sign in again within 7 days, the deletion request is canceled automatically. Otherwise the account and consent data will be removed.",
+        "თუ თავიდან შეხვალთ 7 დღის განმავლობაში, გაუქმების მოთხოვნა ავტომატურად გაუქმდება. წინააღმდეგ შემთხვევაში ანგარიში და თანხმობის მონაცემები წაიშლება.",
       deleteWarningPrimary:
-        "Deleting the account is irreversible. Please back up any data related to this account first.",
+        "ანგარიშის წაშლა შეუქცევადია. გთხოვთ, ჯერ დაუკავშირდეთ ამ ანგარიშთან დაკავშირებულ ნებისმიერ მონაცემს.",
       deleteWarningSecondary:
-        "After the request is submitted, signing in again within 7 days cancels the deletion. If you do not sign in within 7 days, the system deletes the account and consent data automatically.",
+        "მოთხოვნის წარდგენის შემდეგ, 7 დღის განმავლობაში თავიდან შესვლა გააუქმებს გაუქმებას. თუ 7 დღის განმავლობაში არ შეხვალთ, სისტემა ავტომატურად წაშლის ანგარიშს და თანხმობის მონაცემებს.",
       deleteAction: "მე წავიკითხე და ვიღებ შედეგებს",
       passwordVerifyTitle: "მიმდინარე პაროლის ვერიფიკაცია",
       passwordVerifyDesc:
-        "Enter your current sign-in password and complete email verification. If a phone number is bound, phone verification is also required.",
+        "შეიყვანეთ თქვენი მიმდინარე შესვლის პაროლი და დაასრულეთ ელ. ფოსტის დადასტურება. თუ ტელეფონის ნომერია დაკავშირებული, ტელეფონის დადასტურებაც საჭიროა.",
       emailVerifyCode: "ელ. ფოსტის ვერიფიკაციის კოდი",
       emailVerifyCodePlaceholder: "შეიყვანეთ ელ. ფოსტაზე გაგზავნილი 6 ციფრიანი კოდი",
       sendDeleteEmailCode: "ელ. ფოსტის კოდის გაგზავნა",
@@ -511,16 +511,16 @@ const locale = {
       title: "დახმარების ცენტრი",
       loginIssueTitle: "ანგარიშის შესვლა ვერ მოხერხდა",
       loginIssueDesc:
-        "If you cannot sign in, first confirm that you are using the correct method for the account, such as password, email code, phone code, or passkey. If a verification code is rejected, make sure it is the latest one and still within its validity period. If the account is shown as frozen, pending activation, or otherwise restricted, the issue must be handled by a platform administrator. If you recently submitted an account deletion request, the system may also require deletion confirmation or phone binding before access is restored.",
+        "თუ ვერ შედიხართ, ჯერ დაადასტურეთ, რომ იყენებთ ანგარიშისთვის სწორ მეთოდს, როგორიცაა პაროლი, ელ. ფოსტის კოდი, ტელეფონის კოდი ან პასკი. თუ დადასტურების კოდი უარყოფილია, დარწმუნდით, რომ ეს არის უახლესი და კვლავ ვალიდურობის პერიოდშია. თუ ანგარიში გაყინულია, გააქტივების მოლოდინშია ან სხვაგვარად შეზღუდულია, პრობლემა უნდა გადაწყდეს პლატფორმის ადმინისტრატორის მიერ. თუ ცოტა ხნის წინ წარადგინეთ ანგარიშის წაშლის მოთხოვნა, სისტემამ ასევე შეიძლება მოითხოვოს წაშლის დადასტურება ან ტელეფონის დაკავშირება, სანამ წვდომა აღდგება.",
       protectTitle: "როგორ დაიცავთ ანგარიშს",
       protectDesc:
-        "Enable two-factor authentication as soon as possible and bind passkeys on trusted devices to reduce the risk of password-only compromise. Never share email codes, SMS codes, or MFA codes with third parties, and do not re-enter credentials on pages you do not trust. If you use the same account across multiple devices, review recent sign-ins, bound passkeys, and authorized apps regularly, and remove devices or authorizations you no longer use.",
+        "შედის რაც შეიძლება მალე ჩართეთ ორჯერ ნდებადი ავტორიზაცია და დააკავშირეთ პასკები სანდო მოწყობილობებზე, რათა შეამციროთ მხოლოდ პაროლით დაცვის რისკი. არასოდეს გაუზიაროთ ელ. ფოსტის კოდები, SMS კოდები ან MFA კოდები მესამე პირებს და არ ჩაწეროთ ხელახლა მონაცემები გვერდებზე, რომლებსაც არ ენდობით. თუ იყენებთ იგივე ანგარიშს მრავალ მოწყობილობაზე, რეგულარულად გადაავლეთ თვალი ბოლო შესვლებს, დაკავშირებულ პასკებს და ავტორიზებულ აპებს და წაშალეთ მოწყობილობები ან ავტორიზაციები, რომლებსაც აღარ იყენებთ.",
       authIssueTitle: "ავტორიზაციის განსხვავებულ შემთხვევების მართვა",
       authIssueDesc:
-        "If an app looks unfamiliar, requests unusual scopes, or you suspect it is misusing your account, open Authorized Apps to review its authorization time, granted scopes, and integration details, then revoke it immediately if needed. After revocation, the app will no longer be able to access protected resources with your account until you sign in again and approve a new consent request. If the problem may affect the entire account rather than a single app, you should also change your password, verify your MFA settings, and review recent sign-in and passkey activity.",
+        "თუ აპი უცნობად გამოიყურება, არაჩვეულებრივ უფლებებს ითხოვს, ან ეჭვი გაქვთ, რომ არასწორად იყენებს თქვენს ანგარიშს, გახსენით ავტორიზებული აპები, რათა გადაავლოთ თვალი მის ავტორიზაციის დროს, მინიჭებულ უფლებებს და ინტეგრაციის დეტალებს, შემდეგ საჭიროებისამებრ უახლოეს მომავალში გააუქმეთ იგი. გაუქმების შემდეგ, აპი აღარ შეძლებს დაცულ რესურსებზე თქვენი ანგარიშით წვდომას, სანამ თავიდან არ შეხვალთ და არ დაამტკიცებთ ახალ თანხმობის მოთხოვნას. თუ პრობლემამ შეიძლება მთელ ანგარიშზე იმოქმედოს და არა მხოლოდ ერთ აპზე, თქვენ ასევე უნდა შეცვალოთ პაროლი, გადაამოწმოთ თქვენი MFA პარამეტრები და გადაავლოთ თვალი ბოლო შესვლებს და პასკის აქტივობას.",
       contactTitle: "დაკავშირება ჩვენთან",
       contactDesc:
-        "If you need manual assistance, you can reach the platform support contact below. When reporting an issue, include the account email, the time the problem occurred, screenshots of error messages, the sign-in method you were using, and relevant device or browser details so the issue can be investigated faster.",
+        "თუ დახმარება გჭირდებათ, შეგიძლიათ დაუკავშირდეთ პლატფორმის მხარდაჭერის კონტაქტს ქვემოთ. პრობლემის მოხსენებისას, მიუთითეთ ანგარიშის ელ. ფოსტა, დრო, როდესაც პრობლემა მოხდა, შეცდომის შეტყობინებების სქრინშოტები, შესვლის მეთოდი, რომელსაც იყენებდით და შესაბამისი მოწყობილობის ან ბრაუზერის დეტალები, რათა პრობლემა უფრო სწრაფად გამოიძიოთ.",
       contactMainlandTitle: "სამხრეთ კორეა",
       contactOverseasTitle: "საზღვარგარეთ",
       contactPersonLabel: "კონტაქტის პიროვნება:",
@@ -536,9 +536,9 @@ const locale = {
       contactOverseasEmailValue: "გამატებითი",
       contactOverseasHoursValue: "ორშაბათი დ პარასკევი 09:00 - 18:00",
       contactRegionNotice:
-        "გთხოვთ, პირველ რიგში დაუკავშირდეთ თქვენი რეგიონის შესაბამის დახმარების არხს; თუ რეგიონი გაურკვეველია, შეიძლება პირველ რიგში ჩinese mainland კონტაქტი გახსენდეს გადამისამართების დახმარებისთვის.",
+        "გთხოვთ, პირველ რიგში დაუკავშირდეთ თქვენი რეგიონის შესაბამის დახმარების არხს; თუ რეგიონი გაურკვეველია, შეიძლება პირველ რიგში მთავარი ჩინეთის კონტაქტი გახსენდეს გადამისამართების დახმარებისთვის.",
       contactNotice:
-        "For issues such as frozen accounts, abnormal authorizations, lost passkeys, or deletion recovery, contact the administrator through the phone number or email above first. If your platform provides an official ticketing system, announcement board, or operations group, follow that official channel first.",
+        "გაყინული ანგარიშების, არანორმალური ავტორიზაციების, დაკარგული პასკების ან წაშლის აღდგენის პრობლემებისთვის, ჯერ დაუკავშირდით ადმინისტრატორს ზემოთ მოცემული ტელეფონის ნომრით ან ელ. ფოსტით. თუ თქვენი პლატფორმა გთავაზობთ ოფიციალურ ტიკეტირების სისტემას, განცხადებების დაფას ან ოპერაციების ჯგუფს, ჯერ მიჰყევით ამ ოფიციალურ არხს.",
     },
   },
 } as const;
