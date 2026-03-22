@@ -150,6 +150,7 @@ func (s *Server) handleUpdateSystemSettings(c *gin.Context) {
 		UserCenterAnnouncementContent:       req.UserCenterAnnouncementContent,
 		DeveloperAnnouncementEnabled:        req.DeveloperAnnouncementEnabled,
 		DeveloperAnnouncementContent:        req.DeveloperAnnouncementContent,
+		PublicBaseURL:                       req.PublicBaseURL,
 		FrontendBaseURL:                     req.FrontendBaseURL,
 		OIDCFirstPartyClientID:              req.OIDCFirstPartyClientID,
 		OIDCFirstPartyClientSecret:          req.OIDCFirstPartyClientSecret,

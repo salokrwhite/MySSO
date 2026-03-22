@@ -31,6 +31,7 @@ type SystemSettings struct {
 	UserCenterAnnouncementContent        string `json:"user_center_announcement_content"`
 	DeveloperAnnouncementEnabled         bool   `json:"developer_announcement_enabled"`
 	DeveloperAnnouncementContent         string `json:"developer_announcement_content"`
+	PublicBaseURL                        string `json:"public_base_url"`
 	FrontendBaseURL                      string `json:"frontend_base_url"`
 	OIDCFirstPartyClientID               string `json:"oidc_first_party_client_id"`
 	OIDCFirstPartyClientSecret           string `json:"oidc_first_party_client_secret"`
@@ -182,6 +183,7 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 		"user_center_announcement_content",
 		"developer_announcement_enabled",
 		"developer_announcement_content",
+		"public_base_url",
 		"frontend_base_url",
 		"oidc_first_party_client_id",
 		"oidc_first_party_client_secret",
@@ -382,6 +384,7 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 		UserCenterAnnouncementContent:        strings.TrimSpace(values["user_center_announcement_content"]),
 		DeveloperAnnouncementEnabled:         fallbackBoolSetting(values["developer_announcement_enabled"], appdefaults.DefaultDeveloperAnnouncementEnabled),
 		DeveloperAnnouncementContent:         strings.TrimSpace(values["developer_announcement_content"]),
+		PublicBaseURL:                        fallbackSetting(values["public_base_url"], s.deps.cfg.HTTP.PublicBase),
 		FrontendBaseURL:                      fallbackSetting(values["frontend_base_url"], s.deps.cfg.HTTP.FrontendBase),
 		OIDCFirstPartyClientID:               fallbackSetting(values["oidc_first_party_client_id"], s.deps.cfg.OIDC.FirstPartyClientID),
 		OIDCFirstPartyClientSecret:           "",
@@ -499,6 +502,9 @@ func (s *SettingsService) UpdateSystemSettings(input SystemSettings) error {
 
 	if strings.TrimSpace(input.SiteName) == "" {
 		input.SiteName = appdefaults.DefaultSiteName
+	}
+	if strings.TrimSpace(input.PublicBaseURL) == "" {
+		input.PublicBaseURL = s.deps.cfg.HTTP.PublicBase
 	}
 	if strings.TrimSpace(input.FrontendBaseURL) == "" {
 		input.FrontendBaseURL = s.deps.cfg.HTTP.FrontendBase
@@ -748,6 +754,7 @@ func (s *SettingsService) UpdateSystemSettings(input SystemSettings) error {
 		"user_center_announcement_content":         strings.TrimSpace(input.UserCenterAnnouncementContent),
 		"developer_announcement_enabled":           strconv.FormatBool(input.DeveloperAnnouncementEnabled),
 		"developer_announcement_content":           strings.TrimSpace(input.DeveloperAnnouncementContent),
+		"public_base_url":                          strings.TrimSpace(input.PublicBaseURL),
 		"frontend_base_url":                        strings.TrimSpace(input.FrontendBaseURL),
 		"oidc_first_party_client_id":               strings.TrimSpace(input.OIDCFirstPartyClientID),
 		"oidc_first_party_client_secret":           strings.TrimSpace(input.OIDCFirstPartyClientSecret),

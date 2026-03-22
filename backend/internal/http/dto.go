@@ -170,6 +170,7 @@ type updateSystemSettingsRequest struct {
 	UserCenterAnnouncementContent       string `json:"user_center_announcement_content"`
 	DeveloperAnnouncementEnabled        bool   `json:"developer_announcement_enabled"`
 	DeveloperAnnouncementContent        string `json:"developer_announcement_content"`
+	PublicBaseURL                       string `json:"public_base_url"`
 	FrontendBaseURL                     string `json:"frontend_base_url"`
 	OIDCFirstPartyClientID              string `json:"oidc_first_party_client_id"`
 	OIDCFirstPartyClientSecret          string `json:"oidc_first_party_client_secret"`

@@ -179,6 +179,7 @@ export function useSystemSettings(
         "site_footer_text",
         "site_icp_record_number",
         "site_public_security_record_number",
+        "public_base_url",
         "frontend_base_url",
         "oidc_first_party_client_id",
         "oidc_first_party_client_secret",

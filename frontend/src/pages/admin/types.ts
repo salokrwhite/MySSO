@@ -234,6 +234,7 @@ export type SystemSettings = {
   user_center_announcement_content: string;
   developer_announcement_enabled: boolean;
   developer_announcement_content: string;
+  public_base_url: string;
   frontend_base_url: string;
   oidc_first_party_client_id: string;
   oidc_first_party_client_secret: string;

@@ -91,6 +91,14 @@ export function SiteSettings({
           />
         </Form.Item>
         <Form.Item
+          label={t("认证服务公开地址")}
+          name="public_base_url"
+          rules={[{ required: true, message: t("请输入认证服务公开地址") }]}
+          extra={t("用于 OIDC issuer、WebAuthn 通行密钥 RP ID 推导和对外回调地址。请填写用户浏览器真正访问到的认证服务公开域名，例如 https://account.example.com。")}
+        >
+          <Input placeholder={t("例如：https://account.example.com")} />
+        </Form.Item>
+        <Form.Item
           label={t("统一认证 Client ID")}
           name="oidc_first_party_client_id"
           rules={[{ required: true, message: t("请输入统一认证 Client ID") }]}
@@ -123,7 +131,7 @@ export function SiteSettings({
           label={t("前端门户地址")}
           name="frontend_base_url"
           rules={[{ required: true, message: t("请输入前端门户地址") }]}
-          extra={t("用于生成站点自身统一认证客户端的回调地址，例如 http://localhost:5173。保存后会同步回调为该地址下的 /callback。")}
+          extra={t("用于生成站点自身统一认证客户端的回调地址和通行密钥前端来源，例如 https://console.example.com。保存后会同步回调为该地址下的 /callback。")}
         >
           <Input placeholder={t("例如：http://localhost:5173")} />
         </Form.Item>

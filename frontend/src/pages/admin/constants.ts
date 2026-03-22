@@ -17,6 +17,7 @@ export const defaultSettings: SystemSettings = {
   user_center_announcement_content: "",
   developer_announcement_enabled: false,
   developer_announcement_content: "",
+  public_base_url: "",
   frontend_base_url: "",
   oidc_first_party_client_id: "",
   oidc_first_party_client_secret: "",

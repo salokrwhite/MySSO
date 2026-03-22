@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/url"
 	"strings"
 	"time"
@@ -11,6 +12,7 @@ import (
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/google/uuid"
+	"golang.org/x/net/publicsuffix"
 
 	"mysso/backend/internal/domain"
 )
@@ -75,10 +77,42 @@ func (s *PasskeyService) webAuthn() (*webauthn.WebAuthn, error) {
 	origins := []string{originFromURL(publicURL), originFromURL(frontendURL)}
 	config := &webauthn.Config{
 		RPDisplayName: siteName,
-		RPID:          publicURL.Hostname(),
+		RPID:          resolvePasskeyRPID(publicURL.Hostname(), frontendURL.Hostname()),
 		RPOrigins:     uniqueNonEmptyStrings(origins),
 	}
 	return webauthn.New(config)
+}
+
+func resolvePasskeyRPID(publicHostname, frontendHostname string) string {
+	publicHostname = strings.TrimSpace(strings.ToLower(publicHostname))
+	frontendHostname = strings.TrimSpace(strings.ToLower(frontendHostname))
+
+	if frontendHostname == "" {
+		return publicHostname
+	}
+	if publicHostname == "" {
+		return frontendHostname
+	}
+	if publicHostname == frontendHostname {
+		return frontendHostname
+	}
+	if isWebAuthnSpecialHost(publicHostname) || isWebAuthnSpecialHost(frontendHostname) {
+		return frontendHostname
+	}
+
+	publicBaseDomain, publicErr := publicsuffix.EffectiveTLDPlusOne(publicHostname)
+	frontendBaseDomain, frontendErr := publicsuffix.EffectiveTLDPlusOne(frontendHostname)
+	if publicErr == nil && frontendErr == nil && publicBaseDomain == frontendBaseDomain {
+		return frontendBaseDomain
+	}
+	return frontendHostname
+}
+
+func isWebAuthnSpecialHost(hostname string) bool {
+	if hostname == "" {
+		return true
+	}
+	return hostname == "localhost" || net.ParseIP(hostname) != nil
 }
 
 func (s *PasskeyService) ListPasskeys(userID string) ([]domain.Passkey, error) {
