@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Дүйсенбіден жұмаға дейін 09:00 - 18:00",
-      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
-      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
-      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
+      contactOverseasPersonValue: "To be provided",
+      contactOverseasPhoneValue: "To be provided",
+      contactOverseasEmailValue: "To be provided",
       contactOverseasHoursValue: "Дүйсенбіден жұмаға дейін 09:00 - 18:00",
       contactRegionNotice:
         "Алдымен өз аймағыңыздың қолдау арнасына хабарласыңыз. Қайсысы қолданылатынын білмесеңіз, бағыттау көмегі үшін Қытай материгі байланысымен бастаңыз.",

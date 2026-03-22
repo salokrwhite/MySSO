@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Pirmdiena līdz piektdiena 09:00 - 18:00",
-      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
-      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
-      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
+      contactOverseasPersonValue: "Tiks sniegts",
+      contactOverseasPhoneValue: "Tiks sniegts",
+      contactOverseasEmailValue: "Tiks sniegts",
       contactOverseasHoursValue: "Pirmdiena līdz piektdiena 09:00 - 18:00",
       contactRegionNotice:
         "Lūdzu, sāciet ar atbalsta kanālu savā reģionā. Ja neesat pārliecināts, kurš reģions attiecas, sāciet ar Ķīnas kontinentālās daļas kontaktu, lai iegūtu maršrutēšanas palīdzību.",

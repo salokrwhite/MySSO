@@ -590,9 +590,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Pazartesi-Cuma 09:00 - 18:00",
-      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
-      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
-      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
+      contactOverseasPersonValue: "Doldurulacak",
+      contactOverseasPhoneValue: "Doldurulacak",
+      contactOverseasEmailValue: "Doldurulacak",
       contactOverseasHoursValue: "Pazartesi-Cuma 09:00 - 18:00",
       contactRegionNotice:
         "Lütfen bulunduğunuz bölgeye göre ilgili destek kanalını tercih edin; hangi bölgeye ait olduğunu belirleyemiyorsanız, yönlendirme yardımı almak için önce Çin Ana Karası iletişim bilgilerini kullanın.",

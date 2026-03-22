@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "തിങ്കൾ മുതൽ വെള്ളിയാഴ്ച 09:00 - 18:00",
-      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
-      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
-      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
+      contactOverseasPersonValue: "നൽകപ്പെടും",
+      contactOverseasPhoneValue: "നൽകപ്പെടും",
+      contactOverseasEmailValue: "നൽകപ്പെടും",
       contactOverseasHoursValue: "തിങ്കൾ മുതൽ വെള്ളിയാഴ്ച 09:00 - 18:00",
       contactRegionNotice:
         "ദയവായി നിങ്ങളുടെ മേഖലയുടെ സപ്പോർട്ട് ചാനൽ ആദ്യം ഉപയോഗിക്കുക. നിങ്ങൾ ഏത് മേഖലയിലാണ് എന്ന് തിരിച്ചറിയാൻ കഴിയുന്നില്ലെങ്കിൽ, റൂട്ടിംഗ് സഹായത്തിന് മെയിൻലാൻഡ് ചൈന കോൺടാക്റ്റിലൂടെ ആരംഭിക്കുക.",

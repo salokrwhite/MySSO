@@ -529,9 +529,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Lunedì venerdì 09:00 - 18:00",
-      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
-      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
-      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
+      contactOverseasPersonValue: "Da fornire",
+      contactOverseasPhoneValue: "Da fornire",
+      contactOverseasEmailValue: "Da fornire",
       contactOverseasHoursValue: "Lunedì venerdì 09:00 - 18:00",
       contactRegionNotice:
         "Contatta prima il canale di supporto per la tua regione. Se non sei sicuro di quale regione si applica, inizia con il contatto della Cina continentale per assistenza nella messa in routing.",

@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Maanantai - perjantai 09:00 - 18:00",
-      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
-      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
-      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
+      contactOverseasPersonValue: "To be provided",
+      contactOverseasPhoneValue: "To be provided",
+      contactOverseasEmailValue: "To be provided",
       contactOverseasHoursValue: "Maanantai - perjantai 09:00 - 18:00",
       contactRegionNotice:
         "Ota ensin yhteyttä alueesi tukikanavaan. Jos et ole varma, mikä alue koskee sinua, aloita Kiinan pääkontaktin kanssa saadaksesi ohjausta.",

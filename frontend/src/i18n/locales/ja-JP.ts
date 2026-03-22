@@ -530,9 +530,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "月曜日から金曜日 09:00 - 18:00",
-      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
-      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
-      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
+      contactOverseasPersonValue: "提供予定",
+      contactOverseasPhoneValue: "提供予定",
+      contactOverseasEmailValue: "提供予定",
       contactOverseasHoursValue: "月曜日から金曜日 09:00 - 18:00",
       contactRegionNotice:
         "所属する地域のサポートチャネルに優先的に連絡してください。所属地域が判断できない場合は、中国本土の連絡先からルーティングの助けを求めることができます。",

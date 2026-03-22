@@ -531,9 +531,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "من الاثنين إلى الجمعة 09:00 - 18:00",
-      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
-      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
-      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
+      contactOverseasPersonValue: "سيتم توفيره لاحقًا",
+      contactOverseasPhoneValue: "سيتم توفيره لاحقًا",
+      contactOverseasEmailValue: "سيتم توفيره لاحقًا",
       contactOverseasHoursValue: "من الاثنين إلى الجمعة 09:00 - 18:00",
       contactRegionNotice:
         "يرجى حسب منطقتك الاتصال بقناة الدعم المقابلة أولاً؛ إذا لم تتمكن من تحديد المنطقة التابعة لها، يمكنك أولاً الحصول على مساعدة التحويل عبر اتصال البر الرئيسي الصيني.",

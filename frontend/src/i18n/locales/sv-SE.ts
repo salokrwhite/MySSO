@@ -531,9 +531,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Måndag till fredag 09:00 - 18:00",
-      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
-      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
-      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
+      contactOverseasPersonValue: "Att tillhandahållas",
+      contactOverseasPhoneValue: "Att tillhandahållas",
+      contactOverseasEmailValue: "Att tillhandahållas",
       contactOverseasHoursValue: "Måndag till fredag 09:00 - 18:00",
       contactRegionNotice:
         "Vänligen kontakta den supportkanal som gäller för din region först. Om du inte kan avgöra vilken region du tillhör, kan du först kontakta huvudland Kina för vidarebefordran.",

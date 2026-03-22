@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Dushanba - Juma 09:00 - 18:00",
-      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
-      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
-      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
+      contactOverseasPersonValue: "Ta'minlanishi kerak",
+      contactOverseasPhoneValue: "Ta'minlanishi kerak",
+      contactOverseasEmailValue: "Ta'minlanishi kerak",
       contactOverseasHoursValue: "Dushanba - Juma 09:00 - 18:00",
       contactRegionNotice:
         "Iltimos, avval o'zingizning mintaqangiz uchun yordam kanaliga murojaat qiling. Agar qaysi mintaqa tegishli ekanligini aniqlay olmasangiz, yo'naltirish yordami uchun Markaziy Xitoy kontaktiga murojaat qiling.",

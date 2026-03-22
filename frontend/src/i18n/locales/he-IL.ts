@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "יום שני עד יום חמישי 09:00 - 18:00",
-      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
-      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
-      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
+      contactOverseasPersonValue: "תיתן",
+      contactOverseasPhoneValue: "תיתן",
+      contactOverseasEmailValue: "תיתן",
       contactOverseasHoursValue: "יום שני עד יום חמישי 09:00 - 18:00",
       contactRegionNotice:
         "נא ליצור קשר עם ערוץ התמיכה של אזוריך תחילה. אם אינך בטוח איזו אזור חל עליך, התחל עם איש הקשר בישראל עזרה בניתוב.",

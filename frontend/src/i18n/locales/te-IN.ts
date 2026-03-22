@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "సోమవారం నుండి శుక్రవారం 09:00 - 18:00",
-      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
-      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
-      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
+      contactOverseasPersonValue: "అందించబడాలి",
+      contactOverseasPhoneValue: "అందించబడాలి",
+      contactOverseasEmailValue: "అందించబడాలి",
       contactOverseasHoursValue: "సోమవారం నుండి శుక్రవారం 09:00 - 18:00",
       contactRegionNotice:
         "దయచేసి మీ ప్రాంతం కోసం మొదట సపోర్ట్ ఛానెల్‌ను సంప్రదించండి. మీరు ఏ ప్రాంతం వర్తిస్తుందో ఖచ్చితంగా తెలియకపోతే, రూటింగ్ సహాయం కోసం భారతదేశం కాంటాక్ట్‌తో ప్రారంభించండి.",

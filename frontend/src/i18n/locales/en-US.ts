@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Monday to Friday 09:00 - 18:00",
-      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
-      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
-      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
+      contactOverseasPersonValue: "To be provided",
+      contactOverseasPhoneValue: "To be provided",
+      contactOverseasEmailValue: "To be provided",
       contactOverseasHoursValue: "Monday to Friday 09:00 - 18:00",
       contactRegionNotice:
         "Please contact the support channel for your region first. If you are unsure which region applies, start with the Mainland China contact for routing help.",

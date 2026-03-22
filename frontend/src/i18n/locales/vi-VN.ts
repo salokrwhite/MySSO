@@ -531,9 +531,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Thứ Hai đến Thứ Sáu 09:00 - 18:00",
-      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
-      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
-      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
+      contactOverseasPersonValue: "Chờ bổ sung",
+      contactOverseasPhoneValue: "Chờ bổ sung",
+      contactOverseasEmailValue: "Chờ bổ sung",
       contactOverseasHoursValue: "Thứ Hai đến Thứ Sáu 09:00 - 18:00",
       contactRegionNotice:
         "Vui lòng ưu tiên liên hệ kênh hỗ trợ tương ứng với khu vực bạn đang ở; nếu không thể xác định khu vực thuộc, có thể liên hệ Trung Quốc đại lục trước để được hỗ trợ chuyển tiếp.",
