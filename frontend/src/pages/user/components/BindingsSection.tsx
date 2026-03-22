@@ -2,10 +2,10 @@ import { Avatar, Button, Modal, Space, Table, Tag, Typography } from "antd";
 import { GlobalOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { api } from "../../../api/client";
 import { API_BASE } from "../../../api/client";
 import type { Consent } from "../types";
 import { formatDateTime } from "../utils";
+import { fetchPublicSettings } from "../../../publicSettings";
 
 type BindingsSectionProps = {
   consents: Consent[];
@@ -117,13 +117,14 @@ export function BindingsSection({
 
   useEffect(() => {
     let active = true;
-    void api<{ data?: { site_logo_data_url?: string; oidc_first_party_client_id?: string } }>("/public/settings")
+    void fetchPublicSettings()
       .then((result) => {
         if (!active) {
           return;
         }
-        const nextLogo = result.data?.site_logo_data_url?.trim() || "";
-        const nextFirstPartyClientID = result.data?.oidc_first_party_client_id?.trim() || "";
+        const nextLogo = result.site_logo_data_url?.trim() || "";
+        const nextFirstPartyClientID =
+          result.oidc_first_party_client_id?.trim() || "";
         setSiteLogoDataUrl(nextLogo);
         setFirstPartyClientID(nextFirstPartyClientID);
         localStorage.setItem("site_logo_data_url", nextLogo);

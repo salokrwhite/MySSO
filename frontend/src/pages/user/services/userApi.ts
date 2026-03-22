@@ -1,18 +1,31 @@
 import { api, getPreferredApiBase } from "../../../api/client";
 import type { Consent, CurrentUser, PasskeyItem } from "../types";
+import { fetchPublicSettings, type PublicSettings } from "../../../publicSettings";
 
-export type PublicUserSettings = {
-  user_center_announcement_enabled?: boolean;
-  user_center_announcement_content?: string;
-  enable_phone_verification?: boolean;
+export type PublicUserSettings = Pick<
+  PublicSettings,
+  | "user_center_announcement_enabled"
+  | "user_center_announcement_content"
+  | "enable_phone_verification"
+>;
+
+export type PublicSiteBranding = Pick<
+  PublicSettings,
+  | "site_name"
+  | "site_name_en"
+  | "site_footer_text"
+  | "site_icp_record_number"
+  | "site_public_security_record_number"
+>;
+
+export type UserAccountOverview = {
+  user: CurrentUser;
 };
 
-export type PublicSiteBranding = {
-  site_name?: string;
-  site_name_en?: string;
-  site_footer_text?: string;
-  site_icp_record_number?: string;
-  site_public_security_record_number?: string;
+type SessionScopedCache<T> = {
+  value: T | null;
+  inflight: Promise<T> | null;
+  sessionToken?: string;
 };
 
 type PasskeyRegistrationOptionsResult = {
@@ -23,6 +36,43 @@ type PasskeyRegistrationOptionsResult = {
 type PasskeyRegistrationVerifyResult = {
   item: PasskeyItem;
 };
+
+const overviewCache: SessionScopedCache<UserAccountOverview> = {
+  value: null,
+  inflight: null,
+};
+const consentsCache: SessionScopedCache<Consent[]> = {
+  value: null,
+  inflight: null,
+};
+const passkeysCache: SessionScopedCache<PasskeyItem[]> = {
+  value: null,
+  inflight: null,
+};
+
+function sameSessionToken(
+  cacheSessionToken?: string,
+  sessionToken?: string,
+) {
+  return (cacheSessionToken || "") === (sessionToken || "");
+}
+
+function resetSessionScopedCache<T>(cache: SessionScopedCache<T>) {
+  cache.value = null;
+  cache.inflight = null;
+  cache.sessionToken = undefined;
+}
+
+function readSessionScopedCache<T>(
+  cache: SessionScopedCache<T>,
+  sessionToken?: string,
+) {
+  if (!sameSessionToken(cache.sessionToken, sessionToken)) {
+    resetSessionScopedCache(cache);
+    cache.sessionToken = sessionToken;
+  }
+  return cache;
+}
 
 async function fetchRaw(path: string, init?: RequestInit) {
   const response = await fetch(`${getPreferredApiBase()}${path}`, {
@@ -41,25 +91,111 @@ async function fetchRaw(path: string, init?: RequestInit) {
 }
 
 export async function fetchPublicUserSettings() {
-  return api<{ data?: PublicUserSettings }>("/public/settings");
+  const settings = await fetchPublicSettings();
+  return {
+    data: {
+      user_center_announcement_enabled:
+        settings.user_center_announcement_enabled,
+      user_center_announcement_content:
+        settings.user_center_announcement_content,
+      enable_phone_verification: settings.enable_phone_verification,
+    } satisfies PublicUserSettings,
+  };
 }
 
 export async function fetchPublicSiteBranding() {
-  return api<{ data: PublicSiteBranding }>("/public/settings");
+  const settings = await fetchPublicSettings();
+  return {
+    data: {
+      site_name: settings.site_name,
+      site_name_en: settings.site_name_en,
+      site_footer_text: settings.site_footer_text,
+      site_icp_record_number: settings.site_icp_record_number,
+      site_public_security_record_number:
+        settings.site_public_security_record_number,
+    } satisfies PublicSiteBranding,
+  };
 }
 
-export async function fetchUserAccountData(sessionToken?: string) {
-  const [userResult, consentResult, passkeyResult] = await Promise.all([
-    api<{ user: CurrentUser }>("/me", undefined, sessionToken),
-    api<{ items: Consent[] }>("/consents", undefined, sessionToken),
-    api<{ items: PasskeyItem[] }>("/me/passkeys", undefined, sessionToken),
-  ]);
+export async function fetchUserAccountOverview(sessionToken?: string) {
+  const cache = readSessionScopedCache(overviewCache, sessionToken);
+  if (cache.value) {
+    return cache.value;
+  }
+  if (cache.inflight) {
+    return cache.inflight;
+  }
+  cache.inflight = api<UserAccountOverview>("/me", undefined, sessionToken)
+    .then((result) => {
+      cache.value = result;
+      return result;
+    })
+    .finally(() => {
+      cache.inflight = null;
+    });
+  return cache.inflight;
+}
 
-  return {
-    user: userResult.user,
-    consents: consentResult.items,
-    passkeys: passkeyResult.items,
-  };
+export async function fetchUserConsents(sessionToken?: string) {
+  const cache = readSessionScopedCache(consentsCache, sessionToken);
+  if (cache.value) {
+    return cache.value;
+  }
+  if (cache.inflight) {
+    return cache.inflight;
+  }
+  cache.inflight = api<{ items: Consent[] }>("/consents", undefined, sessionToken)
+    .then((result) => {
+      cache.value = result.items;
+      return result.items;
+    })
+    .finally(() => {
+      cache.inflight = null;
+    });
+  return cache.inflight;
+}
+
+export async function fetchUserPasskeys(sessionToken?: string) {
+  const cache = readSessionScopedCache(passkeysCache, sessionToken);
+  if (cache.value) {
+    return cache.value;
+  }
+  if (cache.inflight) {
+    return cache.inflight;
+  }
+  cache.inflight = api<{ items: PasskeyItem[] }>("/me/passkeys", undefined, sessionToken)
+    .then((result) => {
+      cache.value = result.items;
+      return result.items;
+    })
+    .finally(() => {
+      cache.inflight = null;
+    });
+  return cache.inflight;
+}
+
+export function updateUserOverviewCache(user: CurrentUser, sessionToken?: string) {
+  const cache = readSessionScopedCache(overviewCache, sessionToken);
+  cache.value = { user };
+}
+
+export function updateUserConsentsCache(items: Consent[], sessionToken?: string) {
+  const cache = readSessionScopedCache(consentsCache, sessionToken);
+  cache.value = items;
+}
+
+export function updateUserPasskeysCache(
+  items: PasskeyItem[],
+  sessionToken?: string,
+) {
+  const cache = readSessionScopedCache(passkeysCache, sessionToken);
+  cache.value = items;
+}
+
+export function clearUserAccountCaches(sessionToken?: string) {
+  readSessionScopedCache(overviewCache, sessionToken).value = null;
+  readSessionScopedCache(consentsCache, sessionToken).value = null;
+  readSessionScopedCache(passkeysCache, sessionToken).value = null;
 }
 
 export async function updateUserProfile(

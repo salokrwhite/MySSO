@@ -29,7 +29,7 @@ import {
 } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { API_BASE, api } from "../api/client";
+import { API_BASE } from "../api/client";
 import {
   ACCOUNT_LOCALE_STORAGE_KEY,
   normalizeAccountLocale,
@@ -58,6 +58,7 @@ import {
   resolveSiteNameForLocale,
 } from "../siteBranding";
 import { updateUserProfile } from "../pages/user/services/userApi";
+import { fetchPublicSettings, mergePublicSettingsCache } from "../publicSettings";
 
 const { Header, Content, Sider } = Layout;
 
@@ -427,27 +428,18 @@ export function AppLayout() {
   }, [brandingLocale]);
 
   useEffect(() => {
-    void api<{
-      data: {
-        site_name?: string;
-        site_name_en?: string;
-        site_logo_data_url?: string;
-        site_icp_record_number?: string;
-        site_public_security_record_number?: string;
-      };
-    }>("/public/settings")
+    void fetchPublicSettings()
       .then((result) => {
         const nextName = resolveSiteNameForLocale(
           brandingLocale,
-          result.data.site_name,
-          result.data.site_name_en,
+          result.site_name,
+          result.site_name_en,
         );
-        const nextLogo = result.data.site_logo_data_url?.trim() || "";
-        const nextICPRecordNumber =
-          result.data.site_icp_record_number?.trim() || "";
+        const nextLogo = result.site_logo_data_url?.trim() || "";
+        const nextICPRecordNumber = result.site_icp_record_number?.trim() || "";
         const nextPublicSecurityRecordNumber =
-          result.data.site_public_security_record_number?.trim() || "";
-        persistSiteBranding(result.data);
+          result.site_public_security_record_number?.trim() || "";
+        persistSiteBranding(result);
         setSiteName(nextName);
         setSiteLogoDataUrl(nextLogo);
         localStorage.setItem("site_logo_data_url", nextLogo);
@@ -478,6 +470,14 @@ export function AppLayout() {
       const nextICPRecordNumber = detail?.siteICPRecordNumber?.trim();
       const nextPublicSecurityRecordNumber =
         detail?.sitePublicSecurityRecordNumber?.trim();
+      mergePublicSettingsCache({
+        site_name: detail?.siteName,
+        site_name_en: detail?.siteNameEn,
+        site_logo_data_url: detail?.siteLogoDataUrl,
+        site_icp_record_number: detail?.siteICPRecordNumber,
+        site_public_security_record_number:
+          detail?.sitePublicSecurityRecordNumber,
+      });
       persistSiteBranding({
         site_name: detail?.siteName,
         site_name_en: detail?.siteNameEn,

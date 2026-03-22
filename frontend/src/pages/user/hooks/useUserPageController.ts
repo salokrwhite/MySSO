@@ -38,13 +38,18 @@ import {
   exportUserDataRequest,
   fetchPublicSiteBranding,
   fetchPublicUserSettings,
-  fetchUserAccountData,
+  fetchUserAccountOverview,
+  fetchUserConsents,
+  fetchUserPasskeys,
   preparePasskeyRegistration,
   revokeBatchConsentsRequest,
   revokeConsentRequest,
   sendCurrentMFACodeRequest,
   sendEmailCode,
   sendPhoneCode,
+  updateUserConsentsCache,
+  updateUserOverviewCache,
+  updateUserPasskeysCache,
   updateUserEmail,
   updateUserMFA,
   updateUserPassword,
@@ -171,6 +176,8 @@ export function useUserPageController() {
   const [consents, setConsents] = useState<Consent[]>([]);
   const [error, setError] = useState<string>();
   const [passkeys, setPasskeys] = useState<PasskeyItem[]>([]);
+  const [passkeysLoaded, setPasskeysLoaded] = useState(false);
+  const [consentsLoaded, setConsentsLoaded] = useState(false);
   const [revokingConsentId, setRevokingConsentId] = useState<string>();
   const [selectedConsentIds, setSelectedConsentIds] = useState<string[]>([]);
   const [batchRevoking, setBatchRevoking] = useState(false);
@@ -338,20 +345,57 @@ export function useUserPageController() {
     );
   }
 
-  async function load() {
+  async function loadUser() {
     try {
-      const result = await fetchUserAccountData(sessionToken);
+      const result = await fetchUserAccountOverview(sessionToken);
       setUser(result.user);
+      updateUserOverviewCache(result.user, sessionToken);
       setDisplayNameDraft(result.user.display_name || "");
       setGenderDraft(result.user.gender || "");
       setPreferredLocaleDraft(
         normalizeAccountLocale(result.user.preferred_locale),
       );
-      setConsents(result.consents);
-      setPasskeys(result.passkeys);
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        void redirectToLogin();
+        return;
+      }
+      if (err instanceof Error && err.message.toLowerCase().includes("session")) {
+        void redirectToLogin();
+        return;
+      }
+      setError(err instanceof Error ? err.message : t("common.loadingFailed"));
+    }
+  }
+
+  async function loadConsents() {
+    try {
+      const items = await fetchUserConsents(sessionToken);
+      setConsents(items);
+      updateUserConsentsCache(items, sessionToken);
+      setConsentsLoaded(true);
       setSelectedConsentIds((current) =>
-        current.filter((id) => result.consents.some((item) => item.id === id)),
+        current.filter((id) => items.some((item) => item.id === id)),
       );
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        void redirectToLogin();
+        return;
+      }
+      if (err instanceof Error && err.message.toLowerCase().includes("session")) {
+        void redirectToLogin();
+        return;
+      }
+      setError(err instanceof Error ? err.message : t("common.loadingFailed"));
+    }
+  }
+
+  async function loadPasskeys() {
+    try {
+      const items = await fetchUserPasskeys(sessionToken);
+      setPasskeys(items);
+      updateUserPasskeysCache(items, sessionToken);
+      setPasskeysLoaded(true);
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
         void redirectToLogin();
@@ -417,8 +461,22 @@ export function useUserPageController() {
     if (!sessionToken) {
       return;
     }
-    void load();
+    void loadUser();
   }, [sessionToken, t]);
+
+  useEffect(() => {
+    if (!sessionToken || activeSection !== "security" || passkeysLoaded) {
+      return;
+    }
+    void loadPasskeys();
+  }, [activeSection, passkeysLoaded, sessionToken]);
+
+  useEffect(() => {
+    if (!sessionToken || activeSection !== "bindings" || consentsLoaded) {
+      return;
+    }
+    void loadConsents();
+  }, [activeSection, consentsLoaded, sessionToken]);
 
   useEffect(() => {
     if (!isMobile) {
@@ -461,9 +519,15 @@ export function useUserPageController() {
   async function uploadUserAvatar(file: File) {
     const webpBlob = await convertImageToWebp(file, t);
     const nextAvatarURL = await uploadUserAvatarRequest(webpBlob);
-    setUser((current) =>
-      current ? { ...current, avatar_url: nextAvatarURL } : current,
-    );
+    setUser((current) => {
+      const nextUser = current
+        ? { ...current, avatar_url: nextAvatarURL }
+        : current;
+      if (nextUser) {
+        updateUserOverviewCache(nextUser, sessionToken);
+      }
+      return nextUser;
+    });
     messageApi.success(t("common.avatarUpdated"));
   }
 
@@ -471,7 +535,11 @@ export function useUserPageController() {
     setRevokingConsentId(id);
     try {
       await revokeConsentRequest(sessionToken, id);
-      setConsents((current) => current.filter((item) => item.id !== id));
+      setConsents((current) => {
+        const nextItems = current.filter((item) => item.id !== id);
+        updateUserConsentsCache(nextItems, sessionToken);
+        return nextItems;
+      });
       setSelectedConsentIds((current) => current.filter((item) => item !== id));
       messageApi.success(t("common.revokeSuccess"));
     } catch (err) {
@@ -491,9 +559,11 @@ export function useUserPageController() {
     try {
       await revokeBatchConsentsRequest(sessionToken, selectedConsentIds);
       const revokedIDs = new Set(selectedConsentIds);
-      setConsents((current) =>
-        current.filter((item) => !revokedIDs.has(item.id)),
-      );
+      setConsents((current) => {
+        const nextItems = current.filter((item) => !revokedIDs.has(item.id));
+        updateUserConsentsCache(nextItems, sessionToken);
+        return nextItems;
+      });
       setSelectedConsentIds([]);
       setConfirmingBatchRevoke(false);
       messageApi.success(t("common.revokeSuccess"));
@@ -514,6 +584,7 @@ export function useUserPageController() {
         display_name: displayNameDraft.trim(),
       });
       setUser(result.user);
+      updateUserOverviewCache(result.user, sessionToken);
       setDisplayNameDraft(result.user.display_name || "");
       setEditingDisplayName(false);
       messageApi.success(t("common.profileUpdated"));
@@ -534,6 +605,7 @@ export function useUserPageController() {
         gender: genderDraft,
       });
       setUser(result.user);
+      updateUserOverviewCache(result.user, sessionToken);
       setGenderDraft(result.user.gender || "");
       setEditingGender(false);
       messageApi.success(t("common.profileUpdated"));
@@ -554,13 +626,14 @@ export function useUserPageController() {
         preferred_locale: preferredLocaleDraft,
       });
       setUser(result.user);
+      updateUserOverviewCache(result.user, sessionToken);
       const nextLocale = normalizeAccountLocale(
         result.user.preferred_locale || preferredLocaleDraft,
       );
       setPreferredLocaleDraft(nextLocale);
       localStorage.setItem(ACCOUNT_LOCALE_STORAGE_KEY, nextLocale);
       await i18n.changeLanguage(nextLocale);
-      await load();
+      await loadUser();
       messageApi.success(t("profile.languagePreferenceSaved"));
     } catch (err) {
       setError(
@@ -673,6 +746,7 @@ export function useUserPageController() {
         current_password: values.current_password.trim(),
       });
       setUser(result.user);
+      updateUserOverviewCache(result.user, sessionToken);
       setEditingEmail(false);
       messageApi.success(t("common.profileUpdated"));
     } catch (err) {
@@ -698,6 +772,7 @@ export function useUserPageController() {
         current_password: values.current_password.trim(),
       });
       setUser(result.user);
+      updateUserOverviewCache(result.user, sessionToken);
       setEditingPhone(false);
       messageApi.success(t("common.profileUpdated"));
     } catch (err) {
@@ -789,6 +864,7 @@ export function useUserPageController() {
         current_mfa_code: values.current_mfa_code?.trim() || "",
       });
       setUser(result.user);
+      updateUserOverviewCache(result.user, sessionToken);
       setEditingMFA(false);
       messageApi.success(t("common.profileUpdated"));
       window.setTimeout(() => {
@@ -825,7 +901,11 @@ export function useUserPageController() {
         current_password: values.current_password.trim(),
         current_mfa_code: values.current_mfa_code?.trim() || "",
       });
-      setPasskeys((current) => [result.item, ...current]);
+      setPasskeys((current) => {
+        const nextItems = [result.item, ...current];
+        updateUserPasskeysCache(nextItems, sessionToken);
+        return nextItems;
+      });
       setCreatingPasskey(false);
       createPasskeyForm.resetFields();
       messageApi.success(t("auth.passkeyLoginSuccess"));
@@ -851,9 +931,13 @@ export function useUserPageController() {
         current_password: values.current_password.trim(),
         current_mfa_code: values.current_mfa_code?.trim() || "",
       });
-      setPasskeys((current) =>
-        current.filter((item) => item.id !== deletingPasskeyItem.id),
-      );
+      setPasskeys((current) => {
+        const nextItems = current.filter(
+          (item) => item.id !== deletingPasskeyItem.id,
+        );
+        updateUserPasskeysCache(nextItems, sessionToken);
+        return nextItems;
+      });
       setDeletingPasskeyItem(null);
       deletePasskeyForm.resetFields();
       messageApi.success(t("common.revokeSuccess"));

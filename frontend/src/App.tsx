@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
-import { api } from "./api/client";
 import { AppLayout } from "./layouts/AppLayout";
 import { LoginPage } from "./pages/auth/LoginPage";
 import { LoginMFAPage } from "./pages/auth/LoginMFAPage";
@@ -39,6 +38,7 @@ import {
   persistSiteBranding,
   resolveBrowserTitleForLocale,
 } from "./siteBranding";
+import { fetchPublicSettings, mergePublicSettingsCache } from "./publicSettings";
 
 function RequireAuth() {
   const location = useLocation();
@@ -154,19 +154,12 @@ export function App() {
       document.title = resolvedTitle;
     };
 
-    void api<{
-      data?: {
-        site_browser_title?: string;
-        site_browser_title_en?: string;
-        site_name?: string;
-        site_name_en?: string;
-      };
-    }>("/public/settings")
-      .then((result) => {
-        persistSiteBranding(result.data);
+    void fetchPublicSettings()
+      .then((settings) => {
+        persistSiteBranding(settings);
         syncBrowserTitleWithBranding(
-          result.data?.site_browser_title,
-          result.data?.site_browser_title_en,
+          settings.site_browser_title,
+          settings.site_browser_title_en,
         );
       })
       .catch(() => {
@@ -184,6 +177,12 @@ export function App() {
         siteName?: string;
         siteNameEn?: string;
       }>;
+      mergePublicSettingsCache({
+        site_name: customEvent.detail?.siteName,
+        site_name_en: customEvent.detail?.siteNameEn,
+        site_browser_title: customEvent.detail?.siteBrowserTitle,
+        site_browser_title_en: customEvent.detail?.siteBrowserTitleEn,
+      });
       persistSiteBranding({
         site_name: customEvent.detail?.siteName,
         site_name_en: customEvent.detail?.siteNameEn,
