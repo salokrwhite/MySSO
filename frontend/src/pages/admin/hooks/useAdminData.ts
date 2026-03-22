@@ -1,9 +1,32 @@
 import { useCallback, useMemo, useState } from "react";
-import { loadAdminData } from "../services/adminApi";
+import {
+  fetchAdminApps,
+  fetchAdminAuditLogs,
+  fetchAdminEmailSendLogs,
+  fetchAdminPasskeyLogs,
+  fetchAdminPhoneSendLogs,
+  fetchAdminPolicies,
+  fetchAdminRiskLogs,
+  fetchAdminScopes,
+  fetchAdminSystemSettings,
+  fetchAdminUsers,
+} from "../services/adminApi";
 import { defaultSettings } from "../constants";
-import type { AdminPasskeyLogs, AppItem, AuditLog, EmailSendLog, PhoneSendLog, Policy, RiskLog, ScopeDefinition, SystemSettings, User } from "../types";
+import type {
+  AdminPageType,
+  AdminPasskeyLogs,
+  AppItem,
+  AuditLog,
+  EmailSendLog,
+  PhoneSendLog,
+  Policy,
+  RiskLog,
+  ScopeDefinition,
+  SystemSettings,
+  User,
+} from "../types";
 
-export function useAdminData(sessionToken: string) {
+export function useAdminData(sessionToken: string, pageType: AdminPageType) {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [apps, setApps] = useState<AppItem[]>([]);
@@ -22,26 +45,80 @@ export function useAdminData(sessionToken: string) {
   const [settings, setSettings] = useState<SystemSettings>(defaultSettings);
   const [error, setError] = useState<string>();
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (options?: { force?: boolean }) => {
     setLoading(true);
     try {
-      const result = await loadAdminData(sessionToken);
-      setUsers(result.users);
-      setApps(result.apps);
-      setLogs(result.logs);
-      setRiskLogs(result.riskLogs);
-      setPasskeyLogs(result.passkeyLogs);
-      setEmailSendLogs(result.emailSendLogs);
-      setPhoneSendLogs(result.phoneSendLogs);
-      setPolicies(result.policies);
-      setScopes(result.scopes);
-      setSettings(result.settings);
+      if (pageType === "dashboard") {
+        const [nextUsers, nextApps, nextLogs, nextPolicies] =
+          await Promise.all([
+            fetchAdminUsers(sessionToken, options),
+            fetchAdminApps(sessionToken, options),
+            fetchAdminAuditLogs(sessionToken, options),
+            fetchAdminPolicies(sessionToken, options),
+          ]);
+        setUsers(nextUsers);
+        setApps(nextApps);
+        setLogs(nextLogs);
+        setPolicies(nextPolicies);
+        return;
+      }
+
+      if (pageType === "users") {
+        setUsers(await fetchAdminUsers(sessionToken, options));
+        return;
+      }
+
+      if (pageType === "apps") {
+        const [nextApps, nextLogs, nextScopes] = await Promise.all([
+          fetchAdminApps(sessionToken, options),
+          fetchAdminAuditLogs(sessionToken, options),
+          fetchAdminScopes(sessionToken, options),
+        ]);
+        setApps(nextApps);
+        setLogs(nextLogs);
+        setScopes(nextScopes);
+        return;
+      }
+
+      if (pageType === "auditLogs") {
+        setLogs(await fetchAdminAuditLogs(sessionToken, options));
+        return;
+      }
+
+      if (pageType === "riskLogs") {
+        const [nextRiskLogs, nextPasskeyLogs] = await Promise.all([
+          fetchAdminRiskLogs(sessionToken, options),
+          fetchAdminPasskeyLogs(sessionToken, options),
+        ]);
+        setRiskLogs(nextRiskLogs);
+        setPasskeyLogs(nextPasskeyLogs);
+        return;
+      }
+
+      if (pageType === "emailSendLogs") {
+        setEmailSendLogs(await fetchAdminEmailSendLogs(sessionToken, options));
+        return;
+      }
+
+      if (pageType === "phoneSendLogs") {
+        setPhoneSendLogs(await fetchAdminPhoneSendLogs(sessionToken, options));
+        return;
+      }
+
+      if (pageType === "settings") {
+        const [nextScopes, nextSettings] = await Promise.all([
+          fetchAdminScopes(sessionToken, options),
+          fetchAdminSystemSettings(sessionToken, options),
+        ]);
+        setScopes(nextScopes);
+        setSettings(nextSettings);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "加载失败");
     } finally {
       setLoading(false);
     }
-  }, [sessionToken]);
+  }, [pageType, sessionToken]);
 
   const activeUsers = useMemo(() => users.filter((item) => item.status === "active").length, [users]);
   const pendingApps = useMemo(() => apps.filter((item) => item.status === "pending_review").length, [apps]);

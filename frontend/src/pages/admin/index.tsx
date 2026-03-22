@@ -100,13 +100,19 @@ export function AdminPage() {
     activeUsers,
     pendingApps,
     approvedApps,
-  } = useAdminData(sessionToken);
+  } = useAdminData(sessionToken, pageType);
+
+  const ensureCurrentPageLoaded = useCallback(() => load(), [load]);
+  const reloadCurrentPage = useCallback(
+    () => load({ force: true }),
+    [load],
+  );
 
   const systemSettings = useSystemSettings(
     sessionToken,
     settings,
     setSettings,
-    load,
+    reloadCurrentPage,
     setError,
     pageType,
     activeSettingsTab,
@@ -114,20 +120,20 @@ export function AdminPage() {
 
   const { reviewApp, deleteApp, updateApp } = useAppReview(
     sessionToken,
-    load,
+    reloadCurrentPage,
     setError,
   );
   const { deletingApps, confirmBatchDeleteApps } = useBatchAppActions(
     sessionToken,
     selectedAppIds,
     setSelectedAppIds,
-    load,
+    reloadCurrentPage,
     setError,
     systemSettings.messageApi,
   );
   const { creatingUser, createUser } = useUserCreateActions(
     sessionToken,
-    load,
+    reloadCurrentPage,
     setError,
     systemSettings.messageApi,
   );
@@ -151,7 +157,7 @@ export function AdminPage() {
     sessionToken,
     selectedUserIds,
     setSelectedUserIds,
-    load,
+    reloadCurrentPage,
     setError,
     systemSettings.messageApi,
   );
@@ -159,7 +165,7 @@ export function AdminPage() {
     sessionToken,
     selectedAuditLogIds,
     setSelectedAuditLogIds,
-    load,
+    reloadCurrentPage,
     setError,
     systemSettings.messageApi,
   );
@@ -167,14 +173,14 @@ export function AdminPage() {
     sessionToken,
     selectedRiskLogIds,
     setSelectedRiskLogIds,
-    load,
+    reloadCurrentPage,
     setError,
     systemSettings.messageApi,
   );
   const { deletingPasskeyTable, confirmBatchDeletePasskeyLogs } =
     usePasskeyLogActions(
       sessionToken,
-      load,
+      reloadCurrentPage,
       setError,
       systemSettings.messageApi,
     );
@@ -183,7 +189,7 @@ export function AdminPage() {
       sessionToken,
       selectedEmailSendLogIds,
       setSelectedEmailSendLogIds,
-      load,
+      reloadCurrentPage,
       setError,
       systemSettings.messageApi,
     );
@@ -192,7 +198,7 @@ export function AdminPage() {
       sessionToken,
       selectedPhoneSendLogIds,
       setSelectedPhoneSendLogIds,
-      load,
+      reloadCurrentPage,
       setError,
       systemSettings.messageApi,
     );
@@ -204,7 +210,7 @@ export function AdminPage() {
       setSavingScopeKey(input.key || "__new__");
       try {
         await upsertScopeRequest(sessionToken, input);
-        await load();
+        await reloadCurrentPage();
         systemSettings.messageApi.success(t("Scope 设置已保存"));
       } catch (err) {
         setError(err instanceof Error ? err.message : t("保存 scope 失败"));
@@ -212,7 +218,7 @@ export function AdminPage() {
         setSavingScopeKey(undefined);
       }
     },
-    [load, sessionToken, setError, systemSettings.messageApi],
+    [reloadCurrentPage, sessionToken, setError, systemSettings.messageApi, t],
   );
 
   const deleteScope = useCallback(
@@ -220,7 +226,7 @@ export function AdminPage() {
       setDeletingScopeKey(key);
       try {
         await deleteScopeRequest(sessionToken, key);
-        await load();
+        await reloadCurrentPage();
         systemSettings.messageApi.success(t("Scope 已删除"));
       } catch (err) {
         setError(err instanceof Error ? err.message : t("删除 scope 失败"));
@@ -228,7 +234,7 @@ export function AdminPage() {
         setDeletingScopeKey(undefined);
       }
     },
-    [load, sessionToken, setError, systemSettings.messageApi],
+    [reloadCurrentPage, sessionToken, setError, systemSettings.messageApi, t],
   );
 
   useEffect(() => {
@@ -240,8 +246,8 @@ export function AdminPage() {
   }, [error, setError, systemSettings.messageApi]);
 
   useEffect(() => {
-    void load();
-  }, [activeSettingsTab, load, location.pathname]);
+    void ensureCurrentPageLoaded();
+  }, [activeSettingsTab, ensureCurrentPageLoaded, location.pathname]);
 
   return (
     <Space direction="vertical" size={20} style={{ width: "100%" }}>
@@ -278,7 +284,7 @@ export function AdminPage() {
           creatingUser={creatingUser}
           announcingUser={announcingUser}
           editingUser={editingUser}
-          onRefresh={() => void load()}
+          onRefresh={() => void reloadCurrentPage()}
           onBatchFreeze={() => void batchFreezeUsers(true)}
           onBatchUnfreeze={() => void batchFreezeUsers(false)}
           onBatchDelete={confirmBatchDeleteUsers}
@@ -314,7 +320,7 @@ export function AdminPage() {
           }
           onUpdate={(id, values) => void updateApp(id, values)}
           onDelete={(id) => void deleteApp(id)}
-          onRefresh={() => void load()}
+          onRefresh={() => void reloadCurrentPage()}
           onBatchDelete={confirmBatchDeleteApps}
         />
       ) : null}
@@ -338,7 +344,7 @@ export function AdminPage() {
           selectedLogIds={selectedRiskLogIds}
           setSelectedLogIds={setSelectedRiskLogIds}
           deletingPasskeyTable={deletingPasskeyTable}
-          onRefresh={() => void load()}
+          onRefresh={() => void reloadCurrentPage()}
           onBatchDelete={confirmBatchDeleteRiskLogs}
           onBatchDeletePasskeyLogs={(table, recordIds) =>
             confirmBatchDeletePasskeyLogs(table, recordIds)
@@ -353,7 +359,7 @@ export function AdminPage() {
           setSelectedLogIds={setSelectedEmailSendLogIds}
           deletingLogs={deletingEmailSendLogs}
           refreshing={loading}
-          onRefresh={() => void load()}
+          onRefresh={() => void reloadCurrentPage()}
           onBatchDelete={confirmBatchDeleteEmailSendLogs}
         />
       ) : null}
@@ -365,7 +371,7 @@ export function AdminPage() {
           setSelectedLogIds={setSelectedPhoneSendLogIds}
           deletingLogs={deletingPhoneSendLogs}
           refreshing={loading}
-          onRefresh={() => void load()}
+          onRefresh={() => void reloadCurrentPage()}
           onBatchDelete={confirmBatchDeletePhoneSendLogs}
         />
       ) : null}

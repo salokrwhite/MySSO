@@ -1,5 +1,5 @@
 import { Modal, message } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { readSessionToken } from "../../../authSession";
 import { buildDeveloperPageMeta } from "../constants";
@@ -105,29 +105,49 @@ export function useDeveloperPageController() {
     [analyticsData.summary, ready, i18n.language, t],
   );
 
-  async function load() {
+  const load = useCallback(async (options?: { force?: boolean }) => {
     try {
-      const [appResult, logResult, analyticsResult, scopeResult] =
-        await Promise.all([
-          fetchDeveloperApps(sessionToken),
-          fetchDeveloperAuditLogs(sessionToken),
-          fetchDeveloperAnalytics(sessionToken),
-          fetchDeveloperScopes(sessionToken),
+      if (pageType === "dashboard") {
+        const [appResult, logResult] = await Promise.all([
+          fetchDeveloperApps(sessionToken, options),
+          fetchDeveloperAuditLogs(sessionToken, options),
         ]);
-      setItems(appResult.items);
-      setAuditLogs(logResult.items);
-      setAnalyticsData(analyticsResult.data);
-      setScopeOptions(scopeResult.items);
+        setItems(appResult.items);
+        setAuditLogs(logResult.items);
+      } else if (pageType === "console") {
+        const [appResult, scopeResult] = await Promise.all([
+          fetchDeveloperApps(sessionToken, options),
+          fetchDeveloperScopes(sessionToken, options),
+        ]);
+        setItems(appResult.items);
+        setScopeOptions(scopeResult.items);
+      } else if (pageType === "auditLogs") {
+        const [appResult, logResult] = await Promise.all([
+          fetchDeveloperApps(sessionToken, options),
+          fetchDeveloperAuditLogs(sessionToken, options),
+        ]);
+        setItems(appResult.items);
+        setAuditLogs(logResult.items);
+      } else if (pageType === "analytics") {
+        const analyticsResult = await fetchDeveloperAnalytics(
+          sessionToken,
+          options,
+        );
+        setAnalyticsData(analyticsResult.data);
+      } else if (pageType === "docsManual") {
+        const scopeResult = await fetchDeveloperScopes(sessionToken, options);
+        setScopeOptions(scopeResult.items);
+      }
       setError(undefined);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("common.loadingFailed"));
     }
-  }
+  }, [pageType, sessionToken, t]);
 
   async function reloadApps() {
     setReloading(true);
     try {
-      await load();
+      await load({ force: true });
       messageApi.success(t("console.appRefreshed"));
     } finally {
       setReloading(false);
@@ -136,7 +156,7 @@ export function useDeveloperPageController() {
 
   useEffect(() => {
     void load();
-  }, []);
+  }, [load]);
 
   useEffect(() => {
     let active = true;
@@ -176,7 +196,7 @@ export function useDeveloperPageController() {
     setCreating(true);
     try {
       await createDeveloperApp(sessionToken, mapAppPayload(values));
-      await load();
+      await load({ force: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : t("common.createFailed"));
     } finally {
@@ -188,7 +208,7 @@ export function useDeveloperPageController() {
     setEditingAppId(app.id);
     try {
       await updateDeveloperApp(sessionToken, app.id, mapAppPayload(values));
-      await load();
+      await load({ force: true });
       messageApi.success(t("console.appUpdatedResubmitted"));
       setError(undefined);
     } catch (err) {
@@ -204,7 +224,7 @@ export function useDeveloperPageController() {
     const creatingSecret = !currentApp?.has_client_secret;
     try {
       const app = await resetDeveloperAppSecret(sessionToken, id);
-      await load();
+      await load({ force: true });
       setRevealedSecret({
         title: creatingSecret
           ? t("console.secretCreatedTitle")
@@ -233,7 +253,7 @@ export function useDeveloperPageController() {
         setDeletingAppId(app.id);
         try {
           await deleteDeveloperApp(sessionToken, app.id);
-          await load();
+          await load({ force: true });
           messageApi.success(t("console.appDeleted"));
         } catch (err) {
           setError(err instanceof Error ? err.message : t("common.deleteFailed"));
@@ -258,7 +278,7 @@ export function useDeveloperPageController() {
         try {
           await deleteDeveloperAuditLogs(sessionToken, selectedAuditLogIds);
           setSelectedAuditLogIds([]);
-          await load();
+          await load({ force: true });
           messageApi.success(t("audit.batchDeleted"));
         } catch (err) {
           setError(err instanceof Error ? err.message : t("common.deleteFailed"));

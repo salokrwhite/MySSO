@@ -1,7 +1,6 @@
 import { api, API_BASE } from "../../../api/client";
 import { defaultSettings } from "../constants";
 import type {
-  AdminDataResponse,
   AppItem,
   AuditLog,
   AdminPasskeyLogs,
@@ -19,61 +18,315 @@ import type {
   User,
 } from "../types";
 
-export async function loadAdminData(
-  sessionToken: string,
-): Promise<AdminDataResponse> {
-  const [
-    userResult,
-    appResult,
-    logResult,
-    riskLogResult,
-    passkeyLogResult,
-    emailSendLogResult,
-    phoneSendLogResult,
-    policyResult,
-    scopeResult,
-    settingsResult,
-  ] = await Promise.all([
-    api<{ items: User[] }>("/admin/users", undefined, sessionToken),
-    api<{ items: AppItem[] }>("/admin/apps", undefined, sessionToken),
-    api<{ items: AuditLog[] }>("/admin/audit-logs", undefined, sessionToken),
-    api<{ items: RiskLog[] }>("/admin/risk-logs", undefined, sessionToken),
-    api<AdminPasskeyLogs>("/admin/passkey-logs", undefined, sessionToken),
-    api<{ items: EmailSendLog[] }>(
-      "/admin/send-logs/emails",
-      undefined,
-      sessionToken,
-    ),
-    api<{ items: PhoneSendLog[] }>(
-      "/admin/send-logs/phones",
-      undefined,
-      sessionToken,
-    ),
-    api<{ items: Policy[] }>(
-      "/admin/gateway-policies",
-      undefined,
-      sessionToken,
-    ),
-    api<{ items: ScopeDefinition[] }>("/admin/scopes", undefined, sessionToken),
-    api<{ data: SystemSettings }>(
-      "/admin/system-settings",
-      undefined,
-      sessionToken,
-    ),
-  ]);
+type SessionScopedCache<T> = {
+  value: T | null;
+  inflight: Promise<T> | null;
+  sessionToken?: string;
+};
 
-  return {
-    users: userResult.items,
-    apps: appResult.items,
-    logs: logResult.items,
-    riskLogs: riskLogResult.items,
-    passkeyLogs: passkeyLogResult,
-    emailSendLogs: emailSendLogResult.items,
-    phoneSendLogs: phoneSendLogResult.items,
-    policies: policyResult.items,
-    scopes: scopeResult.items,
-    settings: { ...defaultSettings, ...settingsResult.data },
-  };
+function sameSessionToken(
+  cacheSessionToken?: string,
+  sessionToken?: string,
+) {
+  return (cacheSessionToken || "") === (sessionToken || "");
+}
+
+function resetSessionScopedCache<T>(cache: SessionScopedCache<T>) {
+  cache.value = null;
+  cache.inflight = null;
+  cache.sessionToken = undefined;
+}
+
+function readSessionScopedCache<T>(
+  cache: SessionScopedCache<T>,
+  sessionToken?: string,
+) {
+  if (!sameSessionToken(cache.sessionToken, sessionToken)) {
+    resetSessionScopedCache(cache);
+    cache.sessionToken = sessionToken;
+  }
+  return cache;
+}
+
+async function loadCachedResource<T>(
+  cache: SessionScopedCache<T>,
+  sessionToken: string,
+  loader: () => Promise<T>,
+  options?: { force?: boolean },
+) {
+  const currentCache = readSessionScopedCache(cache, sessionToken);
+  if (options?.force) {
+    currentCache.value = null;
+    currentCache.inflight = null;
+  } else {
+    if (currentCache.value) {
+      return currentCache.value;
+    }
+    if (currentCache.inflight) {
+      return currentCache.inflight;
+    }
+  }
+
+  currentCache.inflight = loader()
+    .then((result) => {
+      currentCache.value = result;
+      return result;
+    })
+    .finally(() => {
+      currentCache.inflight = null;
+    });
+  return currentCache.inflight;
+}
+
+const usersCache: SessionScopedCache<User[]> = {
+  value: null,
+  inflight: null,
+};
+const appsCache: SessionScopedCache<AppItem[]> = {
+  value: null,
+  inflight: null,
+};
+const auditLogsCache: SessionScopedCache<AuditLog[]> = {
+  value: null,
+  inflight: null,
+};
+const riskLogsCache: SessionScopedCache<RiskLog[]> = {
+  value: null,
+  inflight: null,
+};
+const passkeyLogsCache: SessionScopedCache<AdminPasskeyLogs> = {
+  value: null,
+  inflight: null,
+};
+const emailSendLogsCache: SessionScopedCache<EmailSendLog[]> = {
+  value: null,
+  inflight: null,
+};
+const phoneSendLogsCache: SessionScopedCache<PhoneSendLog[]> = {
+  value: null,
+  inflight: null,
+};
+const policiesCache: SessionScopedCache<Policy[]> = {
+  value: null,
+  inflight: null,
+};
+const scopesCache: SessionScopedCache<ScopeDefinition[]> = {
+  value: null,
+  inflight: null,
+};
+const systemSettingsCache: SessionScopedCache<SystemSettings> = {
+  value: null,
+  inflight: null,
+};
+
+export async function fetchAdminUsers(
+  sessionToken: string,
+  options?: { force?: boolean },
+) {
+  return loadCachedResource(
+    usersCache,
+    sessionToken,
+    async () => {
+      const result = await api<{ items: User[] }>(
+        "/admin/users",
+        undefined,
+        sessionToken,
+      );
+      return result.items;
+    },
+    options,
+  );
+}
+
+export async function fetchAdminApps(
+  sessionToken: string,
+  options?: { force?: boolean },
+) {
+  return loadCachedResource(
+    appsCache,
+    sessionToken,
+    async () => {
+      const result = await api<{ items: AppItem[] }>(
+        "/admin/apps",
+        undefined,
+        sessionToken,
+      );
+      return result.items;
+    },
+    options,
+  );
+}
+
+export async function fetchAdminAuditLogs(
+  sessionToken: string,
+  options?: { force?: boolean },
+) {
+  return loadCachedResource(
+    auditLogsCache,
+    sessionToken,
+    async () => {
+      const result = await api<{ items: AuditLog[] }>(
+        "/admin/audit-logs",
+        undefined,
+        sessionToken,
+      );
+      return result.items;
+    },
+    options,
+  );
+}
+
+export async function fetchAdminRiskLogs(
+  sessionToken: string,
+  options?: { force?: boolean },
+) {
+  return loadCachedResource(
+    riskLogsCache,
+    sessionToken,
+    async () => {
+      const result = await api<{ items: RiskLog[] }>(
+        "/admin/risk-logs",
+        undefined,
+        sessionToken,
+      );
+      return result.items;
+    },
+    options,
+  );
+}
+
+export async function fetchAdminPasskeyLogs(
+  sessionToken: string,
+  options?: { force?: boolean },
+) {
+  return loadCachedResource(
+    passkeyLogsCache,
+    sessionToken,
+    () => api<AdminPasskeyLogs>("/admin/passkey-logs", undefined, sessionToken),
+    options,
+  );
+}
+
+export async function fetchAdminEmailSendLogs(
+  sessionToken: string,
+  options?: { force?: boolean },
+) {
+  return loadCachedResource(
+    emailSendLogsCache,
+    sessionToken,
+    async () => {
+      const result = await api<{ items: EmailSendLog[] }>(
+        "/admin/send-logs/emails",
+        undefined,
+        sessionToken,
+      );
+      return result.items;
+    },
+    options,
+  );
+}
+
+export async function fetchAdminPhoneSendLogs(
+  sessionToken: string,
+  options?: { force?: boolean },
+) {
+  return loadCachedResource(
+    phoneSendLogsCache,
+    sessionToken,
+    async () => {
+      const result = await api<{ items: PhoneSendLog[] }>(
+        "/admin/send-logs/phones",
+        undefined,
+        sessionToken,
+      );
+      return result.items;
+    },
+    options,
+  );
+}
+
+export async function fetchAdminPolicies(
+  sessionToken: string,
+  options?: { force?: boolean },
+) {
+  return loadCachedResource(
+    policiesCache,
+    sessionToken,
+    async () => {
+      const result = await api<{ items: Policy[] }>(
+        "/admin/gateway-policies",
+        undefined,
+        sessionToken,
+      );
+      return result.items;
+    },
+    options,
+  );
+}
+
+export async function fetchAdminScopes(
+  sessionToken: string,
+  options?: { force?: boolean },
+) {
+  return loadCachedResource(
+    scopesCache,
+    sessionToken,
+    async () => {
+      const result = await api<{ items: ScopeDefinition[] }>(
+        "/admin/scopes",
+        undefined,
+        sessionToken,
+      );
+      return result.items;
+    },
+    options,
+  );
+}
+
+export async function fetchAdminSystemSettings(
+  sessionToken: string,
+  options?: { force?: boolean },
+) {
+  return loadCachedResource(
+    systemSettingsCache,
+    sessionToken,
+    async () => {
+      const result = await api<{ data: SystemSettings }>(
+        "/admin/system-settings",
+        undefined,
+        sessionToken,
+      );
+      return { ...defaultSettings, ...result.data };
+    },
+    options,
+  );
+}
+
+export function updateAdminScopesCache(
+  sessionToken: string,
+  scopes: ScopeDefinition[],
+) {
+  readSessionScopedCache(scopesCache, sessionToken).value = scopes;
+}
+
+export function updateAdminSystemSettingsCache(
+  sessionToken: string,
+  settings: SystemSettings,
+) {
+  readSessionScopedCache(systemSettingsCache, sessionToken).value = settings;
+}
+
+export function clearAdminResourceCaches(sessionToken: string) {
+  readSessionScopedCache(usersCache, sessionToken).value = null;
+  readSessionScopedCache(appsCache, sessionToken).value = null;
+  readSessionScopedCache(auditLogsCache, sessionToken).value = null;
+  readSessionScopedCache(riskLogsCache, sessionToken).value = null;
+  readSessionScopedCache(passkeyLogsCache, sessionToken).value = null;
+  readSessionScopedCache(emailSendLogsCache, sessionToken).value = null;
+  readSessionScopedCache(phoneSendLogsCache, sessionToken).value = null;
+  readSessionScopedCache(policiesCache, sessionToken).value = null;
+  readSessionScopedCache(scopesCache, sessionToken).value = null;
+  readSessionScopedCache(systemSettingsCache, sessionToken).value = null;
 }
 
 export async function reviewApp(
