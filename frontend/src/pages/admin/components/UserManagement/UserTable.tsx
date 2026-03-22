@@ -1,4 +1,5 @@
 import { Button, Grid, Space, Table, Typography } from "antd";
+import type { TablePaginationConfig } from "antd";
 import { countries } from "../../../../utils/countries";
 import type { User } from "../../types";
 import { getRoleLabel } from "../../utils/roleLabel";
@@ -49,6 +50,7 @@ function formatGender(value: string | undefined, t: (key: string) => string) {
 
 type UserTableProps = {
   users: User[];
+  pagination?: false | TablePaginationConfig;
   selectedUserIds: string[];
   setSelectedUserIds: (value: string[]) => void;
   onToggleFreeze: (id: string, frozen: boolean) => void;
@@ -62,6 +64,7 @@ type UserTableProps = {
 
 export function UserTable({
   users,
+  pagination,
   selectedUserIds,
   setSelectedUserIds,
   onToggleFreeze,
@@ -80,7 +83,7 @@ export function UserTable({
     <Table
       rowKey="id"
       dataSource={users}
-      pagination={false}
+      pagination={pagination ?? false}
       scroll={{ x: "max-content" }}
       rowSelection={{
         selectedRowKeys: selectedUserIds,

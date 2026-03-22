@@ -1,5 +1,6 @@
 import { Button, Card, Grid } from "antd";
 import { useMemo, useState } from "react";
+import type { TablePaginationConfig } from "antd";
 import type {
   CreateUserInput,
   UpdateUserInput,
@@ -16,11 +17,18 @@ import { UserDetailModal } from "./UserDetailModal";
 import { UserOperationLogsModal } from "./UserOperationLogsModal";
 import { UserSecurityPolicyModal } from "./UserSecurityPolicyModal";
 import { UserTable } from "./UserTable";
-import { getUserStatusMeta } from "./UserStatusTag";
 import { useAdminI18n } from "../../i18n";
 
 type UserManagementProps = {
   users: User[];
+  usersTotal: number;
+  currentPage: number;
+  pageSize: number;
+  statusFilter: string;
+  emailKeyword: string;
+  onPageChange: (page: number, pageSize: number) => void;
+  onStatusFilterChange: (value: string) => void;
+  onEmailKeywordChange: (value: string) => void;
   selectedUserIds: string[];
   setSelectedUserIds: (value: string[]) => void;
   loading: boolean;
@@ -63,25 +71,25 @@ export function UserManagement(props: UserManagementProps) {
   const [detailUser, setDetailUser] = useState<User>();
   const [editingTargetUser, setEditingTargetUser] = useState<User>();
   const [operationLogsUser, setOperationLogsUser] = useState<User>();
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [emailKeyword, setEmailKeyword] = useState("");
 
-  const filteredUsers = useMemo(() => {
-    const normalizedKeyword = emailKeyword.trim().toLowerCase();
-
-    return props.users.filter((user) => {
-      const matchesKeyword =
-        normalizedKeyword === "" ||
-        user.email.toLowerCase().includes(normalizedKeyword);
-      const derivedStatus = getUserStatusMeta(
-        user.status,
-        user.deletion_scheduled_at,
-      ).value;
-      const matchesStatus =
-        statusFilter === "all" || derivedStatus === statusFilter;
-      return matchesKeyword && matchesStatus;
-    });
-  }, [emailKeyword, props.users, statusFilter]);
+  const pagination = useMemo<TablePaginationConfig>(() => {
+    return {
+      current: props.currentPage,
+      pageSize: props.pageSize,
+      total: props.usersTotal,
+      showSizeChanger: true,
+      showQuickJumper: true,
+      pageSizeOptions: ["10", "20", "50", "100"],
+      showTotal: (total, range) => `${range[0]}-${range[1]} / ${total}`,
+      responsive: true,
+      onChange: (page, nextPageSize) => {
+        props.onPageChange(page, nextPageSize || props.pageSize);
+      },
+      onShowSizeChange: (page, nextPageSize) => {
+        props.onPageChange(page, nextPageSize);
+      },
+    };
+  }, [props]);
 
   return (
     <Card
@@ -96,17 +104,18 @@ export function UserManagement(props: UserManagementProps) {
         selectedCount={props.selectedUserIds.length}
         loading={props.loading}
         refreshing={props.refreshing}
-        statusFilter={statusFilter}
-        onStatusFilterChange={setStatusFilter}
-        emailKeyword={emailKeyword}
-        onEmailKeywordChange={setEmailKeyword}
+        statusFilter={props.statusFilter}
+        onStatusFilterChange={props.onStatusFilterChange}
+        emailKeyword={props.emailKeyword}
+        onEmailKeywordChange={props.onEmailKeywordChange}
         onRefresh={props.onRefresh}
         onFreeze={props.onBatchFreeze}
         onUnfreeze={props.onBatchUnfreeze}
         onDelete={props.onBatchDelete}
       />
       <UserTable
-        users={filteredUsers}
+        users={props.users}
+        pagination={pagination}
         selectedUserIds={props.selectedUserIds}
         setSelectedUserIds={props.setSelectedUserIds}
         onToggleFreeze={props.onToggleFreeze}

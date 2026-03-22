@@ -64,6 +64,13 @@ type UserOperationLogListResult struct {
 	PageSize int
 }
 
+type UserListResult struct {
+	Items    []domain.User
+	Total    int
+	Page     int
+	PageSize int
+}
+
 type UserSecurityPolicyView struct {
 	ForcePhoneBindingNextLogin  bool     `json:"force_phone_binding_next_login"`
 	ForceMFAEnrollmentNextLogin bool     `json:"force_mfa_enrollment_next_login"`
@@ -424,6 +431,20 @@ func (s *AdminService) DeleteApps(adminID string, appIDs []string) error {
 
 func (s *AdminService) ListUsers() []domain.User {
 	return s.deps.store.ListUsers()
+}
+
+func (s *AdminService) ListUsersPaginated(page, pageSize int, emailKeyword, statusFilter string) (UserListResult, error) {
+	page, pageSize = normalizePagination(page, pageSize)
+	items, total, err := s.deps.store.ListUsersPaginated(page, pageSize, emailKeyword, statusFilter)
+	if err != nil {
+		return UserListResult{}, err
+	}
+	return UserListResult{
+		Items:    items,
+		Total:    total,
+		Page:     page,
+		PageSize: pageSize,
+	}, nil
 }
 
 func (s *AdminService) ListUserPasskeys(userID string) ([]domain.Passkey, error) {

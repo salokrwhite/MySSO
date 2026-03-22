@@ -11,6 +11,8 @@ export type PublicSettings = {
   site_public_security_record_number?: string;
   user_center_announcement_enabled?: boolean;
   user_center_announcement_content?: string;
+  developer_announcement_enabled?: boolean;
+  developer_announcement_content?: string;
   enable_phone_verification?: boolean;
   oidc_first_party_client_id?: string;
 };

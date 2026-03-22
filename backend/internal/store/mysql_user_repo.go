@@ -68,6 +68,67 @@ func (s *MySQLStore) ListUsers() []domain.User {
 	return items
 }
 
+func (s *MySQLStore) ListUsersPaginated(page, pageSize int, emailKeyword, statusFilter string) ([]domain.User, int, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	whereParts := []string{"1 = 1"}
+	args := make([]any, 0, 4)
+
+	normalizedKeyword := strings.ToLower(strings.TrimSpace(emailKeyword))
+	if normalizedKeyword != "" {
+		whereParts = append(whereParts, "LOWER(email) LIKE ?")
+		args = append(args, "%"+normalizedKeyword+"%")
+	}
+
+	normalizedStatus := strings.ToLower(strings.TrimSpace(statusFilter))
+	if normalizedStatus != "" && normalizedStatus != "all" {
+		if normalizedStatus == "deleting" {
+			whereParts = append(whereParts, "deletion_scheduled_at IS NOT NULL")
+		} else {
+			whereParts = append(whereParts, "status = ? AND deletion_scheduled_at IS NULL")
+			args = append(args, normalizedStatus)
+		}
+	}
+
+	whereClause := strings.Join(whereParts, " AND ")
+	var total int
+	if err := s.db.QueryRow(
+		fmt.Sprintf("SELECT COUNT(*) FROM users WHERE %s", whereClause),
+		args...,
+	).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
+	offset := (page - 1) * pageSize
+	queryArgs := append(append([]any{}, args...), pageSize, offset)
+	rows, err := s.db.Query(fmt.Sprintf(`
+		SELECT id, country, gender, preferred_locale, email, phone, display_name, password_hash, role, status, freeze_reason, mfa_enabled, mfa_method, mfa_secret, auth_version, last_login_at, created_at, last_device_ip, deletion_requested_at, deletion_scheduled_at
+		FROM users
+		WHERE %s
+		ORDER BY created_at DESC
+		LIMIT ? OFFSET ?
+	`, whereClause), queryArgs...)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	items := make([]domain.User, 0, pageSize)
+	for rows.Next() {
+		user, scanErr := scanUserFromRows(rows)
+		if scanErr != nil {
+			return nil, 0, scanErr
+		}
+		items = append(items, user)
+	}
+	return items, total, nil
+}
+
 func (s *MySQLStore) UpdateUser(user domain.User) error {
 	authVersion := user.AuthVersion
 	if authVersion < 1 {

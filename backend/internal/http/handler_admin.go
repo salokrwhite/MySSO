@@ -13,7 +13,26 @@ import (
 )
 
 func (s *Server) handleUsers(c *gin.Context) {
+	page, _ := strconv.Atoi(strings.TrimSpace(c.Query("page")))
+	pageSize, _ := strconv.Atoi(strings.TrimSpace(c.Query("page_size")))
+	emailKeyword := strings.TrimSpace(c.Query("email_keyword"))
+	statusFilter := strings.TrimSpace(c.Query("status"))
+
 	users := s.services.Admin.ListUsers()
+	total := len(users)
+	currentPage := 1
+	currentPageSize := total
+	if page > 0 || pageSize > 0 || emailKeyword != "" || statusFilter != "" {
+		result, err := s.services.Admin.ListUsersPaginated(page, pageSize, emailKeyword, statusFilter)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		users = result.Items
+		total = result.Total
+		currentPage = result.Page
+		currentPageSize = result.PageSize
+	}
 	items := make([]gin.H, 0, len(users))
 	for _, user := range users {
 		enabled, content, err := s.services.Admin.GetUserAnnouncement(user.ID)
@@ -69,7 +88,12 @@ func (s *Server) handleUsers(c *gin.Context) {
 			"security_policy":               securityPolicy,
 		})
 	}
-	c.JSON(http.StatusOK, gin.H{"items": items})
+	c.JSON(http.StatusOK, gin.H{
+		"items":     items,
+		"total":     total,
+		"page":      currentPage,
+		"page_size": currentPageSize,
+	})
 }
 
 func (s *Server) handleCreateUser(c *gin.Context) {

@@ -27,12 +27,20 @@ function ExamplePage({
   description,
   authorizeCode,
   tokenCode,
+  userInfoCode,
+  refreshCode,
+  logoutCode,
+  notes,
   language,
 }: {
   title: string;
   description: string;
   authorizeCode: string;
   tokenCode: string;
+  userInfoCode: string;
+  refreshCode: string;
+  logoutCode: string;
+  notes: string[];
   language: string;
 }) {
   const { t } = useDeveloperTranslation();
@@ -54,6 +62,30 @@ function ExamplePage({
             language={language}
             code={tokenCode}
           />
+          <CodePanel
+            title={t("docsExamples.userinfoTitle")}
+            language={language}
+            code={userInfoCode}
+          />
+          <CodePanel
+            title={t("docsExamples.refreshTitle")}
+            language={language}
+            code={refreshCode}
+          />
+          <CodePanel
+            title={t("docsExamples.logoutTitle")}
+            language={language}
+            code={logoutCode}
+          />
+          <Card size="small" title={t("docsExamples.notesTitle")}>
+            <Space direction="vertical" size={8} style={{ width: "100%" }}>
+              {notes.map((item) => (
+                <Typography.Paragraph key={item} style={{ marginBottom: 0 }}>
+                  {item}
+                </Typography.Paragraph>
+              ))}
+            </Space>
+          </Card>
         </Space>
       </Card>
     </Space>
@@ -87,12 +119,13 @@ func main() {
 
 import (
   "bytes"
+  "encoding/json"
   "io"
   "net/http"
   "net/url"
 )
 
-func exchangeCode(code string, verifier string) ([]byte, error) {
+func exchangeCode(code string, verifier string) (map[string]any, error) {
   form := url.Values{}
   form.Set("grant_type", "authorization_code")
   form.Set("client_id", "your-client-id")
@@ -106,8 +139,83 @@ func exchangeCode(code string, verifier string) ([]byte, error) {
     return nil, err
   }
   defer resp.Body.Close()
-  return io.ReadAll(resp.Body)
+
+  body, err := io.ReadAll(resp.Body)
+  if err != nil {
+    return nil, err
+  }
+
+  var token map[string]any
+  err = json.Unmarshal(body, &token)
+  return token, err
 }`;
+  const userInfoCode = `package main
+
+import (
+  "encoding/json"
+  "net/http"
+)
+
+func fetchUserInfo(accessToken string) (map[string]any, error) {
+  req, err := http.NewRequest(http.MethodGet, "${issuer}/oauth2/userinfo", nil)
+  if err != nil {
+    return nil, err
+  }
+  req.Header.Set("Authorization", "Bearer "+accessToken)
+
+  resp, err := http.DefaultClient.Do(req)
+  if err != nil {
+    return nil, err
+  }
+  defer resp.Body.Close()
+
+  var profile map[string]any
+  err = json.NewDecoder(resp.Body).Decode(&profile)
+  return profile, err
+}`;
+  const refreshCode = `package main
+
+import (
+  "bytes"
+  "encoding/json"
+  "net/http"
+  "net/url"
+)
+
+func refreshToken(refreshToken string) (map[string]any, error) {
+  form := url.Values{}
+  form.Set("grant_type", "refresh_token")
+  form.Set("client_id", "your-client-id")
+  form.Set("client_secret", "your-client-secret")
+  form.Set("refresh_token", refreshToken)
+
+  resp, err := http.Post("${issuer}/oauth2/token", "application/x-www-form-urlencoded", bytes.NewBufferString(form.Encode()))
+  if err != nil {
+    return nil, err
+  }
+  defer resp.Body.Close()
+
+  var token map[string]any
+  err = json.NewDecoder(resp.Body).Decode(&token)
+  return token, err
+}`;
+  const logoutCode = `package main
+
+import (
+  "fmt"
+  "net/url"
+)
+
+func browserLogout(idTokenHint string) string {
+  return fmt.Sprintf(
+    "${issuer}/oauth2/logout?id_token_hint=%s&post_logout_redirect_uri=%s",
+    url.QueryEscape(idTokenHint),
+    url.QueryEscape("https://client.example.com/logout/callback"),
+  )
+}`;
+  const notes = (["backendOnly", "verifyIdToken", "useSub"] as const).map((item) =>
+    t(`docsExamples.notes.${item}`),
+  );
 
   return (
     <ExamplePage
@@ -115,6 +223,10 @@ func exchangeCode(code string, verifier string) ([]byte, error) {
       description={t("docsExamples.pages.go.desc")}
       authorizeCode={authorizeCode}
       tokenCode={tokenCode}
+      userInfoCode={userInfoCode}
+      refreshCode={refreshCode}
+      logoutCode={logoutCode}
+      notes={notes}
       language="go"
     />
   );
@@ -138,7 +250,6 @@ $params = http_build_query([
 echo '${issuer}/oauth2/authorize?' . $params;`;
   const tokenCode = `<?php
 function exchangeCode(string $code, string $codeVerifier): array {
-    $issuer = '${issuer}';
     $postFields = http_build_query([
         'grant_type' => 'authorization_code',
         'client_id' => 'your-client-id',
@@ -148,16 +259,54 @@ function exchangeCode(string $code, string $codeVerifier): array {
         'code_verifier' => $codeVerifier,
     ]);
 
-    $response = file_get_contents($issuer . '/oauth2/token', false, stream_context_create([
+    $response = file_get_contents('${issuer}/oauth2/token', false, stream_context_create([
         'http' => [
             'method' => 'POST',
-            'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'header' => "Content-Type: application/x-www-form-urlencoded\\r\\n",
             'content' => $postFields,
         ],
     ]));
 
     return json_decode($response, true);
 }`;
+  const userInfoCode = `<?php
+function fetchUserInfo(string $accessToken): array {
+    $response = file_get_contents('${issuer}/oauth2/userinfo', false, stream_context_create([
+        'http' => [
+            'method' => 'GET',
+            'header' => "Authorization: Bearer {$accessToken}\\r\\n",
+        ],
+    ]));
+
+    return json_decode($response, true);
+}`;
+  const refreshCode = `<?php
+function refreshToken(string $refreshToken): array {
+    $postFields = http_build_query([
+        'grant_type' => 'refresh_token',
+        'client_id' => 'your-client-id',
+        'client_secret' => 'your-client-secret',
+        'refresh_token' => $refreshToken,
+    ]);
+
+    $response = file_get_contents('${issuer}/oauth2/token', false, stream_context_create([
+        'http' => [
+            'method' => 'POST',
+            'header' => "Content-Type: application/x-www-form-urlencoded\\r\\n",
+            'content' => $postFields,
+        ],
+    ]));
+
+    return json_decode($response, true);
+}`;
+  const logoutCode = `<?php
+$logoutUrl = '${issuer}/oauth2/logout?' . http_build_query([
+    'id_token_hint' => $idToken,
+    'post_logout_redirect_uri' => 'https://client.example.com/logout/callback',
+]);`;
+  const notes = (["backendOnly", "verifyIdToken", "useSub"] as const).map((item) =>
+    t(`docsExamples.notes.${item}`),
+  );
 
   return (
     <ExamplePage
@@ -165,6 +314,10 @@ function exchangeCode(string $code, string $codeVerifier): array {
       description={t("docsExamples.pages.php.desc")}
       authorizeCode={authorizeCode}
       tokenCode={tokenCode}
+      userInfoCode={userInfoCode}
+      refreshCode={refreshCode}
+      logoutCode={logoutCode}
+      notes={notes}
       language="php"
     />
   );
@@ -182,7 +335,11 @@ public class OIDCLoginExample {
             + "?client_id=" + URLEncoder.encode("your-client-id", StandardCharsets.UTF_8)
             + "&redirect_uri=" + URLEncoder.encode("https://client.example.com/callback", StandardCharsets.UTF_8)
             + "&response_type=code"
-            + "&scope=" + URLEncoder.encode("openid profile email", StandardCharsets.UTF_8);
+            + "&scope=" + URLEncoder.encode("openid profile email", StandardCharsets.UTF_8)
+            + "&state=" + URLEncoder.encode("your-random-state", StandardCharsets.UTF_8)
+            + "&nonce=" + URLEncoder.encode("your-random-nonce", StandardCharsets.UTF_8)
+            + "&code_challenge=" + URLEncoder.encode("your-code-challenge", StandardCharsets.UTF_8)
+            + "&code_challenge_method=S256";
         System.out.println(url);
     }
 }`;
@@ -193,10 +350,17 @@ import java.net.http.HttpResponse;
 
 public class OIDCExchangeExample {
     public static void main(String[] args) throws Exception {
+        String form = "grant_type=authorization_code"
+            + "&client_id=your-client-id"
+            + "&client_secret=your-client-secret"
+            + "&code=authorization-code"
+            + "&redirect_uri=https%3A%2F%2Fclient.example.com%2Fcallback"
+            + "&code_verifier=your-code-verifier";
+
         HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create("${issuer}/oauth2/token"))
             .header("Content-Type", "application/x-www-form-urlencoded")
-            .POST(HttpRequest.BodyPublishers.ofString("grant_type=authorization_code"))
+            .POST(HttpRequest.BodyPublishers.ofString(form))
             .build();
 
         HttpResponse<String> response = HttpClient.newHttpClient()
@@ -204,6 +368,54 @@ public class OIDCExchangeExample {
         System.out.println(response.body());
     }
 }`;
+  const userInfoCode = `import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public class OIDCUserInfoExample {
+    public static void main(String[] args) throws Exception {
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("${issuer}/oauth2/userinfo"))
+            .header("Authorization", "Bearer " + accessToken)
+            .GET()
+            .build();
+
+        HttpResponse<String> response = HttpClient.newHttpClient()
+            .send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println(response.body());
+    }
+}`;
+  const refreshCode = `import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public class OIDCRefreshExample {
+    public static void main(String[] args) throws Exception {
+        String form = "grant_type=refresh_token"
+            + "&client_id=your-client-id"
+            + "&client_secret=your-client-secret"
+            + "&refresh_token=your-refresh-token";
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("${issuer}/oauth2/token"))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .POST(HttpRequest.BodyPublishers.ofString(form))
+            .build();
+
+        HttpResponse<String> response = HttpClient.newHttpClient()
+            .send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println(response.body());
+    }
+}`;
+  const logoutCode = `String logoutUrl = "${issuer}/oauth2/logout"
+    + "?id_token_hint=" + URLEncoder.encode(idToken, StandardCharsets.UTF_8)
+    + "&post_logout_redirect_uri="
+    + URLEncoder.encode("https://client.example.com/logout/callback", StandardCharsets.UTF_8);`;
+  const notes = (["backendOnly", "verifyIdToken", "useSub"] as const).map((item) =>
+    t(`docsExamples.notes.${item}`),
+  );
 
   return (
     <ExamplePage
@@ -211,6 +423,10 @@ public class OIDCExchangeExample {
       description={t("docsExamples.pages.java.desc")}
       authorizeCode={authorizeCode}
       tokenCode={tokenCode}
+      userInfoCode={userInfoCode}
+      refreshCode={refreshCode}
+      logoutCode={logoutCode}
+      notes={notes}
       language="java"
     />
   );
@@ -249,6 +465,38 @@ console.log("${issuer}/oauth2/authorize?" + params.toString());`;
 
   return response.json();
 }`;
+  const userInfoCode = `async function fetchUserInfo(accessToken) {
+  const response = await fetch("${issuer}/oauth2/userinfo", {
+    headers: { Authorization: "Bearer " + accessToken },
+  });
+
+  return response.json();
+}`;
+  const refreshCode = `async function refreshToken(refreshToken) {
+  const body = new URLSearchParams({
+    grant_type: "refresh_token",
+    client_id: "your-client-id",
+    client_secret: "your-client-secret",
+    refresh_token: refreshToken,
+  });
+
+  const response = await fetch("${issuer}/oauth2/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body,
+  });
+
+  return response.json();
+}`;
+  const logoutCode = `const logoutUrl =
+  "${issuer}/oauth2/logout?" +
+  new URLSearchParams({
+    id_token_hint: idToken,
+    post_logout_redirect_uri: "https://client.example.com/logout/callback",
+  }).toString();`;
+  const notes = (["backendOnly", "verifyIdToken", "useSub"] as const).map((item) =>
+    t(`docsExamples.notes.${item}`),
+  );
 
   return (
     <ExamplePage
@@ -256,6 +504,10 @@ console.log("${issuer}/oauth2/authorize?" + params.toString());`;
       description={t("docsExamples.pages.nodejs.desc")}
       authorizeCode={authorizeCode}
       tokenCode={tokenCode}
+      userInfoCode={userInfoCode}
+      refreshCode={refreshCode}
+      logoutCode={logoutCode}
+      notes={notes}
       language="javascript"
     />
   );
@@ -295,6 +547,40 @@ def exchange_code(code: str, code_verifier: str) -> dict:
     )
     response.raise_for_status()
     return response.json()`;
+  const userInfoCode = `import requests
+
+def fetch_userinfo(access_token: str) -> dict:
+    response = requests.get(
+        "${issuer}/oauth2/userinfo",
+        headers={"Authorization": f"Bearer {access_token}"},
+        timeout=10,
+    )
+    response.raise_for_status()
+    return response.json()`;
+  const refreshCode = `import requests
+
+def refresh_token(refresh_token: str) -> dict:
+    response = requests.post(
+        "${issuer}/oauth2/token",
+        data={
+            "grant_type": "refresh_token",
+            "client_id": "your-client-id",
+            "client_secret": "your-client-secret",
+            "refresh_token": refresh_token,
+        },
+        timeout=10,
+    )
+    response.raise_for_status()
+    return response.json()`;
+  const logoutCode = `from urllib.parse import urlencode
+
+logout_url = "${issuer}/oauth2/logout?" + urlencode({
+    "id_token_hint": id_token,
+    "post_logout_redirect_uri": "https://client.example.com/logout/callback",
+})`;
+  const notes = (["backendOnly", "verifyIdToken", "useSub"] as const).map((item) =>
+    t(`docsExamples.notes.${item}`),
+  );
 
   return (
     <ExamplePage
@@ -302,6 +588,10 @@ def exchange_code(code: str, code_verifier: str) -> dict:
       description={t("docsExamples.pages.python.desc")}
       authorizeCode={authorizeCode}
       tokenCode={tokenCode}
+      userInfoCode={userInfoCode}
+      refreshCode={refreshCode}
+      logoutCode={logoutCode}
+      notes={notes}
       language="python"
     />
   );

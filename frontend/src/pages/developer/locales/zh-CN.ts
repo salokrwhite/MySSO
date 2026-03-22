@@ -275,6 +275,9 @@ const zhCN = {
     overview: "接入总览",
     overviewDesc:
       "这套文档按“可直接联调”组织。开发者只要按下面的步骤准备应用信息、跳转授权、后端换 token，再读取用户资料，就可以完成对接。",
+    copyMarkdown: "复制为 Markdown",
+    copyMarkdownSuccess: "开发手册 Markdown 已复制",
+    copyMarkdownFailed: "复制开发手册 Markdown 失败",
     browserLogoutEndpoint: "OIDC 浏览器退出",
     apiLogoutEndpoint: "API 会话退出",
     logoutAlertTitle: "退出模型说明",
@@ -300,6 +303,233 @@ const zhCN = {
       displayName: "显示名称",
       description: "说明",
     },
+    claimContract: "Claims 契约",
+    claimAlertTitle: "对接第三方时请优先阅读这一节",
+    claimAlertDesc:
+      "应用里勾选某个 scope 只表示“允许申请”；只有授权请求里实际带上该 scope，对应字段才会出现在 userinfo 或 id_token 里。",
+    userinfoClaimsDesc:
+      "userinfo 返回字段如下。sub 始终存在，推荐第三方系统优先把它当作唯一绑定标识。",
+    idTokenClaimsDesc:
+      "id_token 里也会带回一部分 claims，便于后端在不额外请求 userinfo 的情况下完成基础校验和映射。",
+    claimColumns: {
+      claim: "Claim",
+      scopeRequirement: "Scope 要求",
+      description: "说明",
+      notes: "注意事项",
+    },
+    claimSources: {
+      always: "始终返回",
+    },
+    claimDescriptions: {
+      sub: "用户唯一且稳定的账号 ID。",
+      email: "用户邮箱地址。",
+      phone: "用户绑定手机号。",
+      name: "用户公开显示名，当前映射到 display_name。",
+      role: "账号当前角色，例如 user、developer、admin。",
+      idTokenSub: "id_token 主体标识，应与 access_token / userinfo 里的 sub 对齐。",
+      nonce: "授权请求里带入的 nonce，会原样回传到 id_token。",
+      authTime: "本次认证时间戳。",
+      acr: "本次认证上下文级别标识。",
+    },
+    claimNotes: {
+      sub: "适合做第三方系统唯一主键，不建议用 name 代替。",
+      email: "必须同时满足：应用已配置 email，且授权请求里实际带上 email。",
+      phone: "仅在用户确实绑定手机号时才有值。",
+      name: "不是唯一值，而且用户可自行修改；不要拿它做稳定主键。",
+      role: "仅在申请了 role scope 时返回。",
+      idTokenSub: "建议后端校验 sub、iss、aud、exp、nonce 等标准 claims。",
+      nonce: "用于抵御回放攻击，必须由业务侧校验。",
+      authTime: "适用于需要感知用户最近认证时间的场景。",
+      acr: "当前会保留认证上下文，但第三方不应把它当作唯一权限依据。",
+    },
+    authRequestExample: "授权请求示例",
+    authRequestDesc:
+      "下面是推荐的授权地址格式。生产环境请把 state、nonce、PKCE 参数都改成每次请求动态生成的随机值。",
+    discovery: {
+      title: "Discovery 与能力说明",
+      desc:
+        "第三方如支持 OpenID Discovery，可直接读取 /.well-known/openid-configuration。下面列出当前最关键的发现项，方便和第三方产品配置页逐项对照；其中 scopes_supported 会随当前已启用的 scopes 动态变化。",
+    },
+    tokenExchange: "Token 交换",
+    tokenExchangeDesc:
+      "后端收到 code 后，立即以 x-www-form-urlencoded 方式调用 /oauth2/token。下面示例展示 authorization_code + client_secret + PKCE 的常见组合。",
+    tokenBasicDesc:
+      "如果第三方 OIDC 客户端默认使用 client_secret_basic，可以按下面的写法把 client_id:client_secret 放进 Authorization 头。",
+    clientAuth: {
+      title: "客户端认证方式",
+      desc:
+        "当前平台支持 client_secret_post 和 client_secret_basic。文档示例默认使用 client_secret_post，也就是在表单体里传 client_id / client_secret；如第三方产品偏好 Basic 认证，也可以按 Discovery 声明改用 Authorization 头。请确保这一步只在服务端执行，不要把 client_secret 暴露给浏览器。",
+    },
+    tokenResponseDesc:
+      "当前 token 响应会返回以下字段。你可以根据 access_token 或 id_token 决定是否继续调用 userinfo。",
+    refreshToken: {
+      title: "Refresh Token 示例",
+      desc:
+        "需要续期 access_token 时，可继续调用 /oauth2/token，并把 grant_type 改成 refresh_token。若第三方系统不支持 refresh token，也可以只实现授权码模式。",
+      notes: {
+        "1": "1. 当前实现会在每次刷新后返回新的 refresh_token，业务侧应立即替换本地保存的旧值。",
+        "2": "2. 旧 refresh_token 被轮换后不应继续重试使用，否则可能触发服务端的 reuse 风险保护。",
+        "3": "3. 一旦检测到 refresh token reuse，当前用户和客户端组合下的续期能力可能会被保护性失效，需要重新发起登录授权。",
+        "4": "4. refresh_token 的生命周期、撤销和轮换都属于服务端安全逻辑，前端不应自行缓存到不安全的位置。",
+      },
+    },
+    userinfoExampleTitle: "UserInfo 示例",
+    userinfoExampleDesc:
+      "使用 access_token 调用 /oauth2/userinfo 后，返回字段取决于授权请求里真正批准的 scopes。",
+    curlExamples: {
+      title: "curl 调试示例",
+      desc:
+        "下面几条命令适合联调阶段快速验证接口是否按预期返回。建议始终用服务端环境变量或临时测试值注入 token，不要把正式密钥写进脚本仓库。",
+      token: "授权码换 Token",
+      refresh: "刷新 Token",
+      userinfo: "读取 UserInfo",
+      introspection: "检查 Access Token 状态",
+      revocation: "撤销 Refresh Token",
+    },
+    redirectRules: {
+      title: "回调地址匹配规则",
+      items: {
+        "1": "1. redirect_uri 与 post_logout_redirect_uri 都必须预先写入应用配置，并与请求参数精确匹配；协议、域名、端口、路径和尾斜杠都会参与校验。",
+        "2": "2. 不建议在生产环境里混用多个近似地址，例如同时存在 /callback 和 /callback/，这类差异会被视为不同地址。",
+        "3": "3. 如果第三方产品支持多个回调地址，请把每一个实际会用到的地址都加入应用配置，而不是依赖模糊匹配。",
+      },
+    },
+    logoutExample: {
+      title: "浏览器退出示例",
+      desc:
+        "浏览器单点退出可使用 /oauth2/logout，并带上 id_token_hint 与 post_logout_redirect_uri。只做站内本地退出时，请走你自己的 POST 登出接口或 /api/auth/logout。",
+    },
+    claimUsage: {
+      title: "phone / role 使用建议",
+      items: {
+        "1": "1. phone 更适合作为展示信息或补充联系资料，不建议把它当作唯一主键，因为用户可能更换手机号。",
+        "2": "2. role 更适合作为会话期展示或辅助授权提示；真正的业务鉴权仍建议由第三方自己的权限系统负责，不要只信任前端展示的 role 字段。",
+        "3": "3. 如果第三方确实要根据 role 做后端鉴权，请在每次登录或 token 校验时重新读取并校验，而不是把第一次拿到的 role 长期固化。",
+        "4": "4. phone、role 都属于可选 claims，只有在对应 scope 被允许且实际请求时才会返回，缺失并不表示接口异常。",
+      },
+    },
+    idTokenChecklist: {
+      title: "id_token 校验清单",
+      items: {
+        "1": "1. 必须先校验签名，再信任 id_token 里的 claims；不要只做 Base64 解码。",
+        "2": "2. 校验 iss 是否等于当前平台的 Issuer，避免把其他来源的 token 误当成本系统签发。",
+        "3": "3. 校验 aud 是否包含当前 client_id，避免把发给别的客户端的 token 用在你自己的系统里。",
+        "4": "4. 校验 exp / iat / nbf 等时间相关 claims，并考虑服务器时钟误差。",
+        "5": "5. 如果授权请求里带了 nonce，必须校验 id_token 返回的 nonce 是否一致。",
+        "6": "6. 如业务对最近登录时间敏感，可继续校验 auth_time；若使用 profile / email / role 等字段，也应把 claims 与 scopes 一起核对。",
+      },
+    },
+    mapping: {
+      title: "第三方字段映射建议",
+      items: {
+        "1": "1. 唯一用户标识优先使用 sub。它稳定且不可由用户自行修改，适合做 SSO 绑定主键。",
+        "2": "2. 如果第三方系统必须使用可读用户名，优先考虑 email；它通常比 name 更稳定。",
+        "3": "3. name 对应 display_name，仅适合展示，不适合做唯一标识或长期绑定键。",
+      },
+    },
+    thirdPartyTemplates: {
+      title: "第三方专项接入模板",
+      desc:
+        "下面这些不是协议硬要求，而是接第三方产品时最常见的字段映射建议，可以直接作为默认配置起点。",
+      items: {
+        openlist: {
+          title: "OpenList",
+          body:
+            "推荐 scopes 使用 openid email profile；唯一标识优先用 sub，若第三方界面只能填用户名字段，可退而求其次用 email。不要用 name 作为唯一绑定键。",
+        },
+        grafana: {
+          title: "Grafana",
+          body:
+            "推荐至少申请 openid email profile，并让 Grafana 使用 email 或 sub 做登录映射。若要同步角色，请把 role 当作登录期映射依据，不要替代 Grafana 自身组织/团队权限模型。",
+        },
+        authentik: {
+          title: "Authentik / 通用 OIDC Broker",
+          body:
+            "推荐直接读取 Discovery 和 JWKS，优先使用 client_secret_basic 或 client_secret_post 的标准配置。claims 映射建议保持 sub 为主键，email/name/phone/role 作为补充属性同步。",
+        },
+      },
+    },
+    errors: {
+      title: "常见错误与排查",
+      columns: {
+        code: "错误 / 现象",
+        reason: "常见原因",
+        action: "排查建议",
+      },
+      items: {
+        "1": {
+          code: "invalid_scope / scope not allowed",
+          reason: "授权请求里的 scope 没有在应用配置里勾选，或管理员未开放该 scope。",
+          action: "先到开发者控制台勾选对应 scope，再确认授权请求里真的带上了这些值。",
+        },
+        "2": {
+          code: "redirect_uri mismatch",
+          reason: "授权请求里的 redirect_uri 与应用配置白名单不完全一致。",
+          action: "逐字符核对协议、域名、端口、路径、尾部斜杠和大小写。",
+        },
+        "3": {
+          code: "post_logout_redirect_uri mismatch",
+          reason: "退出回跳地址不在应用配置的 post logout 白名单中。",
+          action: "把业务实际使用的退出回跳地址加入应用配置。",
+        },
+        "4": {
+          code: "cannot get username from OIDC provider",
+          reason: "第三方系统取的字段没有出现在 userinfo 中，常见于只配置了 scope 但授权请求未实际带上，或用户资料本身为空。",
+          action: "检查应用 scope、实际授权请求 scope，以及 userinfo 返回的 claims。",
+        },
+        "5": {
+          code: "token expired / invalid token",
+          reason: "access_token 已过期、被撤销，或用户认证状态已失效。",
+          action: "重新发起授权，或使用 refresh_token 刷新后再请求受保护接口。",
+        },
+        "6": {
+          code: "invalid code / authorization code expired or used",
+          reason: "授权码无效、已过期，或已经被消费过一次。",
+          action: "重新发起完整授权流程，并确保 code 只在服务端交换一次。",
+        },
+        "7": {
+          code: "authorization request mismatch / pkce verification failed",
+          reason: "回调时传入的 redirect_uri、client_id、code_verifier 与最初授权请求不一致。",
+          action: "核对 redirect_uri、client_id 和 PKCE 参数是否一一对应，尤其确认 code_verifier 没有丢失或被改写。",
+        },
+        "8": {
+          code: "invalid refresh token / refresh token expired / revoked",
+          reason: "刷新令牌不存在、已过期、已撤销，或拿错了客户端对应的 refresh token。",
+          action: "停止重试旧 refresh token，改为让用户重新登录，或确认当前客户端使用的是最新一次刷新后返回的新 refresh token。",
+        },
+        "9": {
+          code: "refresh token reuse detected",
+          reason: "同一个已轮换的 refresh token 被重复使用，触发了服务端的防重放保护。",
+          action: "视为会话已不可信，清理本地旧 token，并强制用户重新完成登录授权。",
+        },
+        "10": {
+          code: "openid scope is required / unsupported code_challenge_method",
+          reason: "授权请求缺少 openid，或 PKCE 使用了系统不支持的方法。",
+          action: "确保 scope 至少包含 openid，并把 code_challenge_method 固定为 S256。",
+        },
+        "11": {
+          code: "consent_required / login_required",
+          reason: "请求使用了 prompt=none、max_age 等参数，但当前会话或授权状态不满足静默授权条件。",
+          action: "改为正常交互式登录授权，或重新让用户显式完成登录和授权。",
+        },
+        "12": {
+          code: "invalid max_age / acr_values_not_satisfied",
+          reason: "max_age 参数非法，或请求的认证上下文级别与当前登录态不匹配。",
+          action: "检查 max_age 是否为非负整数，并确认业务端请求的 acr_values 是否与平台实际登录能力一致。",
+        },
+      },
+    },
+    launchChecklist: {
+      title: "上线前检查清单",
+      items: {
+        "1": "1. 确认生产环境 redirect_uri 与 post_logout_redirect_uri 都已经写入应用配置。",
+        "2": "2. 确认授权请求始终携带 state、nonce 和 PKCE，并在后端完成对应校验。",
+        "3": "3. 确认第三方系统使用的用户唯一标识字段已定稿，避免上线后再切换绑定主键。",
+        "4": "4. 确认应用里已勾选实际会请求的全部 scopes，而不是只勾选 openid。",
+        "5": "5. 确认登出链路区分本地会话退出与 OIDC 浏览器单点退出，不要混用裸 GET 登出链接。",
+        "6": "6. 确认异常处理已覆盖 token 交换失败、userinfo 缺字段、scope 不足和回调地址不匹配等场景。",
+      },
+    },
     steps: {
       "1": "1. 在开发者控制台创建应用，保存 client_id，并配置准确的回调地址。",
       "2": "2. 在应用里勾选实际需要的 scopes，至少包含 openid。",
@@ -320,11 +550,23 @@ const zhCN = {
   docsExamples: {
     navTitle: "语言示例导航",
     navDesc:
-      "当前提供 Go、PHP、Java、Node.js、Python 五套服务端对接示例。每套示例都包含授权地址构造，以及 code 换 token / userinfo 请求。",
+      "当前提供 Go、PHP、Java、Node.js、Python 五套服务端对接示例。每套示例都包含授权地址构造、code 换 token、userinfo、refresh token 和浏览器单点退出示例。",
     navHint:
       "请从左侧菜单进入对应语言页面，直接复制到你的服务端项目里再替换 client_id、client_secret、redirect_uri 即可联调。",
     authorizeTitle: "生成授权地址",
     tokenTitle: "换取 Token",
+    userinfoTitle: "读取 UserInfo",
+    refreshTitle: "刷新 Token",
+    logoutTitle: "构造浏览器退出地址",
+    notesTitle: "接入提醒",
+    notes: {
+      backendOnly:
+        "1. client_secret、code 换 token、refresh token 和 id_token 校验都必须在服务端完成，不要放到浏览器。",
+      verifyIdToken:
+        "2. 换到 token 后，请用 Discovery/JWKS 校验 id_token 的签名、iss、aud、exp、nonce，再决定是否建立本地会话。",
+      useSub:
+        "3. 第三方系统如需要稳定唯一主键，请优先使用 sub；email 更适合作为展示或兼容字段，name 不适合作为唯一标识。",
+    },
     pages: {
       go: {
         title: "Go 对接示例",

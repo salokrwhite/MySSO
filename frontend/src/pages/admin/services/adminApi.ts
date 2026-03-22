@@ -15,7 +15,7 @@ import type {
   UpdateUserSecurityPolicyInput,
   UserOperationLogListResponse,
   UserSecurityPolicy,
-  User,
+  UserListResponse,
 } from "../types";
 
 type SessionScopedCache<T> = {
@@ -78,10 +78,6 @@ async function loadCachedResource<T>(
   return currentCache.inflight;
 }
 
-const usersCache: SessionScopedCache<User[]> = {
-  value: null,
-  inflight: null,
-};
 const appsCache: SessionScopedCache<AppItem[]> = {
   value: null,
   inflight: null,
@@ -121,20 +117,32 @@ const systemSettingsCache: SessionScopedCache<SystemSettings> = {
 
 export async function fetchAdminUsers(
   sessionToken: string,
+  query?: {
+    page?: number;
+    pageSize?: number;
+    emailKeyword?: string;
+    status?: string;
+  },
   options?: { force?: boolean },
 ) {
-  return loadCachedResource(
-    usersCache,
+  const params = new URLSearchParams();
+  if (typeof query?.page === "number" && query.page > 0) {
+    params.set("page", String(query.page));
+  }
+  if (typeof query?.pageSize === "number" && query.pageSize > 0) {
+    params.set("page_size", String(query.pageSize));
+  }
+  if (query?.emailKeyword?.trim()) {
+    params.set("email_keyword", query.emailKeyword.trim());
+  }
+  if (query?.status?.trim() && query.status !== "all") {
+    params.set("status", query.status.trim());
+  }
+  const path = `/admin/users${params.size > 0 ? `?${params.toString()}` : ""}`;
+  return api<UserListResponse>(
+    path,
+    undefined,
     sessionToken,
-    async () => {
-      const result = await api<{ items: User[] }>(
-        "/admin/users",
-        undefined,
-        sessionToken,
-      );
-      return result.items;
-    },
-    options,
   );
 }
 
@@ -317,7 +325,6 @@ export function updateAdminSystemSettingsCache(
 }
 
 export function clearAdminResourceCaches(sessionToken: string) {
-  readSessionScopedCache(usersCache, sessionToken).value = null;
   readSessionScopedCache(appsCache, sessionToken).value = null;
   readSessionScopedCache(auditLogsCache, sessionToken).value = null;
   readSessionScopedCache(riskLogsCache, sessionToken).value = null;

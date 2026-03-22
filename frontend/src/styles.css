@@ -288,6 +288,12 @@ body {
 
 .app-header-title {
   min-width: 0;
+  flex: 1 1 auto;
+}
+
+.app-header-heading {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .app-header-trigger {
@@ -303,6 +309,19 @@ body {
   color: #17324d;
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(18, 38, 58, 0.08);
+}
+
+.developer-docs-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.developer-docs-descriptions {
+  min-width: 760px;
+}
+
+.developer-docs-scroll .ant-descriptions-view {
+  min-width: 100%;
 }
 
 .app-header-user:hover,
@@ -1173,6 +1192,14 @@ body {
 }
 
 @media (max-width: 991px) {
+  .app-header {
+    padding: 0 14px;
+  }
+
+  .app-header-user {
+    padding-inline: 10px;
+  }
+
   .user-shell-header {
     height: auto;
     line-height: 1.4;
@@ -1266,6 +1293,27 @@ body {
 }
 
 @media (max-width: 768px) {
+  .app-header {
+    gap: 10px;
+  }
+
+  .app-header-title .ant-space {
+    gap: 8px !important;
+  }
+
+  .app-header-heading {
+    font-size: 20px !important;
+    line-height: 1.2 !important;
+  }
+
+  .app-content {
+    padding: 14px;
+  }
+
+  .developer-docs-descriptions {
+    min-width: 680px;
+  }
+
   .account-language-modal .ant-modal-content {
     border-radius: 20px;
   }
@@ -1291,6 +1339,23 @@ body {
 }
 
 @media (max-width: 540px) {
+  .app-header {
+    padding: 0 10px;
+  }
+
+  .app-header-user {
+    min-width: 40px;
+    padding-inline: 8px;
+  }
+
+  .app-header-heading {
+    font-size: 18px !important;
+  }
+
+  .developer-docs-descriptions {
+    min-width: 620px;
+  }
+
   .account-language-modal .ant-modal-content {
     border-radius: 18px;
   }

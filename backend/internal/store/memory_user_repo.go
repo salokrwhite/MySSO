@@ -2,6 +2,7 @@ package store
 
 import (
 	"errors"
+	"sort"
 	"strings"
 	"time"
 
@@ -68,6 +69,54 @@ func (s *MemoryStore) ListUsers() []domain.User {
 		users = append(users, user)
 	}
 	return users
+}
+
+func (s *MemoryStore) ListUsersPaginated(page, pageSize int, emailKeyword, statusFilter string) ([]domain.User, int, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	normalizedKeyword := strings.ToLower(strings.TrimSpace(emailKeyword))
+	normalizedStatus := strings.ToLower(strings.TrimSpace(statusFilter))
+	filtered := make([]domain.User, 0, len(s.users))
+	for _, user := range s.users {
+		if normalizedKeyword != "" && !strings.Contains(strings.ToLower(user.Email), normalizedKeyword) {
+			continue
+		}
+		if normalizedStatus != "" && normalizedStatus != "all" {
+			if normalizedStatus == "deleting" {
+				if user.DeletionScheduledAt == nil {
+					continue
+				}
+			} else if string(user.Status) != normalizedStatus || user.DeletionScheduledAt != nil {
+				continue
+			}
+		}
+		filtered = append(filtered, user)
+	}
+
+	sort.Slice(filtered, func(i, j int) bool {
+		return filtered[i].CreatedAt.After(filtered[j].CreatedAt)
+	})
+
+	total := len(filtered)
+	start := (page - 1) * pageSize
+	if start >= total {
+		return []domain.User{}, total, nil
+	}
+	end := start + pageSize
+	if end > total {
+		end = total
+	}
+	items := make([]domain.User, end-start)
+	copy(items, filtered[start:end])
+	return items, total, nil
 }
 
 func (s *MemoryStore) UpdateUser(user domain.User) error {

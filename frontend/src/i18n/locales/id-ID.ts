@@ -449,7 +449,7 @@ const locale = {
       minimizeDesc:
         "Sistem saat ini hanya menyimpan negara registrasi, email, catatan otorisasi, dan informasi keamanan login yang diperlukan.",
       scopeTitle: "Cakupan Izin Saat Ini",
-      scopeDesc: "Anda dapat melihat aplikasi mana yang telah mengakses akun Anda di "Pengikatan dan Otorisasi", dan membatalkan otorisasi kapan saja.",
+      scopeDesc: "Anda dapat melihat aplikasi mana yang telah mengakses akun Anda di \"Pengikatan dan Otorisasi\", dan membatalkan otorisasi kapan saja.",
       statusTitle: "Keterangan Status Akun",
       statusDesc: "Jika akun dibekukan, Anda tidak dapat melanjutkan login dan perlu menghubungi administrator untuk penanganan.",
       deleteTitle: "Hapus Akun",
@@ -517,7 +517,7 @@ const locale = {
         "Disarankan untuk segera mengaktifkan autentikasi dua faktor dan mengikat passkey pada perangkat yang sering digunakan, untuk mengurangi risiko yang disebabkan oleh kebocoran kata sandi tunggal. Jangan memberitahukan kode email, kode SMS, atau kode MFA kepada pihak ketiga mana pun, dan jangan memasukkan informasi autentikasi berulang kali pada halaman yang tidak jelas asalnya. Jika Anda menggunakan akun yang sama di beberapa perangkat, sebaiknya periksa catatan login terbaru, passkey yang terikat, dan daftar aplikasi terotorisasi secara berkala, dan hapus perangkat dan otorisasi yang tidak digunakan lagi.",
       authIssueTitle: "Penanganan Otorisasi Abnormal",
       authIssueDesc:
-        "Jika Anda menemukan bahwa cakupan otorisasi aplikasi abnormal, nama aplikasi asing, atau Anda menduga akun Anda disalahgunakan oleh layanan lain, Anda dapat masuk ke halaman "Pengikatan dan Otorisasi" untuk melihat waktu otorisasi, cakupan izin, dan informasi integrasi aplikasi tersebut, dan segera membatalkan otorisasi. Setelah dibatalkan, aplikasi tersebut tidak dapat lagi menggunakan akun saat ini untuk mengakses sumber daya yang dilindungi; jika ingin melanjutkan menggunakan, silakan login kembali ke aplikasi tersebut dan mengonfirmasi cakupan otorisasi kembali. Jika Anda menduga bahwa tidak hanya aplikasi tunggal yang abnormal, sebaiknya juga ubah kata sandi, periksa status autentikasi dua faktor, dan verifikasi catatan login terbaru dan penggunaan passkey.",
+        "Jika Anda menemukan bahwa cakupan otorisasi aplikasi abnormal, nama aplikasi asing, atau Anda menduga akun Anda disalahgunakan oleh layanan lain, Anda dapat masuk ke halaman \"Pengikatan dan Otorisasi\" untuk melihat waktu otorisasi, cakupan izin, dan informasi integrasi aplikasi tersebut, dan segera membatalkan otorisasi. Setelah dibatalkan, aplikasi tersebut tidak dapat lagi menggunakan akun saat ini untuk mengakses sumber daya yang dilindungi; jika ingin melanjutkan menggunakan, silakan login kembali ke aplikasi tersebut dan mengonfirmasi cakupan otorisasi kembali. Jika Anda menduga bahwa tidak hanya aplikasi tunggal yang abnormal, sebaiknya juga ubah kata sandi, periksa status autentikasi dua faktor, dan verifikasi catatan login terbaru dan penggunaan passkey.",
       contactTitle: "Hubungi Kami",
       contactDesc:
         "Untuk dukungan manual, Anda dapat menghubungi personel dukungan platform melalui cara berikut. Saat mengajukan masalah, sebaiknya sertakan email akun, waktu munculnya masalah, tangkapan layar error, metode login yang digunakan, dan informasi perangkat atau browser terkait, untuk memudahkan penelusuran lebih cepat.",

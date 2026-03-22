@@ -449,7 +449,7 @@ const locale = {
       minimizeDesc:
         "Sistem semasa hanya mengekalkan negara pendaftaran, emel, catatan pengesahan dan maklumat keselamatan log masuk yang perlu.",
       scopeTitle: "Lingkup akses semasa",
-      scopeDesc: "Anda boleh melihat aplikasi mana yang telah mengakses akaun anda di "Pengikatan Pengesahan", dan membatalkannya pada bila-bila masa.",
+      scopeDesc: "Anda boleh melihat aplikasi mana yang telah mengakses akaun anda di \"Pengikatan Pengesahan\", dan membatalkannya pada bila-bila masa.",
       statusTitle: "Penerangan status akaun",
       statusDesc: "Jika akaun dibekukan, tidak dapat terus log masuk, perlu menghubungi pentadbir untuk mengendalikan.",
       deleteTitle: "Batalkan akaun",
@@ -517,7 +517,7 @@ const locale = {
         "Cadangan untuk membuka pengesahan berganda secepat mungkin, dan mengikat kunci akses untuk peranti yang kerap digunakan, mengurangkan risiko yang disebabkan oleh kecurian kata laluan tunggal. Jangan mendedahkan kod verifikasi emel, kod verifikasi SMS atau kod MFA kepada mana-mana pihak ketiga, dan jangan memasukkan maklumat pengesahan berulang kali pada halaman yang tidak dipercayai. Jika anda menggunakan akaun yang sama di pelbagai peranti, cadangan untuk menyemak catatan log masuk terbaru, kunci akses yang diikat dan senarai aplikasi yang disahkan secara berkala, dan memadam peranti dan pengesahan yang tidak digunakan lagi.",
       authIssueTitle: "Pengendalian pengesahan yang tidak normal",
       authIssueDesc:
-        "Jika mendapati lingkup pengesahan aplikasi adalah tidak normal, nama aplikasi adalah tidak dikenali, atau anda meragui bahawa akaun telah disalahguna oleh perkhidmatan lain, anda boleh masuk ke halaman "Pengikatan Pengesahan" untuk melihat masa pengesahan, lingkup kebenaran dan maklumat integrasi aplikasi ini, dan membatalkannya serta-merta jika perlu. Selepas dibatalkan, aplikasi ini tidak boleh terus menggunakan akaun semasa untuk mengakses sumber yang dilindungi; jika perlu terus menggunakan, sila log masuk semula ke aplikasi ini dan mengesahkan lingkup pengesahan semula. Jika anda meragui bahawa tidak hanya aplikasi tunggal yang tidak normal, cadangan untuk mengubah kata laluan, menyemak status pengesahan berganda, dan memeriksa catatan log masuk terbaru dan penggunaan kunci akses.",
+        "Jika mendapati lingkup pengesahan aplikasi adalah tidak normal, nama aplikasi adalah tidak dikenali, atau anda meragui bahawa akaun telah disalahguna oleh perkhidmatan lain, anda boleh masuk ke halaman \"Pengikatan Pengesahan\" untuk melihat masa pengesahan, lingkup kebenaran dan maklumat integrasi aplikasi ini, dan membatalkannya serta-merta jika perlu. Selepas dibatalkan, aplikasi ini tidak boleh terus menggunakan akaun semasa untuk mengakses sumber yang dilindungi; jika perlu terus menggunakan, sila log masuk semula ke aplikasi ini dan mengesahkan lingkup pengesahan semula. Jika anda meragui bahawa tidak hanya aplikasi tunggal yang tidak normal, cadangan untuk mengubah kata laluan, menyemak status pengesahan berganda, dan memeriksa catatan log masuk terbaru dan penggunaan kunci akses.",
       contactTitle: "Hubungi kami",
       contactDesc:
         "Jika memerlukan sokongan manual, anda boleh menghubungi pihak sokongan platform melalui cara berikut. Semasa melaporkan masalah, cadangan untuk menyertakan emel akaun, masa masalah berlaku, tangkapan skrin mesej ralat, kaedah log masuk yang digunakan dan maklumat peranti atau pelayar berkaitan, untuk memudahkan penyiasatan dengan lebih cepat.",

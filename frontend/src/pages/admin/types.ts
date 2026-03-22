@@ -25,6 +25,13 @@ export type User = {
   security_policy?: UserSecurityPolicy;
 };
 
+export type UserListResponse = {
+  items: User[];
+  total: number;
+  page: number;
+  page_size: number;
+};
+
 export type UserSecurityPolicy = {
   force_phone_binding_next_login: boolean;
   force_mfa_enrollment_next_login: boolean;

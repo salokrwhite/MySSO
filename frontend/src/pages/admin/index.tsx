@@ -45,6 +45,10 @@ export function AdminPage() {
   const [selectedPhoneSendLogIds, setSelectedPhoneSendLogIds] = useState<
     string[]
   >([]);
+  const [userPage, setUserPage] = useState(1);
+  const [userPageSize, setUserPageSize] = useState(10);
+  const [userStatusFilter, setUserStatusFilter] = useState("all");
+  const [userEmailKeyword, setUserEmailKeyword] = useState("");
   useAdminDocumentLocalization(true);
   const settingsTabs = useMemo(() => getSettingsTabs(t), [t]);
   const adminPageMeta = useMemo(() => getAdminPageMeta(t), [t]);
@@ -80,9 +84,19 @@ export function AdminPage() {
       ? (tab as SettingsTabKey)
       : "site";
   }, [searchParams, settingsTabs]);
+  const usersQuery = useMemo(
+    () => ({
+      page: userPage,
+      pageSize: userPageSize,
+      emailKeyword: userEmailKeyword,
+      status: userStatusFilter,
+    }),
+    [userEmailKeyword, userPage, userPageSize, userStatusFilter],
+  );
 
   const {
     users,
+    usersTotal,
     apps,
     logs,
     riskLogs,
@@ -100,7 +114,7 @@ export function AdminPage() {
     activeUsers,
     pendingApps,
     approvedApps,
-  } = useAdminData(sessionToken, pageType);
+  } = useAdminData(sessionToken, pageType, usersQuery);
 
   const ensureCurrentPageLoaded = useCallback(() => load(), [load]);
   const reloadCurrentPage = useCallback(
@@ -249,6 +263,13 @@ export function AdminPage() {
     void ensureCurrentPageLoaded();
   }, [activeSettingsTab, ensureCurrentPageLoaded, location.pathname]);
 
+  useEffect(() => {
+    if (pageType !== "users") {
+      return;
+    }
+    setSelectedUserIds([]);
+  }, [pageType, userEmailKeyword, userStatusFilter, userPage, userPageSize]);
+
   return (
     <Space direction="vertical" size={20} style={{ width: "100%" }}>
       {systemSettings.contextHolder}
@@ -277,6 +298,23 @@ export function AdminPage() {
         <UserManagement
           sessionToken={sessionToken}
           users={users}
+          usersTotal={usersTotal}
+          currentPage={userPage}
+          pageSize={userPageSize}
+          statusFilter={userStatusFilter}
+          emailKeyword={userEmailKeyword}
+          onPageChange={(page, pageSize) => {
+            setUserPage(page);
+            setUserPageSize(pageSize);
+          }}
+          onStatusFilterChange={(value) => {
+            setUserStatusFilter(value);
+            setUserPage(1);
+          }}
+          onEmailKeywordChange={(value) => {
+            setUserEmailKeyword(value);
+            setUserPage(1);
+          }}
           selectedUserIds={selectedUserIds}
           setSelectedUserIds={setSelectedUserIds}
           loading={batchActingUsers}

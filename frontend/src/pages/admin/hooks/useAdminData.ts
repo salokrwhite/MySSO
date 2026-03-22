@@ -26,9 +26,19 @@ import type {
   User,
 } from "../types";
 
-export function useAdminData(sessionToken: string, pageType: AdminPageType) {
+export function useAdminData(
+  sessionToken: string,
+  pageType: AdminPageType,
+  usersQuery?: {
+    page: number;
+    pageSize: number;
+    emailKeyword: string;
+    status: string;
+  },
+) {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
+  const [usersTotal, setUsersTotal] = useState(0);
   const [apps, setApps] = useState<AppItem[]>([]);
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [riskLogs, setRiskLogs] = useState<RiskLog[]>([]);
@@ -51,12 +61,13 @@ export function useAdminData(sessionToken: string, pageType: AdminPageType) {
       if (pageType === "dashboard") {
         const [nextUsers, nextApps, nextLogs, nextPolicies] =
           await Promise.all([
-            fetchAdminUsers(sessionToken, options),
+            fetchAdminUsers(sessionToken, undefined, options),
             fetchAdminApps(sessionToken, options),
             fetchAdminAuditLogs(sessionToken, options),
             fetchAdminPolicies(sessionToken, options),
           ]);
-        setUsers(nextUsers);
+        setUsers(nextUsers.items);
+        setUsersTotal(nextUsers.total);
         setApps(nextApps);
         setLogs(nextLogs);
         setPolicies(nextPolicies);
@@ -64,7 +75,9 @@ export function useAdminData(sessionToken: string, pageType: AdminPageType) {
       }
 
       if (pageType === "users") {
-        setUsers(await fetchAdminUsers(sessionToken, options));
+        const nextUsers = await fetchAdminUsers(sessionToken, usersQuery, options);
+        setUsers(nextUsers.items);
+        setUsersTotal(nextUsers.total);
         return;
       }
 
@@ -118,7 +131,7 @@ export function useAdminData(sessionToken: string, pageType: AdminPageType) {
     } finally {
       setLoading(false);
     }
-  }, [pageType, sessionToken]);
+  }, [pageType, sessionToken, usersQuery]);
 
   const activeUsers = useMemo(() => users.filter((item) => item.status === "active").length, [users]);
   const pendingApps = useMemo(() => apps.filter((item) => item.status === "pending_review").length, [apps]);
@@ -126,6 +139,7 @@ export function useAdminData(sessionToken: string, pageType: AdminPageType) {
 
   return {
     users,
+    usersTotal,
     setUsers,
     apps,
     logs,

@@ -23,6 +23,7 @@ type Store interface {
 	FindUserByPhone(phone string) (domain.User, error)
 	GetUser(id string) (domain.User, error)
 	ListUsers() []domain.User
+	ListUsersPaginated(page, pageSize int, emailKeyword, statusFilter string) ([]domain.User, int, error)
 	UpdateUser(user domain.User) error
 	UpdateUserAndInvalidateAuth(user domain.User) error
 	DeleteUser(id string) error

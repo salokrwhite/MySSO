@@ -1,4 +1,5 @@
-import { Alert, Card, Space, Typography } from "antd";
+import { Alert, Button, Card, Space, Typography, message } from "antd";
+import { Grid } from "antd";
 import { DeveloperAnalytics } from "./components/Analytics";
 import { DeveloperAuditLogs } from "./components/AuditLogs";
 import { DeveloperSecretRevealModal } from "./components/common/DeveloperSecretRevealModal";
@@ -11,7 +12,10 @@ import {
   DeveloperDocsExamplesPHP,
   DeveloperDocsExamplesPython,
 } from "./components/DocsExamples";
-import { DeveloperDocsManual } from "./components/DocsManual";
+import {
+  buildDeveloperManualMarkdown,
+  DeveloperDocsManual,
+} from "./components/DocsManual";
 import { DeveloperDashboard } from "./components/Dashboard";
 import { useDeveloperPageController } from "./hooks/useDeveloperPageController";
 import { useDeveloperTranslation } from "./i18n";
@@ -19,9 +23,22 @@ import { useDeveloperTranslation } from "./i18n";
 export function DeveloperPage() {
   const controller = useDeveloperPageController();
   const { t, ready } = useDeveloperTranslation();
+  const screens = Grid.useBreakpoint();
+  const isCompact = !screens.md;
 
   if (!ready) {
     return null;
+  }
+
+  async function handleCopyMarkdown() {
+    try {
+      await navigator.clipboard.writeText(
+        buildDeveloperManualMarkdown(controller.scopeOptions, t),
+      );
+      message.success(t("docsManual.copyMarkdownSuccess"));
+    } catch {
+      message.error(t("docsManual.copyMarkdownFailed"));
+    }
   }
 
   return (
@@ -50,14 +67,32 @@ export function DeveloperPage() {
       ) : null}
 
       <Card>
-        <Space direction="vertical" size={8} style={{ width: "100%" }}>
-          <Typography.Title level={4} style={{ margin: 0 }}>
-            {controller.pageMeta.title}
-          </Typography.Title>
-          <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
-            {controller.pageMeta.description}
-          </Typography.Paragraph>
-        </Space>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: isCompact ? "stretch" : "flex-start",
+            flexDirection: isCompact ? "column" : "row",
+            gap: 16,
+          }}
+        >
+          <Space direction="vertical" size={8} style={{ flex: 1, minWidth: 0 }}>
+            <Typography.Title level={4} style={{ margin: 0 }}>
+              {controller.pageMeta.title}
+            </Typography.Title>
+            <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
+              {controller.pageMeta.description}
+            </Typography.Paragraph>
+          </Space>
+          {controller.pageType === "docsManual" ? (
+            <Button
+              onClick={() => void handleCopyMarkdown()}
+              style={isCompact ? { width: "100%" } : undefined}
+            >
+              {t("docsManual.copyMarkdown")}
+            </Button>
+          ) : null}
+        </div>
       </Card>
 
       <DeveloperSecretRevealModal

@@ -218,6 +218,7 @@ export function AppLayout() {
   const developerFallback = getDeveloperFallbackMessages(i18n.language);
   const sharedSearch = buildSearchString(location.search);
   const isMobile = !screens.lg;
+  const isCompactHeader = !screens.md;
   const selectedMenuKey = useMemo(() => {
     if (location.pathname === "/admin/send-logs/emails") {
       return "/admin/send-logs/emails";
@@ -374,6 +375,24 @@ export function AppLayout() {
             },
           ]
         : [{ key: "/me", icon: <UserOutlined />, label: "用户中心" }];
+
+  const roleTitle =
+    currentRole === "admin"
+      ? adminT("管理后台")
+      : currentRole === "developer"
+        ? developerTranslationsReady
+          ? t("appLayout.title", { ns: "developer" })
+          : developerFallback.appLayout.title
+        : "用户中心";
+  const roleLabel =
+    currentRole === "admin"
+      ? adminT("管理员")
+      : currentRole === "developer"
+        ? developerTranslationsReady
+          ? t("appLayout.role", { ns: "developer" })
+          : developerFallback.appLayout.role
+        : "当前账号";
+  const headerTitleText = isCompactHeader ? roleTitle : `${siteName} ${roleTitle}`;
 
   const siteLogoUrl = useMemo(() => {
     if (!siteLogoDataUrl) {
@@ -747,15 +766,13 @@ export function AppLayout() {
                 icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                 onClick={() => setCollapsed((value) => !value)}
               />
-              <Typography.Title level={4} style={{ margin: 0 }}>
-                {siteName}{" "}
-                {currentRole === "admin"
-                    ? adminT("管理后台")
-                    : currentRole === "developer"
-                    ? developerTranslationsReady
-                      ? t("appLayout.title", { ns: "developer" })
-                      : developerFallback.appLayout.title
-                    : "用户中心"}
+              <Typography.Title
+                level={4}
+                className="app-header-heading"
+                style={{ margin: 0 }}
+                ellipsis={{ tooltip: headerTitleText }}
+              >
+                {headerTitleText}
               </Typography.Title>
             </Space>
           </div>
@@ -766,9 +783,11 @@ export function AppLayout() {
               icon={<GlobalOutlined />}
               onClick={() => setLanguageModalOpen(true)}
             >
-              {currentRole === "admin"
-                ? adminT("语言切换")
-                : t("header.language")}
+              {isCompactHeader
+                ? null
+                : currentRole === "admin"
+                  ? adminT("语言切换")
+                  : t("header.language")}
             </Button>
             <Dropdown
               trigger={["click"]}
@@ -790,15 +809,7 @@ export function AppLayout() {
               <Button type="text" className="app-header-user">
                 <Space size={8}>
                   <UserOutlined />
-                  <span>
-                    {currentRole === "admin"
-                      ? adminT("管理员")
-                      : currentRole === "developer"
-                        ? developerTranslationsReady
-                          ? t("appLayout.role", { ns: "developer" })
-                          : developerFallback.appLayout.role
-                        : "当前账号"}
-                  </span>
+                  {isCompactHeader ? null : <span>{roleLabel}</span>}
                   <DownOutlined />
                 </Space>
               </Button>
