@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net"
+	"net/mail"
 	"net/smtp"
 	"time"
 
@@ -45,6 +46,15 @@ func NewMailer(cfg config.SMTPConfig) Mailer {
 func (m SMTPMailer) Enabled() bool { return true }
 
 func (m SMTPMailer) Send(to, subject, body string) error {
+	fromAddress, err := mail.ParseAddress(m.from)
+	if err != nil {
+		return fmt.Errorf("invalid smtp from address: %w", err)
+	}
+	toAddress, err := mail.ParseAddress(to)
+	if err != nil {
+		return fmt.Errorf("invalid recipient address: %w", err)
+	}
+
 	addr := fmt.Sprintf("%s:%s", m.host, m.port)
 	conn, err := net.DialTimeout("tcp", addr, m.timeout)
 	if err != nil {
@@ -84,15 +94,16 @@ func (m SMTPMailer) Send(to, subject, body string) error {
 		}
 	}
 
-	message := []byte("To: " + to + "\r\n" +
+	message := []byte("From: " + fromAddress.String() + "\r\n" +
+		"To: " + toAddress.String() + "\r\n" +
 		"Subject: " + subject + "\r\n" +
 		"MIME-Version: 1.0\r\n" +
 		"Content-Type: text/plain; charset=UTF-8\r\n\r\n" +
 		body + "\r\n")
-	if err := client.Mail(m.from); err != nil {
+	if err := client.Mail(fromAddress.Address); err != nil {
 		return err
 	}
-	if err := client.Rcpt(to); err != nil {
+	if err := client.Rcpt(toAddress.Address); err != nil {
 		return err
 	}
 	writer, err := client.Data()
