@@ -50,7 +50,7 @@ function buildApiBaseCandidates() {
   if (hostname === "localhost") {
     return [localhostApi, loopbackApi];
   }
-  return [`${protocol}//${hostname}:8080/api`, loopbackApi, localhostApi];
+  return [`${protocol}//${hostname}/api`, loopbackApi, localhostApi];
 }
 
 const API_BASE_CANDIDATES = Array.from(
