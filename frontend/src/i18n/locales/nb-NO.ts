@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Mandag til fredag 09:00 - 18:00",
-      contactOverseasPersonValue: "Skal leveres",
-      contactOverseasPhoneValue: "Skal leveres",
-      contactOverseasEmailValue: "Skal leveres",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "Mandag til fredag 09:00 - 18:00",
       contactRegionNotice:
         "Vennligst kontakt støttekanalen for din region først. Hvis du er usikker på hvilken region som gjelder, start med Hovedland Kina kontakt for rutinghjelp.",

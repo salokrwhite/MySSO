@@ -531,9 +531,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Ponedeljek do petek 09:00 - 18:00",
-      contactOverseasPersonValue: "Načakajoč dopolnitev",
-      contactOverseasPhoneValue: "Načakajoč dopolnitev",
-      contactOverseasEmailValue: "Načakajoč dopolnitev",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "Ponedeljek do petek 09:00 - 18:00",
       contactRegionNotice:
         "Podle vašega regiona se prosimo, obrnite se najprej na ustrezno podporo; če niste prepričani, kateri region velja za vas, lahko se najprej obrnite na kontakt v središnji Kitajski.",

@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Mandag til fredag 09:00 - 18:00",
-      contactOverseasPersonValue: "Tilføjes senere",
-      contactOverseasPhoneValue: "Tilføjes senere",
-      contactOverseasEmailValue: "Tilføjes senere",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "Mandag til fredag 09:00 - 18:00",
       contactRegionNotice:
         "Kontakt venligst supportkanalen for din region først. Hvis du er usikker på, hvilken region der gælder, skal du starte med fastlandskina-kontakten for hjælp til viderestilling.",

@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "ច័ន្ទទៅអថេរ 09:00 - 18:00",
-      contactOverseasPersonValue: "នឹងផ្តល់",
-      contactOverseasPhoneValue: "នឹងផ្តល់",
-      contactOverseasEmailValue: "នឹងផ្តល់",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "ច័ន្ទទៅអថេរ 09:00 - 18:00",
       contactRegionNotice:
         "សូមទាក់ទងតាមរយៈបណ្តាញគាំទ្រសម្រាប់តំបន់របស់អ្នកជាមុន។ ប្រសិនបើអ្នកមិនប្រាកដថាតំបន់ណាដែលអ្នកនៅ សូមចាប់ផ្តើមជាមួយអ្នកទំនាក់ទំនងចិនមូលដ្ឋានសម្រាប់ជំនួយផ្លាស់ទី។",

@@ -590,9 +590,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "จันทร์ถึงศุกร์ 09:00 - 18:00",
-      contactOverseasPersonValue: "รอการเพิ่ม",
-      contactOverseasPhoneValue: "รอการเพิ่ม",
-      contactOverseasEmailValue: "รอการเพิ่ม",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "จันทร์ถึงศุกร์ 09:00 - 18:00",
       contactRegionNotice:
         "โปรดติดต่อช่องทางสนับสนุนตามภูมิภาคของคุณก่อน; หากไม่สามารถระบุภูมิภาคได้ สามารถติดต่อผู้ติดต่อจีนแผ่นดินใหญ่ก่อนเพื่อขอความช่วยเหลือในการเชื่อมต่อ",

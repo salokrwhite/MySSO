@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Litinin zuwa Juma'a 09:00 - 18:00",
-      contactOverseasPersonValue: "Za a bayar",
-      contactOverseasPhoneValue: "Za a bayar",
-      contactOverseasEmailValue: "Za a bayar",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "Litinin zuwa Juma'a 09:00 - 18:00",
       contactRegionNotice:
         "Lura da haɗa taro da tashar taimako na yankin da kake cikin shi da farko. Idan ba ka tabbata wane yanki ya shafi ka ba, fara da taron cibiyar China don samun jagora.",

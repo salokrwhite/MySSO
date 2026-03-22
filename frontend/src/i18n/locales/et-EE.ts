@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Esmaspäevast reedeni 09:00 - 18:00",
-      contactOverseasPersonValue: "Lisatakse hiljem",
-      contactOverseasPhoneValue: "Lisatakse hiljem",
-      contactOverseasEmailValue: "Lisatakse hiljem",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "Esmaspäevast reedeni 09:00 - 18:00",
       contactRegionNotice:
         "Palun võtke kõigepealt ühendust oma piirkonna toekanali. Kui te ei ole kindel, milline piirkond kehtib, alustage mandri-Hiina kontaktist suunamise abi saamiseks.",

@@ -531,9 +531,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "सोमबार देखि शुक्रबार 09:00 - 18:00",
-      contactOverseasPersonValue: "सम्पूर्ण गर्ने छ",
-      contactOverseasPhoneValue: "सम्पूर्ण गर्ने छ",
-      contactOverseasEmailValue: "सम्पूर्ण गर्ने छ",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "सोमबार देखि शुक्रबार 09:00 - 18:00",
       contactRegionNotice:
         "कृपया तपाईंको क्षेत्र अनुसार स优先 सम्बन्धित सपोर्ट च्यानलसँग सम्पर्क गर्नुहोस्; यदि तपाईंले आफ्नो क्षेत्र निर्धारण गर्न सक्नुहुन्न भने, पहिले मुख्य भूमि चीनको सम्पर्क मार्फत सान्दर्भित सहायता प्राप्त गर्नुहोस्।",

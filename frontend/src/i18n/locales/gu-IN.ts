@@ -607,9 +607,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "સોમવારથી શુક્રવાર 09:00 - 18:00",
-      contactOverseasPersonValue: "આપેલ હશે",
-      contactOverseasPhoneValue: "આપેલ હશે",
-      contactOverseasEmailValue: "આપેલ હશે",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "સોમવારથી શુક્રવાર 09:00 - 18:00",
       contactRegionNotice:
         "કૃપા કરીને તમારા所在地区ના સપોર્ટ ચેનલનો પ્રથમ રૂપે સંપર્ક કરો; જો તમે કયા પ્રદેશનો અર્થ છે તે નક્કી નથી, તો રાઉટિંગ મદદ માટે મુખ્ય ભૂમિ ચીનના સંપર્ક સાથે શરૂ કરો.",

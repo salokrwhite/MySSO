@@ -590,9 +590,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Понеділок-п'ятниця 09:00 - 18:00",
-      contactOverseasPersonValue: "Буде додано",
-      contactOverseasPhoneValue: "Буде додано",
-      contactOverseasEmailValue: "Буде додано",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "Понеділок-п'ятниця 09:00 - 18:00",
       contactRegionNotice:
         "Будь ласка, спочатку звертайтеся до відповідного каналу підтримки згідно з вашим регіоном; якщо ви не можете визначити, до якого регіону ви відноситесь, спочатку використовуйте контакти Китайського материка для отримання допомоги з маршрутизацією.",

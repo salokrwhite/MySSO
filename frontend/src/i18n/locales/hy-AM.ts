@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Երկուշաբթիից ուրբաթ까지 09:00 - 18:00",
-      contactOverseasPersonValue: "Պատրաստվում է",
-      contactOverseasPhoneValue: "Պատրաստվում է",
-      contactOverseasEmailValue: "Պատրաստվում է",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "Երկուշաբթիից ուրբաթ까지 09:00 - 18:00",
       contactRegionNotice:
         "Խնդրում ենք առաջին հերթին կապ հաստատել ձեր տարածքի աջակցության հանգույցին: Եթե ​​Դուք չեք համոզված, թե որ տարածքը վերաբերում է, սկսեք Մայրցամաքային Չինաստանի կոնտակտով, որպեսզի ստանաք ուղղորդում:",

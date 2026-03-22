@@ -531,9 +531,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "پیر سے جمعہ 09:00 - 18:00",
-      contactOverseasPersonValue: "مزید جلد ہی فراہم کیا جائے گا",
-      contactOverseasPhoneValue: "مزید جلد ہی فراہم کیا جائے گا",
-      contactOverseasEmailValue: "مزید جلد ہی فراہم کیا جائے گا",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "پیر سے جمعہ 09:00 - 18:00",
       contactRegionNotice:
         "براہ کرم اپنے علاقے کے سپورٹ چینل سے پہلے رابطہ کریں۔ اگر آپ کو یہ نہیں معلوم کہ کون سا علاقہ لاگو ہوتا ہے، تو راؤٹنگ کی مدد کے لیے پہلے چین کی سرزمین کے رابطے سے رابطہ کریں۔",

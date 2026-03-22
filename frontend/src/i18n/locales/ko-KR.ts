@@ -531,9 +531,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "월요일 ~ 금요일 09:00 - 18:00",
-      contactOverseasPersonValue: "추가 예정",
-      contactOverseasPhoneValue: "추가 예정",
-      contactOverseasEmailValue: "추가 예정",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "월요일 ~ 금요일 09:00 - 18:00",
       contactRegionNotice:
         "귀하의 지역에 따라 해당 지원 채널을 우선적으로 연락하세요. 소속 지역을 확인할 수 없는 경우 중국 본토 연락처를 통해 연결 도움을 받을 수 있습니다.",

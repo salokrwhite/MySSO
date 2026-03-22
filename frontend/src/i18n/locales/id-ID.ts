@@ -531,9 +531,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Senin hingga Jumat 09:00 - 18:00",
-      contactOverseasPersonValue: "Akan ditambahkan",
-      contactOverseasPhoneValue: "Akan ditambahkan",
-      contactOverseasEmailValue: "Akan ditambahkan",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "Senin hingga Jumat 09:00 - 18:00",
       contactRegionNotice:
         "Silakan hubungi saluran dukungan yang sesuai dengan wilayah Anda terlebih dahulu; jika Anda tidak dapat menentukan wilayah Anda, Anda dapat menghubungi kontak Tiongkok Daratan terlebih dahulu untuk mendapatkan bantuan transfer.",

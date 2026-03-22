@@ -531,9 +531,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "सोमवार ते शुक्रवार 09:00 - 18:00",
-      contactOverseasPersonValue: "भरणे आवश्यक",
-      contactOverseasPhoneValue: "भरणे आवश्यक",
-      contactOverseasEmailValue: "भरणे आवश्यक",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "सोमवार ते शुक्रवार 09:00 - 18:00",
       contactRegionNotice:
         "कृपया तुमच्या所在地区नुसार प्राधान्याने संबंधित सपोर्ट वाहिन्यास संपर्क साधा; जर तुम्हाला तुम्ही कोणत्या क्षेत्राशी संबंधित आहात हे निश्चित नसेल, तर मुख्य भूमी चीन संपर्काद्वारे राउटिंग मदत मिळवू शकता.",

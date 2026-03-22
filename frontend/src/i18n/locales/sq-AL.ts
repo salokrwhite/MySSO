@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "E hënë deri në E premte 09:00 - 18:00",
-      contactOverseasPersonValue: "Do të sigurohet",
-      contactOverseasPhoneValue: "Do të sigurohet",
-      contactOverseasEmailValue: "Do të sigurohet",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "E hënë deri në E premte 09:00 - 18:00",
       contactRegionNotice:
         "Ju lutem kontaktoni kanalën e mbështetjes për rajonin tuaj së pari. Nëse nuk jeni të sigurt se cili rajon është i aplikueshëm, filloni me kontaktin e Kinës kontinentale për ndihmë në rrugëtim.",

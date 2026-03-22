@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "ಸೋಮವಾರದಿಂದ ಶುಕ್ರವಾರ 09:00 - 18:00",
-      contactOverseasPersonValue: "ನೀಡಲಾಗುತ್ತದೆ",
-      contactOverseasPhoneValue: "ನೀಡಲಾಗುತ್ತದೆ",
-      contactOverseasEmailValue: "ನೀಡಲಾಗುತ್ತದೆ",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "ಸೋಮವಾರದಿಂದ ಶುಕ್ರವಾರ 09:00 - 18:00",
       contactRegionNotice:
         "ದಯವಿಟ್ಟು ಮೊದಲು ನಿಮ್ಮ ಪ್ರದೇಶಕ್ಕೆ ಸಂಬಂಧಿಸಿದ ಬೆಂಬಲ ಚಾನೆಲ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ; ನೀವು ಯಾವ ಪ್ರದೇಶದಲ್ಲಿದ್ದೀರಿ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳದಿದ್ದರೆ, ಮಾರ್ಗದರ್ಶನ ಸಹಾಯಕ್ಕಾಗಿ ಮುಖ್ಯ ಭೂಮಿ ಚೀನಾ ಸಂಪರ್ಕದೊಂದಿಗೆ ಪ್ರಾರಂಭಿಸಿ.",

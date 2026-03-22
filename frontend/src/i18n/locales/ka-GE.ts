@@ -531,9 +531,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "ორშაბათი დ პარასკევი 09:00 - 18:00",
-      contactOverseasPersonValue: "გამატებითი",
-      contactOverseasPhoneValue: "გამატებითი",
-      contactOverseasEmailValue: "გამატებითი",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "ორშაბათი დ პარასკევი 09:00 - 18:00",
       contactRegionNotice:
         "გთხოვთ, პირველ რიგში დაუკავშირდეთ თქვენი რეგიონის შესაბამის დახმარების არხს; თუ რეგიონი გაურკვეველია, შეიძლება პირველ რიგში მთავარი ჩინეთის კონტაქტი გახსენდეს გადამისამართების დახმარებისთვის.",

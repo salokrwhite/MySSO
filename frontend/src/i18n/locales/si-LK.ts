@@ -531,9 +531,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "සඳුදුසු සතුරාදා 09:00 - 18:00",
-      contactOverseasPersonValue: "පහත දැක්වෙන",
-      contactOverseasPhoneValue: "පහත දැක්වෙන",
-      contactOverseasEmailValue: "පහත දැක්වෙන",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "සඳුදුසු සතුරාදා 09:00 - 18:00",
       contactRegionNotice:
         "කරුණාකර ඔබ සිටින කලාපය සඳහා සුපරට් පහර වෙත ප්‍රථම වශයෙන් සම්බන්ධ වන්න; ඔබ所属 කාර්යාලය කොතැන්දැයි තීරණය නොහැකි නම්, ම:"" සම්බන්ධ වේන්න",

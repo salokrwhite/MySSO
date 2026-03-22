@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Astelehenetik ostiralera 09:00 - 18:00",
-      contactOverseasPersonValue: "Eman behar",
-      contactOverseasPhoneValue: "Eman behar",
-      contactOverseasEmailValue: "Eman behar",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "Astelehenetik ostiralera 09:00 - 18:00",
       contactRegionNotice:
         "Jarri harremanetan lehenik zure eskualdeko laguntza-kanalarekin. Zein eskualde aplikatzen den ziur ez bazaude, hasi Txinako Herrialdeko kontaktuarekin birbideratze-laguntza lortzeko.",

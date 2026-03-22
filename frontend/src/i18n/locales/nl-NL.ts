@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Maandag tot vrijdag 09:00 - 18:00",
-      contactOverseasPersonValue: "Wordt geleverd",
-      contactOverseasPhoneValue: "Wordt geleverd",
-      contactOverseasEmailValue: "Wordt geleverd",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "Maandag tot vrijdag 09:00 - 18:00",
       contactRegionNotice:
         "Neem contact op met het ondersteuningskanaal voor uw regio eerst. Als u niet zeker weet welke regio van toepassing is, start met het Hoofdland China-contact voor routeringshulp.",

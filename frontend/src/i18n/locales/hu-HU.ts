@@ -615,9 +615,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Hétfő–péntek 09:00–18:00",
-      contactOverseasPersonValue: "Későbbi kitöltés",
-      contactOverseasPhoneValue: "Későbbi kitöltés",
-      contactOverseasEmailValue: "Későbbi kitöltés",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "Hétfő–péntek 09:00–18:00",
       contactRegionNotice:
         "Kérjük, először forduljon a saját régiójának támogatási csatornájához. Ha nem biztos abban, hogy melyik régió vonatkozik rá, kezdje a Közép-Kína kapcsolattartójával, aki továbbítja.",

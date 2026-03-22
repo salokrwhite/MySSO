@@ -531,9 +531,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "周一至周五 09:00 - 18:00",
-      contactOverseasPersonValue: "待补充",
-      contactOverseasPhoneValue: "待补充",
-      contactOverseasEmailValue: "待补充",
+      contactOverseasPersonValue: "YOUR_NAME_OVERSEAS",
+      contactOverseasPhoneValue: "YOUR_PHONE_NUMBER_OVERSEAS",
+      contactOverseasEmailValue: "YOUR_EMAIL_OVERSEAS",
       contactOverseasHoursValue: "周一至周五 09:00 - 18:00",
       contactRegionNotice:
         "请根据你所在地区优先联系对应支持渠道；若无法判断所属地区，可先通过中国大陆联系人获取转接帮助。",
