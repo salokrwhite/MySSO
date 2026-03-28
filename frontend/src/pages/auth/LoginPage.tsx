@@ -438,16 +438,17 @@ export function LoginPage() {
   }
 
   return (
-    <div className="center-page">
+    <div className="center-page login-page login-page--glass">
       {contextHolder}
+      <div className="login-page__backdrop" aria-hidden="true" />
       <div className="auth-page-toolbar">
         <Button type="link" className="auth-language-button" onClick={() => setLanguageModalOpen(true)}>
           {accountLocaleLabel[accountLocale]}
         </Button>
       </div>
-      <Card className="auth-card">
+      <Card className="auth-card auth-card--glass">
         <Space direction="vertical" size={20} style={{ width: "100%" }}>
-          <div>
+          <div className="login-page__hero">
             <div className="auth-brand">
               {siteLogoUrl ? (
                 <img src={siteLogoUrl} alt={siteName} className="auth-brand-logo" />
@@ -456,7 +457,7 @@ export function LoginPage() {
                 {siteName}
               </Typography.Title>
             </div>
-            <div style={{ marginTop: 8 }}>
+            <div className="login-page__hero-copy">
               <Space direction="vertical" size={4} style={{ width: "100%" }}>
                 <Typography.Text type="secondary">
                   {registrationAllowed ? <>{t("auth.noAccount")} <Link to={`/register${authSearch}`}>{t("auth.registerNow")}</Link></> : t("auth.registrationClosed")}

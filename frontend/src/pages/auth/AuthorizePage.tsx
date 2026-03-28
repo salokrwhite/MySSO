@@ -166,6 +166,10 @@ function buildPromptValueForReauth(rawPrompt: string) {
   return Array.from(new Set(tokens)).join(" ");
 }
 
+function buildSilentAuthorizationPrompt() {
+  return "none";
+}
+
 function getUserInitial(currentUser?: CurrentUser) {
   const source = currentUser?.displayName || currentUser?.email || "";
   return source.trim().slice(0, 1).toUpperCase() || "U";
@@ -474,9 +478,13 @@ export function AuthorizePage() {
         }
         const hasFirstPartySessionContext = Boolean(readFirstPartySessionContext());
         const shouldShowAccountPicker = hasFirstPartySessionContext && !promptLoginSatisfied;
-        setShowConsent(!shouldShowAccountPicker);
-        setShowAccountPicker(shouldShowAccountPicker);
-        setCheckingPageState(false);
+        if (shouldShowAccountPicker) {
+          setShowConsent(false);
+          setShowAccountPicker(true);
+          setCheckingPageState(false);
+          return;
+        }
+        void trySilentAuthorize();
       })
       .catch((err) => {
         if (!active) {
@@ -513,6 +521,36 @@ export function AuthorizePage() {
   ]);
 
   async function authorize() {
+    await authorizeWithPrompt(params.prompt);
+  }
+
+  async function requestAuthorization(prompt: string) {
+    const result = await api<{ redirect_url?: string }>(
+      "/auth/authorize",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          client_id: params.client_id,
+          redirect_uri: params.redirect_uri,
+          response_type: params.response_type,
+          scope: params.scope,
+          state: params.state,
+          nonce: params.nonce,
+          code_challenge: params.code_challenge,
+          code_challenge_method: params.code_challenge_method,
+          prompt,
+          max_age: params.max_age,
+          acr_values: params.acr_values
+        })
+      }
+    );
+    if (!result.redirect_url) {
+      throw new Error("authorize failed");
+    }
+    return result.redirect_url;
+  }
+
+  async function authorizeWithPrompt(prompt: string) {
     if (!hasSession) {
       return;
     }
@@ -520,30 +558,9 @@ export function AuthorizePage() {
     setAuthorizing(true);
     setError("");
     try {
-      const result = await api<{ redirect_url?: string }>(
-        "/auth/authorize",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            client_id: params.client_id,
-            redirect_uri: params.redirect_uri,
-            response_type: params.response_type,
-            scope: params.scope,
-            state: params.state,
-            nonce: params.nonce,
-            code_challenge: params.code_challenge,
-            code_challenge_method: params.code_challenge_method,
-            prompt: params.prompt,
-            max_age: params.max_age,
-            acr_values: params.acr_values
-          })
-        }
-      );
-      if (!result.redirect_url) {
-        throw new Error("authorize failed");
-      }
+      const redirectURL = await requestAuthorization(prompt);
       clearAuthorizationSession();
-      window.location.assign(result.redirect_url);
+      window.location.assign(redirectURL);
     } catch (err) {
       const message = err instanceof Error ? err.message : "authorize failed";
       if (message === "login_required" && !promptValues.has("none")) {
@@ -558,6 +575,38 @@ export function AuthorizePage() {
       }
       setShowConsent(true);
       setError(message);
+    } finally {
+      setAuthorizing(false);
+    }
+  }
+
+  async function trySilentAuthorize() {
+    if (!hasSession) {
+      return;
+    }
+    setAuthorizing(true);
+    setError("");
+    try {
+      const redirectURL = await requestAuthorization(buildSilentAuthorizationPrompt());
+      clearAuthorizationSession();
+      window.location.assign(redirectURL);
+      return;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "authorize failed";
+      if (message === "login_required") {
+        navigateToLoginForNewAccount();
+        return;
+      }
+      if (message.includes("session")) {
+        clearAuthorizationSession();
+        clearLocalSession();
+        navigate(`/authorize${location.search}`, { replace: true });
+        return;
+      }
+      setShowConsent(true);
+      setShowAccountPicker(false);
+      setError(message === "consent_required" ? "" : message);
+      setCheckingPageState(false);
     } finally {
       setAuthorizing(false);
     }

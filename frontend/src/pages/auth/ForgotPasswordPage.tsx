@@ -217,8 +217,9 @@ export function ForgotPasswordPage() {
     }
   }
   return (
-    <div className="center-page">
+    <div className="center-page auth-entry-page auth-entry-page--glass">
       {contextHolder}
+      <div className="auth-entry-page__backdrop" aria-hidden="true" />
       <div className="auth-page-toolbar">
         <Button
           type="link"
@@ -228,14 +229,14 @@ export function ForgotPasswordPage() {
           {accountLocaleLabel[accountLocale]}
         </Button>
       </div>
-      <Card className="auth-card">
+      <Card className="auth-card auth-card--glass">
         <Space direction="vertical" size={20} style={{ width: "100%" }}>
-          <div>
+          <div className="auth-entry-page__hero">
             <Typography.Title level={2}>
               {t("auth.forgotPasswordPageTitle")}
             </Typography.Title>
-            <div style={{ marginTop: 8 }}>
-              <Typography.Text type="secondary">
+            <div className="auth-entry-page__subtitle-wrap">
+              <Typography.Text type="secondary" className="auth-entry-page__subtitle">
                 {t("auth.forgotPasswordPageSubtitle")}
               </Typography.Text>
             </div>

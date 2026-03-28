@@ -218,18 +218,19 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="center-page">
+    <div className="center-page auth-entry-page auth-entry-page--glass">
       {contextHolder}
+      <div className="auth-entry-page__backdrop" aria-hidden="true" />
       <div className="auth-page-toolbar">
         <Button type="link" className="auth-language-button" onClick={() => setLanguageModalOpen(true)}>
           {accountLocaleLabel[accountLocale]}
         </Button>
       </div>
-      <Card className="auth-card">
+      <Card className="auth-card auth-card--glass">
         <Space direction="vertical" size={20} style={{ width: "100%" }}>
-          <div>
+          <div className="auth-entry-page__hero">
             <Typography.Title level={2}>{t("auth.registerPageTitle")}</Typography.Title>
-            <Typography.Text type="secondary">
+            <Typography.Text type="secondary" className="auth-entry-page__subtitle">
               {t("auth.registerPageSubtitle")}
             </Typography.Text>
           </div>

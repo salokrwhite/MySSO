@@ -29,6 +29,52 @@ body {
   position: relative;
 }
 
+.login-page--glass,
+.auth-entry-page--glass {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(120, 195, 255, 0.34), transparent 26%),
+    radial-gradient(circle at 82% 14%, rgba(255, 255, 255, 0.72), transparent 24%),
+    radial-gradient(circle at 76% 72%, rgba(83, 140, 255, 0.22), transparent 28%),
+    linear-gradient(145deg, #e9f1fb 0%, #dce8f8 42%, #edf3fb 100%);
+}
+
+.login-page__backdrop,
+.auth-entry-page__backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.login-page__backdrop::before,
+.login-page__backdrop::after,
+.auth-entry-page__backdrop::before,
+.auth-entry-page__backdrop::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(14px);
+  opacity: 0.9;
+}
+
+.login-page__backdrop::before,
+.auth-entry-page__backdrop::before {
+  width: 420px;
+  height: 420px;
+  top: -120px;
+  left: -90px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.86) 0%, rgba(255, 255, 255, 0) 72%);
+}
+
+.login-page__backdrop::after,
+.auth-entry-page__backdrop::after {
+  width: 360px;
+  height: 360px;
+  right: -80px;
+  bottom: -120px;
+  background: radial-gradient(circle, rgba(90, 145, 255, 0.34) 0%, rgba(90, 145, 255, 0) 74%);
+}
+
 .auth-card {
   width: min(520px, 100%);
   border-radius: 20px;
@@ -36,6 +82,34 @@ body {
   margin-top: auto;
   margin-bottom: auto;
   flex: 0 0 auto;
+}
+
+.auth-card--glass {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.5) 100%);
+  box-shadow:
+    0 28px 80px rgba(32, 58, 92, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+}
+
+.auth-card--glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.44), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 70%);
+  pointer-events: none;
+}
+
+.auth-card--glass .ant-card-body {
+  position: relative;
+  z-index: 1;
 }
 
 .auth-page-footer {
@@ -84,6 +158,102 @@ body {
 .auth-language-button:focus {
   color: #0b5cab !important;
   background: rgba(255, 255, 255, 0.92) !important;
+}
+
+.login-page--glass .auth-language-button,
+.auth-entry-page--glass .auth-language-button {
+  background: rgba(255, 255, 255, 0.42) !important;
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+.login-page__hero {
+  padding: 4px 2px 10px;
+}
+
+.login-page__hero-copy {
+  margin-top: 10px;
+}
+
+.auth-entry-page__hero {
+  padding: 4px 2px 10px;
+}
+
+.auth-entry-page__subtitle-wrap {
+  margin-top: 10px;
+}
+
+.auth-entry-page__subtitle {
+  line-height: 1.75;
+}
+
+.login-page--glass .ant-tabs-nav::before {
+  border-bottom-color: rgba(18, 38, 58, 0.08) !important;
+}
+
+.login-page--glass .ant-tabs-tab {
+  color: rgba(18, 38, 58, 0.72);
+}
+
+.login-page--glass .ant-input,
+.login-page--glass .ant-input-password,
+.login-page--glass .ant-input-affix-wrapper,
+.login-page--glass .ant-select-selector,
+.auth-entry-page--glass .ant-input,
+.auth-entry-page--glass .ant-input-password,
+.auth-entry-page--glass .ant-input-affix-wrapper,
+.auth-entry-page--glass .ant-select-selector {
+  background: rgba(255, 255, 255, 0.48);
+  border-color: rgba(18, 38, 58, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.login-page--glass .ant-input:focus,
+.login-page--glass .ant-input-password:focus,
+.login-page--glass .ant-input-affix-wrapper:focus,
+.login-page--glass .ant-input-affix-wrapper-focused,
+.login-page--glass .ant-select-focused .ant-select-selector,
+.auth-entry-page--glass .ant-input:focus,
+.auth-entry-page--glass .ant-input-password:focus,
+.auth-entry-page--glass .ant-input-affix-wrapper:focus,
+.auth-entry-page--glass .ant-input-affix-wrapper-focused,
+.auth-entry-page--glass .ant-select-focused .ant-select-selector {
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.login-page--glass .ant-btn-primary,
+.auth-entry-page--glass .ant-btn-primary {
+  box-shadow: 0 14px 30px rgba(22, 119, 255, 0.22);
+}
+
+@media (max-width: 640px) {
+  .login-page--glass,
+  .auth-entry-page--glass {
+    padding: 18px 14px 12px;
+  }
+
+  .auth-card--glass {
+    border-radius: 18px;
+    backdrop-filter: blur(18px) saturate(145%);
+    -webkit-backdrop-filter: blur(18px) saturate(145%);
+  }
+
+  .login-page__backdrop::before,
+  .auth-entry-page__backdrop::before {
+    width: 280px;
+    height: 280px;
+    top: -80px;
+    left: -90px;
+  }
+
+  .login-page__backdrop::after,
+  .auth-entry-page__backdrop::after {
+    width: 240px;
+    height: 240px;
+    right: -70px;
+    bottom: -90px;
+  }
 }
 
 .account-language-modal .ant-modal-content {
