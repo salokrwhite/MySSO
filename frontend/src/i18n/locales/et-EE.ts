@@ -562,6 +562,7 @@ const locale = {
       scopes: "Ulatus",
       createdAt: "Autoriseeritud",
       authorizedAt: "Autoriseeritud",
+      status: "Olek",
       action: "Toiming",
       viewDetails: "Detailid",
       detailTitle: "Autoriseerimise detailid",

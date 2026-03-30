@@ -1,4 +1,4 @@
-const locale = {
+﻿const locale = {
   translation: {
     header: {
       language: "ભાષા",
@@ -560,11 +560,19 @@ const locale = {
       scopes: "અધિકારનો અવકાશ",
       createdAt: "અધિકૃત થયું",
       authorizedAt: "અધિકૃત થયું",
+      status: "સ્થિતિ",
       action: "ક્રિયા",
       viewDetails: "વિગતો જોવો",
       detailTitle: "અધિકૃતતા વિગતો",
       siteName: "અધિકૃત સાઇટ",
       requestedPermissions: "પ્રદાન કੀਤી પરવાનગીઓ",
+      accessStatus: "ઍક્સેસ સ્થિતિ",
+      reason: "કારણ",
+      effectiveAt: "પ્રભાવી તારીખ",
+      expiresAt: "સમાપ્તિ તારીખ",
+      accessStatusNormal: "સક્રિય",
+      accessStatusRestricted: "પ્રતિબંધિત",
+      accessStatusBanned: "પ્રતિબંધિત",
       scopeOpenIdTitle: "તમારી ઓળખ પુષ્ટિ કરો",
       scopeOpenIdDesc: "વર્તમાન સાઇન-ઇન એકાઉન્ટ તમારો છે તે ચકાસવા અને મૂળભૂત સાઇન-ઇન સેસન્સ સ્થાપિત કરવા માટે વપરાય છે.",
       scopeProfileTitle: "તમારી જાહેર પ્રોફાઇલને ઍક્સેસ કરો",
