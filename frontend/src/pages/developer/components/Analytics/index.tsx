@@ -24,13 +24,51 @@ export function DeveloperAnalytics({
   const { t } = useDeveloperTranslation();
   const screens = Grid.useBreakpoint();
   const isMobile = !screens.md;
+  const analyticsColumns = [
+    {
+      title: t("analytics.columns.app"),
+      dataIndex: "name",
+      width: 180,
+      ellipsis: true,
+      fixed: isMobile ? undefined : ("left" as const),
+    },
+    {
+      title: t("analytics.columns.status"),
+      width: 100,
+      dataIndex: "status",
+      render: (value: string) => (
+        <Tag color={statusColor(value)}>{statusText(value, t)}</Tag>
+      ),
+    },
+    {
+      title: t("analytics.columns.authorizationCount"),
+      dataIndex: "authorization_count",
+      width: 110,
+    },
+    {
+      title: t("analytics.columns.tokenExchangeCount"),
+      dataIndex: "token_exchange_count",
+      width: 130,
+    },
+    {
+      title: t("analytics.columns.activeUserCount"),
+      dataIndex: "active_user_count",
+      width: 120,
+    },
+    {
+      title: t("analytics.columns.successRate"),
+      width: 100,
+      dataIndex: "success_rate",
+      render: (value: number) => `${value}%`,
+    },
+  ];
 
   return (
     <Space direction="vertical" size={20} style={{ width: "100%" }}>
       <Row gutter={[16, 16]}>
         {insights.map((item) => (
           <Col xs={24} md={8} key={item.label}>
-            <Card>
+            <Card styles={isMobile ? { body: { padding: 16 } } : undefined}>
               <Statistic title={item.label} value={item.value} suffix="%" />
               <Progress
                 percent={item.value}
@@ -51,54 +89,29 @@ export function DeveloperAnalytics({
 
       <Row gutter={[16, 16]}>
         <Col xs={24} xl={14}>
-          <Card title={t("analytics.appConversion")}>
-            <Table
-              rowKey="id"
-              dataSource={analyticsApps}
-              pagination={false}
-              scroll={{ x: isMobile ? 860 : undefined }}
-              columns={[
-                {
-                  title: t("analytics.columns.app"),
-                  dataIndex: "name",
-                  width: 180,
-                  ellipsis: true,
-                },
-                {
-                  title: t("analytics.columns.status"),
-                  width: 100,
-                  dataIndex: "status",
-                  render: (value: string) => (
-                    <Tag color={statusColor(value)}>{statusText(value, t)}</Tag>
-                  ),
-                },
-                {
-                  title: t("analytics.columns.authorizationCount"),
-                  dataIndex: "authorization_count",
-                  width: 110,
-                },
-                {
-                  title: t("analytics.columns.tokenExchangeCount"),
-                  dataIndex: "token_exchange_count",
-                  width: 130,
-                },
-                {
-                  title: t("analytics.columns.activeUserCount"),
-                  dataIndex: "active_user_count",
-                  width: 120,
-                },
-                {
-                  title: t("analytics.columns.successRate"),
-                  width: 100,
-                  dataIndex: "success_rate",
-                  render: (value: number) => `${value}%`,
-                },
-              ]}
-            />
+          <Card
+            title={t("analytics.appConversion")}
+            styles={
+              isMobile ? { body: { padding: 12, overflowX: "auto" } } : undefined
+            }
+          >
+            <div style={{ width: "100%", overflowX: "auto" }}>
+              <Table
+                rowKey="id"
+                dataSource={analyticsApps}
+                pagination={false}
+                size={isMobile ? "small" : "middle"}
+                scroll={{ x: 860 }}
+                columns={analyticsColumns}
+              />
+            </div>
           </Card>
         </Col>
         <Col xs={24} xl={10}>
-          <Card title={t("analytics.explanation")}>
+          <Card
+            title={t("analytics.explanation")}
+            styles={isMobile ? { body: { padding: 16 } } : undefined}
+          >
             <Space direction="vertical" size={12}>
               <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
                 {t("analytics.explanation1")}

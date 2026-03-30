@@ -55,6 +55,30 @@ function getAvailableScopes(scopes: ScopeDefinition[]) {
 
 type ManualTranslator = (key: string) => string;
 
+function getScopeDisplayMeta(
+  scope: Pick<ScopeDefinition, "key" | "display_name" | "description">,
+  t: ManualTranslator,
+) {
+  const knownKeys = new Set([
+    "openid",
+    "profile",
+    "email",
+    "phone",
+    "role",
+    "gateway.read",
+  ]);
+  if (!knownKeys.has(scope.key)) {
+    return {
+      displayName: scope.display_name,
+      description: scope.description,
+    };
+  }
+  return {
+    displayName: t(`docsManual.scopeDefinitions.${scope.key}.displayName`),
+    description: t(`docsManual.scopeDefinitions.${scope.key}.description`),
+  };
+}
+
 export function buildDeveloperManualMarkdown(scopes: ScopeDefinition[], t: ManualTranslator) {
   const availableScopes = getAvailableScopes(scopes);
   const supportedScopeKeys = availableScopes
@@ -147,6 +171,9 @@ Authorization: Bearer access-token
   -u "your-client-id:your-client-secret" \\
   -H "Content-Type: application/x-www-form-urlencoded" \\
   -d "token=refresh-token"`;
+  const accessDeniedCallbackExample = `GET https://client.example.com/callback?error=access_denied&error_description=${encodeURIComponent(
+    "current account cannot access this app",
+  )}&state=your-random-state`;
   const userInfoClaims = [
     {
       key: "sub",
@@ -232,6 +259,30 @@ Authorization: Bearer access-token
   const launchChecklist = (["1", "2", "3", "4", "5", "6"] as const).map(
     (item) => t(`docsManual.launchChecklist.items.${item}`),
   );
+  const accessControlBasics = (["1", "2", "3", "4", "5", "6"] as const).map((item) =>
+    t(`docsManual.accessControl.items.${item}`),
+  );
+  const accessRestrictionBehavior = (["1", "2", "3", "4", "5"] as const).map((item) =>
+    t(`docsManual.accessRestrictions.items.${item}`),
+  );
+  const denialHandling = (["1", "2", "3", "4"] as const).map((item) =>
+    t(`docsManual.denialHandling.items.${item}`),
+  );
+  const tokenInvalidation = (["1", "2", "3", "4"] as const).map((item) =>
+    t(`docsManual.tokenInvalidation.items.${item}`),
+  );
+  const accessDeniedCallbackNotes = (["1", "2", "3"] as const).map((item) =>
+    t(`docsManual.accessDeniedCallback.items.${item}`),
+  );
+  const accessBoundaryNotes = (["1", "2", "3"] as const).map((item) =>
+    t(`docsManual.accessBoundary.items.${item}`),
+  );
+  const resourceServerNotes = (["1", "2", "3", "4"] as const).map((item) =>
+    t(`docsManual.resourceServer.items.${item}`),
+  );
+  const troubleshootingNotes = (["1", "2", "3", "4"] as const).map((item) =>
+    t(`docsManual.troubleshooting.items.${item}`),
+  );
   const mappingGuidance = (["1", "2", "3"] as const).map((item) =>
     t(`docsManual.mapping.items.${item}`),
   );
@@ -239,7 +290,22 @@ Authorization: Bearer access-token
     t(`docsManual.claimUsage.items.${item}`),
   );
   const commonErrors = (
-    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"] as const
+    [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "10a",
+      "10b",
+      "11",
+      "12",
+    ] as const
   ).map((item) => ({
     code: t(`docsManual.errors.items.${item}.code`),
     reason: t(`docsManual.errors.items.${item}.reason`),
@@ -275,11 +341,10 @@ Authorization: Bearer access-token
     [t("docsManual.browserLogoutEndpoint"), browserLogoutURL],
     [t("docsManual.apiLogoutEndpoint"), apiLogoutURL],
   ] as const;
-  const scopeRows = availableScopes.map((item) => [
-    item.key,
-    item.display_name,
-    item.description,
-  ]);
+  const scopeRows = availableScopes.map((item) => {
+    const meta = getScopeDisplayMeta(item, t);
+    return [item.key, meta.displayName, meta.description];
+  });
   const discoveryRows = [
     ["authorization_endpoint", authorizeURL],
     ["token_endpoint", tokenURL],
@@ -295,6 +360,21 @@ Authorization: Bearer access-token
     ["frontchannel_logout_supported", "true"],
     ["frontchannel_logout_session_supported", "false"],
   ] as const;
+  const accountBindingRows = (["sub", "email", "name", "phone"] as const).map((item) => [
+    t(`docsManual.accountBinding.rows.${item}.field`),
+    t(`docsManual.accountBinding.rows.${item}.recommendation`),
+    t(`docsManual.accountBinding.rows.${item}.reason`),
+  ]);
+  const accessBehaviorRows = (["1", "2", "3", "4"] as const).map((item) => [
+    t(`docsManual.accessBehavior.rows.${item}.scenario`),
+    t(`docsManual.accessBehavior.rows.${item}.behavior`),
+  ]);
+  const accountCenterStatusRows = (["normal", "restricted", "banned"] as const).map(
+    (item) => [
+      t(`docsManual.accountCenterStatus.rows.${item}.status`),
+      t(`docsManual.accountCenterStatus.rows.${item}.meaning`),
+    ],
+  );
   const toMarkdownTable = (headers: string[], rows: ReadonlyArray<ReadonlyArray<string>>) =>
     [
       `| ${headers.join(" | ")} |`,
@@ -466,6 +546,93 @@ Authorization: Bearer access-token
     "",
     toNumberedMarkdownList(mappingGuidance),
     "",
+    `## ${t("docsManual.accessControl.title")}`,
+    "",
+    t("docsManual.accessControl.desc"),
+    "",
+    toNumberedMarkdownList(accessControlBasics),
+    "",
+    `## ${t("docsManual.accessRestrictions.title")}`,
+    "",
+    t("docsManual.accessRestrictions.desc"),
+    "",
+    toNumberedMarkdownList(accessRestrictionBehavior),
+    "",
+    `## ${t("docsManual.denialHandling.title")}`,
+    "",
+    t("docsManual.denialHandling.desc"),
+    "",
+    toNumberedMarkdownList(denialHandling),
+    "",
+    `## ${t("docsManual.accountBinding.title")}`,
+    "",
+    t("docsManual.accountBinding.desc"),
+    "",
+    toMarkdownTable(
+      [
+        t("docsManual.accountBinding.columns.field"),
+        t("docsManual.accountBinding.columns.recommendation"),
+        t("docsManual.accountBinding.columns.reason"),
+      ],
+      accountBindingRows,
+    ),
+    "",
+    `## ${t("docsManual.accessBehavior.title")}`,
+    "",
+    t("docsManual.accessBehavior.desc"),
+    "",
+    toMarkdownTable(
+      [
+        t("docsManual.accessBehavior.columns.scenario"),
+        t("docsManual.accessBehavior.columns.behavior"),
+      ],
+      accessBehaviorRows,
+    ),
+    "",
+    `## ${t("docsManual.tokenInvalidation.title")}`,
+    "",
+    t("docsManual.tokenInvalidation.desc"),
+    "",
+    toNumberedMarkdownList(tokenInvalidation),
+    "",
+    `## ${t("docsManual.accessDeniedCallback.title")}`,
+    "",
+    t("docsManual.accessDeniedCallback.desc"),
+    "",
+    toCodeBlock("http", accessDeniedCallbackExample),
+    "",
+    toNumberedMarkdownList(accessDeniedCallbackNotes),
+    "",
+    `## ${t("docsManual.accessBoundary.title")}`,
+    "",
+    t("docsManual.accessBoundary.desc"),
+    "",
+    toNumberedMarkdownList(accessBoundaryNotes),
+    "",
+    `## ${t("docsManual.resourceServer.title")}`,
+    "",
+    t("docsManual.resourceServer.desc"),
+    "",
+    toNumberedMarkdownList(resourceServerNotes),
+    "",
+    `## ${t("docsManual.troubleshooting.title")}`,
+    "",
+    t("docsManual.troubleshooting.desc"),
+    "",
+    toNumberedMarkdownList(troubleshootingNotes),
+    "",
+    `## ${t("docsManual.accountCenterStatus.title")}`,
+    "",
+    t("docsManual.accountCenterStatus.desc"),
+    "",
+    toMarkdownTable(
+      [
+        t("docsManual.accountCenterStatus.columns.status"),
+        t("docsManual.accountCenterStatus.columns.meaning"),
+      ],
+      accountCenterStatusRows,
+    ),
+    "",
     `## ${t("docsManual.thirdPartyTemplates.title")}`,
     "",
     t("docsManual.thirdPartyTemplates.desc"),
@@ -581,6 +748,9 @@ Authorization: Bearer access-token
   -u "your-client-id:your-client-secret" \\
   -H "Content-Type: application/x-www-form-urlencoded" \\
   -d "token=refresh-token"`;
+  const accessDeniedCallbackExample = `GET https://client.example.com/callback?error=access_denied&error_description=${encodeURIComponent(
+    "current account cannot access this app",
+  )}&state=your-random-state`;
   const userInfoClaims = [
     {
       key: "sub",
@@ -666,6 +836,30 @@ Authorization: Bearer access-token
   const launchChecklist = (["1", "2", "3", "4", "5", "6"] as const).map((item) =>
     t(`docsManual.launchChecklist.items.${item}`),
   );
+  const accessControlBasics = (["1", "2", "3", "4", "5", "6"] as const).map((item) =>
+    t(`docsManual.accessControl.items.${item}`),
+  );
+  const accessRestrictionBehavior = (["1", "2", "3", "4", "5"] as const).map((item) =>
+    t(`docsManual.accessRestrictions.items.${item}`),
+  );
+  const denialHandling = (["1", "2", "3", "4"] as const).map((item) =>
+    t(`docsManual.denialHandling.items.${item}`),
+  );
+  const tokenInvalidation = (["1", "2", "3", "4"] as const).map((item) =>
+    t(`docsManual.tokenInvalidation.items.${item}`),
+  );
+  const accessDeniedCallbackNotes = (["1", "2", "3"] as const).map((item) =>
+    t(`docsManual.accessDeniedCallback.items.${item}`),
+  );
+  const accessBoundaryNotes = (["1", "2", "3"] as const).map((item) =>
+    t(`docsManual.accessBoundary.items.${item}`),
+  );
+  const resourceServerNotes = (["1", "2", "3", "4"] as const).map((item) =>
+    t(`docsManual.resourceServer.items.${item}`),
+  );
+  const troubleshootingNotes = (["1", "2", "3", "4"] as const).map((item) =>
+    t(`docsManual.troubleshooting.items.${item}`),
+  );
   const mappingGuidance = (["1", "2", "3"] as const).map((item) =>
     t(`docsManual.mapping.items.${item}`),
   );
@@ -673,7 +867,22 @@ Authorization: Bearer access-token
     t(`docsManual.claimUsage.items.${item}`),
   );
   const commonErrors = (
-    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"] as const
+    [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "10a",
+      "10b",
+      "11",
+      "12",
+    ] as const
   ).map((item) => ({
     code: t(`docsManual.errors.items.${item}.code`),
     reason: t(`docsManual.errors.items.${item}.reason`),
@@ -783,10 +992,14 @@ Authorization: Bearer access-token
                 title: t("docsManual.scopeColumns.displayName"),
                 dataIndex: "display_name",
                 width: 180,
+                render: (_value: string, record: ScopeDefinition) =>
+                  getScopeDisplayMeta(record, t).displayName,
               },
               {
                 title: t("docsManual.scopeColumns.description"),
                 dataIndex: "description",
+                render: (_value: string, record: ScopeDefinition) =>
+                  getScopeDisplayMeta(record, t).description,
               },
             ]}
             dataSource={availableScopes}
@@ -1030,6 +1243,202 @@ Authorization: Bearer access-token
               {item}
             </Typography.Paragraph>
           ))}
+        </Space>
+      </Card>
+
+      <Card title={t("docsManual.accessControl.title")}>
+        <Space direction="vertical" size={10} style={{ width: "100%" }}>
+          <Typography.Paragraph style={{ marginBottom: 0 }}>
+            {t("docsManual.accessControl.desc")}
+          </Typography.Paragraph>
+          {accessControlBasics.map((item) => (
+            <Typography.Paragraph key={item} style={{ marginBottom: 0 }}>
+              {item}
+            </Typography.Paragraph>
+          ))}
+        </Space>
+      </Card>
+
+      <Card title={t("docsManual.accessRestrictions.title")}>
+        <Space direction="vertical" size={10} style={{ width: "100%" }}>
+          <Typography.Paragraph style={{ marginBottom: 0 }}>
+            {t("docsManual.accessRestrictions.desc")}
+          </Typography.Paragraph>
+          {accessRestrictionBehavior.map((item) => (
+            <Typography.Paragraph key={item} style={{ marginBottom: 0 }}>
+              {item}
+            </Typography.Paragraph>
+          ))}
+        </Space>
+      </Card>
+
+      <Card title={t("docsManual.denialHandling.title")}>
+        <Space direction="vertical" size={10} style={{ width: "100%" }}>
+          <Typography.Paragraph style={{ marginBottom: 0 }}>
+            {t("docsManual.denialHandling.desc")}
+          </Typography.Paragraph>
+          {denialHandling.map((item) => (
+            <Typography.Paragraph key={item} style={{ marginBottom: 0 }}>
+              {item}
+            </Typography.Paragraph>
+          ))}
+        </Space>
+      </Card>
+
+      <Card title={t("docsManual.accountBinding.title")}>
+        <Space direction="vertical" size={12} style={{ width: "100%" }}>
+          <Typography.Paragraph style={{ marginBottom: 0 }}>
+            {t("docsManual.accountBinding.desc")}
+          </Typography.Paragraph>
+          <Table
+            pagination={false}
+            scroll={{ x: 900 }}
+            columns={[
+              {
+                title: t("docsManual.accountBinding.columns.field"),
+                dataIndex: "field",
+                width: 180,
+                render: (value: string) => <Typography.Text code>{value}</Typography.Text>,
+              },
+              {
+                title: t("docsManual.accountBinding.columns.recommendation"),
+                dataIndex: "recommendation",
+                width: 200,
+              },
+              {
+                title: t("docsManual.accountBinding.columns.reason"),
+                dataIndex: "reason",
+              },
+            ]}
+            dataSource={(["sub", "email", "name", "phone"] as const).map((item) => ({
+              key: item,
+              field: t(`docsManual.accountBinding.rows.${item}.field`),
+              recommendation: t(`docsManual.accountBinding.rows.${item}.recommendation`),
+              reason: t(`docsManual.accountBinding.rows.${item}.reason`),
+            }))}
+          />
+        </Space>
+      </Card>
+
+      <Card title={t("docsManual.accessBehavior.title")}>
+        <Space direction="vertical" size={12} style={{ width: "100%" }}>
+          <Typography.Paragraph style={{ marginBottom: 0 }}>
+            {t("docsManual.accessBehavior.desc")}
+          </Typography.Paragraph>
+          <Table
+            pagination={false}
+            scroll={{ x: 900 }}
+            columns={[
+              {
+                title: t("docsManual.accessBehavior.columns.scenario"),
+                dataIndex: "scenario",
+                width: 280,
+              },
+              {
+                title: t("docsManual.accessBehavior.columns.behavior"),
+                dataIndex: "behavior",
+              },
+            ]}
+            dataSource={(["1", "2", "3", "4"] as const).map((item) => ({
+              key: item,
+              scenario: t(`docsManual.accessBehavior.rows.${item}.scenario`),
+              behavior: t(`docsManual.accessBehavior.rows.${item}.behavior`),
+            }))}
+          />
+        </Space>
+      </Card>
+
+      <Card title={t("docsManual.tokenInvalidation.title")}>
+        <Space direction="vertical" size={10} style={{ width: "100%" }}>
+          <Typography.Paragraph style={{ marginBottom: 0 }}>
+            {t("docsManual.tokenInvalidation.desc")}
+          </Typography.Paragraph>
+          {tokenInvalidation.map((item) => (
+            <Typography.Paragraph key={item} style={{ marginBottom: 0 }}>
+              {item}
+            </Typography.Paragraph>
+          ))}
+        </Space>
+      </Card>
+
+      <Card title={t("docsManual.accessDeniedCallback.title")}>
+        <Space direction="vertical" size={10} style={{ width: "100%" }}>
+          <Typography.Paragraph style={{ marginBottom: 0 }}>
+            {t("docsManual.accessDeniedCallback.desc")}
+          </Typography.Paragraph>
+          <CodePanel language="http" code={accessDeniedCallbackExample} />
+          {accessDeniedCallbackNotes.map((item) => (
+            <Typography.Paragraph key={item} style={{ marginBottom: 0 }}>
+              {item}
+            </Typography.Paragraph>
+          ))}
+        </Space>
+      </Card>
+
+      <Card title={t("docsManual.accessBoundary.title")}>
+        <Space direction="vertical" size={10} style={{ width: "100%" }}>
+          <Typography.Paragraph style={{ marginBottom: 0 }}>
+            {t("docsManual.accessBoundary.desc")}
+          </Typography.Paragraph>
+          {accessBoundaryNotes.map((item) => (
+            <Typography.Paragraph key={item} style={{ marginBottom: 0 }}>
+              {item}
+            </Typography.Paragraph>
+          ))}
+        </Space>
+      </Card>
+
+      <Card title={t("docsManual.resourceServer.title")}>
+        <Space direction="vertical" size={10} style={{ width: "100%" }}>
+          <Typography.Paragraph style={{ marginBottom: 0 }}>
+            {t("docsManual.resourceServer.desc")}
+          </Typography.Paragraph>
+          {resourceServerNotes.map((item) => (
+            <Typography.Paragraph key={item} style={{ marginBottom: 0 }}>
+              {item}
+            </Typography.Paragraph>
+          ))}
+        </Space>
+      </Card>
+
+      <Card title={t("docsManual.troubleshooting.title")}>
+        <Space direction="vertical" size={10} style={{ width: "100%" }}>
+          <Typography.Paragraph style={{ marginBottom: 0 }}>
+            {t("docsManual.troubleshooting.desc")}
+          </Typography.Paragraph>
+          {troubleshootingNotes.map((item) => (
+            <Typography.Paragraph key={item} style={{ marginBottom: 0 }}>
+              {item}
+            </Typography.Paragraph>
+          ))}
+        </Space>
+      </Card>
+
+      <Card title={t("docsManual.accountCenterStatus.title")}>
+        <Space direction="vertical" size={12} style={{ width: "100%" }}>
+          <Typography.Paragraph style={{ marginBottom: 0 }}>
+            {t("docsManual.accountCenterStatus.desc")}
+          </Typography.Paragraph>
+          <Table
+            pagination={false}
+            scroll={{ x: 760 }}
+            columns={[
+              {
+                title: t("docsManual.accountCenterStatus.columns.status"),
+                dataIndex: "status",
+                width: 180,
+              },
+              {
+                title: t("docsManual.accountCenterStatus.columns.meaning"),
+                dataIndex: "meaning",
+              },
+            ]}
+            dataSource={(["normal", "restricted", "banned"] as const).map((item) => ({
+              key: item,
+              status: t(`docsManual.accountCenterStatus.rows.${item}.status`),
+              meaning: t(`docsManual.accountCenterStatus.rows.${item}.meaning`),
+            }))}
+          />
         </Space>
       </Card>
 

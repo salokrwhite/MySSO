@@ -5,21 +5,38 @@ import { readSessionToken } from "../../../authSession";
 import { buildDeveloperPageMeta } from "../constants";
 import { useDeveloperTranslation } from "../i18n";
 import {
+  banDeveloperAppUser,
+  batchUpdateDeveloperManagedUserGroups,
   createDeveloperApp,
+  createDeveloperGroup,
+  deleteDeveloperAccessLogs,
   deleteDeveloperApp,
   deleteDeveloperAuditLogs,
+  deleteDeveloperGroup,
+  fetchDeveloperAccessApps,
+  fetchDeveloperAccessLogs,
   fetchDeveloperAnalytics,
   fetchDeveloperAnnouncement,
   fetchDeveloperApps,
   fetchDeveloperAuditLogs,
+  fetchDeveloperGroups,
+  fetchDeveloperManagedUsers,
   fetchDeveloperScopes,
   resetDeveloperAppSecret,
+  unbanDeveloperAppUser,
   updateDeveloperApp,
+  updateDeveloperAppBindings,
+  updateDeveloperGroup,
+  updateDeveloperManagedUserGroups,
 } from "../services/developerApi";
 import type {
   AppItem,
+  DeveloperAccessApp,
+  DeveloperAccessLog,
   DeveloperAnalyticsData,
   DeveloperAuditLog,
+  DeveloperGroup,
+  DeveloperManagedUser,
   DeveloperPageType,
   ScopeDefinition,
 } from "../types";
@@ -88,6 +105,21 @@ export function useDeveloperPageController() {
     useState(false);
   const [developerAnnouncementContent, setDeveloperAnnouncementContent] =
     useState("");
+  const [groups, setGroups] = useState<DeveloperGroup[]>([]);
+  const [managedUsers, setManagedUsers] = useState<DeveloperManagedUser[]>([]);
+  const [selectedManagedUserIDs, setSelectedManagedUserIDs] = useState<string[]>([]);
+  const [managedUsersTotal, setManagedUsersTotal] = useState(0);
+  const [managedUsersPage, setManagedUsersPage] = useState(1);
+  const [managedUsersPageSize, setManagedUsersPageSize] = useState(10);
+  const [managedUsersAppID, setManagedUsersAppID] = useState("");
+  const [managedUsersEmailKeyword, setManagedUsersEmailKeyword] = useState("");
+  const [accessApps, setAccessApps] = useState<DeveloperAccessApp[]>([]);
+  const [accessLogs, setAccessLogs] = useState<DeveloperAccessLog[]>([]);
+  const [accessLogsTotal, setAccessLogsTotal] = useState(0);
+  const [accessLogsPage, setAccessLogsPage] = useState(1);
+  const [accessLogsPageSize, setAccessLogsPageSize] = useState(10);
+  const [selectedAccessLogIds, setSelectedAccessLogIds] = useState<string[]>([]);
+  const [deletingAccessLogs, setDeletingAccessLogs] = useState(false);
   const [revealedSecret, setRevealedSecret] = useState<RevealedSecretState>();
 
   const pageType = useMemo<DeveloperPageType>(
@@ -137,12 +169,41 @@ export function useDeveloperPageController() {
       } else if (pageType === "docsManual") {
         const scopeResult = await fetchDeveloperScopes(sessionToken, options);
         setScopeOptions(scopeResult.items);
+      } else if (pageType === "userAccess") {
+        const [groupResult, userResult, appResult, logResult] = await Promise.all([
+          fetchDeveloperGroups(sessionToken, options),
+          fetchDeveloperManagedUsers(
+            sessionToken,
+            {
+              page: managedUsersPage,
+              pageSize: managedUsersPageSize,
+              appId: managedUsersAppID,
+              emailKeyword: managedUsersEmailKeyword,
+            },
+            options,
+          ),
+          fetchDeveloperAccessApps(sessionToken, options),
+          fetchDeveloperAccessLogs(sessionToken, {
+            page: accessLogsPage,
+            pageSize: accessLogsPageSize,
+          }),
+        ]);
+        setGroups(groupResult.items);
+        setManagedUsers(userResult.items);
+        setManagedUsersTotal(userResult.total);
+        setManagedUsersPage(userResult.page);
+        setManagedUsersPageSize(userResult.page_size);
+        setAccessApps(appResult.items);
+        setAccessLogs(logResult.items);
+        setAccessLogsTotal(logResult.total);
+        setAccessLogsPage(logResult.page);
+        setAccessLogsPageSize(logResult.page_size);
       }
       setError(undefined);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("common.loadingFailed"));
     }
-  }, [pageType, sessionToken, t]);
+  }, [accessLogsPage, accessLogsPageSize, managedUsersAppID, managedUsersEmailKeyword, managedUsersPage, managedUsersPageSize, pageType, sessionToken, t]);
 
   async function reloadApps() {
     setReloading(true);
@@ -289,6 +350,142 @@ export function useDeveloperPageController() {
     });
   }
 
+  async function refreshUserAccess() {
+    await load({ force: true });
+  }
+
+  const changeManagedUsersPage = useCallback((page: number, pageSize: number) => {
+    setManagedUsersPage(page);
+    setManagedUsersPageSize(pageSize);
+  }, []);
+
+  const changeManagedUsersAppFilter = useCallback((appId: string) => {
+    setManagedUsersAppID(appId);
+    setManagedUsersPage(1);
+  }, []);
+
+  const changeManagedUsersEmailKeyword = useCallback((keyword: string) => {
+    setManagedUsersEmailKeyword(keyword);
+    setManagedUsersPage(1);
+  }, []);
+
+  const changeAccessLogsPage = useCallback((page: number, pageSize: number) => {
+    setAccessLogsPage(page);
+    setAccessLogsPageSize(pageSize);
+  }, []);
+
+  async function createGroup(values: { name: string; description?: string }) {
+    try {
+      await createDeveloperGroup(sessionToken, values);
+      await refreshUserAccess();
+      messageApi.success("用户组已创建");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("common.createFailed"));
+    }
+  }
+
+  async function updateGroup(id: string, values: { name: string; description?: string }) {
+    try {
+      await updateDeveloperGroup(sessionToken, id, values);
+      await refreshUserAccess();
+      messageApi.success("用户组已更新");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("common.updateFailed"));
+    }
+  }
+
+  async function deleteGroup(id: string) {
+    try {
+      await deleteDeveloperGroup(sessionToken, id);
+      await refreshUserAccess();
+      messageApi.success("用户组已删除");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("common.deleteFailed"));
+      throw err;
+    }
+  }
+
+  async function updateManagedUserGroupsAction(userId: string, groupIds: string[]) {
+    try {
+      await updateDeveloperManagedUserGroups(sessionToken, userId, groupIds);
+      await refreshUserAccess();
+      messageApi.success("用户分组已更新");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("common.updateFailed"));
+    }
+  }
+
+  async function batchUpdateManagedUserGroupsAction(groupIds: string[]) {
+    try {
+      await batchUpdateDeveloperManagedUserGroups(
+        sessionToken,
+        selectedManagedUserIDs,
+        groupIds,
+      );
+      setSelectedManagedUserIDs([]);
+      await refreshUserAccess();
+      messageApi.success("批量用户分组已更新");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("common.updateFailed"));
+    }
+  }
+
+  async function updateAppBindingsAction(appId: string, groupIds: string[]) {
+    try {
+      await updateDeveloperAppBindings(sessionToken, appId, groupIds);
+      await refreshUserAccess();
+      messageApi.success("应用访问范围已更新");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("common.updateFailed"));
+    }
+  }
+
+  async function banAppUserAction(
+    appId: string,
+    payload: { user_id: string; reason: string; expires_at?: string },
+  ) {
+    try {
+      await banDeveloperAppUser(sessionToken, appId, payload);
+      await refreshUserAccess();
+      messageApi.success("用户已封禁");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("common.updateFailed"));
+    }
+  }
+
+  async function unbanAppUserAction(appId: string, userId: string) {
+    try {
+      await unbanDeveloperAppUser(sessionToken, appId, userId);
+      await refreshUserAccess();
+      messageApi.success("封禁已解除");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("common.updateFailed"));
+    }
+  }
+
+  function deleteSelectedAccessLogsAction() {
+    Modal.confirm({
+      title: "确认删除选中的访问日志？",
+      content: `已选择 ${selectedAccessLogIds.length} 条日志。`,
+      okText: t("common.confirm"),
+      cancelText: t("common.cancel"),
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        setDeletingAccessLogs(true);
+        try {
+          await deleteDeveloperAccessLogs(sessionToken, selectedAccessLogIds);
+          setSelectedAccessLogIds([]);
+          await refreshUserAccess();
+          messageApi.success("访问日志已删除");
+        } catch (err) {
+          setError(err instanceof Error ? err.message : t("common.deleteFailed"));
+        } finally {
+          setDeletingAccessLogs(false);
+        }
+      },
+    });
+  }
+
   return {
     contextHolder,
     pageType,
@@ -307,6 +504,23 @@ export function useDeveloperPageController() {
     deletingAuditLogs,
     developerAnnouncementEnabled,
     developerAnnouncementContent,
+    groups,
+    managedUsers,
+    selectedManagedUserIDs,
+    setSelectedManagedUserIDs,
+    managedUsersTotal,
+    managedUsersPage,
+    managedUsersPageSize,
+    managedUsersAppID,
+    managedUsersEmailKeyword,
+    accessApps,
+    accessLogs,
+    accessLogsTotal,
+    accessLogsPage,
+    accessLogsPageSize,
+    selectedAccessLogIds,
+    setSelectedAccessLogIds,
+    deletingAccessLogs,
     revealedSecret,
     pageMeta,
     reloadApps,
@@ -316,5 +530,18 @@ export function useDeveloperPageController() {
     closeRevealedSecret: () => setRevealedSecret(undefined),
     deleteApp,
     deleteSelectedAuditLogs: deleteSelectedAuditLogsAction,
+    createGroup,
+    updateGroup,
+    deleteGroup,
+    changeManagedUsersPage,
+    changeManagedUsersAppFilter,
+    changeManagedUsersEmailKeyword,
+    changeAccessLogsPage,
+    batchUpdateManagedUserGroups: batchUpdateManagedUserGroupsAction,
+    updateManagedUserGroups: updateManagedUserGroupsAction,
+    updateAppBindings: updateAppBindingsAction,
+    banAppUser: banAppUserAction,
+    unbanAppUser: unbanAppUserAction,
+    deleteSelectedAccessLogs: deleteSelectedAccessLogsAction,
   };
 }

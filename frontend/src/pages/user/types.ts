@@ -36,6 +36,10 @@ export type Consent = {
   icon_url?: string;
   scopes: string[];
   created_at: string;
+  access_status?: string;
+  restriction_reason?: string;
+  restricted_at?: string;
+  expires_at?: string;
 };
 
 export type UserSectionKey = "security" | "profile" | "privacy" | "bindings" | "help";

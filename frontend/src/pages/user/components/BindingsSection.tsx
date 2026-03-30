@@ -103,6 +103,16 @@ export function BindingsSection({
     });
   }
 
+  function renderAccessStatus(consent: Consent) {
+    if (consent.access_status === "banned") {
+      return <Tag color="red">{t("bindings.accessStatusBanned")}</Tag>;
+    }
+    if (consent.access_status === "restricted") {
+      return <Tag color="orange">{t("bindings.accessStatusRestricted")}</Tag>;
+    }
+    return <Tag color="green">{t("bindings.accessStatusNormal")}</Tag>;
+  }
+
   useEffect(() => {
     function updateTableScrollY() {
       const viewportHeight = window.innerHeight;
@@ -170,6 +180,10 @@ export function BindingsSection({
                 title: t("bindings.createdAt"),
                 dataIndex: "created_at",
                 render: (value: string) => formatDateTime(value)
+              },
+              {
+                title: t("bindings.status"),
+                render: (_, record: Consent) => renderAccessStatus(record)
               },
               {
                 title: t("bindings.action"),
@@ -257,6 +271,38 @@ export function BindingsSection({
                 <Typography.Text>{formatDateTime(detailConsent.created_at)}</Typography.Text>
               </div>
             </div>
+            <div>
+              <Typography.Text type="secondary">{t("bindings.accessStatus")}</Typography.Text>
+              <div style={{ marginTop: 4 }}>{renderAccessStatus(detailConsent)}</div>
+            </div>
+            {detailConsent.access_status && detailConsent.access_status !== "normal" ? (
+              <div style={{ display: "grid", gap: 8 }}>
+                {detailConsent.restriction_reason ? (
+                  <div>
+                    <Typography.Text type="secondary">{t("bindings.reason")}</Typography.Text>
+                    <div style={{ marginTop: 4 }}>
+                      <Typography.Text>{detailConsent.restriction_reason}</Typography.Text>
+                    </div>
+                  </div>
+                ) : null}
+                {detailConsent.restricted_at ? (
+                  <div>
+                    <Typography.Text type="secondary">{t("bindings.effectiveAt")}</Typography.Text>
+                    <div style={{ marginTop: 4 }}>
+                      <Typography.Text>{formatDateTime(detailConsent.restricted_at)}</Typography.Text>
+                    </div>
+                  </div>
+                ) : null}
+                {detailConsent.expires_at ? (
+                  <div>
+                    <Typography.Text type="secondary">{t("bindings.expiresAt")}</Typography.Text>
+                    <div style={{ marginTop: 4 }}>
+                      <Typography.Text>{formatDateTime(detailConsent.expires_at)}</Typography.Text>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
           </Space>
         ) : null}
       </Modal>

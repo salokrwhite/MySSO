@@ -13,6 +13,10 @@ export function buildDeveloperPageMeta(
       title: t("pageMeta.console.title"),
       description: t("pageMeta.console.description"),
     },
+    userAccess: {
+      title: t("pageMeta.userAccess.title"),
+      description: t("pageMeta.userAccess.description"),
+    },
     auditLogs: {
       title: t("pageMeta.auditLogs.title"),
       description: t("pageMeta.auditLogs.description"),
@@ -33,6 +37,10 @@ export function buildDeveloperPageMeta(
       title: t("pageMeta.docsExamplesGo.title"),
       description: t("pageMeta.docsExamplesGo.description"),
     },
+    docsExamplesCsharp: {
+      title: t("pageMeta.docsExamplesCsharp.title"),
+      description: t("pageMeta.docsExamplesCsharp.description"),
+    },
     docsExamplesPHP: {
       title: t("pageMeta.docsExamplesPHP.title"),
       description: t("pageMeta.docsExamplesPHP.description"),
@@ -48,6 +56,14 @@ export function buildDeveloperPageMeta(
     docsExamplesPython: {
       title: t("pageMeta.docsExamplesPython.title"),
       description: t("pageMeta.docsExamplesPython.description"),
+    },
+    docsExamplesRuby: {
+      title: t("pageMeta.docsExamplesRuby.title"),
+      description: t("pageMeta.docsExamplesRuby.description"),
+    },
+    docsExamplesRust: {
+      title: t("pageMeta.docsExamplesRust.title"),
+      description: t("pageMeta.docsExamplesRust.description"),
     },
   };
 }

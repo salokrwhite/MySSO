@@ -367,10 +367,12 @@ func normalizeAuthorizeError(message string) string {
 		return "invalid_scope"
 	case "application rejected":
 		return "access_denied"
+	case "application access restricted", "application access banned":
+		return "access_denied"
 	case "application not found":
 		return "invalid_request"
 	default:
-		if strings.HasPrefix(strings.TrimSpace(message), "application rejected:") {
+		if strings.HasPrefix(strings.TrimSpace(message), "application rejected:") || strings.HasPrefix(strings.TrimSpace(message), "application access banned:") {
 			return "access_denied"
 		}
 		return "invalid_request"

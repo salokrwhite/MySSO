@@ -623,13 +623,14 @@ export function AuthorizePage() {
   const currentUserAvatarURL = currentUser?.avatarURL ? resolveAssetURL(currentUser.avatarURL, backendOrigin) : "";
 
   return (
-    <div className="center-page">
+    <div className="center-page auth-entry-page--glass">
+      <div className="auth-entry-page__backdrop" aria-hidden="true" />
       <div className="auth-page-toolbar">
         <Button type="link" className="auth-language-button" onClick={() => setLanguageModalOpen(true)}>
           {accountLocaleLabel[accountLocale]}
         </Button>
       </div>
-      <Card className="auth-card" styles={{ body: { padding: 32 } }}>
+      <Card className="auth-card auth-card--glass" styles={{ body: { padding: 32 } }}>
         <Space direction="vertical" size={20} style={{ width: "100%" }}>
           <div style={{ textAlign: "center" }}>
             <Space direction="vertical" size={8} style={{ width: "100%" }}>

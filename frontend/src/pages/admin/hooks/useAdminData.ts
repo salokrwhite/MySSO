@@ -2,6 +2,8 @@ import { useCallback, useMemo, useState } from "react";
 import {
   fetchAdminApps,
   fetchAdminAuditLogs,
+  fetchAdminDashboardSummary,
+  fetchAdminDeveloperAccessLogs,
   fetchAdminEmailSendLogs,
   fetchAdminPasskeyLogs,
   fetchAdminPhoneSendLogs,
@@ -15,8 +17,10 @@ import { defaultSettings } from "../constants";
 import type {
   AdminPageType,
   AdminPasskeyLogs,
+  AdminDashboardSummary,
   AppItem,
   AuditLog,
+  DeveloperAccessLog,
   EmailSendLog,
   PhoneSendLog,
   Policy,
@@ -39,8 +43,19 @@ export function useAdminData(
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [usersTotal, setUsersTotal] = useState(0);
+  const [dashboardSummary, setDashboardSummary] = useState<AdminDashboardSummary>({
+    total_users: 0,
+    active_users: 0,
+    pending_apps: 0,
+    approved_apps: 0,
+    audit_logs: 0,
+    policies: 0,
+  });
   const [apps, setApps] = useState<AppItem[]>([]);
   const [logs, setLogs] = useState<AuditLog[]>([]);
+  const [developerAccessLogs, setDeveloperAccessLogs] = useState<
+    DeveloperAccessLog[]
+  >([]);
   const [riskLogs, setRiskLogs] = useState<RiskLog[]>([]);
   const [passkeyLogs, setPasskeyLogs] = useState<AdminPasskeyLogs>({
     passkeys: [],
@@ -59,17 +74,12 @@ export function useAdminData(
     setLoading(true);
     try {
       if (pageType === "dashboard") {
-        const [nextUsers, nextApps, nextLogs, nextPolicies] =
+        const [nextSummary, nextPolicies] =
           await Promise.all([
-            fetchAdminUsers(sessionToken, undefined, options),
-            fetchAdminApps(sessionToken, options),
-            fetchAdminAuditLogs(sessionToken, options),
+            fetchAdminDashboardSummary(sessionToken, options),
             fetchAdminPolicies(sessionToken, options),
           ]);
-        setUsers(nextUsers.items);
-        setUsersTotal(nextUsers.total);
-        setApps(nextApps);
-        setLogs(nextLogs);
+        setDashboardSummary(nextSummary);
         setPolicies(nextPolicies);
         return;
       }
@@ -95,6 +105,13 @@ export function useAdminData(
 
       if (pageType === "auditLogs") {
         setLogs(await fetchAdminAuditLogs(sessionToken, options));
+        return;
+      }
+
+      if (pageType === "developerAccessLogs") {
+        setDeveloperAccessLogs(
+          await fetchAdminDeveloperAccessLogs(sessionToken, options),
+        );
         return;
       }
 
@@ -140,9 +157,11 @@ export function useAdminData(
   return {
     users,
     usersTotal,
+    dashboardSummary,
     setUsers,
     apps,
     logs,
+    developerAccessLogs,
     riskLogs,
     passkeyLogs,
     emailSendLogs,

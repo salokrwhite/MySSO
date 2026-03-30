@@ -32,6 +32,15 @@ export type UserListResponse = {
   page_size: number;
 };
 
+export type AdminDashboardSummary = {
+  total_users: number;
+  active_users: number;
+  pending_apps: number;
+  approved_apps: number;
+  audit_logs: number;
+  policies: number;
+};
+
 export type UserSecurityPolicy = {
   force_phone_binding_next_login: boolean;
   force_mfa_enrollment_next_login: boolean;
@@ -117,6 +126,21 @@ export type AuditLog = {
   target_id: string;
   detail?: Record<string, unknown>;
   created_at: string;
+};
+
+export type DeveloperAccessLog = {
+  id: string;
+  owner_user_id: string;
+  actor_id: string;
+  action: string;
+  target_type: string;
+  target_id: string;
+  app_id: string;
+  user_id: string;
+  group_id: string;
+  detail?: Record<string, unknown>;
+  created_at: string;
+  deleted_at?: string;
 };
 
 export type EmailSendLog = {
@@ -349,6 +373,7 @@ export type AdminPageType =
   | "emailSendLogs"
   | "phoneSendLogs"
   | "auditLogs"
+  | "developerAccessLogs"
   | "riskLogs"
   | "settings";
 

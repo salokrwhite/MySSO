@@ -2,6 +2,7 @@ const zhCN = {
   menu: {
     dashboard: "首页仪表盘",
     console: "开发者控制台",
+    userAccess: "用户分组与访问",
     auditLogs: "审计日志",
     analytics: "用户分析",
     integration: "对接文档",
@@ -27,6 +28,10 @@ const zhCN = {
       title: "开发者控制台",
       description: "创建和管理 OIDC 应用，维护回调地址、Scope 与密钥。",
     },
+    userAccess: {
+      title: "用户分组与访问",
+      description: "将已授权用户归类到用户组，为应用配置允许访问的用户范围，并按应用执行封禁。",
+    },
     auditLogs: {
       title: "审计日志",
       description: "查看当前开发者后台的接入事件、审核动态和操作轨迹。",
@@ -43,27 +48,42 @@ const zhCN = {
     docsExamples: {
       title: "语言示例",
       description:
-        "按语言提供后端对接参考代码目录。当前包含 Go、PHP、Java、Node.js、Python 五套授权、换 token、userinfo 示例。",
+        "按语言提供后端对接参考代码目录。当前包含 Go、C#、PHP、Java、Node.js、Python、Ruby、Rust 八套正式示例，覆盖授权地址生成、回调错误处理、换 token、id_token 校验和 token 生命周期操作。",
     },
     docsExamplesGo: {
       title: "语言示例 - Go",
-      description: "Go 后端对接示例，包含授权地址生成、code 换 token、userinfo 请求。",
+      description: "Go 后端对接示例，包含授权地址生成、回调错误处理、换 token、id_token 校验和 token 生命周期操作。",
+    },
+    docsExamplesCsharp: {
+      title: "语言示例 - C#",
+      description:
+        "C# / ASP.NET Core 后端对接示例，包含授权地址生成、回调错误处理、换 token、id_token 校验和 token 生命周期操作。",
     },
     docsExamplesPHP: {
       title: "语言示例 - PHP",
-      description: "PHP 后端对接示例，包含授权地址生成、code 换 token、userinfo 请求。",
+      description: "PHP 后端对接示例，包含授权地址生成、回调错误处理、换 token、id_token 校验和 token 生命周期操作。",
     },
     docsExamplesJava: {
       title: "语言示例 - Java",
-      description: "Java 后端对接示例，包含授权地址生成、code 换 token、userinfo 请求。",
+      description: "Java 后端对接示例，包含授权地址生成、回调错误处理、换 token、id_token 校验和 token 生命周期操作。",
     },
     docsExamplesNodejs: {
       title: "语言示例 - Node.js",
-      description: "Node.js 后端对接示例，包含授权地址生成、code 换 token、userinfo 请求。",
+      description: "Node.js 后端对接示例，包含授权地址生成、回调错误处理、换 token、id_token 校验和 token 生命周期操作。",
     },
     docsExamplesPython: {
       title: "语言示例 - Python",
-      description: "Python 后端对接示例，包含授权地址生成、code 换 token、userinfo 请求。",
+      description: "Python 后端对接示例，包含授权地址生成、回调错误处理、换 token、id_token 校验和 token 生命周期操作。",
+    },
+    docsExamplesRuby: {
+      title: "语言示例 - Ruby",
+      description:
+        "Ruby / Rails 后端对接示例，包含授权地址生成、回调错误处理、换 token、id_token 校验和 token 生命周期操作。",
+    },
+    docsExamplesRust: {
+      title: "语言示例 - Rust",
+      description:
+        "Rust 后端对接示例，包含授权地址生成、回调错误处理、换 token、id_token 校验和 token 生命周期操作。",
     },
   },
   common: {
@@ -89,6 +109,56 @@ const zhCN = {
     submitForReview: "提交审核",
     saveAndResubmit: "保存并重新提交审核",
     currentAvailableScopes: "当前可申请 scope：{{scopes}}",
+    displayName: "昵称",
+  },
+  userAccess: {
+    groupsTab: "用户组",
+    usersTab: "用户",
+    appsTab: "应用访问",
+    logsTab: "访问日志",
+    createGroup: "新建用户组",
+    editGroup: "编辑用户组",
+    groupName: "组名",
+    groupDescription: "说明",
+    members: "成员数",
+    boundApps: "绑定应用数",
+    updateGroups: "更新分组",
+    appBindings: "应用允许访问的用户组",
+    saveBindings: "保存访问范围",
+    noGroupsBound: "未绑定任何用户组时，应用保持默认全放开。",
+    banUser: "封禁用户",
+    unbanUser: "解除封禁",
+    banReason: "封禁原因",
+    banExpiresAt: "过期时间（可选）",
+    maskedEmail: "邮箱",
+    maskedPhone: "脱敏手机号",
+    lastAuthorizedAt: "最近授权时间",
+    groups: "所属用户组",
+    authorizedApps: "已授权应用",
+    currentBan: "当前封禁",
+    accessLogDelete: "删除选中日志",
+    logDeleted: "访问日志已删除",
+    authorizedAppsDetailTitle: "{{name}}的已授权应用",
+    authorizedAppsCount: "共 {{count}} 个应用",
+    authorizedAppsShortCount: "{{count}} 个应用",
+    deleteGroupConfirmTitle: "删除用户组 {{name}}？",
+    filterAuthorizedApp: "筛选授权应用",
+    searchUserByEmail: "通过邮箱搜索用户",
+    batchSetGroups: "批量设置用户组",
+    selectApp: "选择应用",
+    currentAppUsers: "当前应用用户",
+    banStatus: "封禁状态",
+    normalStatus: "正常",
+    bannedStatus: "已封禁",
+    logAction: "动作",
+    logTarget: "目标",
+    logApp: "应用",
+    logUser: "用户",
+    logTime: "时间",
+    banExpiresAtPlaceholder: "2026-04-30T12:00:00Z",
+    batchSetGroupsDescription:
+      "已选择 {{count}} 个用户，保存后会将这些用户的分组设置为所选内容。",
+    selectAtLeastOneGroup: "请至少选择一个用户组",
   },
   status: {
     approved: "已通过",
@@ -303,6 +373,32 @@ const zhCN = {
       displayName: "显示名称",
       description: "说明",
     },
+    scopeDefinitions: {
+      openid: {
+        displayName: "基础登录",
+        description: "确认用户身份并建立 OIDC 登录会话。",
+      },
+      profile: {
+        displayName: "公开资料",
+        description: "允许读取昵称、头像等公开资料。",
+      },
+      email: {
+        displayName: "邮箱资料",
+        description: "允许读取账号邮箱地址。",
+      },
+      phone: {
+        displayName: "手机号资料",
+        description: "允许读取账号绑定手机号。",
+      },
+      role: {
+        displayName: "账号角色信息",
+        description: "允许读取账号当前角色标识，例如 user、developer、admin。",
+      },
+      "gateway.read": {
+        displayName: "网关受保护资源读取",
+        description: "允许访问系统里受 scope 保护的网关或 API 资源。",
+      },
+    },
     claimContract: "Claims 契约",
     claimAlertTitle: "对接第三方时请优先阅读这一节",
     claimAlertDesc:
@@ -427,6 +523,166 @@ const zhCN = {
         "3": "3. name 对应 display_name，仅适合展示，不适合做唯一标识或长期绑定键。",
       },
     },
+    accessControl: {
+      title: "用户组与应用访问控制",
+      desc: "平台现在支持开发者按自己的业务场景管理已授权用户，并把访问规则作用到具体应用，而不是影响用户的整站登录。",
+      items: {
+        "1": "1. 用户组是开发者级复用能力。一个用户组可以绑定多个应用，不需要为每个应用单独重复建组。",
+        "2": "2. 开发者只能管理“已经授权过自己任一应用”的用户，不能搜索或编辑全站任意账号。",
+        "3": "3. 应用默认全放开；一旦某个应用绑定了至少一个用户组，就会进入白名单模式，只有命中任一绑定组的用户可以继续授权该应用。",
+        "4": "4. 你可以在“用户分组与访问”页面里维护用户组、批量设置用户所属组，并给应用绑定允许访问的用户组。",
+        "5": "5. 应用级封禁是单应用维度的，不会阻止用户登录 MySSO 本身，也不会影响该用户访问其他开发者的应用。",
+        "6": "6. 用户中心会保留授权记录，但如果该应用被限制访问或封禁，详情页会展示对应状态、原因和过期时间。",
+      },
+    },
+    accessRestrictions: {
+      title: "访问限制生效规则",
+      desc: "接入方需要把这些限制当作 OAuth 行为的一部分处理，而不是把它理解成一次性的页面配置。",
+      items: {
+        "1": "1. 访问规则会影响首次授权、再次授权、prompt=none 静默授权，以及基于已有 consent 的自动放行。",
+        "2": "2. 如果用户后来被移出允许组，或者被应用封禁，即使他过去已经授权过该应用，后续也会被拒绝再次进入。",
+        "3": "3. 规则变更后，该应用下已有 refresh_token 会被撤销，旧 access_token 也会因为用户-应用维度版本号变化而失效。",
+        "4": "4. 接入系统不要假设“授权成功一次后永远可以自动登录”，应正确处理重新授权、重新登录和权限被收回的场景。",
+        "5": "5. 如果你的资源服务器完全离线自校验 JWT，而不回到 SSO 校验当前访问状态，那么它看不到最新的应用级封禁和分组变化，这属于架构边界，需要你在系统设计里单独考虑。",
+      },
+    },
+    denialHandling: {
+      title: "授权被拒绝后的处理建议",
+      desc: "当授权端点返回 access_denied 时，建议第三方系统把它当作“访问策略拒绝”来处理，而不是统一当成密码错误或系统异常。",
+      items: {
+        "1": "1. 如果当前账号不在允许访问组里，前端提示应更接近“当前账号无权访问该应用”，不要误导成“登录失败”。",
+        "2": "2. 如果当前账号被应用封禁，建议提示用户联系该应用管理员，并展示你自己业务侧的申诉或帮助入口。",
+        "3": "3. 后端回调处理要区分用户主动取消授权与平台拒绝授权，不要把两者混写成同一种错误日志。",
+        "4": "4. 建议保留原始 error、error_description、state 和回调时间，方便后续排查是权限问题、封禁问题还是常规 OAuth 参数错误。",
+      },
+    },
+    accountBinding: {
+      title: "账号绑定主键建议",
+      desc: "如果第三方需要把 MySSO 账号和本地账号做长期绑定，建议在项目一开始就确定主键字段，避免上线后再迁移绑定关系。",
+      columns: {
+        field: "字段",
+        recommendation: "建议",
+        reason: "说明",
+      },
+      rows: {
+        sub: {
+          field: "sub",
+          recommendation: "强烈推荐",
+          reason: "稳定、唯一、不可由用户自行修改，最适合作为 SSO 绑定主键。",
+        },
+        email: {
+          field: "email",
+          recommendation: "可读回填字段",
+          reason: "适合展示或做辅助匹配，但不建议替代 sub 成为最终唯一绑定键。",
+        },
+        name: {
+          field: "name / display_name",
+          recommendation: "仅展示",
+          reason: "可能重复，也可能变更，不适合做唯一主键。",
+        },
+        phone: {
+          field: "phone",
+          recommendation: "谨慎使用",
+          reason: "手机号具有可变性，更适合作为联系方式或补充资料，而不是长期绑定主键。",
+        },
+      },
+    },
+    accessBehavior: {
+      title: "访问控制开启前后行为对比",
+      desc: "下面这张表可以帮助接入方快速理解启用用户组和应用封禁后的真实授权行为。",
+      columns: {
+        scenario: "场景",
+        behavior: "系统行为",
+      },
+      rows: {
+        "1": {
+          scenario: "应用未绑定任何用户组",
+          behavior: "所有已登录且满足常规 OAuth 条件的用户都可以授权该应用。",
+        },
+        "2": {
+          scenario: "应用绑定了至少一个用户组",
+          behavior: "只有属于任一绑定用户组的用户才可继续授权该应用，其余用户会被拒绝。",
+        },
+        "3": {
+          scenario: "用户历史上授权过应用，但后来被移出允许组",
+          behavior: "历史 consent 仍保留，但不再触发自动放行；再次进入时会被拒绝。",
+        },
+        "4": {
+          scenario: "用户被该应用封禁",
+          behavior: "当前应用授权直接拒绝，同时不影响用户登录 MySSO 或访问其他开发者的应用。",
+        },
+      },
+    },
+    tokenInvalidation: {
+      title: "访问控制变更后的 Token 行为",
+      desc: "如果你在业务系统里缓存了 access_token 或 refresh_token，需要明确知道这些凭证在访问策略变更后可能会立即失效。",
+      items: {
+        "1": "1. 当用户被移出允许组，或被当前应用封禁时，该应用下已有 refresh_token 会立即失效。",
+        "2": "2. 旧 access_token 也会因为用户-应用维度版本号变化而失效，资源端应能正确处理 401 / 重新授权。",
+        "3": "3. 解封或重新加入允许组后，不会恢复旧 token，正确做法是重新走授权流程获取新 token。",
+        "4": "4. 不要假设 access_token 到 exp 之前一定一直可用；在启用了访问控制后，权限撤回会比自然过期更早发生。",
+      },
+    },
+    accessDeniedCallback: {
+      title: "access_denied 回调示例",
+      desc: "当平台因为访问控制规则拒绝授权时，第三方回调通常会拿到 OAuth 标准错误，而不是成功的 code。",
+      items: {
+        "1": "1. 后端回调处理要优先判断是否携带 error 参数；有 error 时不要再继续执行 code 换 token。",
+        "2": "2. 建议保留 state 校验逻辑，即使这是失败回调，也应确认请求和原始登录发起方一致。",
+        "3": "3. 业务提示上要区分“用户自己取消授权”和“平台因访问策略拒绝授权”，这样用户和运维都更容易理解原因。",
+      },
+    },
+    accessBoundary: {
+      title: "访问被拒绝时的 token 与 userinfo 边界",
+      desc: "应用访问控制是在授权阶段生效的，所以被拒绝时的结果与普通登录成功后的接口行为不同。",
+      items: {
+        "1": "1. 当授权请求被拒绝时，通常不会签发新的 authorization code，因此后续也无法正常换取新的 access_token 或 id_token。",
+        "2": "2. 因为没有拿到新的 access_token，接入方也不应该再期待拿到新的 userinfo 返回体。",
+        "3": "3. 如果你看到了 access_denied，正确处理方式通常是提示、记录并结束当前登录流程，而不是继续重试 userinfo 或 token 接口。",
+      },
+    },
+    resourceServer: {
+      title: "资源服务器联动建议",
+      desc: "如果你的业务系统有自己的资源服务器或后端 API，访问控制生效后还需要考虑资源端如何感知权限变化。",
+      items: {
+        "1": "1. 对安全要求较高的业务，建议资源端结合服务端会话、后端状态检查或 introspection，而不是只信任前端是否显示“已登录”。",
+        "2": "2. 如果资源端完全离线自校验 JWT，那么它无法立刻知道用户被移出允许组或被应用封禁，除非你额外做状态联查。",
+        "3": "3. 一旦资源端收到 401 或检测到 token 已失效，应把用户引导回完整授权流程，而不是无限重试旧 token。",
+        "4": "4. 不要把应用访问控制只做成前端路由守卫；真正的资源访问判断仍应放在后端或资源服务器上完成。",
+      },
+    },
+    troubleshooting: {
+      title: "审计与排障建议",
+      desc: "当开发者反馈“用户明明授权过，但现在进不去”时，可以按下面的顺序排查。",
+      items: {
+        "1": "1. 先看“用户分组与访问”页面，确认应用是否绑定了用户组，以及该用户当前是否仍属于允许组。",
+        "2": "2. 再看该应用下是否存在封禁记录，尤其确认封禁原因、开始时间和过期时间。",
+        "3": "3. 如果要追踪是谁修改了组、绑定或封禁，优先查看开发者访问日志；如果涉及更高层审计，再到管理员日志核对。",
+        "4": "4. 用户侧问题可再结合用户中心授权详情一起看，因为那里会直接展示“正常 / 已限制访问 / 已封禁”以及原因说明。",
+      },
+    },
+    accountCenterStatus: {
+      title: "用户中心展示状态",
+      desc: "当用户在自己的用户中心查看某个应用的授权详情时，看到的状态会和访问控制规则联动。",
+      columns: {
+        status: "状态",
+        meaning: "含义",
+      },
+      rows: {
+        normal: {
+          status: "正常",
+          meaning: "当前授权记录有效，用户也仍然满足应用访问规则。",
+        },
+        restricted: {
+          status: "已限制访问",
+          meaning: "授权记录仍保留，但用户当前不再满足应用允许访问的用户组规则。",
+        },
+        banned: {
+          status: "已封禁",
+          meaning: "开发者对该用户执行了单应用封禁，详情页会展示原因、时间和过期时间。",
+        },
+      },
+    },
     thirdPartyTemplates: {
       title: "第三方专项接入模板",
       desc:
@@ -507,6 +763,16 @@ const zhCN = {
           reason: "授权请求缺少 openid，或 PKCE 使用了系统不支持的方法。",
           action: "确保 scope 至少包含 openid，并把 code_challenge_method 固定为 S256。",
         },
+        "10a": {
+          code: "access_denied / 当前账号无权访问该应用",
+          reason: "用户没有命中该应用绑定的允许访问用户组，或开发者已经把该用户移出允许组。",
+          action: "检查开发者后台“用户分组与访问”页面里该应用绑定的用户组，以及当前用户是否仍属于这些组之一。",
+        },
+        "10b": {
+          code: "access_denied / 当前账号已被该应用封禁",
+          reason: "开发者对该用户执行了单应用封禁。该限制只影响当前应用，不影响用户登录平台或访问其他应用。",
+          action: "检查该应用下的封禁记录、封禁原因和过期时间；若业务允许，可由开发者解除封禁后再重新发起授权。",
+        },
         "11": {
           code: "consent_required / login_required",
           reason: "请求使用了 prompt=none、max_age 等参数，但当前会话或授权状态不满足静默授权条件。",
@@ -527,7 +793,7 @@ const zhCN = {
         "3": "3. 确认第三方系统使用的用户唯一标识字段已定稿，避免上线后再切换绑定主键。",
         "4": "4. 确认应用里已勾选实际会请求的全部 scopes，而不是只勾选 openid。",
         "5": "5. 确认登出链路区分本地会话退出与 OIDC 浏览器单点退出，不要混用裸 GET 登出链接。",
-        "6": "6. 确认异常处理已覆盖 token 交换失败、userinfo 缺字段、scope 不足和回调地址不匹配等场景。",
+        "6": "6. 确认异常处理已覆盖 token 交换失败、userinfo 缺字段、scope 不足、应用级访问限制、用户封禁和回调地址不匹配等场景。",
       },
     },
     steps: {
@@ -550,13 +816,17 @@ const zhCN = {
   docsExamples: {
     navTitle: "语言示例导航",
     navDesc:
-      "当前提供 Go、PHP、Java、Node.js、Python 五套服务端对接示例。每套示例都包含授权地址构造、code 换 token、userinfo、refresh token 和浏览器单点退出示例。",
+      "当前提供 Go、C#、PHP、Java、Node.js、Python、Ruby、Rust 八套服务端对接示例。每套示例都包含授权地址构造、回调错误处理、code 换 token、id_token 校验、userinfo、refresh token、introspection、revoke 和浏览器单点退出示例。",
     navHint:
       "请从左侧菜单进入对应语言页面，直接复制到你的服务端项目里再替换 client_id、client_secret、redirect_uri 即可联调。",
     authorizeTitle: "生成授权地址",
+    callbackErrorTitle: "处理回调错误",
     tokenTitle: "换取 Token",
+    verifyIdTokenTitle: "校验 id_token",
     userinfoTitle: "读取 UserInfo",
     refreshTitle: "刷新 Token",
+    introspectTitle: "校验 Token 状态",
+    revokeTitle: "撤销 Token",
     logoutTitle: "构造浏览器退出地址",
     notesTitle: "接入提醒",
     notes: {
@@ -566,11 +836,20 @@ const zhCN = {
         "2. 换到 token 后，请用 Discovery/JWKS 校验 id_token 的签名、iss、aud、exp、nonce，再决定是否建立本地会话。",
       useSub:
         "3. 第三方系统如需要稳定唯一主键，请优先使用 sub；email 更适合作为展示或兼容字段，name 不适合作为唯一标识。",
+      handleAccessDenied:
+        "4. 请把 access_denied 这类回调错误当成正式业务分支处理。它可能表示用户取消授权、当前账号不在应用允许范围内，或已被应用封禁，而不只是普通登录失败。",
+      planForRevocation:
+        "5. 需要预留访问权限变化后的处理逻辑。开发者调整用户组或封禁用户后，refresh token 可能立即失效，已签发的 access token 也可能无法继续使用。",
     },
     pages: {
       go: {
         title: "Go 对接示例",
         desc: "适用于 Go 后端接 OAuth/OIDC 回调，并在服务端换取 token。",
+      },
+      csharp: {
+        title: "C# 对接示例",
+        desc:
+          "适用于 ASP.NET Core 或其他 .NET 服务端应用接 OAuth/OIDC 回调，并在服务端维护本地会话。",
       },
       php: {
         title: "PHP 对接示例",
@@ -588,6 +867,16 @@ const zhCN = {
       python: {
         title: "Python 对接示例",
         desc: "适用于 Python 服务端接入，Flask、Django、FastAPI 等框架都可以直接套这套流程。",
+      },
+      ruby: {
+        title: "Ruby 对接示例",
+        desc:
+          "适用于 Ruby 服务端接入，Rails、Sinatra 或其他基于 Rack 的应用都可以按这套流程处理 OAuth/OIDC 回调。",
+      },
+      rust: {
+        title: "Rust 对接示例",
+        desc:
+          "适用于 Rust 服务端接入，Axum、Actix Web 或其他异步服务都可以按这套流程处理 OAuth/OIDC 回调和 token 校验。",
       },
     },
   },

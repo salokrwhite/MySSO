@@ -239,6 +239,7 @@ export function App() {
               <Route path="/me/:section?" element={<UserPage />} />
               <Route path="/developer" element={<DeveloperPage />} />
               <Route path="/developer/console" element={<DeveloperPage />} />
+              <Route path="/developer/user-access" element={<DeveloperPage />} />
               <Route path="/developer/audit-logs" element={<DeveloperPage />} />
               <Route
                 path="/developer/user-analytics"
@@ -258,6 +259,10 @@ export function App() {
                 element={<DeveloperPage />}
               />
               <Route
+                path="/developer/docs/examples/csharp"
+                element={<DeveloperPage />}
+              />
+              <Route
                 path="/developer/docs/examples/php"
                 element={<DeveloperPage />}
               />
@@ -273,12 +278,24 @@ export function App() {
                 path="/developer/docs/examples/python"
                 element={<DeveloperPage />}
               />
+              <Route
+                path="/developer/docs/examples/ruby"
+                element={<DeveloperPage />}
+              />
+              <Route
+                path="/developer/docs/examples/rust"
+                element={<DeveloperPage />}
+              />
               <Route path="/admin" element={<AdminPage />} />
               <Route path="/admin/users" element={<AdminPage />} />
               <Route path="/admin/apps" element={<AdminPage />} />
               <Route path="/admin/send-logs/emails" element={<AdminPage />} />
               <Route path="/admin/send-logs/phones" element={<AdminPage />} />
               <Route path="/admin/audit-logs" element={<AdminPage />} />
+              <Route
+                path="/admin/developer-access-logs"
+                element={<AdminPage />}
+              />
               <Route path="/admin/risk-logs" element={<AdminPage />} />
               <Route path="/admin/settings" element={<AdminPage />} />
             </Route>

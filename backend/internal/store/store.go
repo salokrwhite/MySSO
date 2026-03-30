@@ -1,9 +1,21 @@
 package store
 
 import (
+	"errors"
 	"time"
 
 	"mysso/backend/internal/domain"
+)
+
+var (
+	ErrNotFound                         = errors.New("not found")
+	ErrAuthorizationCodeUnavailable     = errors.New("authorization code unavailable")
+	ErrAuthorizationCodeRequestMismatch = errors.New("authorization code request mismatch")
+	ErrAuthorizationCodePKCEMismatch    = errors.New("authorization code pkce mismatch")
+	ErrRefreshTokenClientMismatch       = errors.New("refresh token client mismatch")
+	ErrRefreshTokenRevoked              = errors.New("refresh token revoked")
+	ErrRefreshTokenReuseDetected        = errors.New("refresh token reuse detected")
+	ErrRefreshTokenExpired              = errors.New("refresh token expired")
 )
 
 type CleanupPlan struct {
@@ -17,16 +29,21 @@ type CleanupPlan struct {
 	UserOperationLogBefore time.Time
 }
 
-type Store interface {
+type UserStore interface {
 	CreateUser(user domain.User) error
 	FindUserByEmail(email string) (domain.User, error)
 	FindUserByPhone(phone string) (domain.User, error)
 	GetUser(id string) (domain.User, error)
 	ListUsers() []domain.User
 	ListUsersPaginated(page, pageSize int, emailKeyword, statusFilter string) ([]domain.User, int, error)
+	CountUsers(statusFilter string) (int, error)
 	UpdateUser(user domain.User) error
 	UpdateUserAndInvalidateAuth(user domain.User) error
 	DeleteUser(id string) error
+	ListUsersPendingDeletion(before time.Time) ([]domain.User, error)
+}
+
+type VerificationStore interface {
 	SaveEmailVerificationCode(code domain.EmailVerificationCode) error
 	GetEmailVerificationCode(email, purpose, code string) (domain.EmailVerificationCode, error)
 	GetLatestEmailVerificationCode(email, purpose string) (domain.EmailVerificationCode, error)
@@ -35,6 +52,15 @@ type Store interface {
 	GetSMSVerificationCode(phone, purpose, code string) (domain.SMSVerificationCode, error)
 	GetLatestSMSVerificationCode(phone, purpose string) (domain.SMSVerificationCode, error)
 	ConsumeSMSVerificationCode(id string) error
+	SaveMFALoginChallenge(challenge domain.MFALoginChallenge) error
+	GetMFALoginChallenge(token string) (domain.MFALoginChallenge, error)
+	DeleteMFALoginChallenge(token string) error
+	SaveDeletionLoginChallenge(challenge domain.DeletionLoginChallenge) error
+	GetDeletionLoginChallenge(token string) (domain.DeletionLoginChallenge, error)
+	DeleteDeletionLoginChallenge(token string) error
+}
+
+type RateLimitStore interface {
 	GetRateLimitCounter(counterKey string) (domain.RateLimitCounter, error)
 	IncrementRateLimitCounter(counterKey, windowType string, windowStartedAt, expiresAt time.Time, delta int) (domain.RateLimitCounter, error)
 	SetRateLimitCounter(counter domain.RateLimitCounter) error
@@ -46,9 +72,9 @@ type Store interface {
 	AppendRateLimitEvent(event domain.RateLimitEvent) error
 	ListRateLimitEvents() []domain.RateLimitEvent
 	DeleteRateLimitEvents(ids []string) error
-	SaveMFALoginChallenge(challenge domain.MFALoginChallenge) error
-	GetMFALoginChallenge(token string) (domain.MFALoginChallenge, error)
-	DeleteMFALoginChallenge(token string) error
+}
+
+type PasskeyStore interface {
 	ListPasskeysByUser(userID string) ([]domain.Passkey, error)
 	ListAllPasskeys() []domain.Passkey
 	GetPasskeyByID(id string) (domain.Passkey, error)
@@ -71,9 +97,15 @@ type Store interface {
 	ListPasskeyUsageLogs() []domain.PasskeyUsageLog
 	ListPasskeyUsageLogsByUser(userID string) []domain.PasskeyUsageLog
 	DeletePasskeyUsageLogs(ids []string) error
+}
+
+type PhoneBindingChallengeStore interface {
 	SavePhoneBindingChallenge(challenge domain.PhoneBindingChallenge) error
 	GetPhoneBindingChallenge(token string) (domain.PhoneBindingChallenge, error)
 	DeletePhoneBindingChallenge(token string) error
+}
+
+type SecurityPolicyStore interface {
 	GetUserSecurityPolicy(userID string) (domain.UserSecurityPolicy, error)
 	UpsertUserSecurityPolicy(policy domain.UserSecurityPolicy) error
 	DeleteUserSecurityPolicy(userID string) error
@@ -83,24 +115,32 @@ type Store interface {
 	SaveLoginMFAEnrollmentChallenge(challenge domain.LoginMFAEnrollmentChallenge) error
 	GetLoginMFAEnrollmentChallenge(token string) (domain.LoginMFAEnrollmentChallenge, error)
 	DeleteLoginMFAEnrollmentChallenge(token string) error
-	SaveDeletionLoginChallenge(challenge domain.DeletionLoginChallenge) error
-	GetDeletionLoginChallenge(token string) (domain.DeletionLoginChallenge, error)
-	DeleteDeletionLoginChallenge(token string) error
+}
+
+type SessionStore interface {
 	CreateSession(session domain.Session)
 	GetSession(token string) (domain.Session, error)
 	DeleteSession(token string) error
 	DeleteSessionsByUser(userID string) error
+}
+
+type AppStore interface {
 	ListAppsByOwner(ownerID string) []domain.ClientApp
 	ListApps() []domain.ClientApp
+	CountApps(status string) (int, error)
 	CreateApp(app domain.ClientApp) domain.ClientApp
 	UpdateApp(app domain.ClientApp) error
 	DeleteApp(id string) error
 	FindAppByClientID(clientID string) (domain.ClientApp, error)
 	GetApp(id string) (domain.ClientApp, error)
+}
+
+type OAuthStore interface {
 	SaveAuthorizationCode(code domain.AuthorizationCode)
 	ConsumeAuthorizationCode(value, clientID, redirectURI, expectedCodeChallenge string) (domain.AuthorizationCode, error)
 	SaveConsent(consent domain.Consent)
 	ListConsentsByUser(userID string) []domain.Consent
+	ListConsentsByClientID(clientID string, includeRevoked bool) ([]domain.Consent, error)
 	RevokeConsent(id string) error
 	SaveRefreshToken(token domain.RefreshToken)
 	GetRefreshToken(value string) (domain.RefreshToken, error)
@@ -108,6 +148,36 @@ type Store interface {
 	RevokeRefreshToken(value string) error
 	RevokeRefreshTokensByUser(userID string) error
 	RevokeRefreshTokensByUserClient(userID, clientID string) error
+}
+
+type DeveloperAccessStore interface {
+	ListDeveloperGroups(ownerUserID string) ([]domain.DeveloperGroup, error)
+	GetDeveloperGroup(id string) (domain.DeveloperGroup, error)
+	CreateDeveloperGroup(group domain.DeveloperGroup) error
+	UpdateDeveloperGroup(group domain.DeveloperGroup) error
+	DeleteDeveloperGroup(id string) error
+	ListDeveloperGroupMembers(groupID string) ([]string, error)
+	AddDeveloperGroupMember(groupID, userID string) error
+	RemoveDeveloperGroupMember(groupID, userID string) error
+	ListUserGroupsByOwner(ownerUserID, userID string) ([]domain.DeveloperGroup, error)
+	ListAppGroupBindings(appID string) ([]domain.AppGroupBinding, error)
+	ReplaceAppGroupBindings(appID string, groupIDs []string, createdAt time.Time) error
+	ListAppIDsByGroup(groupID string) ([]string, error)
+	CreateOrUpdateAppUserBan(ban domain.AppUserBan) error
+	GetActiveAppUserBan(appID, userID string, now time.Time) (domain.AppUserBan, error)
+	ListAppUserBans(appID string, includeExpired bool, now time.Time) ([]domain.AppUserBan, error)
+	DeleteAppUserBan(appID, userID string) error
+	GetAppUserAccessVersion(appID, userID string) (domain.AppUserAccessVersion, error)
+	BumpAppUserAccessVersion(appID, userID string, updatedAt time.Time) (domain.AppUserAccessVersion, error)
+	AppendDeveloperAccessLog(log domain.DeveloperAccessLog) error
+	ListDeveloperAccessLogs(ownerUserID string, includeDeleted bool) ([]domain.DeveloperAccessLog, error)
+	ListDeveloperAccessLogsPaginated(ownerUserID string, includeDeleted bool, page, pageSize int) ([]domain.DeveloperAccessLog, int, error)
+	ListAllDeveloperAccessLogs(includeDeleted bool) ([]domain.DeveloperAccessLog, error)
+	SoftDeleteDeveloperAccessLogs(ownerUserID string, ids []string, deletedAt time.Time) error
+	HardDeleteDeveloperAccessLogs(ids []string) error
+}
+
+type AuditSettingsStore interface {
 	AppendAudit(log domain.AuditLog)
 	ListAudit() []domain.AuditLog
 	DeleteAuditLogs(ids []string) error
@@ -120,14 +190,37 @@ type Store interface {
 	AppendPhoneSendLog(log domain.PhoneSendLog)
 	ListPhoneSendLogs() []domain.PhoneSendLog
 	DeletePhoneSendLogs(ids []string) error
+	CountAuditLogs() (int, error)
 	ListPolicies() []domain.GatewayPolicy
+	CountPolicies() (int, error)
+	GetSettings(keys ...string) (map[string]string, error)
+	UpsertSettings(values map[string]string) error
+}
+
+type ScopeStore interface {
 	ListScopes() []domain.ScopeDefinition
 	GetScope(key string) (domain.ScopeDefinition, error)
 	UpsertScope(scope domain.ScopeDefinition) error
 	DeleteScope(key string) error
 	CountAppsByScope(scope string) (int, error)
-	GetSettings(keys ...string) (map[string]string, error)
-	UpsertSettings(values map[string]string) error
-	ListUsersPendingDeletion(before time.Time) ([]domain.User, error)
+}
+
+type CleanupStore interface {
 	CleanupRuntimeData(plan CleanupPlan) error
+}
+
+type Store interface {
+	UserStore
+	VerificationStore
+	RateLimitStore
+	PasskeyStore
+	PhoneBindingChallengeStore
+	SecurityPolicyStore
+	SessionStore
+	AppStore
+	OAuthStore
+	DeveloperAccessStore
+	AuditSettingsStore
+	ScopeStore
+	CleanupStore
 }

@@ -2,6 +2,7 @@ const enUS = {
   menu: {
     dashboard: "Dashboard",
     console: "Developer Console",
+    userAccess: "User Access",
     auditLogs: "Audit Logs",
     analytics: "User Analytics",
     integration: "Integration Docs",
@@ -28,6 +29,11 @@ const enUS = {
       description:
         "Create and manage OIDC applications, maintain redirect URIs, scopes, and secrets.",
     },
+    userAccess: {
+      title: "User Access",
+      description:
+        "Group previously authorized users, configure which groups may access each app, and apply app-specific bans.",
+    },
     auditLogs: {
       title: "Audit Logs",
       description:
@@ -46,32 +52,47 @@ const enUS = {
     docsExamples: {
       title: "Language Examples",
       description:
-        "Backend integration samples by language. Includes Go, PHP, Java, Node.js, and Python examples for authorization, token exchange, and userinfo.",
+        "Backend integration samples by language. Includes Go, C#, PHP, Java, Node.js, Python, Ruby, and Rust examples for authorization, callback error handling, id_token verification, and token lifecycle operations.",
     },
     docsExamplesGo: {
       title: "Language Examples - Go",
       description:
-        "Go backend sample including authorization URL generation, code exchange, and userinfo request.",
+        "Go backend sample including authorization URL generation, callback error handling, token exchange, id_token verification, and token lifecycle operations.",
+    },
+    docsExamplesCsharp: {
+      title: "Language Examples - C#",
+      description:
+        "C# / ASP.NET Core backend sample including authorization URL generation, callback error handling, token exchange, id_token verification, and token lifecycle operations.",
     },
     docsExamplesPHP: {
       title: "Language Examples - PHP",
       description:
-        "PHP backend sample including authorization URL generation, code exchange, and userinfo request.",
+        "PHP backend sample including authorization URL generation, callback error handling, token exchange, id_token verification, and token lifecycle operations.",
     },
     docsExamplesJava: {
       title: "Language Examples - Java",
       description:
-        "Java backend sample including authorization URL generation, code exchange, and userinfo request.",
+        "Java backend sample including authorization URL generation, callback error handling, token exchange, id_token verification, and token lifecycle operations.",
     },
     docsExamplesNodejs: {
       title: "Language Examples - Node.js",
       description:
-        "Node.js backend sample including authorization URL generation, code exchange, and userinfo request.",
+        "Node.js backend sample including authorization URL generation, callback error handling, token exchange, id_token verification, and token lifecycle operations.",
     },
     docsExamplesPython: {
       title: "Language Examples - Python",
       description:
-        "Python backend sample including authorization URL generation, code exchange, and userinfo request.",
+        "Python backend sample including authorization URL generation, callback error handling, token exchange, id_token verification, and token lifecycle operations.",
+    },
+    docsExamplesRuby: {
+      title: "Language Examples - Ruby",
+      description:
+        "Ruby / Rails backend sample including authorization URL generation, callback error handling, token exchange, id_token verification, and token lifecycle operations.",
+    },
+    docsExamplesRust: {
+      title: "Language Examples - Rust",
+      description:
+        "Rust backend sample including authorization URL generation, callback error handling, token exchange, id_token verification, and token lifecycle operations.",
     },
   },
   common: {
@@ -97,6 +118,56 @@ const enUS = {
     submitForReview: "Submit for Review",
     saveAndResubmit: "Save and Resubmit",
     currentAvailableScopes: "Available scopes: {{scopes}}",
+    displayName: "Display Name",
+  },
+  userAccess: {
+    groupsTab: "Groups",
+    usersTab: "Users",
+    appsTab: "App Access",
+    logsTab: "Access Logs",
+    createGroup: "Create Group",
+    editGroup: "Edit Group",
+    groupName: "Group Name",
+    groupDescription: "Description",
+    members: "Members",
+    boundApps: "Bound Apps",
+    updateGroups: "Update Groups",
+    appBindings: "Allowed groups for this app",
+    saveBindings: "Save Access Rules",
+    noGroupsBound: "If no groups are bound, the app stays open to all signed-in users by default.",
+    banUser: "Ban User",
+    unbanUser: "Unban User",
+    banReason: "Ban Reason",
+    banExpiresAt: "Expires At (optional)",
+    maskedEmail: "Email",
+    maskedPhone: "Masked Phone",
+    lastAuthorizedAt: "Last Authorized At",
+    groups: "Groups",
+    authorizedApps: "Authorized Apps",
+    currentBan: "Current Ban",
+    accessLogDelete: "Delete Selected Logs",
+    logDeleted: "Access logs deleted",
+    authorizedAppsDetailTitle: "{{name}} Authorized Apps",
+    authorizedAppsCount: "{{count}} app(s)",
+    authorizedAppsShortCount: "{{count}} app(s)",
+    deleteGroupConfirmTitle: "Delete group {{name}}?",
+    filterAuthorizedApp: "Filter by authorized app",
+    searchUserByEmail: "Search users by email",
+    batchSetGroups: "Batch Set Groups",
+    selectApp: "Select App",
+    currentAppUsers: "Current App Users",
+    banStatus: "Ban Status",
+    normalStatus: "Normal",
+    bannedStatus: "Banned",
+    logAction: "Action",
+    logTarget: "Target",
+    logApp: "App",
+    logUser: "User",
+    logTime: "Time",
+    banExpiresAtPlaceholder: "2026-04-30T12:00:00Z",
+    batchSetGroupsDescription:
+      "{{count}} user(s) selected. Saving will replace their groups with the selected set.",
+    selectAtLeastOneGroup: "Please select at least one group",
   },
   status: {
     approved: "Approved",
@@ -323,6 +394,32 @@ const enUS = {
       displayName: "Display Name",
       description: "Description",
     },
+    scopeDefinitions: {
+      openid: {
+        displayName: "Base Sign-In",
+        description: "Confirms the user's identity and establishes the OIDC login session.",
+      },
+      profile: {
+        displayName: "Public Profile",
+        description: "Allows reading public profile fields such as display name and avatar.",
+      },
+      email: {
+        displayName: "Email",
+        description: "Allows reading the account email address.",
+      },
+      phone: {
+        displayName: "Phone",
+        description: "Allows reading the account's bound phone number.",
+      },
+      role: {
+        displayName: "Account Role",
+        description: "Allows reading the account's current role such as user, developer, or admin.",
+      },
+      "gateway.read": {
+        displayName: "Protected Gateway Resource Access",
+        description: "Allows access to gateway or API resources protected by this scope.",
+      },
+    },
     claimContract: "Claims Contract",
     claimAlertTitle: "Read this section before integrating third-party systems",
     claimAlertDesc:
@@ -450,6 +547,166 @@ const enUS = {
         "3": "3. name maps to display_name and is suitable for display only, not for a durable unique binding key.",
       },
     },
+    accessControl: {
+      title: "User Groups and App Access Control",
+      desc: "The platform now lets developers manage previously authorized users for their own business scenarios and apply those rules to specific apps without affecting global platform sign-in.",
+      items: {
+        "1": "1. User groups are reusable at the developer level. One group can be bound to multiple apps, so you do not need to rebuild the same audience per app.",
+        "2": "2. Developers may only manage users who have already authorized at least one of their apps. They cannot search or edit arbitrary platform accounts.",
+        "3": "3. Apps are open by default. Once at least one group is bound to an app, that app enters allowlist mode and only users matching any bound group may authorize it.",
+        "4": "4. Use the User Access page to manage groups, batch-update user memberships, and bind allowed groups to each app.",
+        "5": "5. App-level bans are scoped to a single app. They do not prevent the user from signing in to MySSO itself or from using apps owned by other developers.",
+        "6": "6. The account center keeps historical authorization records, but if access becomes restricted or banned, the authorization detail page will display the current status, reason, and expiry time.",
+      },
+    },
+    accessRestrictions: {
+      title: "How Restrictions Take Effect",
+      desc: "Treat these rules as part of the OAuth behavior itself, not as one-time UI configuration.",
+      items: {
+        "1": "1. Access rules affect first-time authorization, repeated authorization, prompt=none silent authorization, and consent-based auto-approval.",
+        "2": "2. If a user is later removed from an allowed group or banned from the app, future authorization will be denied even if the user had already approved the app in the past.",
+        "3": "3. After a rule change, existing refresh tokens for that app are revoked and prior access tokens also stop working because the per-user per-app access version changes.",
+        "4": "4. Your integration must not assume that a previously successful authorization guarantees permanent automatic sign-in. Handle re-authorization, re-login, and withdrawn access explicitly.",
+        "5": "5. If your resource server validates JWTs fully offline and never checks current state with the SSO platform, it cannot see the latest app-level bans or group changes. That is an architectural boundary you should plan for separately.",
+      },
+    },
+    denialHandling: {
+      title: "How to Handle Authorization Denials",
+      desc: "When the authorization endpoint returns access_denied, treat it as an access policy rejection rather than a generic login failure whenever possible.",
+      items: {
+        "1": "1. If the current account is not in an allowed group, your UI should say something closer to “this account cannot access the app” instead of “login failed”.",
+        "2": "2. If the current account is banned from the app, guide the user to contact that app's administrator or your own support flow.",
+        "3": "3. In the callback handler, distinguish user-cancelled consent from platform-denied authorization so your logs and alerts stay meaningful.",
+        "4": "4. Preserve the original error, error_description, state, and callback timestamp so you can later tell access policy issues from bans or normal OAuth parameter problems.",
+      },
+    },
+    accountBinding: {
+      title: "Account Binding Key Guidance",
+      desc: "If your system needs a durable binding between MySSO accounts and local accounts, decide the key early and keep it stable.",
+      columns: {
+        field: "Field",
+        recommendation: "Recommendation",
+        reason: "Notes",
+      },
+      rows: {
+        sub: {
+          field: "sub",
+          recommendation: "Strongly recommended",
+          reason: "Stable, unique, and not user-editable. This is the best long-term SSO binding key.",
+        },
+        email: {
+          field: "email",
+          recommendation: "Readable secondary field",
+          reason: "Good for display or fallback matching, but it should not replace sub as the canonical binding key.",
+        },
+        name: {
+          field: "name / display_name",
+          recommendation: "Display only",
+          reason: "It may change and may not be unique, so it is not suitable as a durable primary key.",
+        },
+        phone: {
+          field: "phone",
+          recommendation: "Use carefully",
+          reason: "Phone numbers can change and are better treated as contact data than as a long-term account binding key.",
+        },
+      },
+    },
+    accessBehavior: {
+      title: "Behavior Before and After Access Control",
+      desc: "This table gives integrators a quick mental model of how authorization behavior changes once user groups or app bans are enabled.",
+      columns: {
+        scenario: "Scenario",
+        behavior: "Platform Behavior",
+      },
+      rows: {
+        "1": {
+          scenario: "The app has no bound user groups",
+          behavior: "Any signed-in user who satisfies normal OAuth requirements may authorize the app.",
+        },
+        "2": {
+          scenario: "The app has one or more bound user groups",
+          behavior: "Only users belonging to any bound group may authorize the app. Others are denied.",
+        },
+        "3": {
+          scenario: "The user had authorized the app before but was later removed from allowed groups",
+          behavior: "Historical consent remains as a record, but it no longer auto-approves access. Future entry is denied.",
+        },
+        "4": {
+          scenario: "The user is banned from the app",
+          behavior: "Authorization for the current app is denied immediately, without affecting platform sign-in or other developers' apps.",
+        },
+      },
+    },
+    tokenInvalidation: {
+      title: "Token Behavior After Access Changes",
+      desc: "If your system caches access_token or refresh_token values, you should expect them to stop working immediately after some access control changes.",
+      items: {
+        "1": "1. When a user is removed from an allowed group or banned from the app, existing refresh tokens for that app stop working immediately.",
+        "2": "2. Older access tokens also stop working because the per-user per-app access version changes, so your resource side must handle 401 and re-authorization cleanly.",
+        "3": "3. If the user is later unbanned or added back to an allowed group, old tokens are not restored. A fresh authorization flow is required.",
+        "4": "4. Do not assume an access token will remain usable until exp if app-level access control is enabled. Access withdrawal may happen earlier than natural expiration.",
+      },
+    },
+    accessDeniedCallback: {
+      title: "access_denied Callback Example",
+      desc: "When the platform rejects authorization because of app access control, the callback usually carries a standard OAuth error instead of a successful code.",
+      items: {
+        "1": "1. In your backend callback handler, check for the error parameter first. If it exists, do not continue into the code exchange path.",
+        "2": "2. Keep state validation even on failure callbacks so you can still confirm the response belongs to the original login initiation.",
+        "3": "3. In user-facing messaging, distinguish user-cancelled authorization from platform-denied authorization so both users and operators can understand the cause quickly.",
+      },
+    },
+    accessBoundary: {
+      title: "Token and UserInfo Boundaries on Denial",
+      desc: "App access control takes effect during the authorization stage, so denial behavior is different from a successful sign-in flow.",
+      items: {
+        "1": "1. When the authorization request is denied, the platform normally does not issue a new authorization code, so no new access_token or id_token can be exchanged.",
+        "2": "2. Without a new access_token, your integration should not expect a fresh userinfo response either.",
+        "3": "3. If you receive access_denied, the correct action is usually to show the user a clear message, log the event, and stop the current login flow instead of retrying token or userinfo endpoints.",
+      },
+    },
+    resourceServer: {
+      title: "Resource Server Guidance",
+      desc: "If your system has its own resource server or backend APIs, you also need a plan for how those services react after app access control changes.",
+      items: {
+        "1": "1. For higher-security scenarios, let your resource side combine backend session checks, current-state lookups, or introspection instead of trusting only the frontend's signed-in state.",
+        "2": "2. If your resource server validates JWTs fully offline, it cannot immediately learn that a user was removed from an allowed group or banned from the app unless you add an online state check.",
+        "3": "3. When the resource side receives 401 or detects token invalidation, redirect users into a fresh authorization flow instead of endlessly retrying old tokens.",
+        "4": "4. Do not implement app access control as a frontend-only route guard. Final access decisions still belong on the backend or resource server.",
+      },
+    },
+    troubleshooting: {
+      title: "Audit and Troubleshooting Guidance",
+      desc: "When a developer says “the user had authorized before, but now cannot enter”, this is a practical troubleshooting order.",
+      items: {
+        "1": "1. Start with the User Access page and confirm whether the app is bound to groups and whether the user still belongs to any allowed group.",
+        "2": "2. Then check whether the user has an active ban record for that app, including the reason, effective time, and expiry time.",
+        "3": "3. If you need to know who changed groups, app bindings, or bans, look at the developer access logs first and then cross-check admin logs when deeper audit tracing is required.",
+        "4": "4. For user-side visibility, also inspect the account center authorization detail because it directly shows Normal, Restricted, or Banned together with the reason.",
+      },
+    },
+    accountCenterStatus: {
+      title: "What Users See in the Account Center",
+      desc: "When users open authorization details for an app in their account center, the visible status now reflects app-level access control.",
+      columns: {
+        status: "Status",
+        meaning: "Meaning",
+      },
+      rows: {
+        normal: {
+          status: "Normal",
+          meaning: "The authorization record is active and the user still satisfies the app's current access rules.",
+        },
+        restricted: {
+          status: "Restricted",
+          meaning: "The historical authorization remains visible, but the user no longer satisfies the app's allowed-group rules.",
+        },
+        banned: {
+          status: "Banned",
+          meaning: "The developer applied an app-specific ban. The detail page shows the reason, effective time, and expiry time when available.",
+        },
+      },
+    },
     thirdPartyTemplates: {
       title: "Third-Party Integration Templates",
       desc:
@@ -550,6 +807,20 @@ const enUS = {
           action:
             "Ensure the requested scopes include openid and keep code_challenge_method fixed to S256.",
         },
+        "10a": {
+          code: "access_denied / current account cannot access this app",
+          reason:
+            "The user no longer matches the groups bound to the app, or the developer removed the user from the allowed audience.",
+          action:
+            "Review the app bindings in the User Access page and confirm that the user still belongs to at least one bound group.",
+        },
+        "10b": {
+          code: "access_denied / current account is banned from this app",
+          reason:
+            "The developer applied an app-specific ban to this user. This only affects the current app, not platform sign-in or other developers' apps.",
+          action:
+            "Check the app's ban records, reason, and expiry time. If allowed by your process, lift the ban and start a fresh authorization flow.",
+        },
         "11": {
           code: "consent_required / login_required",
           reason:
@@ -574,7 +845,7 @@ const enUS = {
         "3": "3. Confirm the unique user identifier used by the third-party system before launch to avoid rebinding problems later.",
         "4": "4. Confirm that the app has every scope it will actually request, not just openid.",
         "5": "5. Confirm that local logout and OIDC browser logout are handled separately and that you do not expose plain GET logout links.",
-        "6": "6. Confirm that failure handling covers token exchange errors, missing userinfo claims, insufficient scopes, and callback mismatch scenarios.",
+        "6": "6. Confirm that failure handling covers token exchange errors, missing userinfo claims, insufficient scopes, app-level access restrictions, app bans, and callback mismatch scenarios.",
       },
     },
     steps: {
@@ -597,13 +868,17 @@ const enUS = {
   docsExamples: {
     navTitle: "Language Example Navigation",
     navDesc:
-      "Go, PHP, Java, Node.js, and Python backend integration samples are currently provided. Each sample includes authorization URL generation, code exchange, userinfo, refresh token, and browser logout examples.",
+      "Go, C#, PHP, Java, Node.js, Python, Ruby, and Rust backend integration samples are currently provided. Each sample includes authorization URL generation, callback error handling, code exchange, id_token verification, userinfo, refresh token, introspection, revocation, and browser logout examples.",
     navHint:
       "Open the target language page from the left menu, copy the sample into your backend project, and replace client_id, client_secret, and redirect_uri to start testing.",
     authorizeTitle: "Build Authorization URL",
+    callbackErrorTitle: "Handle Callback Errors",
     tokenTitle: "Exchange Token",
+    verifyIdTokenTitle: "Verify id_token",
     userinfoTitle: "Fetch UserInfo",
     refreshTitle: "Refresh Token",
+    introspectTitle: "Introspect Token",
+    revokeTitle: "Revoke Token",
     logoutTitle: "Build Browser Logout URL",
     notesTitle: "Integration Notes",
     notes: {
@@ -613,12 +888,21 @@ const enUS = {
         "2. After receiving tokens, validate the id_token signature, iss, aud, exp, and nonce against Discovery/JWKS before creating a local session.",
       useSub:
         "3. If the third-party system needs a stable unique key, prefer sub. email is a better display or compatibility field, and name should not be used as the unique identifier.",
+      handleAccessDenied:
+        "4. Treat callback errors such as access_denied as first-class outcomes. They may indicate user cancellation, app audience mismatch, or an app-specific ban rather than a generic login failure.",
+      planForRevocation:
+        "5. Be prepared for app-level access changes. Refresh tokens can be revoked and previously issued access tokens may become unusable after the developer changes groups or bans a user.",
     },
     pages: {
       go: {
         title: "Go Integration Example",
         desc:
           "Suitable for Go backends handling OAuth/OIDC callbacks and exchanging tokens server-side.",
+      },
+      csharp: {
+        title: "C# Integration Example",
+        desc:
+          "Suitable for ASP.NET Core or other .NET backends handling OAuth/OIDC callbacks and maintaining local sessions server-side.",
       },
       php: {
         title: "PHP Integration Example",
@@ -639,6 +923,16 @@ const enUS = {
         title: "Python Integration Example",
         desc:
           "Suitable for Python backends such as Flask, Django, or FastAPI.",
+      },
+      ruby: {
+        title: "Ruby Integration Example",
+        desc:
+          "Suitable for Ruby backends such as Rails, Sinatra, or other Rack-based applications handling OAuth/OIDC callbacks server-side.",
+      },
+      rust: {
+        title: "Rust Integration Example",
+        desc:
+          "Suitable for Rust backends such as Axum, Actix Web, or other async services handling OAuth/OIDC callbacks and token validation server-side.",
       },
     },
   },

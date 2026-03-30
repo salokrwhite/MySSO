@@ -276,14 +276,18 @@ type DeletionLoginChallenge struct {
 }
 
 type Consent struct {
-	ID        string    `json:"id"`
-	UserID    string    `json:"user_id"`
-	ClientID  string    `json:"client_id"`
-	AppName   string    `json:"app_name"`
-	IconURL   string    `json:"icon_url"`
-	Scopes    []string  `json:"scopes"`
-	CreatedAt time.Time `json:"created_at"`
-	RevokedAt time.Time `json:"revoked_at,omitempty"`
+	ID                 string     `json:"id"`
+	UserID             string     `json:"user_id"`
+	ClientID           string     `json:"client_id"`
+	AppName            string     `json:"app_name"`
+	IconURL            string     `json:"icon_url"`
+	Scopes             []string   `json:"scopes"`
+	CreatedAt          time.Time  `json:"created_at"`
+	RevokedAt          time.Time  `json:"revoked_at,omitempty"`
+	AccessStatus       string     `json:"access_status,omitempty"`
+	RestrictionReason  string     `json:"restriction_reason,omitempty"`
+	RestrictedAt       *time.Time `json:"restricted_at,omitempty"`
+	RestrictionExpires *time.Time `json:"expires_at,omitempty"`
 }
 
 type RefreshToken struct {
@@ -338,4 +342,71 @@ type ScopeDefinition struct {
 	DeveloperSelectable bool      `json:"developer_selectable"`
 	System              bool      `json:"system"`
 	UpdatedAt           time.Time `json:"updated_at"`
+}
+
+type DeveloperGroup struct {
+	ID          string    `json:"id"`
+	OwnerUserID string    `json:"owner_user_id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+type AppGroupBinding struct {
+	AppID     string    `json:"app_id"`
+	GroupID   string    `json:"group_id"`
+	CreatedAt time.Time `json:"created_at"`
+	GroupName string    `json:"group_name,omitempty"`
+}
+
+type AppUserBan struct {
+	ID        string     `json:"id"`
+	AppID     string     `json:"app_id"`
+	UserID    string     `json:"user_id"`
+	Reason    string     `json:"reason"`
+	ExpiresAt *time.Time `json:"expires_at,omitempty"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+}
+
+type AppUserAccessVersion struct {
+	AppID     string    `json:"app_id"`
+	UserID    string    `json:"user_id"`
+	Version   int       `json:"version"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type DeveloperManagedUserAuthorizedApp struct {
+	AppID            string    `json:"app_id"`
+	ClientID         string    `json:"client_id"`
+	AppName          string    `json:"app_name"`
+	LastAuthorizedAt time.Time `json:"last_authorized_at"`
+}
+
+type DeveloperManagedUser struct {
+	UserID           string                              `json:"user_id"`
+	DisplayName      string                              `json:"display_name"`
+	MaskedEmail      string                              `json:"masked_email"`
+	MaskedPhone      string                              `json:"masked_phone"`
+	LastAuthorizedAt time.Time                           `json:"last_authorized_at"`
+	AuthorizedApps   []DeveloperManagedUserAuthorizedApp `json:"authorized_apps"`
+	GroupIDs         []string                            `json:"group_ids"`
+	GroupNames       []string                            `json:"group_names"`
+	AppBans          []AppUserBan                        `json:"app_bans"`
+}
+
+type DeveloperAccessLog struct {
+	ID          string         `json:"id"`
+	OwnerUserID string         `json:"owner_user_id"`
+	ActorID     string         `json:"actor_id"`
+	Action      string         `json:"action"`
+	TargetType  string         `json:"target_type"`
+	TargetID    string         `json:"target_id"`
+	AppID       string         `json:"app_id"`
+	UserID      string         `json:"user_id"`
+	GroupID     string         `json:"group_id"`
+	Detail      map[string]any `json:"detail"`
+	CreatedAt   time.Time      `json:"created_at"`
+	DeletedAt   *time.Time     `json:"deleted_at,omitempty"`
 }

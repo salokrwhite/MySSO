@@ -382,6 +382,34 @@ type batchConsentsRequest struct {
 	ConsentIDs []string `json:"consent_ids"`
 }
 
+type developerGroupRequest struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+type developerManagedUserGroupsRequest struct {
+	GroupIDs []string `json:"group_ids"`
+}
+
+type batchDeveloperManagedUserGroupsRequest struct {
+	UserIDs  []string `json:"user_ids"`
+	GroupIDs []string `json:"group_ids"`
+}
+
+type developerAppBindingsRequest struct {
+	GroupIDs []string `json:"group_ids"`
+}
+
+type developerAppBanRequest struct {
+	UserID    string `json:"user_id"`
+	Reason    string `json:"reason"`
+	ExpiresAt string `json:"expires_at"`
+}
+
+type batchDeveloperAccessLogsRequest struct {
+	LogIDs []string `json:"log_ids"`
+}
+
 type batchFreezeUsersRequest struct {
 	UserIDs []string `json:"user_ids"`
 	Frozen  bool     `json:"frozen"`

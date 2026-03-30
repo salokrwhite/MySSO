@@ -179,6 +179,10 @@ export function getAdminPageMeta(t: (key: string) => string) {
       title: t("审计日志"),
       description: t("查看平台关键操作记录，支持勾选并批量删除历史审计日志。")
     },
+    developerAccessLogs: {
+      title: t("开发者访问日志"),
+      description: t("查看开发者侧用户组、访问限制和封禁操作记录，支持管理员硬删除。")
+    },
     riskLogs: {
       title: t("风控日志"),
       description: t("查看公开发码风控命中与放行记录，并在同页查看 Passkey 相关数据表信息，支持批量删除。")
@@ -187,5 +191,5 @@ export function getAdminPageMeta(t: (key: string) => string) {
       title: t("参数设置"),
       description: t("使用顶部同级标签管理不同系统子页面，邮件与验证码配置已可直接生效。")
     }
-  } satisfies Record<"dashboard" | "users" | "apps" | "emailSendLogs" | "phoneSendLogs" | "auditLogs" | "riskLogs" | "settings", AdminPageMeta>;
+  } satisfies Record<"dashboard" | "users" | "apps" | "emailSendLogs" | "phoneSendLogs" | "auditLogs" | "developerAccessLogs" | "riskLogs" | "settings", AdminPageMeta>;
 }

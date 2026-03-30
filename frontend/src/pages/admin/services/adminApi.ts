@@ -4,7 +4,9 @@ import type {
   AppItem,
   AuditLog,
   AdminPasskeyLogs,
+  AdminDashboardSummary,
   CreateUserInput,
+  DeveloperAccessLog,
   EmailSendLog,
   PhoneSendLog,
   Policy,
@@ -86,6 +88,10 @@ const auditLogsCache: SessionScopedCache<AuditLog[]> = {
   value: null,
   inflight: null,
 };
+const developerAccessLogsCache: SessionScopedCache<DeveloperAccessLog[]> = {
+  value: null,
+  inflight: null,
+};
 const riskLogsCache: SessionScopedCache<RiskLog[]> = {
   value: null,
   inflight: null,
@@ -111,6 +117,10 @@ const scopesCache: SessionScopedCache<ScopeDefinition[]> = {
   inflight: null,
 };
 const systemSettingsCache: SessionScopedCache<SystemSettings> = {
+  value: null,
+  inflight: null,
+};
+const dashboardSummaryCache: SessionScopedCache<AdminDashboardSummary> = {
   value: null,
   inflight: null,
 };
@@ -146,6 +156,25 @@ export async function fetchAdminUsers(
   );
 }
 
+export async function fetchAdminDashboardSummary(
+  sessionToken: string,
+  options?: { force?: boolean },
+) {
+  return loadCachedResource(
+    dashboardSummaryCache,
+    sessionToken,
+    async () => {
+      const result = await api<{ data: AdminDashboardSummary }>(
+        "/admin/dashboard-summary",
+        undefined,
+        sessionToken,
+      );
+      return result.data;
+    },
+    options,
+  );
+}
+
 export async function fetchAdminApps(
   sessionToken: string,
   options?: { force?: boolean },
@@ -175,6 +204,25 @@ export async function fetchAdminAuditLogs(
     async () => {
       const result = await api<{ items: AuditLog[] }>(
         "/admin/audit-logs",
+        undefined,
+        sessionToken,
+      );
+      return result.items;
+    },
+    options,
+  );
+}
+
+export async function fetchAdminDeveloperAccessLogs(
+  sessionToken: string,
+  options?: { force?: boolean },
+) {
+  return loadCachedResource(
+    developerAccessLogsCache,
+    sessionToken,
+    async () => {
+      const result = await api<{ items: DeveloperAccessLog[] }>(
+        "/admin/developer-access-logs",
         undefined,
         sessionToken,
       );
@@ -325,8 +373,10 @@ export function updateAdminSystemSettingsCache(
 }
 
 export function clearAdminResourceCaches(sessionToken: string) {
+  readSessionScopedCache(dashboardSummaryCache, sessionToken).value = null;
   readSessionScopedCache(appsCache, sessionToken).value = null;
   readSessionScopedCache(auditLogsCache, sessionToken).value = null;
+  readSessionScopedCache(developerAccessLogsCache, sessionToken).value = null;
   readSessionScopedCache(riskLogsCache, sessionToken).value = null;
   readSessionScopedCache(passkeyLogsCache, sessionToken).value = null;
   readSessionScopedCache(emailSendLogsCache, sessionToken).value = null;
@@ -582,6 +632,20 @@ export async function batchDeleteAuditLogs(
 ) {
   return api(
     "/admin/audit-logs/batch-delete",
+    {
+      method: "POST",
+      body: JSON.stringify({ log_ids: logIds }),
+    },
+    sessionToken,
+  );
+}
+
+export async function batchDeleteDeveloperAccessLogs(
+  sessionToken: string,
+  logIds: string[],
+) {
+  return api(
+    "/admin/developer-access-logs/batch-delete",
     {
       method: "POST",
       body: JSON.stringify({ log_ids: logIds }),

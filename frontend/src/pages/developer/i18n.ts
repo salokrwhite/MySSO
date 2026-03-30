@@ -14,6 +14,7 @@ type DeveloperMessages = {
   menu: {
     dashboard: string;
     console: string;
+    userAccess: string;
     auditLogs: string;
     analytics: string;
     integration: string;
@@ -62,6 +63,7 @@ const fallbackMessages: Record<DeveloperLocale, DeveloperMessages> = {
     menu: {
       dashboard: "首页仪表盘",
       console: "开发者控制台",
+      userAccess: "用户分组与访问",
       auditLogs: "审计日志",
       analytics: "用户分析",
       integration: "对接文档",
@@ -77,6 +79,7 @@ const fallbackMessages: Record<DeveloperLocale, DeveloperMessages> = {
     menu: {
       dashboard: "Dashboard",
       console: "Developer Console",
+      userAccess: "User Access",
       auditLogs: "Audit Logs",
       analytics: "User Analytics",
       integration: "Integration Docs",

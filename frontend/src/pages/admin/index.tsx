@@ -5,6 +5,7 @@ import { getAdminPageMeta, getSettingsTabs } from "./constants";
 import { AppReview } from "./components/AppReview";
 import { AuditLogsPanel } from "./components/AuditLogs";
 import { Dashboard } from "./components/Dashboard";
+import { DeveloperAccessLogsPanel } from "./components/DeveloperAccessLogs";
 import { RiskLogsPanel } from "./components/RiskLogs";
 import { EmailSendLogsPanel, PhoneSendLogsPanel } from "./components/SendLogs";
 import { SystemSettingsPanel } from "./components/SystemSettings";
@@ -14,6 +15,7 @@ import { useAuditLogActions } from "./hooks/useAuditLogActions";
 import { useAppReview } from "./hooks/useAppReview";
 import { useBatchAppActions } from "./hooks/useBatchAppActions";
 import { useBatchUserActions } from "./hooks/useBatchUserActions";
+import { useDeveloperAccessLogActions } from "./hooks/useDeveloperAccessLogActions";
 import { useRiskLogActions } from "./hooks/useRiskLogActions";
 import { usePasskeyLogActions } from "./hooks/usePasskeyLogActions";
 import {
@@ -38,6 +40,8 @@ export function AdminPage() {
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [selectedAppIds, setSelectedAppIds] = useState<string[]>([]);
   const [selectedAuditLogIds, setSelectedAuditLogIds] = useState<string[]>([]);
+  const [selectedDeveloperAccessLogIds, setSelectedDeveloperAccessLogIds] =
+    useState<string[]>([]);
   const [selectedRiskLogIds, setSelectedRiskLogIds] = useState<string[]>([]);
   const [selectedEmailSendLogIds, setSelectedEmailSendLogIds] = useState<
     string[]
@@ -69,6 +73,9 @@ export function AdminPage() {
     if (location.pathname === "/admin/audit-logs") {
       return "auditLogs";
     }
+    if (location.pathname === "/admin/developer-access-logs") {
+      return "developerAccessLogs";
+    }
     if (location.pathname === "/admin/risk-logs") {
       return "riskLogs";
     }
@@ -97,8 +104,10 @@ export function AdminPage() {
   const {
     users,
     usersTotal,
+    dashboardSummary,
     apps,
     logs,
+    developerAccessLogs,
     riskLogs,
     passkeyLogs,
     emailSendLogs,
@@ -111,9 +120,6 @@ export function AdminPage() {
     error,
     setError,
     load,
-    activeUsers,
-    pendingApps,
-    approvedApps,
   } = useAdminData(sessionToken, pageType, usersQuery);
 
   const ensureCurrentPageLoaded = useCallback(() => load(), [load]);
@@ -179,6 +185,17 @@ export function AdminPage() {
     sessionToken,
     selectedAuditLogIds,
     setSelectedAuditLogIds,
+    reloadCurrentPage,
+    setError,
+    systemSettings.messageApi,
+  );
+  const {
+    deletingDeveloperAccessLogs,
+    confirmBatchDeleteDeveloperAccessLogs,
+  } = useDeveloperAccessLogActions(
+    sessionToken,
+    selectedDeveloperAccessLogIds,
+    setSelectedDeveloperAccessLogIds,
     reloadCurrentPage,
     setError,
     systemSettings.messageApi,
@@ -285,12 +302,13 @@ export function AdminPage() {
 
       {pageType === "dashboard" ? (
         <Dashboard
-          userCount={users.length}
-          activeUsers={activeUsers}
-          pendingApps={pendingApps}
-          approvedApps={approvedApps}
-          logs={logs}
+          userCount={dashboardSummary.total_users}
+          activeUsers={dashboardSummary.active_users}
+          pendingApps={dashboardSummary.pending_apps}
+          approvedApps={dashboardSummary.approved_apps}
+          logCount={dashboardSummary.audit_logs}
           policies={policies}
+          policyCount={dashboardSummary.policies}
         />
       ) : null}
 
@@ -370,6 +388,16 @@ export function AdminPage() {
           setSelectedAuditLogIds={setSelectedAuditLogIds}
           deletingAuditLogs={deletingAuditLogs}
           onBatchDelete={confirmBatchDeleteAuditLogs}
+        />
+      ) : null}
+
+      {pageType === "developerAccessLogs" ? (
+        <DeveloperAccessLogsPanel
+          logs={developerAccessLogs}
+          selectedLogIds={selectedDeveloperAccessLogIds}
+          setSelectedLogIds={setSelectedDeveloperAccessLogIds}
+          deletingLogs={deletingDeveloperAccessLogs}
+          onBatchDelete={confirmBatchDeleteDeveloperAccessLogs}
         />
       ) : null}
 

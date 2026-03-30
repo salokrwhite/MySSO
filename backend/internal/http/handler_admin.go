@@ -18,11 +18,12 @@ func (s *Server) handleUsers(c *gin.Context) {
 	emailKeyword := strings.TrimSpace(c.Query("email_keyword"))
 	statusFilter := strings.TrimSpace(c.Query("status"))
 
-	users := s.services.Admin.ListUsers()
-	total := len(users)
+	usePagination := page > 0 || pageSize > 0 || emailKeyword != "" || statusFilter != ""
+	users := make([]domain.User, 0)
+	total := 0
 	currentPage := 1
-	currentPageSize := total
-	if page > 0 || pageSize > 0 || emailKeyword != "" || statusFilter != "" {
+	currentPageSize := 0
+	if usePagination {
 		result, err := s.services.Admin.ListUsersPaginated(page, pageSize, emailKeyword, statusFilter)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -32,6 +33,10 @@ func (s *Server) handleUsers(c *gin.Context) {
 		total = result.Total
 		currentPage = result.Page
 		currentPageSize = result.PageSize
+	} else {
+		users = s.services.Admin.ListUsers()
+		total = len(users)
+		currentPageSize = total
 	}
 	items := make([]gin.H, 0, len(users))
 	for _, user := range users {
@@ -93,6 +98,24 @@ func (s *Server) handleUsers(c *gin.Context) {
 		"total":     total,
 		"page":      currentPage,
 		"page_size": currentPageSize,
+	})
+}
+
+func (s *Server) handleAdminDashboardSummary(c *gin.Context) {
+	result, err := s.services.Admin.GetDashboardSummary()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"data": gin.H{
+			"total_users":   result.TotalUsers,
+			"active_users":  result.ActiveUsers,
+			"pending_apps":  result.PendingApps,
+			"approved_apps": result.ApprovedApps,
+			"audit_logs":    result.AuditLogs,
+			"policies":      result.Policies,
+		},
 	})
 }
 

@@ -10,7 +10,7 @@ import (
 	"mysso/backend/internal/config"
 	installsvc "mysso/backend/internal/install"
 	"mysso/backend/internal/service"
-	"mysso/backend/internal/store"
+	storemysql "mysso/backend/internal/store/mysql"
 )
 
 func (s *Server) handleInstallStatus(c *gin.Context) {
@@ -60,7 +60,7 @@ func (s *Server) handleInstallComplete(c *gin.Context) {
 		c.JSON(status, gin.H{"error": err.Error()})
 		return
 	}
-	db, err := store.OpenMySQL(payload.DB)
+	db, err := storemysql.Open(payload.DB)
 	if err != nil {
 		c.JSON(http.StatusCreated, gin.H{"installed": true, "reload_required": true})
 		return
@@ -73,7 +73,7 @@ func (s *Server) handleInstallComplete(c *gin.Context) {
 	runtimeCfg.DB = payload.DB
 	s.cfg = runtimeCfg
 	s.installer = installsvc.NewService(s.cfg)
-	services, err := service.NewServices(runtimeCfg, store.NewMySQLStore(db))
+	services, err := service.NewServices(runtimeCfg, storemysql.NewStore(db))
 	if err != nil {
 		c.JSON(http.StatusCreated, gin.H{
 			"installed":       true,

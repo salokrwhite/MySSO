@@ -14,7 +14,7 @@ import (
 	"mysso/backend/internal/domain"
 	installsvc "mysso/backend/internal/install"
 	"mysso/backend/internal/service"
-	"mysso/backend/internal/store"
+	storemysql "mysso/backend/internal/store/mysql"
 )
 
 type Server struct {
@@ -38,12 +38,12 @@ func NewServer(cfg config.Config) (*Server, error) {
 		if err := cfg.ValidateInstalledSecrets(); err != nil {
 			return nil, err
 		}
-		db, err := store.OpenMySQL(cfg.DB)
+		db, err := storemysql.Open(cfg.DB)
 		if err == nil {
 			if err := installsvc.ApplyRuntimeSettings(db, &cfg); err != nil {
 				return nil, err
 			}
-			services, err = service.NewServices(cfg, store.NewMySQLStore(db))
+			services, err = service.NewServices(cfg, storemysql.NewStore(db))
 			if err != nil {
 				return nil, err
 			}
@@ -166,17 +166,31 @@ func (s *Server) registerRoutes() {
 
 	dev := api.Group("/developer", s.requireSession(), s.requireRole(domain.RoleDeveloper))
 	dev.GET("/apps", s.handleDeveloperApps)
+	dev.GET("/user-groups", s.handleDeveloperGroups)
+	dev.GET("/managed-users", s.handleDeveloperManagedUsers)
+	dev.GET("/access-apps", s.handleDeveloperAccessApps)
+	dev.GET("/access-logs", s.handleDeveloperAccessLogs)
 	dev.GET("/scopes", s.handleDeveloperScopes)
 	dev.GET("/audit-logs", s.handleDeveloperAuditLogs)
 	dev.GET("/analytics", s.handleDeveloperAnalytics)
 	dev.POST("/apps", s.handleCreateApp)
+	dev.POST("/user-groups", s.handleCreateDeveloperGroup)
+	dev.PUT("/user-groups/:id", s.handleUpdateDeveloperGroup)
+	dev.DELETE("/user-groups/:id", s.handleDeleteDeveloperGroup)
+	dev.PUT("/managed-users/:user_id/groups", s.handleUpdateDeveloperManagedUserGroups)
+	dev.PUT("/managed-users/groups/batch-update", s.handleBatchUpdateDeveloperManagedUserGroups)
+	dev.PUT("/apps/:id/access-groups", s.handleUpdateDeveloperAppBindings)
+	dev.POST("/apps/:id/bans", s.handleCreateDeveloperAppBan)
+	dev.DELETE("/apps/:id/bans/:user_id", s.handleDeleteDeveloperAppBan)
 	dev.POST("/apps/icon", s.handleUploadDeveloperAppIcon)
 	dev.PUT("/apps/:id", s.handleUpdateDeveloperApp)
 	dev.POST("/apps/:id/reset-secret", s.handleResetSecret)
 	dev.DELETE("/apps/:id", s.handleDeleteDeveloperApp)
 	dev.POST("/audit-logs/batch-delete", s.handleBatchDeleteDeveloperAuditLogs)
+	dev.POST("/access-logs/batch-delete", s.handleBatchDeleteDeveloperAccessLogs)
 
 	admin := api.Group("/admin", s.requireSession(), s.requireRole(domain.RoleAdmin))
+	admin.GET("/dashboard-summary", s.handleAdminDashboardSummary)
 	admin.GET("/users", s.handleUsers)
 	admin.POST("/users", s.handleCreateUser)
 	admin.PUT("/users/:id", s.handleUpdateUser)
@@ -195,6 +209,7 @@ func (s *Server) registerRoutes() {
 	admin.DELETE("/apps/:id", s.handleDeleteApp)
 	admin.POST("/apps/batch-delete", s.handleBatchDeleteApps)
 	admin.GET("/audit-logs", s.handleAuditLogs)
+	admin.GET("/developer-access-logs", s.handleAdminDeveloperAccessLogs)
 	admin.GET("/risk-logs", s.handleRiskLogs)
 	admin.GET("/passkey-logs", s.handlePasskeyLogs)
 	admin.GET("/send-logs/emails", s.handleEmailSendLogs)
@@ -204,6 +219,7 @@ func (s *Server) registerRoutes() {
 	admin.POST("/send-logs/emails/batch-delete", s.handleBatchDeleteEmailSendLogs)
 	admin.POST("/send-logs/phones/batch-delete", s.handleBatchDeletePhoneSendLogs)
 	admin.POST("/audit-logs/batch-delete", s.handleBatchDeleteAuditLogs)
+	admin.POST("/developer-access-logs/batch-delete", s.handleAdminHardDeleteDeveloperAccessLogs)
 	admin.GET("/gateway-policies", s.handleGatewayPolicies)
 	admin.GET("/scopes", s.handleAdminScopes)
 	admin.POST("/scopes", s.handleUpsertScope)

@@ -4,6 +4,9 @@ export function resolveDeveloperPageType(pathname: string): DeveloperPageType {
   if (pathname === "/developer/console") {
     return "console";
   }
+  if (pathname === "/developer/user-access") {
+    return "userAccess";
+  }
   if (pathname === "/developer/audit-logs") {
     return "auditLogs";
   }
@@ -12,6 +15,9 @@ export function resolveDeveloperPageType(pathname: string): DeveloperPageType {
   }
   if (pathname === "/developer/docs/examples/go") {
     return "docsExamplesGo";
+  }
+  if (pathname === "/developer/docs/examples/csharp") {
+    return "docsExamplesCsharp";
   }
   if (pathname === "/developer/docs/examples/php") {
     return "docsExamplesPHP";
@@ -24,6 +30,12 @@ export function resolveDeveloperPageType(pathname: string): DeveloperPageType {
   }
   if (pathname === "/developer/docs/examples/python") {
     return "docsExamplesPython";
+  }
+  if (pathname === "/developer/docs/examples/ruby") {
+    return "docsExamplesRuby";
+  }
+  if (pathname === "/developer/docs/examples/rust") {
+    return "docsExamplesRust";
   }
   if (pathname === "/developer/docs/examples") {
     return "docsExamples";

@@ -97,6 +97,79 @@ CREATE TABLE `deletion_login_challenges` (
   KEY `idx_deletion_login_challenges_expires_at` (`expires_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `developer_groups` (
+  `id` varchar(64) NOT NULL,
+  `owner_user_id` varchar(64) NOT NULL,
+  `name` varchar(128) NOT NULL,
+  `description` varchar(500) NOT NULL DEFAULT '',
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_developer_group_owner_name` (`owner_user_id`,`name`),
+  KEY `idx_developer_groups_owner_user_id` (`owner_user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `developer_group_members` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `group_id` varchar(64) NOT NULL,
+  `user_id` varchar(64) NOT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_developer_group_member` (`group_id`,`user_id`),
+  KEY `idx_developer_group_members_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `app_group_bindings` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `app_id` varchar(64) NOT NULL,
+  `group_id` varchar(64) NOT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_app_group_binding` (`app_id`,`group_id`),
+  KEY `idx_app_group_bindings_group_id` (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `app_user_bans` (
+  `id` varchar(64) NOT NULL,
+  `app_id` varchar(64) NOT NULL,
+  `user_id` varchar(64) NOT NULL,
+  `reason` varchar(500) NOT NULL DEFAULT '',
+  `expires_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_app_user_ban` (`app_id`,`user_id`),
+  KEY `idx_app_user_bans_app_updated_at` (`app_id`,`updated_at`),
+  KEY `idx_app_user_bans_expires_at` (`expires_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `app_user_access_versions` (
+  `app_id` varchar(64) NOT NULL,
+  `user_id` varchar(64) NOT NULL,
+  `version` int(11) NOT NULL DEFAULT '1',
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`app_id`,`user_id`),
+  KEY `idx_app_user_access_versions_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `developer_access_logs` (
+  `id` varchar(64) NOT NULL,
+  `owner_user_id` varchar(64) NOT NULL,
+  `actor_id` varchar(64) NOT NULL,
+  `action` varchar(128) NOT NULL,
+  `target_type` varchar(64) NOT NULL DEFAULT '',
+  `target_id` varchar(64) NOT NULL DEFAULT '',
+  `app_id` varchar(64) NOT NULL DEFAULT '',
+  `user_id` varchar(64) NOT NULL DEFAULT '',
+  `group_id` varchar(64) NOT NULL DEFAULT '',
+  `detail_json` json DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_developer_access_logs_owner_created_at` (`owner_user_id`,`created_at`),
+  KEY `idx_developer_access_logs_deleted_at` (`deleted_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `email_send_logs` (
   `id` varchar(64) NOT NULL,
   `target_email` varchar(255) NOT NULL,

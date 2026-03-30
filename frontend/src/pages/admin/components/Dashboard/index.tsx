@@ -1,5 +1,5 @@
 import { Space } from "antd";
-import type { AuditLog, Policy } from "../../types";
+import type { Policy } from "../../types";
 import { PolicyTable } from "./PolicyTable";
 import { StatisticGrid } from "./StatisticGrid";
 
@@ -8,8 +8,9 @@ type DashboardProps = {
   activeUsers: number;
   pendingApps: number;
   approvedApps: number;
-  logs: AuditLog[];
+  logCount: number;
   policies: Policy[];
+  policyCount: number;
 };
 
 export function Dashboard({
@@ -17,8 +18,9 @@ export function Dashboard({
   activeUsers,
   pendingApps,
   approvedApps,
-  logs,
-  policies
+  logCount,
+  policies,
+  policyCount,
 }: DashboardProps) {
   return (
     <Space direction="vertical" size={20} style={{ width: "100%" }}>
@@ -27,8 +29,8 @@ export function Dashboard({
         activeUsers={activeUsers}
         pendingApps={pendingApps}
         approvedApps={approvedApps}
-        logCount={logs.length}
-        policyCount={policies.length}
+        logCount={logCount}
+        policyCount={policyCount}
       />
       <PolicyTable policies={policies} />
     </Space>

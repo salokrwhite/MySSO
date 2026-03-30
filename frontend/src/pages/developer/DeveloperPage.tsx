@@ -6,17 +6,21 @@ import { DeveloperSecretRevealModal } from "./components/common/DeveloperSecretR
 import { DeveloperConsole } from "./components/Console";
 import {
   DeveloperDocsExamples,
+  DeveloperDocsExamplesCsharp,
   DeveloperDocsExamplesGo,
   DeveloperDocsExamplesJava,
   DeveloperDocsExamplesNodejs,
   DeveloperDocsExamplesPHP,
   DeveloperDocsExamplesPython,
+  DeveloperDocsExamplesRuby,
+  DeveloperDocsExamplesRust,
 } from "./components/DocsExamples";
 import {
   buildDeveloperManualMarkdown,
   DeveloperDocsManual,
 } from "./components/DocsManual";
 import { DeveloperDashboard } from "./components/Dashboard";
+import { DeveloperUserAccess } from "./components/UserAccess";
 import { useDeveloperPageController } from "./hooks/useDeveloperPageController";
 import { useDeveloperTranslation } from "./i18n";
 
@@ -124,6 +128,44 @@ export function DeveloperPage() {
           onDeleteApp={controller.deleteApp}
         />
       ) : null}
+      {controller.pageType === "userAccess" ? (
+        <DeveloperUserAccess
+          groups={controller.groups}
+          managedUsers={controller.managedUsers}
+          selectedManagedUserIDs={controller.selectedManagedUserIDs}
+          setSelectedManagedUserIDs={controller.setSelectedManagedUserIDs}
+          managedUsersTotal={controller.managedUsersTotal}
+          managedUsersPage={controller.managedUsersPage}
+          managedUsersPageSize={controller.managedUsersPageSize}
+          managedUsersAppID={controller.managedUsersAppID}
+          managedUsersEmailKeyword={controller.managedUsersEmailKeyword}
+          accessApps={controller.accessApps}
+          accessLogs={controller.accessLogs}
+          accessLogsTotal={controller.accessLogsTotal}
+          accessLogsPage={controller.accessLogsPage}
+          accessLogsPageSize={controller.accessLogsPageSize}
+          deletingAccessLogs={controller.deletingAccessLogs}
+          selectedAccessLogIds={controller.selectedAccessLogIds}
+          setSelectedAccessLogIds={controller.setSelectedAccessLogIds}
+          onCreateGroup={controller.createGroup}
+          onUpdateGroup={controller.updateGroup}
+          onDeleteGroup={controller.deleteGroup}
+          onManagedUsersPageChange={controller.changeManagedUsersPage}
+          onManagedUsersAppFilterChange={controller.changeManagedUsersAppFilter}
+          onManagedUsersEmailKeywordChange={
+            controller.changeManagedUsersEmailKeyword
+          }
+          onBatchUpdateManagedUserGroups={
+            controller.batchUpdateManagedUserGroups
+          }
+          onUpdateManagedUserGroups={controller.updateManagedUserGroups}
+          onUpdateAppBindings={controller.updateAppBindings}
+          onBanUser={controller.banAppUser}
+          onUnbanUser={controller.unbanAppUser}
+          onAccessLogsPageChange={controller.changeAccessLogsPage}
+          onDeleteSelectedLogs={controller.deleteSelectedAccessLogs}
+        />
+      ) : null}
       {controller.pageType === "auditLogs" ? (
         <DeveloperAuditLogs
           auditLogs={controller.auditLogs}
@@ -147,6 +189,9 @@ export function DeveloperPage() {
       {controller.pageType === "docsExamplesGo" ? (
         <DeveloperDocsExamplesGo />
       ) : null}
+      {controller.pageType === "docsExamplesCsharp" ? (
+        <DeveloperDocsExamplesCsharp />
+      ) : null}
       {controller.pageType === "docsExamplesPHP" ? (
         <DeveloperDocsExamplesPHP />
       ) : null}
@@ -158,6 +203,12 @@ export function DeveloperPage() {
       ) : null}
       {controller.pageType === "docsExamplesPython" ? (
         <DeveloperDocsExamplesPython />
+      ) : null}
+      {controller.pageType === "docsExamplesRuby" ? (
+        <DeveloperDocsExamplesRuby />
+      ) : null}
+      {controller.pageType === "docsExamplesRust" ? (
+        <DeveloperDocsExamplesRust />
       ) : null}
     </Space>
   );

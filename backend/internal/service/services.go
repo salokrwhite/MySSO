@@ -9,108 +9,37 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
-
-	"github.com/google/uuid"
 
 	"mysso/backend/internal/config"
 	"mysso/backend/internal/crypto"
-	"mysso/backend/internal/domain"
 	"mysso/backend/internal/notify"
+	"mysso/backend/internal/service/accesscontrol"
+	"mysso/backend/internal/service/admin"
+	"mysso/backend/internal/service/apps"
+	"mysso/backend/internal/service/audit"
+	"mysso/backend/internal/service/auth"
+	"mysso/backend/internal/service/common/deps"
+	"mysso/backend/internal/service/consent"
+	"mysso/backend/internal/service/oauth"
+	"mysso/backend/internal/service/passkey"
+	"mysso/backend/internal/service/ratelimit"
+	"mysso/backend/internal/service/settings"
+	"mysso/backend/internal/service/user"
 	"mysso/backend/internal/store"
 )
 
-type serviceDeps struct {
-	cfg   *config.Config
-	store store.Store
-	jwt   *crypto.JWTManager
-	mail  notify.Mailer
-	sms   notify.SMSSender
-}
-
-func (d *serviceDeps) lookupUserEmailByID(userID string) string {
-	userID = strings.TrimSpace(userID)
-	if userID == "" {
-		return ""
-	}
-	user, err := d.store.GetUser(userID)
-	if err != nil {
-		return ""
-	}
-	return strings.TrimSpace(user.Email)
-}
-
-func (d *serviceDeps) lookupUserEmailByEmail(email string) string {
-	email = strings.ToLower(strings.TrimSpace(email))
-	if email == "" {
-		return ""
-	}
-	user, err := d.store.FindUserByEmail(email)
-	if err != nil {
-		return email
-	}
-	return strings.TrimSpace(user.Email)
-}
-
-func (d *serviceDeps) lookupUserEmailByPhone(phone string) string {
-	phone = strings.TrimSpace(phone)
-	if phone == "" {
-		return ""
-	}
-	user, err := d.store.FindUserByPhone(phone)
-	if err != nil {
-		return ""
-	}
-	return strings.TrimSpace(user.Email)
-}
-
-func (d *serviceDeps) appendEmailSendLog(targetEmail, content, accountEmail string) {
-	d.store.AppendEmailSendLog(domain.EmailSendLog{
-		ID:           uuid.NewString(),
-		TargetEmail:  strings.TrimSpace(targetEmail),
-		Content:      strings.TrimSpace(content),
-		AccountEmail: strings.TrimSpace(accountEmail),
-		CreatedAt:    time.Now().UTC(),
-	})
-}
-
-func (d *serviceDeps) appendPhoneSendLog(targetPhone, content, accountEmail string) {
-	d.store.AppendPhoneSendLog(domain.PhoneSendLog{
-		ID:           uuid.NewString(),
-		TargetPhone:  strings.TrimSpace(targetPhone),
-		Content:      strings.TrimSpace(content),
-		AccountEmail: strings.TrimSpace(accountEmail),
-		CreatedAt:    time.Now().UTC(),
-	})
-}
-
-func (d *serviceDeps) appendUserOperationLog(userID, action, targetID string, detail map[string]any) {
-	userID = strings.TrimSpace(userID)
-	action = strings.TrimSpace(action)
-	if userID == "" || action == "" {
-		return
-	}
-	d.store.AppendUserOperationLog(domain.UserOperationLog{
-		ID:        uuid.NewString(),
-		UserID:    userID,
-		Action:    action,
-		TargetID:  strings.TrimSpace(targetID),
-		Detail:    detail,
-		CreatedAt: time.Now().UTC(),
-	})
-}
-
 type Services struct {
-	Auth      *AuthService
-	Passkey   *PasskeyService
-	User      *UserService
-	Settings  *SettingsService
-	RateLimit *RateLimitService
-	OAuth     *OAuthService
-	Apps      *AppsService
-	Admin     *AdminService
-	Consent   *ConsentService
-	Audit     *AuditService
+	Auth          *auth.Service
+	Passkey       *passkey.Service
+	User          *user.Service
+	Settings      *settings.Service
+	RateLimit     *ratelimit.Service
+	OAuth         *oauth.Service
+	Apps          *apps.Service
+	AccessControl *accesscontrol.Service
+	Admin         *admin.Service
+	Consent       *consent.Service
+	Audit         *audit.Service
 }
 
 func NewServices(cfg config.Config, dataStore store.Store) (*Services, error) {
@@ -130,26 +59,27 @@ func NewServices(cfg config.Config, dataStore store.Store) (*Services, error) {
 	}
 
 	cfgCopy := cfg
-	deps := &serviceDeps{
-		cfg:   &cfgCopy,
-		store: dataStore,
-		jwt:   jwtManager,
-		mail:  notify.NewMailer(cfgCopy.SMTP),
-		sms:   notify.NewSMSSender(cfgCopy.SMS),
+	dependencies := &deps.Deps{
+		Cfg:   &cfgCopy,
+		Store: dataStore,
+		JWT:   jwtManager,
+		Mail:  notify.NewMailer(cfgCopy.SMTP),
+		SMS:   notify.NewSMSSender(cfgCopy.SMS),
 	}
 
 	services := &Services{}
-	services.Audit = &AuditService{deps: deps}
-	services.Settings = &SettingsService{deps: deps}
-	services.RateLimit = &RateLimitService{deps: deps, settings: services.Settings}
-	services.User = &UserService{deps: deps, audit: services.Audit, settings: services.Settings, rateLimit: services.RateLimit}
-	services.Auth = &AuthService{deps: deps, audit: services.Audit, settings: services.Settings, user: services.User, rateLimit: services.RateLimit}
-	services.Passkey = &PasskeyService{deps: deps, audit: services.Audit, settings: services.Settings, user: services.User, rateLimit: services.RateLimit}
-	services.Settings.rateLimit = services.RateLimit
-	services.OAuth = &OAuthService{deps: deps, audit: services.Audit, settings: services.Settings}
-	services.Apps = &AppsService{deps: deps, audit: services.Audit}
-	services.Admin = &AdminService{deps: deps, audit: services.Audit}
-	services.Consent = &ConsentService{deps: deps, audit: services.Audit}
+	services.Audit = audit.New(dependencies)
+	services.Settings = settings.New(dependencies)
+	services.RateLimit = ratelimit.New(dependencies, services.Settings)
+	services.Settings.SetRateLimitChecker(services.RateLimit)
+	services.AccessControl = accesscontrol.New(dependencies, services.Audit)
+	services.User = user.New(dependencies, services.Audit, services.Settings, services.RateLimit)
+	services.Auth = auth.New(dependencies, services.Audit, services.Settings, services.User, services.RateLimit)
+	services.Passkey = passkey.New(dependencies, services.Audit, services.Settings, services.User, services.RateLimit)
+	services.OAuth = oauth.New(dependencies, services.Audit, services.Settings, services.AccessControl)
+	services.Apps = apps.New(dependencies, services.Audit)
+	services.Admin = admin.New(dependencies, services.Audit)
+	services.Consent = consent.New(dependencies, services.Audit, services.AccessControl)
 	if err := services.Apps.MigrateLegacyClientSecrets(); err != nil {
 		return nil, err
 	}

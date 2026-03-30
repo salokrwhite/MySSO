@@ -2,8 +2,15 @@ import { api } from "../../../api/client";
 import { fetchPublicSettings } from "../../../publicSettings";
 import type {
   AppItem,
+  AppUserBan,
+  DeveloperAccessApp,
+  DeveloperAccessLog,
+  DeveloperAccessLogListResponse,
   DeveloperAnalyticsData,
   DeveloperAuditLog,
+  DeveloperGroup,
+  DeveloperManagedUser,
+  DeveloperManagedUserListResponse,
   ResetSecretResult,
   ScopeDefinition,
 } from "../types";
@@ -89,7 +96,16 @@ const developerScopesCache: SessionScopedCache<{ items: ScopeDefinition[] }> = {
   value: null,
   inflight: null,
 };
-
+const developerGroupsCache: SessionScopedCache<{ items: DeveloperGroup[] }> = {
+  value: null,
+  inflight: null,
+};
+const developerAccessAppsCache: SessionScopedCache<{
+  items: DeveloperAccessApp[];
+}> = {
+  value: null,
+  inflight: null,
+};
 export async function fetchDeveloperApps(
   sessionToken?: string,
   options?: { force?: boolean },
@@ -153,6 +169,75 @@ export async function fetchDeveloperScopes(
   );
 }
 
+export async function fetchDeveloperGroups(
+  sessionToken?: string,
+  options?: { force?: boolean },
+) {
+  return loadCachedResource(
+    developerGroupsCache,
+    sessionToken,
+    () => api<{ items: DeveloperGroup[] }>("/developer/user-groups", undefined, sessionToken),
+    options,
+  );
+}
+
+export async function fetchDeveloperManagedUsers(
+  sessionToken?: string,
+  query?: {
+    page?: number;
+    pageSize?: number;
+    appId?: string;
+    emailKeyword?: string;
+  },
+  options?: { force?: boolean },
+) {
+  const params = new URLSearchParams();
+  if (typeof query?.page === "number" && query.page > 0) {
+    params.set("page", String(query.page));
+  }
+  if (typeof query?.pageSize === "number" && query.pageSize > 0) {
+    params.set("page_size", String(query.pageSize));
+  }
+  if (query?.appId?.trim()) {
+    params.set("app_id", query.appId.trim());
+  }
+  if (query?.emailKeyword?.trim()) {
+    params.set("email_keyword", query.emailKeyword.trim());
+  }
+  const path = `/developer/managed-users${params.size > 0 ? `?${params.toString()}` : ""}`;
+  return api<DeveloperManagedUserListResponse>(path, undefined, sessionToken);
+}
+
+export async function fetchDeveloperAccessApps(
+  sessionToken?: string,
+  options?: { force?: boolean },
+) {
+  return loadCachedResource(
+    developerAccessAppsCache,
+    sessionToken,
+    () => api<{ items: DeveloperAccessApp[] }>("/developer/access-apps", undefined, sessionToken),
+    options,
+  );
+}
+
+export async function fetchDeveloperAccessLogs(
+  sessionToken?: string,
+  query?: {
+    page?: number;
+    pageSize?: number;
+  },
+) {
+  const params = new URLSearchParams();
+  if (typeof query?.page === "number" && query.page > 0) {
+    params.set("page", String(query.page));
+  }
+  if (typeof query?.pageSize === "number" && query.pageSize > 0) {
+    params.set("page_size", String(query.pageSize));
+  }
+  const path = `/developer/access-logs${params.size > 0 ? `?${params.toString()}` : ""}`;
+  return api<DeveloperAccessLogListResponse>(path, undefined, sessionToken);
+}
+
 export async function fetchDeveloperAnnouncement() {
   const settings = await fetchPublicSettings();
   return {
@@ -182,6 +267,8 @@ export function clearDeveloperResourceCaches(sessionToken?: string) {
   readSessionScopedCache(developerAuditLogsCache, sessionToken).value = null;
   readSessionScopedCache(developerAnalyticsCache, sessionToken).value = null;
   readSessionScopedCache(developerScopesCache, sessionToken).value = null;
+  readSessionScopedCache(developerGroupsCache, sessionToken).value = null;
+  readSessionScopedCache(developerAccessAppsCache, sessionToken).value = null;
 }
 
 export async function updateDeveloperApp(
@@ -227,6 +314,110 @@ export async function deleteDeveloperAuditLogs(
       method: "POST",
       body: JSON.stringify({ log_ids: logIds }),
     },
+    sessionToken,
+  );
+}
+
+export async function createDeveloperGroup(
+  sessionToken: string | undefined,
+  payload: { name: string; description?: string },
+) {
+  return api<{ item: DeveloperGroup }>(
+    "/developer/user-groups",
+    { method: "POST", body: JSON.stringify(payload) },
+    sessionToken,
+  );
+}
+
+export async function updateDeveloperGroup(
+  sessionToken: string | undefined,
+  id: string,
+  payload: { name: string; description?: string },
+) {
+  return api<{ item: DeveloperGroup }>(
+    `/developer/user-groups/${id}`,
+    { method: "PUT", body: JSON.stringify(payload) },
+    sessionToken,
+  );
+}
+
+export async function deleteDeveloperGroup(
+  sessionToken: string | undefined,
+  id: string,
+) {
+  return api(`/developer/user-groups/${id}`, { method: "DELETE" }, sessionToken);
+}
+
+export async function updateDeveloperManagedUserGroups(
+  sessionToken: string | undefined,
+  userId: string,
+  groupIds: string[],
+) {
+  return api(
+    `/developer/managed-users/${userId}/groups`,
+    { method: "PUT", body: JSON.stringify({ group_ids: groupIds }) },
+    sessionToken,
+  );
+}
+
+export async function batchUpdateDeveloperManagedUserGroups(
+  sessionToken: string | undefined,
+  userIds: string[],
+  groupIds: string[],
+) {
+  return api(
+    "/developer/managed-users/groups/batch-update",
+    {
+      method: "PUT",
+      body: JSON.stringify({ user_ids: userIds, group_ids: groupIds }),
+    },
+    sessionToken,
+  );
+}
+
+export async function updateDeveloperAppBindings(
+  sessionToken: string | undefined,
+  appId: string,
+  groupIds: string[],
+) {
+  return api(
+    `/developer/apps/${appId}/access-groups`,
+    { method: "PUT", body: JSON.stringify({ group_ids: groupIds }) },
+    sessionToken,
+  );
+}
+
+export async function banDeveloperAppUser(
+  sessionToken: string | undefined,
+  appId: string,
+  payload: { user_id: string; reason: string; expires_at?: string },
+) {
+  return api<{ item: AppUserBan }>(
+    `/developer/apps/${appId}/bans`,
+    { method: "POST", body: JSON.stringify(payload) },
+    sessionToken,
+  );
+}
+
+export async function unbanDeveloperAppUser(
+  sessionToken: string | undefined,
+  appId: string,
+  userId: string,
+) {
+  return api(
+    `/developer/apps/${appId}/bans/${userId}`,
+    { method: "DELETE" },
+    sessionToken,
+  );
+}
+
+export async function deleteDeveloperAccessLogs(
+  sessionToken: string | undefined,
+  logIds: string[],
+) {
+  return api(
+    "/developer/access-logs/batch-delete",
+    { method: "POST", body: JSON.stringify({ log_ids: logIds }) },
     sessionToken,
   );
 }

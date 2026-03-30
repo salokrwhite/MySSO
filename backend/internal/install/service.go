@@ -23,7 +23,7 @@ import (
 	"mysso/backend/internal/appdefaults"
 	"mysso/backend/internal/config"
 	"mysso/backend/internal/security"
-	"mysso/backend/internal/store"
+	storemysql "mysso/backend/internal/store/mysql"
 )
 
 var ErrAlreadyInstalled = errors.New("system already installed")
@@ -127,7 +127,7 @@ func openDB(dbCfg config.DBConfig) (*sql.DB, error) {
 	if !dbCfg.IsConfigured() {
 		return nil, fmt.Errorf("database config incomplete")
 	}
-	return store.OpenMySQL(dbCfg)
+	return storemysql.Open(dbCfg)
 }
 
 func isInstalled(db *sql.DB) (bool, error) {
