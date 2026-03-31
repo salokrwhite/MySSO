@@ -219,6 +219,73 @@ function getRequestedPermissions(scope: string, t: (key: string, options?: Recor
   });
 }
 
+function translateAuthorizeError(rawMessage: string, t: (key: string, options?: Record<string, unknown>) => string) {
+  const normalizedMessage = rawMessage.trim();
+  const lowerCasedMessage = normalizedMessage.toLowerCase();
+  const rejectedPrefix = "application rejected:";
+  const bannedPrefix = "application access banned:";
+
+  if (lowerCasedMessage.startsWith(rejectedPrefix)) {
+    return t("auth.authorize.errors.applicationRejectedWithReason", {
+      reason: normalizedMessage.slice(rejectedPrefix.length).trim()
+    });
+  }
+
+  if (lowerCasedMessage.startsWith(bannedPrefix)) {
+    return t("auth.authorize.errors.applicationAccessBannedWithReason", {
+      reason: normalizedMessage.slice(bannedPrefix.length).trim()
+    });
+  }
+
+  switch (lowerCasedMessage) {
+    case "application rejected":
+      return t("auth.authorize.errors.applicationRejected");
+    case "application access restricted":
+      return t("auth.authorize.errors.applicationAccessRestricted");
+    case "application access banned":
+      return t("auth.authorize.errors.applicationAccessBanned");
+    case "application not approved":
+      return t("auth.authorize.errors.applicationNotApproved");
+    case "application not found":
+      return t("auth.authorize.errors.applicationNotFound");
+    case "forbidden":
+      return t("auth.authorize.errors.forbidden");
+    case "unsupported response_type":
+      return t("auth.authorize.errors.unsupportedResponseType");
+    case "redirect_uri mismatch":
+      return t("auth.authorize.errors.redirectUriMismatch");
+    case "scope not allowed":
+      return t("auth.authorize.errors.scopeNotAllowed");
+    case "openid scope is required":
+      return t("auth.authorize.errors.openidScopeRequired");
+    case "code_challenge_method requires code_challenge":
+      return t("auth.authorize.errors.codeChallengeMethodRequiresCodeChallenge");
+    case "unsupported code_challenge_method":
+      return t("auth.authorize.errors.unsupportedCodeChallengeMethod");
+    case "prompt none must not be combined with other values":
+      return t("auth.authorize.errors.promptNoneMustNotBeCombinedWithOtherValues");
+    case "invalid max_age":
+      return t("auth.authorize.errors.invalidMaxAge");
+    case "acr_values_not_satisfied":
+      return t("auth.authorize.errors.acrValuesNotSatisfied");
+    case "consent_required":
+      return t("auth.authorize.errors.consentRequired");
+    case "login_required":
+      return t("auth.authorize.errors.loginRequired");
+    case "authorize failed":
+      return t("auth.authorize.errors.authorizeFailed");
+    case "failed to load authorization settings":
+      return t("auth.authorize.errors.loadAuthorizationSettingsFailed");
+    case "network request failed":
+      return t("auth.authorize.errors.networkRequestFailed");
+    default:
+      if (lowerCasedMessage.startsWith("api endpoint returned html instead of json")) {
+        return t("auth.authorize.errors.apiReturnedHtml");
+      }
+      return rawMessage;
+  }
+}
+
 export function AuthorizePage() {
   const { t, i18n } = useTranslation();
   const location = useLocation();
@@ -713,7 +780,7 @@ export function AuthorizePage() {
             </Space>
           </div>
 
-          {error ? <Alert type="error" message={error} /> : null}
+          {error ? <Alert type="error" message={translateAuthorizeError(error, t)} /> : null}
 
           {showAccountPicker ? (
             <div

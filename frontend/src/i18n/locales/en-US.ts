@@ -247,6 +247,30 @@ const locale = {
           "I have read and agree to grant the permissions listed above",
         confirm: "Confirm and Continue",
         cancel: "Cancel and Return to Sign In",
+        errors: {
+          applicationRejected: "Application Rejected",
+          applicationRejectedWithReason: "Application Rejected: {{reason}}",
+          applicationAccessRestricted: "Application access is restricted",
+          applicationAccessBanned: "Application access is banned",
+          applicationAccessBannedWithReason:
+            "Application access is banned: {{reason}}",
+          applicationNotApproved: "Application is not approved",
+          applicationNotFound: "Application Not Found",
+          unsupportedResponseType: "Unsupported response type",
+          redirectUriMismatch: "The redirect URI does not match",
+          scopeNotAllowed: "Requested scope is not allowed",
+          openidScopeRequired: "The openid scope is required",
+          codeChallengeMethodRequiresCodeChallenge:
+            "A code challenge is required when code_challenge_method is provided",
+          unsupportedCodeChallengeMethod: "Unsupported code challenge method",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "The prompt value none cannot be combined with other values",
+          invalidMaxAge: "The max_age value is invalid",
+          acrValuesNotSatisfied:
+            "The current session does not satisfy the requested authentication context",
+          consentRequired: "Additional consent is required",
+          loginRequired: "Please sign in again to continue",
+        },
         scopes: {
           openidTitle: "Confirm your identity",
           openidDesc:

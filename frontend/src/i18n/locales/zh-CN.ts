@@ -226,6 +226,28 @@ const locale = {
         agreement: "我已阅读并同意该应用获取以上权限",
         confirm: "确认授权并继续",
         cancel: "取消并返回登录",
+        errors: {
+          applicationRejected: "应用已被驳回",
+          applicationRejectedWithReason: "应用已被驳回：{{reason}}",
+          applicationAccessRestricted: "应用访问已受限",
+          applicationAccessBanned: "应用访问已被封禁",
+          applicationAccessBannedWithReason: "应用访问已被封禁：{{reason}}",
+          applicationNotApproved: "应用尚未通过审核",
+          applicationNotFound: "应用不存在",
+          unsupportedResponseType: "不支持的响应类型",
+          redirectUriMismatch: "回调地址不匹配",
+          scopeNotAllowed: "申请的权限范围不被允许",
+          openidScopeRequired: "必须包含 openid 权限",
+          codeChallengeMethodRequiresCodeChallenge:
+            "提供 code_challenge_method 时必须同时提供 code_challenge",
+          unsupportedCodeChallengeMethod: "不支持的 code challenge 方法",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "prompt 参数中的 none 不能与其他值同时使用",
+          invalidMaxAge: "max_age 参数无效",
+          acrValuesNotSatisfied: "当前登录会话不满足请求的认证上下文要求",
+          consentRequired: "需要额外确认授权",
+          loginRequired: "需要重新登录后继续",
+        },
         scopes: {
           openidTitle: "确认您的身份标识",
           openidDesc: "用于确认当前登录账号是您本人，并建立基础登录会话。",
