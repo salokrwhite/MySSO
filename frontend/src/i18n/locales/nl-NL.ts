@@ -247,6 +247,33 @@ const locale = {
           "Ik heb gelezen en ga akkoord met het verlenen van de bovenstaande machtigingen",
         confirm: "Bevestigen en doorgaan",
         cancel: "Annuleren en terugkeren naar inloggen",
+        errors: {
+          applicationRejected: "Applicatie afgewezen",
+          applicationRejectedWithReason: "Applicatie afgewezen: {{reason}}",
+          applicationAccessRestricted: "Toegang tot de applicatie is beperkt",
+          applicationAccessBanned: "Toegang tot de applicatie is verboden",
+          applicationAccessBannedWithReason: "Toegang tot de applicatie is verboden: {{reason}}",
+          applicationNotApproved: "Applicatie niet goedgekeurd",
+          applicationNotFound: "Applicatie niet gevonden",
+          forbidden: "U hebt geen toestemming om toegang te krijgen tot deze applicatie",
+          unsupportedResponseType: "Niet ondersteund antwoordtype",
+          redirectUriMismatch: "Omleidings-URI komt niet overeen",
+          scopeNotAllowed: "Gevraagde scope is niet toegestaan",
+          openidScopeRequired: "OpenID-scope is vereist",
+          codeChallengeMethodRequiresCodeChallenge:
+            "Wanneer code_challenge_method wordt opgegeven, moet ook code_challenge worden opgegeven",
+          unsupportedCodeChallengeMethod: "Niet ondersteunde code challenge-methode",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "De waarde 'none' in prompt mag niet worden gecombineerd met andere waarden",
+          invalidMaxAge: "De max_age-waarde is ongeldig",
+          acrValuesNotSatisfied: "De huidige inlogsessie voldoet niet aan de gevraagde authenticatiecontext",
+          consentRequired: "Extra toestemming vereist",
+          loginRequired: "Log a.u.b. opnieuw in om door te gaan",
+          authorizeFailed: "Autorisatie mislukt, probeer het later opnieuw",
+          loadAuthorizationSettingsFailed: "Laden van autorisatie-instellingen is mislukt",
+          networkRequestFailed: "Netwerkverzoek mislukt, controleer uw verbinding en probeer opnieuw",
+          apiReturnedHtml: "De autorisatieservice retourneerde een onverwachte pagina. Controleer de API- of reverse proxy-configuratie.",
+        },
         scopes: {
           openidTitle: "Bevestig uw identiteit",
           openidDesc:

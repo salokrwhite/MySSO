@@ -247,6 +247,33 @@ const locale = {
           "Pročitao/la sam i pristajem na daje navedenih dopuštenja",
         confirm: "Potvrdi i nastavi",
         cancel: "Poništi i vratite se na prijavu",
+        errors: {
+          applicationRejected: "Aplikacija je odbijena",
+          applicationRejectedWithReason: "Aplikacija je odbijena: {{reason}}",
+          applicationAccessRestricted: "Pristup aplikaciji je ograničen",
+          applicationAccessBanned: "Pristup aplikaciji je zabranjen",
+          applicationAccessBannedWithReason: "Pristup aplikaciji je zabranjen: {{reason}}",
+          applicationNotApproved: "Aplikacija nije odobrena",
+          applicationNotFound: "Aplikacija nije pronađena",
+          forbidden: "Nemate dopuštenja za pristup ovoj aplikaciji",
+          unsupportedResponseType: "Nepodržani tip odgovora",
+          redirectUriMismatch: "URI preusmjeravanja se ne podudara",
+          scopeNotAllowed: "Zahtjevani opseg nije dozvoljen",
+          openidScopeRequired: "Potreban je opseg openid",
+          codeChallengeMethodRequiresCodeChallenge:
+            "Kada se navede code_challenge_method, mora se navesti i code_challenge",
+          unsupportedCodeChallengeMethod: "Nepodržana metoda code challenge",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "Vrijednost 'none' u promptu ne može se kombinirati s drugim vrijednostima",
+          invalidMaxAge: "Vrijednost max_age je nevažeća",
+          acrValuesNotSatisfied: "Trenutna sesija prijave ne zadovoljava traženi kontekst autentikacije",
+          consentRequired: "Potrebno je dodatno pristanak",
+          loginRequired: "Prijavite se ponovno kako biste nastavili",
+          authorizeFailed: "Autorizacija nije uspjela, molimo pokušajte ponovno kasnije",
+          loadAuthorizationSettingsFailed: "Učitavanje postavki autorizacije nije uspjelo",
+          networkRequestFailed: "Mrežni zahtjev nije uspio, provjerite svoju vezu i pokušajte ponovno",
+          apiReturnedHtml: "Servis autorizacije vratio je neočekivanu stranicu. Provjerite konfiguraciju API ili obrnutog proxyja.",
+        },
         scopes: {
           openidTitle: "Potvrdi svoj identitet",
           openidDesc:

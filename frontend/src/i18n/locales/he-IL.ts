@@ -244,9 +244,36 @@ const locale = {
         permissionTitle: "הרשאות запрошени",
         permissionCount: "{{count}} פריטים",
         agreement:
-          "קראתי ואיני מסכים להקצאת ההרשאות המופיעות לעיל",
+          "קראתי ואני מסכים להקצאת ההרשאות המופיעות לעיל",
         confirm: "אשר והמשך",
         cancel: "בטל וחזור להתחברות",
+        errors: {
+          applicationRejected: "יישום נדחה",
+          applicationRejectedWithReason: "יישום נדחה: {{reason}}",
+          applicationAccessRestricted: "גישה לאפליקציה מוגבלת",
+          applicationAccessBanned: "גישה לאפליקציה אסורה",
+          applicationAccessBannedWithReason: "גישה לאפליקציה אסורה: {{reason}}",
+          applicationNotApproved: "יישום לא אושר",
+          applicationNotFound: "יישום לא נמצא",
+          forbidden: "אין לך הרשאה לגשת לטעם הזה",
+          unsupportedResponseType: "סוג תגובה לא נתמך",
+          redirectUriMismatch: "URI הפניה אינו מתאים",
+          scopeNotAllowed: "ההיקף запрошен אינו מורשה",
+          openidScopeRequired: "היקף openid נדרש",
+          codeChallengeMethodRequiresCodeChallenge:
+            "כאשר מסופק code_challenge_method, יש להסופק גם code_challenge",
+          unsupportedCodeChallengeMethod: "שיטת code challenge לא נתמכת",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "ערך 'none' בפקד prompt לא יכול להיות משולב עם ערכים אחרים",
+          invalidMaxAge: "ערך max_age אינו חוקי",
+          acrValuesNotSatisfied: "המשך ההתחברות הנוכחי אינו מספק את הקשר האימותי запрошен",
+          consentRequired: "נדרש הסכמה נוספת",
+          loginRequired: "אנא התחבר שוב כדי להמשיך",
+          authorizeFailed: "אישור הרשאה נכשל, אנא נסה שוב מאוחר יותר",
+          loadAuthorizationSettingsFailed: "טעינת הגדרות אישור הרשאה נכשלה",
+          networkRequestFailed: "בקשת הרשת נכשלה, אנא בדוק את החיבור שלך ונסו שוב",
+          apiReturnedHtml: "שירות אישור הרשאה החזיר דף בלתי צפוי. אנא בדוק את תצורת ה-API או הפרוקסי ההפוך.",
+        },
         scopes: {
           openidTitle: "אמת את הזהות שלך",
           openidDesc:

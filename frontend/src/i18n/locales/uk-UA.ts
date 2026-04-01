@@ -226,6 +226,33 @@ const locale = {
         agreement: "Я прочитав та погоджуюся з наданням правам, перерахованим вище",
         confirm: "Підтвердити та продовжити",
         cancel: "Скасувати та повернутися до входу",
+        errors: {
+          applicationRejected: "Застосунок відхилено",
+          applicationRejectedWithReason: "Застосунок відхилено: {{reason}}",
+          applicationAccessRestricted: "Доступ до застосунку обмежено",
+          applicationAccessBanned: "Доступ до застосунку заборонено",
+          applicationAccessBannedWithReason: "Доступ до застосунку заборонено: {{reason}}",
+          applicationNotApproved: "Застосунок не схвалено",
+          applicationNotFound: "Застосунок не знайдено",
+          forbidden: "У вас немає дозволу на доступ до цього застосунку",
+          unsupportedResponseType: "Тип відповіді не підтримується",
+          redirectUriMismatch: "URI перенаправлення не збігається",
+          scopeNotAllowed: "Запитана область не дозволена",
+          openidScopeRequired: "Потрібна область OpenID",
+          codeChallengeMethodRequiresCodeChallenge:
+            "Коли надається code_challenge_method, також повинен надаватися code_challenge",
+          unsupportedCodeChallengeMethod: "Метод code challenge не підтримується",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "Значення 'none' у prompt не можна поєднувати з іншими значеннями",
+          invalidMaxAge: "Значення max_age недійсне",
+          acrValuesNotSatisfied: "Поточний сеанс входу не задовольняє запитаний контекст автентифікації",
+          consentRequired: "Потрібна додаткова згода",
+          loginRequired: "Будь ласка, увійдіть знову, щоб продовжити",
+          authorizeFailed: "Авторизація не вдалася, будь ласка, спробуйте пізніше",
+          loadAuthorizationSettingsFailed: "Не вдалося завантажити налаштування авторизації",
+          networkRequestFailed: "Мережевий запит не вдався, будь ласка, перевірте підключення та спробуйте знову",
+          apiReturnedHtml: "Служба авторизації повернула несподівану сторінку. Будь ласка, перевірте конфігурацію API або зворотного проксі.",
+        },
         scopes: {
           openidTitle: "Підтвердити вашу ідентичність",
           openidDesc:

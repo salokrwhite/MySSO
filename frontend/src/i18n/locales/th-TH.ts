@@ -226,6 +226,33 @@ const locale = {
         agreement: "ฉันได้อ่านและยอมรับให้แอปพลิเคชันเข้าถึงสิทธิ์ที่ระบุข้างต้น",
         confirm: "ยืนยันและดำเนินการต่อ",
         cancel: "ยกเลิกและกลับไปที่การเข้าสู่ระบบ",
+        errors: {
+          applicationRejected: "แอปพลิเคชันถูกปฏิเสธ",
+          applicationRejectedWithReason: "แอปพลิเคชันถูกปฏิเสธ: {{reason}}",
+          applicationAccessRestricted: "การเข้าถึงแอปพลิเคชันถูกจำกัด",
+          applicationAccessBanned: "การเข้าถึงแอปพลิเคชันถูกห้าม",
+          applicationAccessBannedWithReason: "การเข้าถึงแอปพลิเคชันถูกห้าม: {{reason}}",
+          applicationNotApproved: "แอปพลิเคชันไม่ได้รับการอนุมัติ",
+          applicationNotFound: "ไม่พบแอปพลิเคชัน",
+          forbidden: "คุณไม่มีสิทธิ์เข้าถึงแอปพลิเคชันนี้",
+          unsupportedResponseType: "ประเภทการตอบสนองไม่รองรับ",
+          redirectUriMismatch: "URI การเปลี่ยนเส้นทางไม่ตรงกัน",
+          scopeNotAllowed: "ขอบเขตที่ร้องขอไม่ได้รับอนุญาต",
+          openidScopeRequired: "ต้องการขอบเขต OpenID",
+          codeChallengeMethodRequiresCodeChallenge:
+            "เมื่อระบุ code_challenge_method ต้องระบุ code_challenge ด้วย",
+          unsupportedCodeChallengeMethod: "วิธี code challenge ไม่รองรับ",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "ค่า 'none' ใน prompt ไม่สามารถรวมกับค่าอื่นได้",
+          invalidMaxAge: "ค่า max_age ไม่ถูกต้อง",
+          acrValuesNotSatisfied: "เซสชันการเข้าสู่ระบบปัจจุบันไม่ตรงตามบริบทการตรวจสอบสิทธิ์ที่ร้องขอ",
+          consentRequired: "ต้องการความยินยอมเพิ่มเติม",
+          loginRequired: "กรุณาเข้าสู่ระบบอีกครั้งเพื่อดำเนินการต่อ",
+          authorizeFailed: "การอนุญาตล้มเหลว กรุณาลองใหม่ภายหลัง",
+          loadAuthorizationSettingsFailed: "โหลดการตั้งค่าการอนุญาตล้มเหลว",
+          networkRequestFailed: "คำขอเครือข่ายล้มเหลว กรุณาตรวจสอบการเชื่อมต่อและลองใหม่",
+          apiReturnedHtml: "บริการการอนุญาตส่งคืนหน้าที่ไม่คาดคิด กรุณาตรวจสอบการกำหนดค่า API หรือ reverse proxy",
+        },
         scopes: {
           openidTitle: "ยืนยันตัวตนของคุณ",
           openidDesc:

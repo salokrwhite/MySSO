@@ -234,6 +234,7 @@ const locale = {
           applicationAccessBannedWithReason: "应用访问已被封禁：{{reason}}",
           applicationNotApproved: "应用尚未通过审核",
           applicationNotFound: "应用不存在",
+          forbidden: "你没有权限访问该应用",
           unsupportedResponseType: "不支持的响应类型",
           redirectUriMismatch: "回调地址不匹配",
           scopeNotAllowed: "申请的权限范围不被允许",
@@ -247,6 +248,10 @@ const locale = {
           acrValuesNotSatisfied: "当前登录会话不满足请求的认证上下文要求",
           consentRequired: "需要额外确认授权",
           loginRequired: "需要重新登录后继续",
+          authorizeFailed: "授权失败，请稍后重试",
+          loadAuthorizationSettingsFailed: "加载授权设置失败",
+          networkRequestFailed: "网络请求失败，请检查网络后重试",
+          apiReturnedHtml: "授权服务返回了异常页面，请检查 API 或反向代理配置",
         },
         scopes: {
           openidTitle: "确认您的身份标识",

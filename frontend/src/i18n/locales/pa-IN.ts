@@ -247,6 +247,33 @@ const locale = {
           "ਮੈਂ ਉੱਪਰ ਸੂਚੀਬੱਧ ਅਧਿਕਾਰ ਦੇਣ ਲਈ ਪੜ੍ਹਿਆ ਅਤੇ ਸਹਿਮਤ ਹਾਂ",
         confirm: "ਪੁਸ਼ਟੀ ਕਰੋ ਅਤੇ ਜਾਰੀ ਰੱਖੋ",
         cancel: "ਰੱਦ ਕਰੋ ਅਤੇ ਸਾਈਨ ਇਨ 'ਤੇ ਵਾਪਸ ਜਾਓ",
+        errors: {
+          applicationRejected: "ਐਪਲੀਕੇਸ਼ਨ ਨੂੰ ਅਸਵੀਕਾਰ ਕੀਤਾ ਗਿਆ",
+          applicationRejectedWithReason: "ਐਪਲੀਕੇਸ਼ਨ ਨੂੰ ਅਸਵੀਕਾਰ ਕੀਤਾ ਗਿਆ: {{reason}}",
+          applicationAccessRestricted: "ਐਪਲੀਕੇਸ਼ਨ ਪਹੁੰਚ ਪ੍ਰਤਿਬੰਧਿਤ ਹੈ",
+          applicationAccessBanned: "ਐਪਲੀਕੇਸ਼ਨ ਪਹੁੰਚ ਪਾਬੰਦੀ ਹੈ",
+          applicationAccessBannedWithReason: "ਐਪਲੀਕੇਸ਼ਨ ਪਹੁੰਚ ਪਾਬੰਦੀ ਹੈ: {{reason}}",
+          applicationNotApproved: "ਐਪਲੀਕੇਸ਼ਨ ਨੂੰ ਮਨਜ਼ੂਰੀ ਨਹੀਂ ਦਿੱਤੀ ਗਈ",
+          applicationNotFound: "ਐਪਲੀਕੇਸ਼ਨ ਨਹੀਂ ਮਿਲੀ",
+          forbidden: "ਤੁਹਾਡੇ ਕੋਲ ਇਸ ਐਪਲੀਕੇਸ਼ਨ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ",
+          unsupportedResponseType: "ਅਸਮਰੱਥਤ ਪ੍ਰਤੀਕ੍ਰਿਆ ਕਿਸਮ",
+          redirectUriMismatch: "ਰੀਡਾਇਰੈਕਟ URI ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ",
+          scopeNotAllowed: "ਅਨੁਮਾਨਿਤ ਸਕੋਪ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ",
+          openidScopeRequired: "OpenID ਸਕੋਪ ਲੋੜੀਂਦਾ ਹੈ",
+          codeChallengeMethodRequiresCodeChallenge:
+            "code_challenge_method ਪ੍ਰਦਾਨ ਕਰਨ ਤੇ code_challenge ਵੀ ਪ੍ਰਦਾਨ ਕਰਨਾ ਲਾਜ਼ਮੀ ਹੈ",
+          unsupportedCodeChallengeMethod: "ਅਸਮਰੱਥਤ code challenge ਵਿਧੀ",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "prompt ਵਿੱਚ 'none' ਮੁੱਲ ਨੂੰ ਹੋਰ ਮੁੱਲਾਂ ਨਾਲ ਜੋੜਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ",
+          invalidMaxAge: "max_age ਮੁੱਲ ਅਵੈਧ ਹੈ",
+          acrValuesNotSatisfied: "ਮੌਜੂਦਾ ਲੌਗਇਨ ਸੈਸ਼ਨ ਮੰਗੇ ਗਏ ਪ੍ਰਮਾਣੀਕਰਨ ਸੰਦਰਭ ਨੂੰ ਪੂਰਾ ਨਹੀਂ ਕਰਦਾ",
+          consentRequired: "ਵਾਧੂ ਸਹਿਮਤੀ ਲੋੜੀਂਦੀ ਹੈ",
+          loginRequired: "ਜਾਰੀ ਰੱਖਣ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਸਾਈਨ ਇਨ ਕਰੋ",
+          authorizeFailed: "ਅਧਿਕਾਰ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫ਼ਲ, ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
+          loadAuthorizationSettingsFailed: "ਅਧਿਕਾਰ ਸੈਟਿੰਗਾਂ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਫ਼ਲ",
+          networkRequestFailed: "ਨੈਟਵਰਕ ਬੇਨਤੀ ਅਸਫ਼ਲ ਰਹੀ, ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਕਨੈਕਸ਼ਨ ਜਾਂਚੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
+          apiReturnedHtml: "ਅਧਿਕਾਰ ਸੇਵਾ ਨੇ ਇੱਕ ਅਣਜਾਣਾ ਪੰਨਾ ਵਾਪਸ ਦਿੱਤਾ। ਕਿਰਪਾ ਕਰਕੇ API ਜਾਂ ਰਿਵਰਸ ਪ੍ਰੌਕਸੀ ਸੰਰਚਨਾ ਜਾਂਚੋ।",
+        },
         scopes: {
           openidTitle: "ਆਪनी ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ",
           openidDesc:

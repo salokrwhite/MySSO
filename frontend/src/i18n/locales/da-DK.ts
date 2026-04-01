@@ -247,6 +247,33 @@ const locale = {
           "Jeg har læst og accepterer at give de ovenfor anførte tilladelser",
         confirm: "Bekræft og fortsæt",
         cancel: "Annuller og returner til login",
+        errors: {
+          applicationRejected: "Applikation afvist",
+          applicationRejectedWithReason: "Applikation afvist: {{reason}}",
+          applicationAccessRestricted: "Adgang til applikation er begrænset",
+          applicationAccessBanned: "Adgang til applikation er forbudt",
+          applicationAccessBannedWithReason: "Adgang til applikation er forbudt: {{reason}}",
+          applicationNotApproved: "Applikation ikke godkendt",
+          applicationNotFound: "Applikation ikke fundet",
+          forbidden: "Du har ikke tilladelse til at få adgang til denne applikation",
+          unsupportedResponseType: "Ikke understøttet responsetype",
+          redirectUriMismatch: "Omdirigerings-URI matcher ikke",
+          scopeNotAllowed: "Anmodet omfang er ikke tilladt",
+          openidScopeRequired: "OpenID-omfang kræves",
+          codeChallengeMethodRequiresCodeChallenge:
+            "Når code_challenge_method angives, skal også code_challenge angives",
+          unsupportedCodeChallengeMethod: "Ikke understøttet code challenge-metode",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "Værdien none i prompt kan ikke kombineres med andre værdier",
+          invalidMaxAge: "max_age-værdien er ugyldig",
+          acrValuesNotSatisfied: "Den aktuelle loginsession opfylder ikke det anmodede autentificeringstekst",
+          consentRequired: "Yderligere samtykke kræves",
+          loginRequired: "Log venligst ind igen for at fortsætte",
+          authorizeFailed: "Godkendelse mislykkedes, prøv venligst igen senere",
+          loadAuthorizationSettingsFailed: "Kunne ikke indlæse autoriseringsindstillinger",
+          networkRequestFailed: "Netværksanmodning mislykkedes, tjek venligst din forbindelse og prøv igen",
+          apiReturnedHtml: "Godkendelsestjenesten returnerede en uventet side. Tjek venligst API eller reverse proxy-konfiguration.",
+        },
         scopes: {
           openidTitle: "Bekræft din identitet",
           openidDesc:

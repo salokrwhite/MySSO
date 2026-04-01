@@ -226,6 +226,33 @@ const locale = {
         agreement: "நான் மேலே பட்டியலிடப்பட்ட அனுமதிகளை வழங்குவதை படித்து ஒப்புக்கொண்டேன",
         confirm: "உறுதிப்படுத்தவும் மற்றும் தொடரவும",
         cancel: "ரத்து செய்து உள்நுழைவுக்கு திரும்பவும",
+        errors: {
+          applicationRejected: "பயன்பாடு நிராகரிக்கப்பட்டது",
+          applicationRejectedWithReason: "பயன்பாடு நிராகரிக்கப்பட்டது: {{reason}}",
+          applicationAccessRestricted: "பயன்பாட்டு அணுகல் கட்டுப்படுத்தப்பட்டுள்ளது",
+          applicationAccessBanned: "பயன்பாட்டு அணுகல் தடை செய்யப்பட்டுள்ளது",
+          applicationAccessBannedWithReason: "பயன்பாட்டு அணுகல் தடை செய்யப்பட்டுள்ளது: {{reason}}",
+          applicationNotApproved: "பயன்பாடு அங்கீகரிக்கப்படவில்லை",
+          applicationNotFound: "பயன்பாடு கிடைக்கவில்லை",
+          forbidden: "இந்த பயன்பாட்டை அணுக உங்களுக்கு அனுமதி இல்லை",
+          unsupportedResponseType: "ஆதரிக்கப்படாத பதில் வகை",
+          redirectUriMismatch: "திருப்பிவிடும் URI பொருந்தவில்லை",
+          scopeNotAllowed: "கோரப்பட்ட நோக்கம் அனுமதிக்கப்படவில்லை",
+          openidScopeRequired: "OpenID நோக்கம் தேவை",
+          codeChallengeMethodRequiresCodeChallenge:
+            "code_challenge_method வழங்கப்படும்போது, code_challenge-ஐயும் வழங்க வேண்டும்",
+          unsupportedCodeChallengeMethod: "ஆதரிக்கப்படாத code challenge முறை",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "prompt-இல் 'none' மதிப்பு பிற மதிப்புகளுடன் இணைக்கப்படக்கூடாது",
+          invalidMaxAge: "max_age மதிப்பு தவறானது",
+          acrValuesNotSatisfied: "தற்போதைய உள்நுழைவு அமர்வு கோரப்பட்ட அங்கீகார சூழலை பூர்த்தி செய்யவில்லை",
+          consentRequired: "கூடுதல் சம்மதம் தேவை",
+          loginRequired: "தொடர உள்நுழையவும்",
+          authorizeFailed: "அங்கீகாரம் தோல்வியடைந்தது, பிறகு முயற்சிக்கவும்",
+          loadAuthorizationSettingsFailed: "அங்கீகார அமைப்புகளை ஏற்றுவது தோல்வியடைந்தது",
+          networkRequestFailed: "பிணைய கோரிக்கை தோல்வியடைந்தது, உங்கள் இணைப்பை சரிபார்த்து மீண்டும் முயற்சிக்கவும்",
+          apiReturnedHtml: "அங்கீகார சேவை எதிர்பாராத பக்கத்தைத் திரும்பியது. API அல்லது தலைகீழ் ப்ராக்ஸி உள்ளமைவை சரிபார்க்கவும்.",
+        },
         scopes: {
           openidTitle: "உங்கள் அடையாளத்தை உறுதிப்படுத்தவும்",
           openidDesc:

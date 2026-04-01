@@ -256,6 +256,7 @@ const locale = {
             "Application access is banned: {{reason}}",
           applicationNotApproved: "Application is not approved",
           applicationNotFound: "Application Not Found",
+          forbidden: "You do not have permission to access this application",
           unsupportedResponseType: "Unsupported response type",
           redirectUriMismatch: "The redirect URI does not match",
           scopeNotAllowed: "Requested scope is not allowed",
@@ -270,6 +271,13 @@ const locale = {
             "The current session does not satisfy the requested authentication context",
           consentRequired: "Additional consent is required",
           loginRequired: "Please sign in again to continue",
+          authorizeFailed: "Authorization failed. Please try again.",
+          loadAuthorizationSettingsFailed:
+            "Failed to load authorization settings",
+          networkRequestFailed:
+            "Network request failed. Please check your connection and try again.",
+          apiReturnedHtml:
+            "The authorization service returned an unexpected page. Please check the API or reverse proxy configuration.",
         },
         scopes: {
           openidTitle: "Confirm your identity",

@@ -247,6 +247,33 @@ const locale = {
           "Qrajt u naqbel li nagħti l-permessi elenkati hawn fuq",
         confirm: "Ikkonferma u Kompli",
         cancel: "Akkanna u Lura għat-Tidħol",
+        errors: {
+          applicationRejected: "Applikazzjoni Rirrifjutata",
+          applicationRejectedWithReason: "Applikazzjoni Rirrifjutata: {{reason}}",
+          applicationAccessRestricted: "Aċċess għall-Applikazzjoni Ristrett",
+          applicationAccessBanned: "Aċċess għall-Applikazzjoni Mifjur",
+          applicationAccessBannedWithReason: "Aċċess għall-Applikazzjoni Mifjur: {{reason}}",
+          applicationNotApproved: "Applikazzjoni Mhux Approvata",
+          applicationNotFound: "Applikazzjoni Mhux Misjuba",
+          forbidden: "M'għandekx permess biex taċċessa din l-applikazzjoni",
+          unsupportedResponseType: "Tip ta' Risposta Mhux Appoġġjat",
+          redirectUriMismatch: "URI ta' Rindirizzament Ma Jaqbilx",
+          scopeNotAllowed: "L-ambitu mitlob mhux permess",
+          openidScopeRequired: "Ambitu openid Meħtieġ",
+          codeChallengeMethodRequiresCodeChallenge:
+            "Meta jkun preżenti code_challenge_method, għandu jkun preżenti wkoll code_challenge",
+          unsupportedCodeChallengeMethod: "Metodu ta' Code Challenge Mhux Appoġġjat",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "Il-valur 'none' fil-prompt ma jistax jiġi kkombinat ma' valuri oħra",
+          invalidMaxAge: "Il-valur max_age mhux valid",
+          acrValuesNotSatisfied: "Is-sessjoni ta' tidħol attwali ma tissodisfa l-kuntest tal-awtentikazzjoni mitlob",
+          consentRequired: "Kunsens Addizzjonali Meħtieġ",
+          loginRequired: "Jekk jogħġbok idħol mill-ġdid biex tkompli",
+          authorizeFailed: "L-awtorizzazzjoni falliet, jekk jogħġbok ipprova iktar tard",
+          loadAuthorizationSettingsFailed: "Falliet l-ħruġ tal-impostazzjonijiet ta' awtorizzazzjoni",
+          networkRequestFailed: "It-talb tan-netwerk falliet, jekk jogħġbok iċċekkja l-konnessjoni tiegħek u ipprova mill-ġdid",
+          apiReturnedHtml: "Is-servizz ta' awtorizzazzjoni rritorna paġna mhux mistennija. Jekk jogħġbok iċċekkja l-konfigurazzjoni tal-API jew tal-proxy invers.",
+        },
         scopes: {
           openidTitle: "Ikkonferma l-identità tiegħek",
           openidDesc:

@@ -247,6 +247,33 @@ const locale = {
           "Jeg har lest og godtar å gi tillatelsene som er oppført ovenfor",
         confirm: "Bekreft og fortsett",
         cancel: "Avbryt og gå tilbake til pålogging",
+        errors: {
+          applicationRejected: "Applikasjon avvist",
+          applicationRejectedWithReason: "Applikasjon avvist: {{reason}}",
+          applicationAccessRestricted: "Tilgang til applikasjon begrenset",
+          applicationAccessBanned: "Tilgang til applikasjon forbudt",
+          applicationAccessBannedWithReason: "Tilgang til applikasjon forbudt: {{reason}}",
+          applicationNotApproved: "Applikasjon ikke godkjent",
+          applicationNotFound: "Applikasjon ikke funnet",
+          forbidden: "Du har ikke tillatelse til å få tilgang til denne applikasjonen",
+          unsupportedResponseType: "Ikke støttet responsetype",
+          redirectUriMismatch: "Omdirigerings-URI matcher ikke",
+          scopeNotAllowed: "Forespurte omfang ikke tillatt",
+          openidScopeRequired: "OpenID-omfang kreves",
+          codeChallengeMethodRequiresCodeChallenge:
+            "Når code_challenge_method angis, må også code_challenge angis",
+          unsupportedCodeChallengeMethod: "Ikke støttet code challenge-metode",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "Verdien 'none' i prompt kan ikke kombineres med andre verdier",
+          invalidMaxAge: "max_age-verdien er ugyldig",
+          acrValuesNotSatisfied: "Den gjeldende påloggingsøkten oppfyller ikke den forespurte autentiseringskonteksten",
+          consentRequired: "Ytterligere samtykke kreves",
+          loginRequired: "Vennligst logg inn igjen for å fortsette",
+          authorizeFailed: "Autorisasjon mislyktes, vennligst prøv igjen senere",
+          loadAuthorizationSettingsFailed: "Kunne ikke laste autoriseringsinnstillinger",
+          networkRequestFailed: "Nettverksforespørsel mislyktes, vennligst sjekk din tilkobling og prøv igjen",
+          apiReturnedHtml: "Autorisasjonstjenesten returnerte en uventet side. Vennligst sjekk API- eller reverse proxy-konfigurasjonen.",
+        },
         scopes: {
           openidTitle: "Bekreft din identitet",
           openidDesc:

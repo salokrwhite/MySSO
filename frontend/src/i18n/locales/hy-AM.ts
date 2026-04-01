@@ -247,6 +247,33 @@ const locale = {
           "Ես կարդացա և համաձայնում եմ, որ հավելվածը ստանա վերևում նշված իրավունքները",
         confirm: "Հաստատել և շարունակել",
         cancel: "Չեղարկել և վերադառնալ մուտք",
+        errors: {
+          applicationRejected: "Հավելվածը մերժվել է",
+          applicationRejectedWithReason: "Հավելվածը մերժվել է: {{reason}}",
+          applicationAccessRestricted: "Հավելվածին հասանելը սահմանափակված է",
+          applicationAccessBanned: "Հավելվածին հասանելը արգելված է",
+          applicationAccessBannedWithReason: "Հավելվածին հասանելը արգելված է: {{reason}}",
+          applicationNotApproved: "Հավելվածը չի հաստատվել",
+          applicationNotFound: "Հավելվածը չի գտնվել",
+          forbidden: "Ձեզ հավելվածին հասանելու իրավունք չունեք",
+          unsupportedResponseType: "Չսպասարկվող պատասխանի տիպ",
+          redirectUriMismatch: "Redirect URI համընկնում չէ",
+          scopeNotAllowed: "Պահանջվող տիրույթը թույլատրված չէ",
+          openidScopeRequired: "OpenID տիրույթի պահանջ",
+          codeChallengeMethodRequiresCodeChallenge:
+            "Երբ code_challenge_method տրամադրված է, պետք է code_challenge նույնպես տրամադրվի",
+          unsupportedCodeChallengeMethod: "Չսպասարկվող code challenge մեթոդ",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "'none' արժեքը prompt-ում չի կարելի համատեղել այլ արժեքների հետ",
+          invalidMaxAge: "max_age արժեքը անվավեր է",
+          acrValuesNotSatisfied: "Ներկայիս մուտքի սեսիան չի բավարարում պահանջվող հաստատման համատեքստը",
+          consentRequired: "Պահանջվում է լրացուցիչ համաձայնություն",
+          loginRequired: "Խնդրում ենք մուտք գործել կրկին, որպեսզի շարունակեք",
+          authorizeFailed: "Հաստատումը անհաջող է, Խնդրում ենք փորձել հետո",
+          loadAuthorizationSettingsFailed: "Հաստատման կարգավորումները բեռնելը անհաջող է",
+          networkRequestFailed: "Ցանցային հարցումը անհաջող է, Խնդրում ենք ստուգել կապը և փորձել կրկին",
+          apiReturnedHtml: "Հաստատման աշխատանքը վերադարձրեց անսպասելի էջ: Խնդրում ենք ստուգել API կամ հակադարձ պրոքսի կոնֆիգուրացիան:",
+        },
         scopes: {
           openidTitle: "Ձեր ինքնությունը հաստատել",
           openidDesc:

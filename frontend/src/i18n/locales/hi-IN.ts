@@ -247,6 +247,33 @@ const locale = {
           "मैंने इन अनुमतियों को पढ़ा है और उनको देने से सहमत हूं",
         confirm: "पुष्टि करें और आगे बढ़ें",
         cancel: "रद्द करें और लॉगिन पर वापस जाएं",
+        errors: {
+          applicationRejected: "ऐप अस्वीकार कर दिया गया",
+          applicationRejectedWithReason: "ऐप अस्वीकार कर दिया गया: {{reason}}",
+          applicationAccessRestricted: "ऐप तक पहुंच प्रतिबंधित",
+          applicationAccessBanned: "ऐप तक पहुंच प्रतिबंधित",
+          applicationAccessBannedWithReason: "ऐप तक पहुंच प्रतिबंधित: {{reason}}",
+          applicationNotApproved: "ऐप स्वीकृत नहीं",
+          applicationNotFound: "ऐप नहीं मिला",
+          forbidden: "आपको इस ऐप तक पहुंचने की अनुमति नहीं है",
+          unsupportedResponseType: "असमर्थित प्रतिक्रिया प्रकार",
+          redirectUriMismatch: "रीडायरेक्ट URI मेल नहीं खाता",
+          scopeNotAllowed: "अनुरोधित स्कोप अनुमति नहीं है",
+          openidScopeRequired: "OpenID स्कोप आवश्यक है",
+          codeChallengeMethodRequiresCodeChallenge:
+            "code_challenge_method प्रदान करते समय code_challenge भी प्रदान करना आवश्यक है",
+          unsupportedCodeChallengeMethod: "असमर्थित code challenge विधि",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "प्रॉम्प्ट में 'none' मान अन्य मानों के साथ संयोजित नहीं किया जा सकता",
+          invalidMaxAge: "max_age मान अमान्य है",
+          acrValuesNotSatisfied: "वर्तमान लॉगिन सत्र अनुरोधित प्रमाणीकरण संदर्भ की आवश्यकताओं को पूरा नहीं करता",
+          consentRequired: "अतिरिक्त सहमति आवश्यक है",
+          loginRequired: "आगे बढ़ने के लिए कृपया फिर से लॉगिन करें",
+          authorizeFailed: "अनुमति असफल, कृपया बाद में पुनः प्रयास करें",
+          loadAuthorizationSettingsFailed: "अनुमति सेटिंग्स लोड करना असफल",
+          networkRequestFailed: "नेटवर्क अनुरोध असफल, कृपया अपना कनेक्शन चेक करें और पुनः प्रयास करें",
+          apiReturnedHtml: "अनुमति सेवा एक अप्रत्याशित पृष्ठ लौटाई. कृपया API या रिवर्स प्रॉक्सी कॉन्फ़िगरेशन की जांच करें.",
+        },
         scopes: {
           openidTitle: "अपनी पहचान सत्यापित करें",
           openidDesc:

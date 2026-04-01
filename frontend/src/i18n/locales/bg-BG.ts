@@ -247,6 +247,33 @@ const locale = {
           "Прочетох и се съгласявам да предоставя изброените по-горе разрешения",
         confirm: "Потвърдете и продължете",
         cancel: "Откажете и се върнете към влизането",
+        errors: {
+          applicationRejected: "Приложението е отхвърлено",
+          applicationRejectedWithReason: "Приложението е отхвърлено: {{reason}}",
+          applicationAccessRestricted: "Достъпът до приложението е ограничен",
+          applicationAccessBanned: "Достъпът до приложението е забранен",
+          applicationAccessBannedWithReason: "Достъпът до приложението е забранен: {{reason}}",
+          applicationNotApproved: "Приложението не е одобрено",
+          applicationNotFound: "Приложението не е намерено",
+          forbidden: "Нямате разрешение да достъпите това приложение",
+          unsupportedResponseType: "Неподдържан тип отговор",
+          redirectUriMismatch: "URI за пренасочване не съвпада",
+          scopeNotAllowed: "Заявеният обхват не е разрешен",
+          openidScopeRequired: "Изисква се обхват openid",
+          codeChallengeMethodRequiresCodeChallenge:
+            "Трябва да се предостави code_challenge, когато се предоставя code_challenge_method",
+          unsupportedCodeChallengeMethod: "Неподдържан метод за code challenge",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "Стойността none в prompt не може да се комбинира с други стойности",
+          invalidMaxAge: "Стойността max_age е невалидна",
+          acrValuesNotSatisfied: "Текущата сесия за влизане не отговаря на изискванията за контекст на удостоверяване",
+          consentRequired: "Изисква се допълнително съгласие",
+          loginRequired: "Моля, влезте отново, за да продължите",
+          authorizeFailed: "Упълномощаването не бе успешно, моля, опитайте отново по-късно",
+          loadAuthorizationSettingsFailed: "Неуспешно зареждане на настройките за упълномощаване",
+          networkRequestFailed: "Мрежовата заявка не бе успешна, моля, проверете връзката и опитайте отново",
+          apiReturnedHtml: "Услугата за упълномощаване върна неочаквана страница. Моля, проверете конфигурацията на API или обратния прокси.",
+        },
         scopes: {
           openidTitle: "Потвърдете вашата самоличност",
           openidDesc:

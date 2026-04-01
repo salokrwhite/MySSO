@@ -247,6 +247,33 @@ const locale = {
           "Nimesoma na nakubali kutoa ruhusa zilizoonyeshwa hapo juu",
         confirm: "Thibitisha na Uendelee",
         cancel: "Ghairi na Rudi Kuingia",
+        errors: {
+          applicationRejected: "Programu Imekataliwa",
+          applicationRejectedWithReason: "Programu Imekataliwa: {{reason}}",
+          applicationAccessRestricted: "Ufikiaji wa Programu Umezuiliwa",
+          applicationAccessBanned: "Ufikiaji wa Programu Umezuiliwa",
+          applicationAccessBannedWithReason: "Ufikiaji wa Programu Umezuiliwa: {{reason}}",
+          applicationNotApproved: "Programu Haijakubaliwa",
+          applicationNotFound: "Programu Haikupatikana",
+          forbidden: "Huna ruhusa ya kufikia programu hii",
+          unsupportedResponseType: "Aina ya majibu isiyoungwa mkono",
+          redirectUriMismatch: "URI ya uelekezaji hailingani",
+          scopeNotAllowed: "Wigo ulioombwa hairuhusiwi",
+          openidScopeRequired: "Wigo wa OpenID unahitajika",
+          codeChallengeMethodRequiresCodeChallenge:
+            "Wakati code_challenge_method inapotolewa, code_challenge pia lazima itolewe",
+          unsupportedCodeChallengeMethod: "Mbinu ya code challenge isiyoungwa mkono",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "Thamani 'none' ya prompt haiwezi kuchanganywa na thamani nyingine",
+          invalidMaxAge: "Thamani ya max_age si sahihi",
+          acrValuesNotSatisfied: "Kikiso cha sasa cha kuingia hakikidhi muktadha uliotolewa wa uthibitishaji",
+          consentRequired: "Idhini ya ziada inahitajika",
+          loginRequired: "Tafadhali ingia tena ili kuendelea",
+          authorizeFailed: "Uidhinishaji umeshindwa, tafadhali jaribu tena baadaye",
+          loadAuthorizationSettingsFailed: "Imeshindwa kupakia mipangilio ya uidhinishaji",
+          networkRequestFailed: "Ombi la mtandao limekataliwa, tafadhali angalia muunganiko wako ujaribu tena",
+          apiReturnedHtml: "Huduma ya uidhinishaji imerejesha ukurasa usiotarajiwa. Tafadhali angalia usanidi wa API au proxy ya kinyume.",
+        },
         scopes: {
           openidTitle: "Thibitisha utambulisho wako",
           openidDesc:

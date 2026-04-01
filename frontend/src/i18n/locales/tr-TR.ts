@@ -226,6 +226,33 @@ const locale = {
         agreement: "Yukarıda listelenen izinlerin verilmesini okudum ve onaylıyorum",
         confirm: "Onayla ve Devam Et",
         cancel: "İptal Et ve Giriş Sayfasına Dön",
+        errors: {
+          applicationRejected: "Uygulama Reddedildi",
+          applicationRejectedWithReason: "Uygulama Reddedildi: {{reason}}",
+          applicationAccessRestricted: "Uygulama Erişimi Kısıtlandı",
+          applicationAccessBanned: "Uygulama Erişimi Yasaklandı",
+          applicationAccessBannedWithReason: "Uygulama Erişimi Yasaklandı: {{reason}}",
+          applicationNotApproved: "Uygulama Onaylanmadı",
+          applicationNotFound: "Uygulama Bulunamadı",
+          forbidden: "Bu uygulamaya erişim izniniz yok",
+          unsupportedResponseType: "Desteklenmeyen Yanıt Türü",
+          redirectUriMismatch: "Yönlendirme URI'si Eşleşmiyor",
+          scopeNotAllowed: "İstenen Kapsam İzin Verilmiyor",
+          openidScopeRequired: "OpenID Kapsamı Gerekli",
+          codeChallengeMethodRequiresCodeChallenge:
+            "code_challenge_method sağlandığında, code_challenge de sağlanmalıdır",
+          unsupportedCodeChallengeMethod: "Desteklenmeyen Code Challenge Yöntemi",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "prompt içindeki 'none' değeri diğer değerlerle birleştirilemez",
+          invalidMaxAge: "max_age değeri geçersiz",
+          acrValuesNotSatisfied: "Mevcut oturum, istenen kimlik doğrulama bağlamını karşılamıyor",
+          consentRequired: "Ek Onay Gerekli",
+          loginRequired: "Devam etmek için lütfen tekrar giriş yapın",
+          authorizeFailed: "Yetkilendirme başarısız oldu, lütfen daha sonra tekrar deneyin",
+          loadAuthorizationSettingsFailed: "Yetkilendirme ayarları yüklenemedi",
+          networkRequestFailed: "Ağ isteği başarısız oldu, lütfen bağlantınızı kontrol edin ve tekrar deneyin",
+          apiReturnedHtml: "Yetkilendirme hizmeti beklenmeyen bir sayfa döndürdü. Lütfen API veya ters proxy yapılandırmasını kontrol edin.",
+        },
         scopes: {
           openidTitle: "Kimliğinizi doğrulayın",
           openidDesc:

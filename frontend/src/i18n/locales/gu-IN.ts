@@ -1,4 +1,4 @@
-﻿const locale = {
+const locale = {
   translation: {
     header: {
       language: "ભાષા",
@@ -247,19 +247,44 @@
           "મેં ઉપરોક્ત સૂચિબદ્ધ પરવાનગીઓને આપવા માટે વાંચી છું અને સંમત છું",
         confirm: "પુષ્ટિ કરો અને ચાલુ રાખો",
         cancel: "રદ કરો અને સાઇન ઇન પર પાછા જાઓ",
+        errors: {
+          applicationRejected: "એપ્લિકેશનને નકારવામાં આવી",
+          applicationRejectedWithReason: "એપ્લિકેશનને નકારવામાં આવી: {{reason}}",
+          applicationAccessRestricted: "એપ્લિકેશનને ઍક્સેસ પ્રતિબંધિત",
+          applicationAccessBanned: "એપ્લિકેશનને ઍક્સેસ પ્રતિબંધિત",
+          applicationAccessBannedWithReason: "એપ્લિકેશનને ઍક્સેસ પ્રતિબંધિત: {{reason}}",
+          applicationNotApproved: "એપ્લિકેશનને મંજૂરી આપવામાં આવી નથી",
+          applicationNotFound: "એપ્લિકેશન મળી નથી",
+          forbidden: "તમારે આ એપ્લિકેશનને ઍક્સેસ કરવાની પરવાનગી નથી",
+          unsupportedResponseType: "પ્રતિભાવ પ્રકાર સપોર્ટેડ નથી",
+          redirectUriMismatch: "રીડાયરેક્ટ URI મેળ નથી ખાતું",
+          scopeNotAllowed: "વિનંતી કરેલા અવકાશ મંજૂર નથી",
+          openidScopeRequired: "openid અવકાશ જરૂરી છે",
+          codeChallengeMethodRequiresCodeChallenge: "code_challenge_method પ્રદાન કરતી વખતે code_challenge જરૂરી છે",
+          unsupportedCodeChallengeMethod: "code challenge પદ્ધતિ સપોર્ટેડ નથી",
+          promptNoneMustNotBeCombinedWithOtherValues: "prompt પેરામીટરનું none મૂલ્ય અન્ય મૂલ્યો સાથે સંયોજિત ન થઈ શકે",
+          invalidMaxAge: "max_age મૂલ્ય અમાન્ય છે",
+          acrValuesNotSatisfied: "વર્તમાન સાઇન-ઇન સેસન્સ વિનંતી કરેલા ઓથેન્ટિકેશન કન્ટેક્સ્ટની જરૂરિયાતો પૂરી પાડતું નથી",
+          consentRequired: "વધારાનું સંમતિ જરૂરી છે",
+          loginRequired: "ચાલુ રાખવા માટે ફરીથી સાઇન ઇન કરવું જોઈએ",
+          authorizeFailed: "અધિકૃતતા નિષ્ફળ. કૃપા કરીને પુનઃપ્રયાસ કરો.",
+          loadAuthorizationSettingsFailed: "અધિકૃતતા સેટિંગ્સ લોડ કરવામાં નિષ્ફળ",
+          networkRequestFailed: "નેટવર્ક વિનંતી નિષ્ફળ. કૃપા કરીને તમારું નેટવર્ક ચકાસો અને પુનઃપ્રયાસ કરો.",
+          apiReturnedHtml: "અધિકૃતતા સેવાએ અપેક્ષિત પૃષ્ઠ પરત કર્યું છે. કૃપા કરીને API અથવા રિવર્સ પ્રોક્સ કન્ફિગરેશન ચકાસો.",
+        },
         scopes: {
           openidTitle: "તમારી ઓળખ પુષ્ટિ કરો",
           openidDesc:
-            "વર્તમાન સાઇન-ઇન એકાઉન્ટ તમારો છે તે ચકાસવા અને મૂળભૂત સાઇન-ઇન સેસન્સ સ્થાપિત કરવા માટે વપરાય છે.",
+            "વર્તમાન સાઇન-ઇન એકાઉન્ટ તમારો છે તે ચકાસવા અને મૂળભૂત સાઇન-ઇન સેસન્સ સ્થાપિત કરવા માટે વપરાય છ.",
           profileTitle: "તમારી જાહેર પ્રોફાઇલને ઍક્સેસ કરો",
           profileDesc:
             "તમારું પ્રદર્શન નામ, એવતાર અને એપ્લિકેશનની અંદરના પ્રત્યક્ષણ માટે સમાન જાહેર પ્રોફાઇલ ડેટાનો સમાવેશ કરે છે.",
           emailTitle: "તમારી ઈમેઇલ માહિતીને ઍક્સેસ કરો",
           emailDesc:
-            "તમારા એકાઉન્ટના ઈમેઇલને બતાવવા અથવા જરૂરી સંચાર અને એકાઉન્ટ લિન્કિંગ માટે વપરાય છે.",
+            "તમારા એકાઉન્ટના ઈમેઇલને બતાવવા અથવા જરૂરી સંચાર અને એકાઉન્ટ લિન્કિંગ માટે વપરાય છ.",
           phoneTitle: "તમારા ફોન નંબરને ઍક્સેસ કરો",
           phoneDesc:
-            "જરૂરી હોય ત્યારે એકાઉન્ટને ઓળખવા, સૂચનાઓ માટે અથવા સુરક્ષા ચકાસણી માટે વપરાય છે.",
+            "જરૂરી હોય ત્યારે એકાઉન્ટને ઓળખવા, સૂચનાઓ માટે અથવા સુરક્ષા ચકાસણી માટે વપરાય છ.",
           gatewayReadTitle: "સુરક્ષિત બિઝનેસ APIને ઍક્સેસ કરો",
           gatewayReadDesc:
             "એપ્લિકેશનને તમારી અધિકૃત ઓળખ તરીકે સુરક્ષિત સંસાધનો પર ઍક્સેસ કરવાની મંજૂરી આપે છે.",

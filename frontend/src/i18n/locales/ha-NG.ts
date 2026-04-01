@@ -247,6 +247,33 @@ const locale = {
           "Na karanta kuma na yarda da ba da izini da ke sama",
         confirm: "Tabbatar kuma Ci gaba",
         cancel: "Yanke kuma dawo zuwa shiga",
+        errors: {
+          applicationRejected: "An ƙi app",
+          applicationRejectedWithReason: "An ƙi app: {{reason}}",
+          applicationAccessRestricted: "An iyakance damar shiga app",
+          applicationAccessBanned: "An hana damar shiga app",
+          applicationAccessBannedWithReason: "An hana damar shiga app: {{reason}}",
+          applicationNotApproved: "Ba a amince da app ba",
+          applicationNotFound: "Ba a sami app ba",
+          forbidden: "Ba ku da izini don shiga wannan app",
+          unsupportedResponseType: "Nau'in amsa ba a goyan bayan shi ba",
+          redirectUriMismatch: "URI na juyawa ba ya dace ba",
+          scopeNotAllowed: "Iyin da ake neman ba a yarda da shi ba",
+          openidScopeRequired: "Ana buƙatar iyaka na openid",
+          codeChallengeMethodRequiresCodeChallenge:
+            "Lokacin da ake bayar da code_challenge_method, dole ne a bayar da code_challenge kuma",
+          unsupportedCodeChallengeMethod: "Hanyar code challenge ba a goyan bayan ta ba",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "Ƙimar 'none' a cikin prompt ba za a iya haɗa ta da ƙima daban ba",
+          invalidMaxAge: "Ƙimar max_age ba ta da inganci",
+          acrValuesNotSatisfied: "Sesshin shiga na yanzu baya cika buƙatar mahallin shaida",
+          consentRequired: "Ana buƙatar yarda ƙari",
+          loginRequired: "Lura da shiga kuma don ci gaba",
+          authorizeFailed: "Ba da izini ya kasa nasara, lura da ƙoƙari daga baya",
+          loadAuthorizationSettingsFailed: "Lodi na saitin ba da izini ya kasa nasara",
+          networkRequestFailed: "Aikin neman hanyar sadarwa ya kasa nasara, lura da bincika haɗin ku kuma ƙoƙari daga baya",
+          apiReturnedHtml: "Sabis na ba da izini ya dawo da shafi da ba a sa ran shi ba. Lura da bincika API ko tsarin rufaffiyar fitarwa.",
+        },
         scopes: {
           openidTitle: "Tabbatar Halittarka",
           openidDesc:

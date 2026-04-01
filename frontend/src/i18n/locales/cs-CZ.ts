@@ -247,6 +247,33 @@ const locale = {
           "Přečetl jsem a souhlasím s poskytnutím výše uvedených oprávnění",
         confirm: "Potvrdit a pokračovat",
         cancel: "Zrušit a vrátit se na přihlášení",
+        errors: {
+          applicationRejected: "Aplikace byla odmítnuta",
+          applicationRejectedWithReason: "Aplikace byla odmítnuta: {{reason}}",
+          applicationAccessRestricted: "Přístup k aplikaci je omezen",
+          applicationAccessBanned: "Přístup k aplikaci je zakázán",
+          applicationAccessBannedWithReason: "Přístup k aplikaci je zakázán: {{reason}}",
+          applicationNotApproved: "Aplikace nebyla schválena",
+          applicationNotFound: "Aplikace nebyla nalezena",
+          forbidden: "Nemáte oprávnění k přístupu k této aplikaci",
+          unsupportedResponseType: "Nepodporovaný typ odpovědi",
+          redirectUriMismatch: "URI přesměrování se neshoduje",
+          scopeNotAllowed: "Požadovaný obor není povolen",
+          openidScopeRequired: "Vyžadován obor openid",
+          codeChallengeMethodRequiresCodeChallenge:
+            "Při zadání code_challenge_method je nutné zadat také code_challenge",
+          unsupportedCodeChallengeMethod: "Nepodporovaná metoda code challenge",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "Hodnota none v parametru prompt nemůže být kombinována s jinými hodnotami",
+          invalidMaxAge: "Hodnota max_age je neplatná",
+          acrValuesNotSatisfied: "Aktuální relace přihlášení nesplňuje požadovaný kontext autentizace",
+          consentRequired: "Vyžadováno dodatkové souhlasení",
+          loginRequired: "Pro pokračování se prosím přihlaste znovu",
+          authorizeFailed: "Autorizace selhala, prosím zkuste to později",
+          loadAuthorizationSettingsFailed: "Selhalo načtení nastavení autorizace",
+          networkRequestFailed: "Síťový požadavek selhal, prosím zkontrolujte připojení a zkuste to znovu",
+          apiReturnedHtml: "Služba autorizace vrátila neočekávanou stránku. Prosím zkontrolujte konfiguraci API nebo reverzního proxy.",
+        },
         scopes: {
           openidTitle: "Potvrďte svou identitu",
           openidDesc:

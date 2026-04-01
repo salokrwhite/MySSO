@@ -247,6 +247,33 @@ const locale = {
           "Olvastam és elfogadom, hogy az alkalmazás megkapja a fenti engedélyeket",
         confirm: "Megerősítés és folytatás",
         cancel: "Mégsem és vissza a bejelentkezéshez",
+        errors: {
+          applicationRejected: "Az alkalmazás elutasítva",
+          applicationRejectedWithReason: "Az alkalmazás elutasítva: {{reason}}",
+          applicationAccessRestricted: "Az alkalmazáshoz való hozzáférés korlátozva",
+          applicationAccessBanned: "Az alkalmazáshoz való hozzáférés tiltva",
+          applicationAccessBannedWithReason: "Az alkalmazáshoz való hozzáférés tiltva: {{reason}}",
+          applicationNotApproved: "Az alkalmazás nincs jóváhagyva",
+          applicationNotFound: "Az alkalmazás nem található",
+          forbidden: "Nincs jogosultsága az alkalmazáshoz való hozzáférésre",
+          unsupportedResponseType: "Nem támogatott válasz típusa",
+          redirectUriMismatch: "A átirányítási URI nem egyezik",
+          scopeNotAllowed: "A kért hatókör nem engedélyezett",
+          openidScopeRequired: "OpenID hatókör szükséges",
+          codeChallengeMethodRequiresCodeChallenge:
+            "Ha code_challenge_method meg van adva, code_challenge is meg kell adni",
+          unsupportedCodeChallengeMethod: "Nem támogatott code challenge módszer",
+          promptNoneMustNotBeCombinedWithOtherValues:
+            "A 'none' érték a promptban nem kombinálható más értékekkel",
+          invalidMaxAge: "A max_age érték érvénytelen",
+          acrValuesNotSatisfied: "Az aktuális bejelentkezési munkamenet nem felel meg a kért hitelesítési kontextusnak",
+          consentRequired: "További engedélyezés szükséges",
+          loginRequired: "Kérjük, jelentkezzen be újra a folytatáshoz",
+          authorizeFailed: "A hitelesítés sikertelen, kérjük, próbálja újra később",
+          loadAuthorizationSettingsFailed: "A hitelesítési beállítások betöltése sikertelen",
+          networkRequestFailed: "Hálózati kérés sikertelen, kérjük, ellenőrizze a kapcsolatot és próbálja újra",
+          apiReturnedHtml: "A hitelesítési szolgáltatás váratlan oldalt adott vissza. Kérjük, ellenőrizze az API vagy fordított proxy konfigurációját.",
+        },
         scopes: {
           openidTitle: "Identitás megerősítése",
           openidDesc:
