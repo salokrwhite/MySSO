@@ -8,7 +8,8 @@ FRONTEND_DIR="$ROOT_DIR/frontend"
 RELEASE_DIR="$ROOT_DIR/release"
 BACKEND_OUT="$RELEASE_DIR/backend"
 FRONTEND_OUT="$RELEASE_DIR/frontend"
-LOCALE_CDN_OUT="$RELEASE_DIR/cdn-assets"
+ASSET_CDN_OUT="$RELEASE_DIR/cdn-assets"
+LOCALE_CDN_OUT="$RELEASE_DIR/cdn-locale-assets"
 PACKAGE_ROOT="$RELEASE_DIR/package"
 LOCALE_MAP_OUTPUT="$FRONTEND_DIR/src/i18n/localeRemoteMap.generated.ts"
 DEVELOPER_LOCALE_MAP_OUTPUT="$FRONTEND_DIR/src/pages/developer/developerLocaleRemoteMap.generated.ts"
@@ -21,6 +22,7 @@ CGO_ENABLED="${CGO_ENABLED:-0}"
 RUN_TESTS="${RUN_TESTS:-0}"
 VERSION="${VERSION:-$(date -u +"%Y%m%d%H%M%S")}"
 ARCHIVE_NAME="${ARCHIVE_NAME:-mysso-${TARGET_OS}-${TARGET_ARCH}-${VERSION}.tar.gz}"
+ASSET_CDN_BASE="${ASSET_CDN_BASE:-}"
 LOCALE_CDN_BASE="${LOCALE_CDN_BASE:-}"
 VITE_API_ORIGIN="${VITE_API_ORIGIN:-}"
 
@@ -82,15 +84,21 @@ echo "==> Installing frontend dependencies"
     echo "==> Frontend API origin override: runtime auto-detect"
   fi
 
+  if [ -n "$ASSET_CDN_BASE" ]; then
+    echo "==> Frontend asset CDN base: $ASSET_CDN_BASE"
+  else
+    echo "==> Frontend asset CDN base: local bundled assets"
+  fi
+
   if [ -z "$LOCALE_CDN_BASE" ]; then
-    echo "==> Frontend build mode: local locales"
-    VITE_API_ORIGIN="$VITE_API_ORIGIN" npm run build
+    echo "==> Frontend locale mode: local bundled locales"
+    ASSET_CDN_BASE="$ASSET_CDN_BASE" VITE_API_ORIGIN="$VITE_API_ORIGIN" npm run build
   else
     echo "==> Frontend build mode: remote locales"
     mkdir -p "$LOCALE_CDN_OUT/assets"
 
     echo "==> Frontend build pass 1/2: local locale chunks"
-    VITE_API_ORIGIN="$VITE_API_ORIGIN" npm run build
+    ASSET_CDN_BASE="$ASSET_CDN_BASE" VITE_API_ORIGIN="$VITE_API_ORIGIN" npm run build
 
     echo "==> Extracting locale CDN assets and generating remote locale map"
     node "$LOCALE_MAP_SCRIPT" \
@@ -108,7 +116,12 @@ echo "==> Installing frontend dependencies"
       --export-name=developerRemoteLocaleMap
 
     echo "==> Frontend build pass 2/2: release bundle with CDN locale map"
-    VITE_API_ORIGIN="$VITE_API_ORIGIN" VITE_REMOTE_LOCALE=1 npm run build
+    ASSET_CDN_BASE="$ASSET_CDN_BASE" VITE_API_ORIGIN="$VITE_API_ORIGIN" VITE_REMOTE_LOCALE=1 npm run build
+  fi
+
+  if [ -n "$ASSET_CDN_BASE" ]; then
+    mkdir -p "$ASSET_CDN_OUT/assets"
+    find dist/assets -maxdepth 1 -type f ! -name 'languages-*.chunk.js' -exec cp {} "$ASSET_CDN_OUT/assets/" \;
   fi
 
   cp -R dist/. "$FRONTEND_OUT/"
@@ -118,9 +131,13 @@ echo "==> Assembling deployment package"
 mkdir -p "$PACKAGE_ROOT/backend" "$PACKAGE_ROOT/frontend"
 cp -R "$BACKEND_OUT/." "$PACKAGE_ROOT/backend/"
 cp -R "$FRONTEND_OUT/." "$PACKAGE_ROOT/frontend/"
-if [ -n "$LOCALE_CDN_BASE" ] && [ -d "$LOCALE_CDN_OUT" ]; then
+if [ -n "$ASSET_CDN_BASE" ] && [ -d "$ASSET_CDN_OUT" ]; then
   mkdir -p "$PACKAGE_ROOT/cdn-assets"
-  cp -R "$LOCALE_CDN_OUT/." "$PACKAGE_ROOT/cdn-assets/"
+  cp -R "$ASSET_CDN_OUT/." "$PACKAGE_ROOT/cdn-assets/"
+fi
+if [ -n "$LOCALE_CDN_BASE" ] && [ -d "$LOCALE_CDN_OUT" ]; then
+  mkdir -p "$PACKAGE_ROOT/cdn-locale-assets"
+  cp -R "$LOCALE_CDN_OUT/." "$PACKAGE_ROOT/cdn-locale-assets/"
 fi
 cp "$ROOT_DIR/README.md" "$PACKAGE_ROOT/README.md"
 
@@ -131,10 +148,17 @@ echo "Backend binary: $BACKEND_OUT/$APP_NAME"
 echo "Backend env: $BACKEND_OUT/.env"
 echo "Backend migrations: $BACKEND_OUT/migrations"
 echo "Frontend assets: $FRONTEND_OUT"
+if [ -n "$ASSET_CDN_BASE" ]; then
+  echo "Asset CDN files: $ASSET_CDN_OUT"
+  echo "Frontend asset CDN base: $ASSET_CDN_BASE"
+else
+  echo "Frontend asset mode: local"
+fi
 if [ -n "$LOCALE_CDN_BASE" ]; then
   echo "Locale CDN assets: $LOCALE_CDN_OUT"
   echo "Generated locale map: $LOCALE_MAP_OUTPUT"
   echo "Generated developer locale map: $DEVELOPER_LOCALE_MAP_OUTPUT"
+  echo "Locale CDN base: $LOCALE_CDN_BASE"
 else
   echo "Locale mode: local"
 fi

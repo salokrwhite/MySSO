@@ -33,6 +33,9 @@ This repository is intended to cover the full path from local development to pro
   - configure redirect URIs, logout URIs, scopes, descriptions, and icons
   - track app review status
   - create and reset client secrets
+  - manage reusable developer-level user groups and batch-update authorized users
+  - bind allowed user groups to apps for allowlist-based access control
+  - ban users per app without affecting platform sign-in or other developers' apps
   - developer audit logs and analytics
 
 - Admin console
@@ -46,8 +49,9 @@ This repository is intended to cover the full path from local development to pro
 - Deployment support
   - installation flow with minimal initial `.env`
   - MySQL migrations
-  - production release packaging
-  - optional remote locale CDN mode
+- production release packaging
+- optional asset CDN mode
+- optional remote locale CDN mode
 
 ## Repository Structure
 
@@ -64,6 +68,19 @@ release/   generated build output (created by build scripts)
 - Frontend: React, Vite, TypeScript, Ant Design
 - Database: MySQL
 - Protocols: OIDC, OAuth 2.0
+
+## Developer Access Control
+
+The platform supports developer-level user groups, app-level access control, and single-app bans:
+
+- user groups are reusable across multiple apps owned by the same developer
+- developers may manage only users who have already authorized at least one of their apps
+- apps are open by default; once one or more groups are bound, the app switches into allowlist mode
+- app-level bans affect only the target app and do not block platform sign-in or other developers' apps
+- group and ban changes affect first-time authorization, repeated authorization, `prompt=none` silent authorization, and consent-based auto-approval
+- third-party systems should always use `sub` as the stable unique user identifier, while `display_name` remains display-only
+
+If you enable app access control, make sure your integration handles authorization denial cases such as “current account cannot access this app” or “current account is banned from this app”.
 
 ## Quick Start
 
@@ -153,6 +170,28 @@ This produces:
 VITE_API_ORIGIN=https://backend-sso.example.com ./build.sh
 ```
 
+### Asset CDN mode
+
+If the main frontend assets should be served from a CDN:
+
+```bash
+ASSET_CDN_BASE=https://cdn.example.com/assets \
+VITE_API_ORIGIN=https://backend-sso.example.com \
+./build.sh
+```
+
+In this mode:
+
+- the built `index.html` will reference JS / CSS under `ASSET_CDN_BASE`
+- if `LOCALE_CDN_BASE` is not set, locale chunks still default to the built frontend `assets/` directory
+- the files to upload for the asset CDN are written to:
+
+```text
+release/cdn-assets/assets/*
+```
+
+If `ASSET_CDN_BASE` is not set, the frontend keeps using the built-in local `assets/` directory by default.
+
 ### Remote locale CDN mode
 
 If locale chunks should be served from a CDN:
@@ -166,17 +205,35 @@ LOCALE_CDN_BASE=https://cdn.example.com/assets \
 In this mode the build script:
 
 1. builds the frontend once to emit locale chunks
-2. copies locale chunks into `release/cdn-assets/assets`
+2. copies locale chunks into `release/cdn-locale-assets/assets`
 3. generates the remote locale map
 4. rebuilds the frontend so locale files load from the CDN base URL
 
 If you use this mode, upload:
 
 ```text
-release/cdn-assets/assets/*
+release/cdn-locale-assets/assets/*
 ```
 
 to your CDN, and make sure the public URLs match `LOCALE_CDN_BASE`.
+
+If `LOCALE_CDN_BASE` is not set, locale chunks keep using the built frontend `assets/` directory by default.
+
+### Asset CDN + locale CDN together
+
+You may use both modes at the same time:
+
+```bash
+ASSET_CDN_BASE=https://cdn-a.example.com/assets \
+LOCALE_CDN_BASE=https://cdn-b.example.com/assets \
+VITE_API_ORIGIN=https://backend-sso.example.com \
+./build.sh
+```
+
+In that case:
+
+- upload `release/cdn-assets/assets/*` to `ASSET_CDN_BASE`
+- upload `release/cdn-locale-assets/assets/*` to `LOCALE_CDN_BASE`
 
 ### Optional build variables
 
@@ -186,11 +243,15 @@ to your CDN, and make sure the public URLs match `LOCALE_CDN_BASE`.
 - `RUN_TESTS`
 - `CGO_ENABLED`
 - `VERSION`
+- `ASSET_CDN_BASE`
+- `LOCALE_CDN_BASE`
+- `VITE_API_ORIGIN`
 
 Example:
 
 ```bash
-LOCALE_CDN_BASE=https://cdn.example.com/assets \
+ASSET_CDN_BASE=https://cdn-a.example.com/assets \
+LOCALE_CDN_BASE=https://cdn-b.example.com/assets \
 TARGET_OS=linux \
 TARGET_ARCH=amd64 \
 RUN_TESTS=1 \
@@ -205,6 +266,7 @@ Recommended production setup:
 
 - one frontend domain
 - one backend / OIDC domain
+- one optional CDN domain for frontend assets
 - one optional CDN domain for locale assets
 
 Recommended practice:
@@ -299,7 +361,7 @@ location ~* \.(js|css|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf)$ {
 
 ### CDN CORS essentials
 
-If you enable remote locale loading, your CDN must return CORS headers for `/assets/`.
+If you enable asset CDN or remote locale loading, the corresponding CDN must return CORS headers for `/assets/`.
 
 Example:
 
@@ -352,7 +414,7 @@ curl -i https://backend-sso.example.com/.well-known/jwks.json
 - Discovery or JWKS returns `404`
   - usually caused by Nginx treating `/.well-known/` as a static directory
 
-- Remote locale loading fails with CORS
+- Asset CDN or remote locale loading fails with CORS
   - make sure `/assets/` CORS headers are returned
   - make sure a regex static rule is not overriding the `/assets/` location
 
@@ -373,4 +435,3 @@ Implemented areas include:
 - release packaging
 
 ![Site Image](./site-image-bule.webp)
-

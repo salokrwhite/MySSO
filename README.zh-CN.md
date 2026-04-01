@@ -33,6 +33,9 @@ MySSO 是一个围绕 OIDC 和 OAuth 2.0 构建的开源单点登录平台，包
   - 配置回调地址、登出地址、Scope、描述和图标
   - 查看应用审核状态
   - 创建和重置 Client Secret
+  - 管理开发者级用户组并批量维护已授权用户分组
+  - 按应用绑定允许访问的用户组，形成白名单访问控制
+  - 按应用封禁用户，不影响其登录平台或访问其他开发者应用
   - 开发者审计日志与分析能力
 
 - 管理后台
@@ -46,8 +49,9 @@ MySSO 是一个围绕 OIDC 和 OAuth 2.0 构建的开源单点登录平台，包
 - 部署支持
   - 首次安装流程和最小 `.env`
   - MySQL 迁移脚本
-  - 生产打包发布
-  - 可选远程语言包 CDN 模式
+- 生产打包发布
+- 可选主资源 CDN 模式
+- 可选远程语言包 CDN 模式
 
 ## 仓库结构
 
@@ -64,6 +68,19 @@ release/   构建输出目录（由脚本生成）
 - 前端：React、Vite、TypeScript、Ant Design
 - 数据库：MySQL
 - 协议：OIDC、OAuth 2.0
+
+## 开发者访问控制
+
+系统支持“开发者级用户组 + 应用级访问控制 + 单应用封禁”能力：
+
+- 用户组可在同一开发者名下跨多个应用复用
+- 开发者只能管理“已经授权过自己任一应用”的用户
+- 应用默认全放开；绑定至少一个用户组后，该应用进入白名单模式
+- 应用级封禁只作用于单个应用，不影响用户登录 MySSO 或访问其他开发者的应用
+- 组和封禁规则会影响首次授权、再次授权、`prompt=none` 静默授权，以及基于已有 consent 的自动放行
+- 第三方系统应始终使用 `sub` 作为稳定唯一用户标识，`display_name` 仅适合展示
+
+如果你为某个应用启用了访问控制，请在接入方正确处理“当前账号无权访问该应用”或“当前账号已被该应用封禁”这类授权拒绝场景。
 
 ## 快速开始
 
@@ -153,6 +170,28 @@ http://localhost:5173
 VITE_API_ORIGIN=https://backend-sso.example.com ./build.sh
 ```
 
+### 主资源 CDN 模式
+
+如果前端主资源需要从 CDN 提供：
+
+```bash
+ASSET_CDN_BASE=https://cdn.example.com/assets \
+VITE_API_ORIGIN=https://backend-sso.example.com \
+./build.sh
+```
+
+这个模式下：
+
+- 构建后的 `index.html` 会把主入口 JS / CSS 指向 `ASSET_CDN_BASE`
+- 如果未设置 `LOCALE_CDN_BASE`，语言 chunk 仍然默认从前端产物内的 `assets/` 目录加载
+- 需要上传到主资源 CDN 的文件会输出到：
+
+```text
+release/cdn-assets/assets/*
+```
+
+如果未设置 `ASSET_CDN_BASE`，前端默认继续使用打包产物内自带的本地 `assets/` 目录。
+
 ### 远程语言包 CDN 模式
 
 如果语言包需要从 CDN 提供：
@@ -166,17 +205,35 @@ LOCALE_CDN_BASE=https://cdn.example.com/assets \
 这个模式下脚本会：
 
 1. 第一次构建前端，产出语言 chunk
-2. 将语言 chunk 复制到 `release/cdn-assets/assets`
+2. 将语言 chunk 复制到 `release/cdn-locale-assets/assets`
 3. 生成远程语言映射
 4. 第二次构建前端，让语言资源改为从 CDN 地址加载
 
 如果启用这个模式，需要上传：
 
 ```text
-release/cdn-assets/assets/*
+release/cdn-locale-assets/assets/*
 ```
 
 到 CDN，并保证公网 URL 与 `LOCALE_CDN_BASE` 一致。
+
+如果未设置 `LOCALE_CDN_BASE`，语言 chunk 默认继续使用前端产物内自带的 `assets/` 目录。
+
+### 主资源 CDN 与语言包 CDN 同时启用
+
+也可以同时启用两种模式：
+
+```bash
+ASSET_CDN_BASE=https://cdn-a.example.com/assets \
+LOCALE_CDN_BASE=https://cdn-b.example.com/assets \
+VITE_API_ORIGIN=https://backend-sso.example.com \
+./build.sh
+```
+
+此时：
+
+- 将 `release/cdn-assets/assets/*` 上传到 `ASSET_CDN_BASE`
+- 将 `release/cdn-locale-assets/assets/*` 上传到 `LOCALE_CDN_BASE`
 
 ### 可选构建参数
 
@@ -186,11 +243,15 @@ release/cdn-assets/assets/*
 - `RUN_TESTS`
 - `CGO_ENABLED`
 - `VERSION`
+- `ASSET_CDN_BASE`
+- `LOCALE_CDN_BASE`
+- `VITE_API_ORIGIN`
 
 示例：
 
 ```bash
-LOCALE_CDN_BASE=https://cdn.example.com/assets \
+ASSET_CDN_BASE=https://cdn-a.example.com/assets \
+LOCALE_CDN_BASE=https://cdn-b.example.com/assets \
 TARGET_OS=linux \
 TARGET_ARCH=amd64 \
 RUN_TESTS=1 \
@@ -205,6 +266,7 @@ RUN_TESTS=1 \
 
 - 一个前端域名
 - 一个后端 / OIDC 域名
+- 一个可选前端主资源 CDN 域名
 - 一个可选语言包 CDN 域名
 
 推荐做法：
@@ -299,7 +361,7 @@ location ~* \.(js|css|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf)$ {
 
 ### CDN 跨域要点
 
-如果启用了远程语言加载，CDN 必须为 `/assets/` 返回 CORS 头。
+如果启用了主资源 CDN 或远程语言加载，对应 CDN 都必须为 `/assets/` 返回 CORS 头。
 
 示例：
 
@@ -352,7 +414,7 @@ curl -i https://backend-sso.example.com/.well-known/jwks.json
 - Discovery 或 JWKS 返回 `404`
   - 通常是因为 Nginx 把 `/.well-known/` 当成静态目录处理了
 
-- 远程语言包加载时报 CORS
+- 主资源 CDN 或远程语言包加载时报 CORS
   - 检查 `/assets/` 是否正确返回跨域头
   - 检查是否被正则静态规则覆盖
 
@@ -373,4 +435,3 @@ curl -i https://backend-sso.example.com/.well-known/jwks.json
 - 发布打包流程
 
 ![站点图片](./site-image-bule.webp)
-
