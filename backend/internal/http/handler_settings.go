@@ -124,6 +124,9 @@ func (s *Server) handleGetSystemSettings(c *gin.Context) {
 		return
 	}
 	settings.OIDCFirstPartyClientSecret = ""
+	settings.SMTPPassword = ""
+	settings.SMSPassword = ""
+	settings.AliyunSMSAccessKeySecret = ""
 	c.JSON(http.StatusOK, gin.H{"data": settings})
 }
 
