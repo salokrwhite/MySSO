@@ -697,11 +697,12 @@ export function AuthorizePage() {
           {accountLocaleLabel[accountLocale]}
         </Button>
       </div>
-      <Card className="auth-card auth-card--glass" styles={{ body: { padding: 32 } }}>
+      <Card className="auth-card auth-card--glass auth-authorize-card" styles={{ body: { padding: 32 } }}>
         <Space direction="vertical" size={20} style={{ width: "100%" }}>
           <div style={{ textAlign: "center" }}>
             <Space direction="vertical" size={8} style={{ width: "100%" }}>
               <div
+                className="auth-authorize-card__icon-row"
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -767,12 +768,12 @@ export function AuthorizePage() {
                   )}
                 </div>
               </div>
-              <Typography.Title level={3} style={{ margin: 0 }}>
+              <Typography.Title level={3} className="auth-authorize-card__title" style={{ margin: 0 }}>
                 {showAccountPicker
                   ? t("auth.authorize.chooseAccountTitle", { siteName, appName: appDisplayName })
                   : t("auth.authorize.title", { siteName, appName: appDisplayName })}
               </Typography.Title>
-              <Typography.Paragraph type="secondary" style={{ margin: 0 }}>
+              <Typography.Paragraph type="secondary" className="auth-authorize-card__desc" style={{ margin: 0 }}>
                 {showAccountPicker
                   ? t("auth.authorize.chooseAccountDesc")
                   : t("auth.authorize.desc")}
@@ -882,9 +883,10 @@ export function AuthorizePage() {
                 {t("auth.authorize.agreement")}
               </Checkbox>
 
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <Space>
+              <div className="auth-authorize-card__actions-wrap" style={{ display: "flex", justifyContent: "center" }}>
+                <Space className="auth-authorize-card__actions">
                   <Button
+                    className="auth-authorize-card__action-button"
                     type="primary"
                     size="large"
                     onClick={() => void authorize()}
@@ -894,6 +896,7 @@ export function AuthorizePage() {
                     {t("auth.authorize.confirm")}
                   </Button>
                   <Button
+                    className="auth-authorize-card__action-button"
                     size="large"
                     onClick={() => {
                       clearAuthorizationSession();
