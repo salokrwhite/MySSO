@@ -58,6 +58,7 @@ func (s *Server) handleAuthorize(c *gin.Context) {
 		Prompt:              c.Query("prompt"),
 		MaxAge:              c.Query("max_age"),
 		ACRValues:           c.Query("acr_values"),
+		ConsentAccepted:     false,
 	})
 	if err != nil {
 		if redirectURI != "" {
@@ -102,6 +103,7 @@ func (s *Server) buildAuthorizeRedirectURL(session domain.Session, req authorize
 		req.Prompt,
 		req.MaxAge,
 		req.ACRValues,
+		req.ConsentAccepted,
 	)
 	if err != nil {
 		return "", err

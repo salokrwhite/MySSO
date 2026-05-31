@@ -301,6 +301,7 @@ type authorizeRequest struct {
 	Prompt              string `json:"prompt"`
 	MaxAge              string `json:"max_age"`
 	ACRValues           string `json:"acr_values"`
+	ConsentAccepted     bool   `json:"consent_accepted"`
 }
 
 type uploadSiteLogoResponse struct {

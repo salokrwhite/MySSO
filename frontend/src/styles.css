@@ -84,6 +84,12 @@ body {
   flex: 0 0 auto;
 }
 
+.login-page--glass > .auth-card,
+.auth-entry-page--glass > .auth-card {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
 .auth-card--glass {
   position: relative;
   z-index: 1;

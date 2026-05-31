@@ -67,7 +67,7 @@ func (s *OAuthService) ExchangeFirstPartyRefreshToken(refreshToken string) (map[
 	)
 }
 
-func (s *OAuthService) GenerateAuthorizationCode(session domain.Session, clientID, redirectURI, responseType, scope, state, nonce, challenge, challengeMethod, prompt, maxAge, acrValues string) (string, error) {
+func (s *OAuthService) GenerateAuthorizationCode(session domain.Session, clientID, redirectURI, responseType, scope, state, nonce, challenge, challengeMethod, prompt, maxAge, acrValues string, consentAccepted bool) (string, error) {
 	if strings.TrimSpace(responseType) != "code" {
 		return "", fmt.Errorf("unsupported response_type")
 	}
@@ -105,7 +105,11 @@ func (s *OAuthService) GenerateAuthorizationCode(session domain.Session, clientI
 	if err := s.accessControl.EnsureAppAccessAllowed(clientID, session.UserID, time.Now().UTC()); err != nil {
 		return "", err
 	}
-	if promptValues["none"] && !hasActiveConsent(s.deps.Store.ListConsentsByUser(session.UserID), clientID, scopes) {
+	hasConsent := hasActiveConsent(s.deps.Store.ListConsentsByUser(session.UserID), clientID, scopes)
+	if promptValues["none"] && !hasConsent {
+		return "", fmt.Errorf("consent_required")
+	}
+	if !promptValues["none"] && !hasConsent && !consentAccepted {
 		return "", fmt.Errorf("consent_required")
 	}
 	if strings.TrimSpace(maxAge) != "" {
@@ -136,7 +140,7 @@ func (s *OAuthService) GenerateAuthorizationCode(session domain.Session, clientI
 	}
 	s.deps.Store.SaveAuthorizationCode(code)
 
-	if !hasActiveConsent(s.deps.Store.ListConsentsByUser(session.UserID), clientID, scopes) {
+	if !hasConsent {
 		consent := domain.Consent{
 			ID:        uuid.NewString(),
 			UserID:    session.UserID,

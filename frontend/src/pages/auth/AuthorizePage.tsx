@@ -295,6 +295,7 @@ export function AuthorizePage() {
   const [authorizing, setAuthorizing] = useState(false);
   const [checkingPageState, setCheckingPageState] = useState(true);
   const [showConsent, setShowConsent] = useState(false);
+  const [consentAccepted, setConsentAccepted] = useState(false);
   const [showAccountPicker, setShowAccountPicker] = useState(false);
   const [siteName, setSiteName] = useState(getStoredSiteName(i18n.language));
   const [siteLogoDataUrl, setSiteLogoDataUrl] = useState(localStorage.getItem("site_logo_data_url") || "");
@@ -349,6 +350,12 @@ export function AuthorizePage() {
   useEffect(() => {
     setSiteName(getStoredSiteName(i18n.language));
   }, [i18n.language]);
+
+  useEffect(() => {
+    if (showConsent) {
+      setConsentAccepted(false);
+    }
+  }, [showConsent, params.client_id, params.redirect_uri, params.scope]);
 
   function clearLocalSession() {
     clearBrowserSessionMeta();
@@ -588,10 +595,10 @@ export function AuthorizePage() {
   ]);
 
   async function authorize() {
-    await authorizeWithPrompt(params.prompt);
+    await authorizeWithPrompt(params.prompt, true);
   }
 
-  async function requestAuthorization(prompt: string) {
+  async function requestAuthorization(prompt: string, consentAccepted = false) {
     const result = await api<{ redirect_url?: string }>(
       "/auth/authorize",
       {
@@ -607,7 +614,8 @@ export function AuthorizePage() {
           code_challenge_method: params.code_challenge_method,
           prompt,
           max_age: params.max_age,
-          acr_values: params.acr_values
+          acr_values: params.acr_values,
+          consent_accepted: consentAccepted
         })
       }
     );
@@ -617,7 +625,7 @@ export function AuthorizePage() {
     return result.redirect_url;
   }
 
-  async function authorizeWithPrompt(prompt: string) {
+  async function authorizeWithPrompt(prompt: string, consentAccepted = false) {
     if (!hasSession) {
       return;
     }
@@ -625,7 +633,7 @@ export function AuthorizePage() {
     setAuthorizing(true);
     setError("");
     try {
-      const redirectURL = await requestAuthorization(prompt);
+      const redirectURL = await requestAuthorization(prompt, consentAccepted);
       clearAuthorizationSession();
       window.location.assign(redirectURL);
     } catch (err) {
@@ -879,7 +887,10 @@ export function AuthorizePage() {
                 </Space>
               </div>
 
-              <Checkbox checked disabled>
+              <Checkbox
+                checked={consentAccepted}
+                onChange={(event) => setConsentAccepted(event.target.checked)}
+              >
                 {t("auth.authorize.agreement")}
               </Checkbox>
 
@@ -891,7 +902,7 @@ export function AuthorizePage() {
                     size="large"
                     onClick={() => void authorize()}
                     loading={authorizing}
-                    disabled={!hasRequiredParams}
+                    disabled={!hasRequiredParams || !consentAccepted}
                   >
                     {t("auth.authorize.confirm")}
                   </Button>
