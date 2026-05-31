@@ -158,10 +158,6 @@ func (s *Server) handleBatchDeleteDeveloperAuditLogs(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"deleted": true})
 }
 
-func (s *Server) handleAdminApps(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"items": s.services.Apps.ListApps()})
-}
-
 func (s *Server) handlePublicAppByClientID(c *gin.Context) {
 	clientID := strings.TrimSpace(c.Param("client_id"))
 	if clientID == "" {

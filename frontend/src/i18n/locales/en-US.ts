@@ -255,6 +255,7 @@ const locale = {
           applicationAccessBannedWithReason:
             "Application access is banned: {{reason}}",
           applicationNotApproved: "Application is not approved",
+          applicationDisabled: "This application has been disabled",
           applicationNotFound: "Application Not Found",
           forbidden: "You do not have permission to access this application",
           unsupportedResponseType: "Unsupported response type",

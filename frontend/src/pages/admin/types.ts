@@ -110,6 +110,11 @@ export type AppItem = {
   icon_url?: string;
   description?: string;
   client_id: string;
+  client_secret?: string;
+  owner_user_id?: string;
+  admin_owned?: boolean;
+  admin_created?: boolean;
+  has_client_secret?: boolean;
   redirect_uris?: string[];
   post_logout_redirect_uris?: string[];
   frontchannel_logout_uri?: string;
@@ -117,6 +122,13 @@ export type AppItem = {
   scopes?: string[];
   status: string;
   review_comment?: string;
+};
+
+export type AppListResponse = {
+  items: AppItem[];
+  total: number;
+  page: number;
+  page_size: number;
 };
 
 export type AuditLog = {
@@ -127,6 +139,13 @@ export type AuditLog = {
   target_id: string;
   detail?: Record<string, unknown>;
   created_at: string;
+};
+
+export type AuditLogListResponse = {
+  items: AuditLog[];
+  total: number;
+  page: number;
+  page_size: number;
 };
 
 export type DeveloperAccessLog = {
@@ -142,6 +161,13 @@ export type DeveloperAccessLog = {
   detail?: Record<string, unknown>;
   created_at: string;
   deleted_at?: string;
+};
+
+export type DeveloperAccessLogListResponse = {
+  items: DeveloperAccessLog[];
+  total: number;
+  page: number;
+  page_size: number;
 };
 
 export type EmailSendLog = {

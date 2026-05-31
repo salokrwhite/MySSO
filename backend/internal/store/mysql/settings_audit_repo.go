@@ -38,6 +38,68 @@ func (s *MySQLStore) ListAudit() []domain.AuditLog {
 	return items
 }
 
+func (s *MySQLStore) ListAuditPaginated(page, pageSize int) ([]domain.AuditLog, int, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+	var total int
+	if err := s.db.QueryRow(`SELECT COUNT(*) FROM audit_logs`).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+	rows, err := s.db.Query(`
+		SELECT id, actor_id, actor_role, action, target_id, detail_json, created_at
+		FROM audit_logs
+		ORDER BY created_at DESC
+		LIMIT ? OFFSET ?
+	`, pageSize, (page-1)*pageSize)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	items := make([]domain.AuditLog, 0, pageSize)
+	for rows.Next() {
+		var item domain.AuditLog
+		var detail string
+		if err := rows.Scan(&item.ID, &item.ActorID, &item.ActorRole, &item.Action, &item.TargetID, &detail, &item.CreatedAt); err != nil {
+			return nil, 0, err
+		}
+		item.Detail = parseMap(detail)
+		items = append(items, item)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, 0, err
+	}
+	return items, total, nil
+}
+
+func (s *MySQLStore) ListAuditByTarget(targetID string) []domain.AuditLog {
+	rows, err := s.db.Query(`
+		SELECT id, actor_id, actor_role, action, target_id, detail_json, created_at
+		FROM audit_logs
+		WHERE target_id = ?
+		ORDER BY created_at DESC
+	`, targetID)
+	if err != nil {
+		return []domain.AuditLog{}
+	}
+	defer rows.Close()
+
+	items := []domain.AuditLog{}
+	for rows.Next() {
+		var item domain.AuditLog
+		var detail string
+		if err := rows.Scan(&item.ID, &item.ActorID, &item.ActorRole, &item.Action, &item.TargetID, &detail, &item.CreatedAt); err == nil {
+			item.Detail = parseMap(detail)
+			items = append(items, item)
+		}
+	}
+	return items
+}
+
 func (s *MySQLStore) CountAuditLogs() (int, error) {
 	var total int
 	if err := s.db.QueryRow(`SELECT COUNT(*) FROM audit_logs`).Scan(&total); err != nil {
@@ -61,6 +123,24 @@ func (s *MySQLStore) DeleteAuditLogs(ids []string) error {
 		args...,
 	)
 	return err
+}
+
+func (s *MySQLStore) DeleteAuditLogsByTarget(targetID string, startAt, endAt *time.Time) (int64, error) {
+	query := `DELETE FROM audit_logs WHERE target_id = ?`
+	args := []any{targetID}
+	if startAt != nil {
+		query += ` AND created_at >= ?`
+		args = append(args, *startAt)
+	}
+	if endAt != nil {
+		query += ` AND created_at <= ?`
+		args = append(args, *endAt)
+	}
+	result, err := s.db.Exec(query, args...)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 func (s *MySQLStore) AppendUserOperationLog(log domain.UserOperationLog) {

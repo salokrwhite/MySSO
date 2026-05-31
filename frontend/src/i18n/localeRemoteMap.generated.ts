@@ -14,7 +14,7 @@ export const remoteLocaleMap: Record<string, string> = {
   "developer-en-US": "https://static.anteasy.com/web-language/rsg/assets/languages-developer-en-US.DGxn2VKp.chunk.js",
   "developer-zh-CN": "https://static.anteasy.com/web-language/rsg/assets/languages-developer-zh-CN.CUE1T06c.chunk.js",
   "el-GR": "https://static.anteasy.com/web-language/rsg/assets/languages-el-GR.BS8JFt17.chunk.js",
-  "en-US": "https://static.anteasy.com/web-language/rsg/assets/languages-en-US.Bb-r4scZ.chunk.js",
+  "en-US": "https://static.anteasy.com/web-language/rsg/assets/languages-en-US.CGLpSny6.chunk.js",
   "es-419": "https://static.anteasy.com/web-language/rsg/assets/languages-es-419.bJjIkQ9M.chunk.js",
   "es-ES": "https://static.anteasy.com/web-language/rsg/assets/languages-es-ES.CxRlOfAb.chunk.js",
   "et-EE": "https://static.anteasy.com/web-language/rsg/assets/languages-et-EE.DaDqx1XL.chunk.js",
@@ -72,6 +72,6 @@ export const remoteLocaleMap: Record<string, string> = {
   "ur-PK": "https://static.anteasy.com/web-language/rsg/assets/languages-ur-PK.C5REElfN.chunk.js",
   "uz-UZ": "https://static.anteasy.com/web-language/rsg/assets/languages-uz-UZ.BeLjkbR9.chunk.js",
   "vi-VN": "https://static.anteasy.com/web-language/rsg/assets/languages-vi-VN.MO2Isyp5.chunk.js",
-  "zh-CN": "https://static.anteasy.com/web-language/rsg/assets/languages-zh-CN.Bf9nxJRb.chunk.js",
+  "zh-CN": "https://static.anteasy.com/web-language/rsg/assets/languages-zh-CN.L-bdzFx9.chunk.js",
   "zh-TW": "https://static.anteasy.com/web-language/rsg/assets/languages-zh-TW.Cd3U6bmw.chunk.js",
 };

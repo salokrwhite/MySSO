@@ -35,7 +35,7 @@ type UserStore interface {
 	FindUserByPhone(phone string) (domain.User, error)
 	GetUser(id string) (domain.User, error)
 	ListUsers() []domain.User
-	ListUsersPaginated(page, pageSize int, emailKeyword, statusFilter string) ([]domain.User, int, error)
+	ListUsersPaginated(page, pageSize int, emailKeyword, statusFilter, userID string) ([]domain.User, int, error)
 	CountUsers(statusFilter string) (int, error)
 	UpdateUser(user domain.User) error
 	UpdateUserAndInvalidateAuth(user domain.User) error
@@ -127,6 +127,7 @@ type SessionStore interface {
 type AppStore interface {
 	ListAppsByOwner(ownerID string) []domain.ClientApp
 	ListApps() []domain.ClientApp
+	ListAppsPaginated(page, pageSize int, statusFilter, nameKeyword string) ([]domain.ClientApp, int, error)
 	CountApps(status string) (int, error)
 	CreateApp(app domain.ClientApp) domain.ClientApp
 	UpdateApp(app domain.ClientApp) error
@@ -173,6 +174,7 @@ type DeveloperAccessStore interface {
 	ListDeveloperAccessLogs(ownerUserID string, includeDeleted bool) ([]domain.DeveloperAccessLog, error)
 	ListDeveloperAccessLogsPaginated(ownerUserID string, includeDeleted bool, page, pageSize int) ([]domain.DeveloperAccessLog, int, error)
 	ListAllDeveloperAccessLogs(includeDeleted bool) ([]domain.DeveloperAccessLog, error)
+	ListAllDeveloperAccessLogsPaginated(includeDeleted bool, page, pageSize int) ([]domain.DeveloperAccessLog, int, error)
 	SoftDeleteDeveloperAccessLogs(ownerUserID string, ids []string, deletedAt time.Time) error
 	HardDeleteDeveloperAccessLogs(ids []string) error
 }
@@ -180,6 +182,9 @@ type DeveloperAccessStore interface {
 type AuditSettingsStore interface {
 	AppendAudit(log domain.AuditLog)
 	ListAudit() []domain.AuditLog
+	ListAuditPaginated(page, pageSize int) ([]domain.AuditLog, int, error)
+	ListAuditByTarget(targetID string) []domain.AuditLog
+	DeleteAuditLogsByTarget(targetID string, startAt, endAt *time.Time) (int64, error)
 	DeleteAuditLogs(ids []string) error
 	AppendUserOperationLog(log domain.UserOperationLog)
 	ListUserOperationLogs(userID string, page, pageSize int) ([]domain.UserOperationLog, int, error)

@@ -318,6 +318,37 @@ func (s *MemoryStore) ListAllDeveloperAccessLogs(includeDeleted bool) ([]domain.
 	return items, nil
 }
 
+func (s *MemoryStore) ListAllDeveloperAccessLogsPaginated(includeDeleted bool, page, pageSize int) ([]domain.DeveloperAccessLog, int, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+	items := make([]domain.DeveloperAccessLog, 0, len(s.developerAccessLogs))
+	for _, log := range s.developerAccessLogs {
+		if !includeDeleted && log.DeletedAt != nil {
+			continue
+		}
+		items = append(items, log)
+	}
+	total := len(items)
+	start := (page - 1) * pageSize
+	if start >= total {
+		return []domain.DeveloperAccessLog{}, total, nil
+	}
+	if start < 0 {
+		start = 0
+	}
+	end := start + pageSize
+	if end > total {
+		end = total
+	}
+	return append([]domain.DeveloperAccessLog{}, items[start:end]...), total, nil
+}
+
 func (s *MemoryStore) SoftDeleteDeveloperAccessLogs(ownerUserID string, ids []string, deletedAt time.Time) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

@@ -26,6 +26,7 @@ import { useSystemSettings } from "./hooks/useSystemSettings";
 import { useUserCreateActions } from "./hooks/useUserCreateActions";
 import {
   deleteScope as deleteScopeRequest,
+  fetchAdminAppAuditLogs,
   upsertScope as upsertScopeRequest,
 } from "./services/adminApi";
 import type { AdminPageType, ScopeDefinition, SettingsTabKey } from "./types";
@@ -51,8 +52,17 @@ export function AdminPage() {
   >([]);
   const [userPage, setUserPage] = useState(1);
   const [userPageSize, setUserPageSize] = useState(10);
+  const [appPage, setAppPage] = useState(1);
+  const [appPageSize, setAppPageSize] = useState(10);
+  const [auditLogPage, setAuditLogPage] = useState(1);
+  const [auditLogPageSize, setAuditLogPageSize] = useState(10);
+  const [developerAccessLogPage, setDeveloperAccessLogPage] = useState(1);
+  const [developerAccessLogPageSize, setDeveloperAccessLogPageSize] = useState(10);
   const [userStatusFilter, setUserStatusFilter] = useState("all");
   const [userEmailKeyword, setUserEmailKeyword] = useState("");
+  const [userIDKeyword, setUserIDKeyword] = useState("");
+  const [appStatusFilter, setAppStatusFilter] = useState("all");
+  const [appNameKeyword, setAppNameKeyword] = useState("");
   useAdminDocumentLocalization(true);
   const settingsTabs = useMemo(() => getSettingsTabs(t), [t]);
   const adminPageMeta = useMemo(() => getAdminPageMeta(t), [t]);
@@ -97,8 +107,32 @@ export function AdminPage() {
       pageSize: userPageSize,
       emailKeyword: userEmailKeyword,
       status: userStatusFilter,
+      userID: userIDKeyword,
     }),
-    [userEmailKeyword, userPage, userPageSize, userStatusFilter],
+    [userEmailKeyword, userIDKeyword, userPage, userPageSize, userStatusFilter],
+  );
+  const appsQuery = useMemo(
+    () => ({
+      page: appPage,
+      pageSize: appPageSize,
+      status: appStatusFilter,
+      nameKeyword: appNameKeyword,
+    }),
+    [appNameKeyword, appPage, appPageSize, appStatusFilter],
+  );
+  const auditLogsQuery = useMemo(
+    () => ({
+      page: auditLogPage,
+      pageSize: auditLogPageSize,
+    }),
+    [auditLogPage, auditLogPageSize],
+  );
+  const developerAccessLogsQuery = useMemo(
+    () => ({
+      page: developerAccessLogPage,
+      pageSize: developerAccessLogPageSize,
+    }),
+    [developerAccessLogPage, developerAccessLogPageSize],
   );
 
   const {
@@ -106,8 +140,11 @@ export function AdminPage() {
     usersTotal,
     dashboardSummary,
     apps,
+    appsTotal,
     logs,
+    logsTotal,
     developerAccessLogs,
+    developerAccessLogsTotal,
     riskLogs,
     passkeyLogs,
     emailSendLogs,
@@ -120,7 +157,14 @@ export function AdminPage() {
     error,
     setError,
     load,
-  } = useAdminData(sessionToken, pageType, usersQuery);
+  } = useAdminData(
+    sessionToken,
+    pageType,
+    usersQuery,
+    appsQuery,
+    auditLogsQuery,
+    developerAccessLogsQuery,
+  );
 
   const ensureCurrentPageLoaded = useCallback(() => load(), [load]);
   const reloadCurrentPage = useCallback(
@@ -138,7 +182,7 @@ export function AdminPage() {
     activeSettingsTab,
   );
 
-  const { reviewApp, deleteApp, updateApp } = useAppReview(
+  const { createApp, reviewApp, deleteApp, updateApp, resetSecret, setDisabled } = useAppReview(
     sessionToken,
     reloadCurrentPage,
     setError,
@@ -285,7 +329,73 @@ export function AdminPage() {
       return;
     }
     setSelectedUserIds([]);
-  }, [pageType, userEmailKeyword, userStatusFilter, userPage, userPageSize]);
+  }, [pageType, userEmailKeyword, userIDKeyword, userStatusFilter, userPage, userPageSize]);
+
+  useEffect(() => {
+    if (pageType !== "apps") {
+      return;
+    }
+    setSelectedAppIds([]);
+  }, [pageType, appNameKeyword, appPage, appPageSize, appStatusFilter]);
+
+  useEffect(() => {
+    if (pageType !== "apps" || loading || appPage <= 1 || apps.length > 0) {
+      return;
+    }
+    const lastPage = Math.max(1, Math.ceil(appsTotal / appPageSize));
+    if (appPage > lastPage) {
+      setAppPage(lastPage);
+    }
+  }, [appPage, appPageSize, apps.length, appsTotal, loading, pageType]);
+
+  useEffect(() => {
+    if (pageType !== "auditLogs") {
+      return;
+    }
+    setSelectedAuditLogIds([]);
+  }, [auditLogPage, auditLogPageSize, pageType]);
+
+  useEffect(() => {
+    if (pageType !== "auditLogs" || loading || auditLogPage <= 1 || logs.length > 0) {
+      return;
+    }
+    const lastPage = Math.max(1, Math.ceil(logsTotal / auditLogPageSize));
+    if (auditLogPage > lastPage) {
+      setAuditLogPage(lastPage);
+    }
+  }, [auditLogPage, auditLogPageSize, loading, logs.length, logsTotal, pageType]);
+
+  useEffect(() => {
+    if (pageType !== "developerAccessLogs") {
+      return;
+    }
+    setSelectedDeveloperAccessLogIds([]);
+  }, [developerAccessLogPage, developerAccessLogPageSize, pageType]);
+
+  useEffect(() => {
+    if (
+      pageType !== "developerAccessLogs" ||
+      loading ||
+      developerAccessLogPage <= 1 ||
+      developerAccessLogs.length > 0
+    ) {
+      return;
+    }
+    const lastPage = Math.max(
+      1,
+      Math.ceil(developerAccessLogsTotal / developerAccessLogPageSize),
+    );
+    if (developerAccessLogPage > lastPage) {
+      setDeveloperAccessLogPage(lastPage);
+    }
+  }, [
+    developerAccessLogPage,
+    developerAccessLogPageSize,
+    developerAccessLogs.length,
+    developerAccessLogsTotal,
+    loading,
+    pageType,
+  ]);
 
   return (
     <Space direction="vertical" size={20} style={{ width: "100%" }}>
@@ -321,6 +431,7 @@ export function AdminPage() {
           pageSize={userPageSize}
           statusFilter={userStatusFilter}
           emailKeyword={userEmailKeyword}
+          userIDKeyword={userIDKeyword}
           onPageChange={(page, pageSize) => {
             setUserPage(page);
             setUserPageSize(pageSize);
@@ -331,6 +442,10 @@ export function AdminPage() {
           }}
           onEmailKeywordChange={(value) => {
             setUserEmailKeyword(value);
+            setUserPage(1);
+          }}
+          onUserIDKeywordChange={(value) => {
+            setUserIDKeyword(value);
             setUserPage(1);
           }}
           selectedUserIds={selectedUserIds}
@@ -364,17 +479,38 @@ export function AdminPage() {
 
       {pageType === "apps" ? (
         <AppReview
+          sessionToken={sessionToken}
           apps={apps}
-          logs={logs}
+          appsTotal={appsTotal}
+          currentPage={appPage}
+          pageSize={appPageSize}
+          statusFilter={appStatusFilter}
+          nameKeyword={appNameKeyword}
           scopes={scopes}
           selectedAppIds={selectedAppIds}
           setSelectedAppIds={setSelectedAppIds}
           deletingApps={deletingApps}
           refreshing={loading}
+          onPageChange={(page, pageSize) => {
+            setAppPage(page);
+            setAppPageSize(pageSize);
+          }}
+          onStatusFilterChange={(value) => {
+            setAppStatusFilter(value);
+            setAppPage(1);
+          }}
+          onNameKeywordChange={(value) => {
+            setAppNameKeyword(value);
+            setAppPage(1);
+          }}
+          onLoadHistory={(appID) => fetchAdminAppAuditLogs(sessionToken, appID)}
+          onCreate={(values) => void createApp(values)}
           onReview={(id, approved, comment) =>
             void reviewApp(id, approved, comment)
           }
           onUpdate={(id, values) => void updateApp(id, values)}
+          onResetSecret={(id) => resetSecret(id)}
+          onSetDisabled={(id, disabled) => void setDisabled(id, disabled)}
           onDelete={(id) => void deleteApp(id)}
           onRefresh={() => void reloadCurrentPage()}
           onBatchDelete={confirmBatchDeleteApps}
@@ -384,9 +520,17 @@ export function AdminPage() {
       {pageType === "auditLogs" ? (
         <AuditLogsPanel
           logs={logs}
+          logsTotal={logsTotal}
+          currentPage={auditLogPage}
+          pageSize={auditLogPageSize}
           selectedAuditLogIds={selectedAuditLogIds}
           setSelectedAuditLogIds={setSelectedAuditLogIds}
           deletingAuditLogs={deletingAuditLogs}
+          refreshing={loading}
+          onPageChange={(page, pageSize) => {
+            setAuditLogPage(page);
+            setAuditLogPageSize(pageSize);
+          }}
           onBatchDelete={confirmBatchDeleteAuditLogs}
         />
       ) : null}
@@ -394,9 +538,17 @@ export function AdminPage() {
       {pageType === "developerAccessLogs" ? (
         <DeveloperAccessLogsPanel
           logs={developerAccessLogs}
+          logsTotal={developerAccessLogsTotal}
+          currentPage={developerAccessLogPage}
+          pageSize={developerAccessLogPageSize}
           selectedLogIds={selectedDeveloperAccessLogIds}
           setSelectedLogIds={setSelectedDeveloperAccessLogIds}
           deletingLogs={deletingDeveloperAccessLogs}
+          refreshing={loading}
+          onPageChange={(page, pageSize) => {
+            setDeveloperAccessLogPage(page);
+            setDeveloperAccessLogPageSize(pageSize);
+          }}
           onBatchDelete={confirmBatchDeleteDeveloperAccessLogs}
         />
       ) : null}

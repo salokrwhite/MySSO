@@ -68,7 +68,7 @@ func (s *MySQLStore) ListUsers() []domain.User {
 	return items
 }
 
-func (s *MySQLStore) ListUsersPaginated(page, pageSize int, emailKeyword, statusFilter string) ([]domain.User, int, error) {
+func (s *MySQLStore) ListUsersPaginated(page, pageSize int, emailKeyword, statusFilter, userID string) ([]domain.User, int, error) {
 	if page <= 0 {
 		page = 1
 	}
@@ -83,6 +83,12 @@ func (s *MySQLStore) ListUsersPaginated(page, pageSize int, emailKeyword, status
 	if normalizedKeyword != "" {
 		whereParts = append(whereParts, "LOWER(email) LIKE ?")
 		args = append(args, "%"+normalizedKeyword+"%")
+	}
+
+	normalizedUserID := strings.TrimSpace(userID)
+	if normalizedUserID != "" {
+		whereParts = append(whereParts, "id = ?")
+		args = append(args, normalizedUserID)
 	}
 
 	normalizedStatus := strings.ToLower(strings.TrimSpace(statusFilter))

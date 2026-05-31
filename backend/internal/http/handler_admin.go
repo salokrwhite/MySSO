@@ -17,14 +17,15 @@ func (s *Server) handleUsers(c *gin.Context) {
 	pageSize, _ := strconv.Atoi(strings.TrimSpace(c.Query("page_size")))
 	emailKeyword := strings.TrimSpace(c.Query("email_keyword"))
 	statusFilter := strings.TrimSpace(c.Query("status"))
+	userID := strings.TrimSpace(c.Query("user_id"))
 
-	usePagination := page > 0 || pageSize > 0 || emailKeyword != "" || statusFilter != ""
+	usePagination := page > 0 || pageSize > 0 || emailKeyword != "" || statusFilter != "" || userID != ""
 	users := make([]domain.User, 0)
 	total := 0
 	currentPage := 1
 	currentPageSize := 0
 	if usePagination {
-		result, err := s.services.Admin.ListUsersPaginated(page, pageSize, emailKeyword, statusFilter)
+		result, err := s.services.Admin.ListUsersPaginated(page, pageSize, emailKeyword, statusFilter, userID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -320,6 +321,85 @@ func (s *Server) handleReviewApp(c *gin.Context) {
 	c.JSON(http.StatusOK, app)
 }
 
+func (s *Server) handleAdminApps(c *gin.Context) {
+	admin := c.MustGet("user").(domain.User)
+	page, _ := strconv.Atoi(strings.TrimSpace(c.Query("page")))
+	pageSize, _ := strconv.Atoi(strings.TrimSpace(c.Query("page_size")))
+	statusFilter := strings.TrimSpace(c.Query("status"))
+	nameKeyword := strings.TrimSpace(c.Query("name_keyword"))
+	result, err := s.services.Admin.ListAppsPaginated(page, pageSize, statusFilter, nameKeyword)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	items := make([]gin.H, 0, len(result.Items))
+	for _, app := range result.Items {
+		items = append(items, s.adminAppResponse(app, admin.ID, false))
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"items":     items,
+		"total":     result.Total,
+		"page":      result.Page,
+		"page_size": result.PageSize,
+	})
+}
+
+func (s *Server) adminAppResponse(app domain.ClientApp, adminID string, includeClientSecret bool) gin.H {
+	return adminAppResponse(app, adminID, s.services.Admin.AppOwnerIsAdmin(app), includeClientSecret)
+}
+
+func adminAppResponse(app domain.ClientApp, adminID string, ownerIsAdmin bool, includeClientSecret bool) gin.H {
+	response := gin.H{
+		"id":                        app.ID,
+		"name":                      app.Name,
+		"icon_url":                  app.IconURL,
+		"owner_user_id":             app.OwnerUserID,
+		"admin_owned":               app.OwnerUserID == adminID,
+		"admin_created":             ownerIsAdmin,
+		"client_id":                 app.ClientID,
+		"has_client_secret":         app.HasClientSecret,
+		"redirect_uris":             app.RedirectURIs,
+		"post_logout_redirect_uris": app.PostLogoutRedirectURIs,
+		"frontchannel_logout_uri":   app.FrontChannelLogoutURI,
+		"allow_get_session_logout":  app.AllowGetSessionLogout,
+		"scopes":                    app.Scopes,
+		"status":                    app.Status,
+		"description":               app.Description,
+		"created_at":                app.CreatedAt,
+		"updated_at":                app.UpdatedAt,
+		"review_comment":            app.ReviewComment,
+	}
+	if includeClientSecret && strings.TrimSpace(app.ClientSecret) != "" {
+		response["client_secret"] = app.ClientSecret
+	}
+	return response
+}
+
+func (s *Server) handleCreateAdminApp(c *gin.Context) {
+	admin := c.MustGet("user").(domain.User)
+	var req createAppRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	app, err := s.services.Admin.CreateApp(
+		admin.ID,
+		req.Name,
+		req.IconURL,
+		req.Description,
+		req.FrontChannelLogoutURI,
+		req.AllowGetSessionLogout,
+		req.RedirectURIs,
+		req.PostLogoutRedirectURIs,
+		req.Scopes,
+	)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, s.adminAppResponse(app, admin.ID, false))
+}
+
 func (s *Server) handleUpdateAdminApp(c *gin.Context) {
 	admin := c.MustGet("user").(domain.User)
 	var req createAppRequest
@@ -343,7 +423,40 @@ func (s *Server) handleUpdateAdminApp(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, app)
+	c.JSON(http.StatusOK, s.adminAppResponse(app, admin.ID, false))
+}
+
+func (s *Server) handleResetAdminAppSecret(c *gin.Context) {
+	admin := c.MustGet("user").(domain.User)
+	app, err := s.services.Admin.ResetAdminOwnedAppSecret(admin.ID, c.Param("id"))
+	if err != nil {
+		if err == service.ErrForbidden {
+			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, s.adminAppResponse(app, admin.ID, true))
+}
+
+func (s *Server) handleSetAdminAppDisabled(c *gin.Context) {
+	admin := c.MustGet("user").(domain.User)
+	var req setAppDisabledRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	app, err := s.services.Admin.SetAdminOwnedAppDisabled(admin.ID, c.Param("id"), req.Disabled)
+	if err != nil {
+		if err == service.ErrForbidden {
+			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, s.adminAppResponse(app, admin.ID, false))
 }
 
 func (s *Server) handleUploadAdminAppIcon(c *gin.Context) {
@@ -374,7 +487,52 @@ func (s *Server) handleBatchDeleteApps(c *gin.Context) {
 }
 
 func (s *Server) handleAuditLogs(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"items": s.services.Admin.ListAuditLogs()})
+	page, _ := strconv.Atoi(strings.TrimSpace(c.Query("page")))
+	pageSize, _ := strconv.Atoi(strings.TrimSpace(c.Query("page_size")))
+	if page <= 0 && pageSize <= 0 {
+		c.JSON(http.StatusOK, gin.H{"items": s.services.Admin.ListAuditLogs()})
+		return
+	}
+	result, err := s.services.Admin.ListAuditLogsPaginated(page, pageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"items":     result.Items,
+		"total":     result.Total,
+		"page":      result.Page,
+		"page_size": result.PageSize,
+	})
+}
+
+func (s *Server) handleAppAuditLogs(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"items": s.services.Admin.ListAppAuditLogs(c.Param("id"))})
+}
+
+func (s *Server) handleDeleteAppAuditLogs(c *gin.Context) {
+	admin := c.MustGet("user").(domain.User)
+	var req deleteAppAuditLogsRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	startAt, err := parseOptionalRFC3339(req.StartAt)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid start_at"})
+		return
+	}
+	endAt, err := parseOptionalRFC3339(req.EndAt)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid end_at"})
+		return
+	}
+	deleted, err := s.services.Admin.DeleteAppAuditLogs(admin.ID, c.Param("id"), startAt, endAt)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"deleted": deleted})
 }
 
 func (s *Server) handleRiskLogs(c *gin.Context) {

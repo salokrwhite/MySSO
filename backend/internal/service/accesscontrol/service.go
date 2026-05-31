@@ -745,6 +745,20 @@ func (s *Service) ListAllDeveloperAccessLogs() ([]domain.DeveloperAccessLog, err
 	return s.deps.Store.ListAllDeveloperAccessLogs(true)
 }
 
+func (s *Service) ListAllDeveloperAccessLogsPaginated(page, pageSize int) (DeveloperAccessLogListResult, error) {
+	page, pageSize = normalizeAccessLogPagination(page, pageSize)
+	items, total, err := s.deps.Store.ListAllDeveloperAccessLogsPaginated(true, page, pageSize)
+	if err != nil {
+		return DeveloperAccessLogListResult{}, err
+	}
+	return DeveloperAccessLogListResult{
+		Items:    items,
+		Total:    total,
+		Page:     page,
+		PageSize: pageSize,
+	}, nil
+}
+
 func (s *Service) SoftDeleteDeveloperAccessLogs(ownerUserID string, ids []string) error {
 	if len(ids) == 0 {
 		return fmt.Errorf("no access logs selected")

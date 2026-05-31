@@ -140,6 +140,7 @@ const (
 	AppPending  AppStatus = "pending_review"
 	AppApproved AppStatus = "approved"
 	AppRejected AppStatus = "rejected"
+	AppDisabled AppStatus = "disabled"
 )
 
 type ClientApp struct {

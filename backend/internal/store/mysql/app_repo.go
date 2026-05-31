@@ -17,6 +17,57 @@ func (s *MySQLStore) ListApps() []domain.ClientApp {
 	return s.listApps("", nil)
 }
 
+func (s *MySQLStore) ListAppsPaginated(page, pageSize int, statusFilter, nameKeyword string) ([]domain.ClientApp, int, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+	where, args := buildAppListFilters(statusFilter, nameKeyword)
+	var total int
+	if err := s.db.QueryRow(`SELECT COUNT(*) FROM client_apps`+where, args...).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+	offset := (page - 1) * pageSize
+	queryArgs := append([]any{}, args...)
+	queryArgs = append(queryArgs, pageSize, offset)
+	rows, err := s.db.Query(`
+		SELECT id, owner_user_id, name, icon_url, client_id, client_secret, description, frontchannel_logout_uri, allow_get_session_logout, status, review_comment, created_at, updated_at
+		FROM client_apps
+		`+where+`
+		ORDER BY created_at DESC
+		LIMIT ? OFFSET ?
+	`, queryArgs...)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	items, err := s.scanAppRows(rows)
+	if err != nil {
+		return nil, 0, err
+	}
+	return items, total, nil
+}
+
+func buildAppListFilters(statusFilter, nameKeyword string) (string, []any) {
+	clauses := []string{}
+	args := []any{}
+	if normalizedStatus := strings.TrimSpace(statusFilter); normalizedStatus != "" && normalizedStatus != "all" {
+		clauses = append(clauses, "status = ?")
+		args = append(args, normalizedStatus)
+	}
+	if keyword := strings.TrimSpace(nameKeyword); keyword != "" {
+		clauses = append(clauses, "LOWER(name) LIKE ?")
+		args = append(args, "%"+strings.ToLower(keyword)+"%")
+	}
+	if len(clauses) == 0 {
+		return "", args
+	}
+	return " WHERE " + strings.Join(clauses, " AND "), args
+}
+
 func (s *MySQLStore) CountApps(status string) (int, error) {
 	query := "SELECT COUNT(*) FROM client_apps"
 	args := make([]any, 0, 1)
@@ -134,15 +185,26 @@ func (s *MySQLStore) listApps(whereClause string, arg any) []domain.ClientApp {
 
 	items := []domain.ClientApp{}
 	for rows.Next() {
-		app, err := s.scanApp(rows)
+		app, err := s.scanAppBase(rows)
 		if err == nil {
 			items = append(items, app)
 		}
 	}
+	s.hydrateAppCollections(items)
 	return items
 }
 
 func (s *MySQLStore) scanApp(scanner interface{ Scan(dest ...any) error }) (domain.ClientApp, error) {
+	item, err := s.scanAppBase(scanner)
+	if err != nil {
+		return domain.ClientApp{}, err
+	}
+	items := []domain.ClientApp{item}
+	s.hydrateAppCollections(items)
+	return items[0], nil
+}
+
+func (s *MySQLStore) scanAppBase(scanner interface{ Scan(dest ...any) error }) (domain.ClientApp, error) {
 	var item domain.ClientApp
 	if err := scanner.Scan(&item.ID, &item.OwnerUserID, &item.Name, &item.IconURL, &item.ClientID, &item.ClientSecret, &item.Description, &item.FrontChannelLogoutURI, &item.AllowGetSessionLogout, &item.Status, &item.ReviewComment, &item.CreatedAt, &item.UpdatedAt); err != nil {
 		if err == sql.ErrNoRows {
@@ -151,10 +213,68 @@ func (s *MySQLStore) scanApp(scanner interface{ Scan(dest ...any) error }) (doma
 		return domain.ClientApp{}, err
 	}
 	item.HasClientSecret = strings.TrimSpace(item.ClientSecret) != ""
-	item.RedirectURIs = s.listAppStrings("client_redirect_uris", "redirect_uri", item.ID)
-	item.PostLogoutRedirectURIs = s.listAppStrings("client_post_logout_redirect_uris", "post_logout_redirect_uri", item.ID)
-	item.Scopes = s.listAppStrings("client_scopes", "scope", item.ID)
 	return item, nil
+}
+
+func (s *MySQLStore) scanAppRows(rows *sql.Rows) ([]domain.ClientApp, error) {
+	items := []domain.ClientApp{}
+	for rows.Next() {
+		app, err := s.scanAppBase(rows)
+		if err != nil {
+			return nil, err
+		}
+		items = append(items, app)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	s.hydrateAppCollections(items)
+	return items, nil
+}
+
+func (s *MySQLStore) hydrateAppCollections(items []domain.ClientApp) {
+	if len(items) == 0 {
+		return
+	}
+	indexByID := make(map[string]int, len(items))
+	ids := make([]string, 0, len(items))
+	for index, item := range items {
+		indexByID[item.ID] = index
+		ids = append(ids, item.ID)
+	}
+	s.hydrateAppStringCollection(items, indexByID, ids, "client_redirect_uris", "redirect_uri", func(app *domain.ClientApp, value string) {
+		app.RedirectURIs = append(app.RedirectURIs, value)
+	})
+	s.hydrateAppStringCollection(items, indexByID, ids, "client_post_logout_redirect_uris", "post_logout_redirect_uri", func(app *domain.ClientApp, value string) {
+		app.PostLogoutRedirectURIs = append(app.PostLogoutRedirectURIs, value)
+	})
+	s.hydrateAppStringCollection(items, indexByID, ids, "client_scopes", "scope", func(app *domain.ClientApp, value string) {
+		app.Scopes = append(app.Scopes, value)
+	})
+}
+
+func (s *MySQLStore) hydrateAppStringCollection(items []domain.ClientApp, indexByID map[string]int, appIDs []string, table, column string, appendValue func(*domain.ClientApp, string)) {
+	placeholders := make([]string, len(appIDs))
+	args := make([]any, 0, len(appIDs))
+	for i, id := range appIDs {
+		placeholders[i] = "?"
+		args = append(args, id)
+	}
+	rows, err := s.db.Query(fmt.Sprintf(`SELECT app_id, %s FROM %s WHERE app_id IN (%s) ORDER BY id ASC`, column, table, strings.Join(placeholders, ",")), args...)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var appID string
+		var value string
+		if err := rows.Scan(&appID, &value); err != nil {
+			continue
+		}
+		if index, ok := indexByID[appID]; ok {
+			appendValue(&items[index], value)
+		}
+	}
 }
 
 func (s *MySQLStore) replaceAppCollections(app domain.ClientApp) {

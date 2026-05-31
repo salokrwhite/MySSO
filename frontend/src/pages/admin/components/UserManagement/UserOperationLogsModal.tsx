@@ -2,6 +2,7 @@ import {
   Button,
   DatePicker,
   Descriptions,
+  Drawer,
   Empty,
   List,
   Modal,
@@ -28,6 +29,7 @@ type UserOperationLogsModalProps = {
   open: boolean;
   sessionToken: string;
   user?: User;
+  isMobile?: boolean;
   onCancel: () => void;
 };
 
@@ -106,6 +108,7 @@ export function UserOperationLogsModal({
   open,
   sessionToken,
   user,
+  isMobile,
   onCancel,
 }: UserOperationLogsModalProps) {
   const { t, locale } = useAdminI18n();
@@ -270,13 +273,13 @@ export function UserOperationLogsModal({
   }
 
   return (
-    <Modal
+    <Drawer
       title={user ? t("账号操作日志 · {{email}}", { email: user.email }) : t("账号操作日志")}
       open={open}
-      footer={null}
-      width={820}
+      width={isMobile ? "100vw" : 820}
+      placement="right"
       destroyOnHidden
-      onCancel={onCancel}
+      onClose={onCancel}
     >
       {contextHolder}
       {user ? (
@@ -368,6 +371,6 @@ export function UserOperationLogsModal({
           />
         </Space>
       ) : null}
-    </Modal>
+    </Drawer>
   );
 }

@@ -1,4 +1,4 @@
-import { Alert, Form, Modal, Radio, Skeleton, Space, Switch, Tag, Typography } from "antd";
+import { Alert, Button, Drawer, Form, Radio, Skeleton, Space, Switch, Tag, Typography } from "antd";
 import { useEffect } from "react";
 import { useAdminI18n } from "../../i18n";
 import type { UpdateUserSecurityPolicyInput, User, UserSecurityPolicy } from "../../types";
@@ -8,6 +8,7 @@ type UserSecurityPolicyModalProps = {
   user?: User;
   policy?: UserSecurityPolicy;
   loading: boolean;
+  isMobile?: boolean;
   onCancel: () => void;
   onSubmit: (userId: string, values: UpdateUserSecurityPolicyInput) => Promise<void>;
 };
@@ -17,6 +18,7 @@ export function UserSecurityPolicyModal({
   user,
   policy,
   loading,
+  isMobile,
   onCancel,
   onSubmit,
 }: UserSecurityPolicyModalProps) {
@@ -50,24 +52,41 @@ export function UserSecurityPolicyModal({
       ]
     : [];
 
+  function handleClose() {
+    if (loading) {
+      return;
+    }
+    onCancel();
+  }
+
+  function handleSubmit() {
+    void form.validateFields().then((values) => {
+      if (!user) {
+        return;
+      }
+      void onSubmit(user.id, values);
+    });
+  }
+
   return (
-    <Modal
+    <Drawer
       title={user ? t("{{email}} 安全策略", { email: user.email }) : t("安全策略")}
       open={open}
+      width={isMobile ? "100vw" : 560}
+      placement="right"
       destroyOnClose
-      okText={t("保存")}
-      cancelText={t("取消")}
-      confirmLoading={loading}
-      okButtonProps={{ disabled: !policy }}
-      onOk={() => {
-        void form.validateFields().then((values) => {
-          if (!user) {
-            return;
-          }
-          void onSubmit(user.id, values);
-        });
-      }}
-      onCancel={onCancel}
+      maskClosable={!loading}
+      onClose={handleClose}
+      footer={
+        <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+          <Button disabled={loading} onClick={handleClose}>
+            {t("取消")}
+          </Button>
+          <Button type="primary" loading={loading} disabled={!policy} onClick={handleSubmit}>
+            {t("保存")}
+          </Button>
+        </Space>
+      }
     >
       <Skeleton active loading={!policy}>
         <Space direction="vertical" size={16} style={{ width: "100%" }}>
@@ -116,6 +135,6 @@ export function UserSecurityPolicyModal({
           </Form>
         </Space>
       </Skeleton>
-    </Modal>
+    </Drawer>
   );
 }

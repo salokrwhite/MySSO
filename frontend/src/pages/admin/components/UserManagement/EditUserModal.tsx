@@ -1,4 +1,4 @@
-import { Form, Input, Modal, Select } from "antd";
+import { Button, Drawer, Form, Input, Select, Space } from "antd";
 import { useEffect } from "react";
 import { getCountries } from "../../../../utils/countries";
 import { useAdminI18n } from "../../i18n";
@@ -8,6 +8,7 @@ type EditUserModalProps = {
   open: boolean;
   user?: User;
   loading: boolean;
+  isMobile?: boolean;
   onCancel: () => void;
   onSubmit: (userId: string, values: UpdateUserInput) => Promise<void>;
 };
@@ -30,6 +31,7 @@ export function EditUserModal({
   open,
   user,
   loading,
+  isMobile,
   onCancel,
   onSubmit,
 }: EditUserModalProps) {
@@ -46,36 +48,54 @@ export function EditUserModal({
     }
   }, [form, open, user]);
 
+  function handleClose() {
+    if (loading) {
+      return;
+    }
+    onCancel();
+  }
+
+  function handleSubmit() {
+    if (!user) {
+      return;
+    }
+    void form.validateFields().then(async (values) => {
+      await onSubmit(user.id, {
+        ...values,
+        display_name: values.display_name.trim(),
+        freeze_reason:
+          values.status === "frozen"
+            ? values.freeze_reason?.trim() || ""
+            : "",
+        phone: values.phone.trim(),
+        password: values.password?.trim() || undefined,
+        country: values.country,
+        gender: values.gender || undefined,
+      });
+      onCancel();
+    });
+  }
+
   return (
-    <Modal
+    <Drawer
       title={t("编辑用户")}
       open={open}
-      okText={t("保存")}
-      cancelText={t("取消")}
-      confirmLoading={loading}
+      width={isMobile ? "100vw" : 560}
+      placement="right"
       forceRender
       destroyOnHidden
-      onCancel={onCancel}
-      onOk={() => {
-        if (!user) {
-          return;
-        }
-        void form.validateFields().then(async (values) => {
-          await onSubmit(user.id, {
-            ...values,
-            display_name: values.display_name.trim(),
-            freeze_reason:
-              values.status === "frozen"
-                ? values.freeze_reason?.trim() || ""
-                : "",
-            phone: values.phone.trim(),
-            password: values.password?.trim() || undefined,
-            country: values.country,
-            gender: values.gender || undefined,
-          });
-          onCancel();
-        });
-      }}
+      maskClosable={!loading}
+      onClose={handleClose}
+      footer={
+        <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+          <Button disabled={loading} onClick={handleClose}>
+            {t("取消")}
+          </Button>
+          <Button type="primary" loading={loading} onClick={handleSubmit}>
+            {t("保存")}
+          </Button>
+        </Space>
+      }
     >
       <Form form={form} layout="vertical">
         <Form.Item
@@ -162,6 +182,6 @@ export function EditUserModal({
           </Form.Item>
         ) : null}
       </Form>
-    </Modal>
+    </Drawer>
   );
 }

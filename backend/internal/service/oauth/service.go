@@ -382,6 +382,9 @@ func parsePrompt(prompt string) map[string]bool {
 }
 
 func appApprovalError(app domain.ClientApp) error {
+	if app.Status == domain.AppDisabled {
+		return fmt.Errorf("application disabled")
+	}
 	if app.Status == domain.AppRejected {
 		comment := strings.TrimSpace(app.ReviewComment)
 		if comment != "" {

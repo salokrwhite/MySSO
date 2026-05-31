@@ -1,14 +1,18 @@
 import { Card, Table, Tag, Typography } from "antd";
-import { useEffect, useState } from "react";
 import type { DeveloperAccessLog } from "../../types";
 import { BatchActions } from "../AuditLogs/BatchActions";
 import { useAdminI18n } from "../../i18n";
 
 type DeveloperAccessLogsPanelProps = {
   logs: DeveloperAccessLog[];
+  logsTotal: number;
+  currentPage: number;
+  pageSize: number;
   selectedLogIds: string[];
   setSelectedLogIds: (value: string[]) => void;
   deletingLogs: boolean;
+  refreshing: boolean;
+  onPageChange: (page: number, pageSize: number) => void;
   onBatchDelete: () => void;
 };
 
@@ -25,21 +29,17 @@ function formatDetail(detail?: Record<string, unknown>) {
 
 export function DeveloperAccessLogsPanel({
   logs,
+  logsTotal,
+  currentPage,
+  pageSize,
   selectedLogIds,
   setSelectedLogIds,
   deletingLogs,
+  refreshing,
+  onPageChange,
   onBatchDelete,
 }: DeveloperAccessLogsPanelProps) {
   const { t } = useAdminI18n();
-  const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-
-  useEffect(() => {
-    const maxPage = Math.max(1, Math.ceil(logs.length / pageSize));
-    if (current > maxPage) {
-      setCurrent(maxPage);
-    }
-  }, [current, logs.length, pageSize]);
 
   return (
     <Card title={t("开发者访问日志列表")}>
@@ -51,22 +51,17 @@ export function DeveloperAccessLogsPanel({
       <Table
         rowKey="id"
         dataSource={logs}
+        loading={refreshing}
         scroll={{ x: 1280 }}
         pagination={{
-          current,
+          current: currentPage,
           pageSize,
+          total: logsTotal,
           showSizeChanger: true,
           pageSizeOptions: ["10", "20", "50", "100"],
-          onChange: (page, nextPageSize) => {
-            setCurrent(page);
-            if (nextPageSize && nextPageSize !== pageSize) {
-              setPageSize(nextPageSize);
-            }
-          },
-          onShowSizeChange: (_, nextPageSize) => {
-            setCurrent(1);
-            setPageSize(nextPageSize);
-          },
+          showTotal: (total, range) => `${range[0]}-${range[1]} / ${total}`,
+          onChange: (page, nextPageSize) => onPageChange(page, nextPageSize || pageSize),
+          onShowSizeChange: (_, nextPageSize) => onPageChange(1, nextPageSize),
         }}
         rowSelection={{
           selectedRowKeys: selectedLogIds,

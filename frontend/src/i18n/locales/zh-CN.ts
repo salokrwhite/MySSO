@@ -233,6 +233,7 @@ const locale = {
           applicationAccessBanned: "应用访问已被封禁",
           applicationAccessBannedWithReason: "应用访问已被封禁：{{reason}}",
           applicationNotApproved: "应用尚未通过审核",
+          applicationDisabled: "该应用已被禁用",
           applicationNotFound: "应用不存在",
           forbidden: "你没有权限访问该应用",
           unsupportedResponseType: "不支持的响应类型",

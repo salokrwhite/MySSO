@@ -26,9 +26,11 @@ type UserManagementProps = {
   pageSize: number;
   statusFilter: string;
   emailKeyword: string;
+  userIDKeyword: string;
   onPageChange: (page: number, pageSize: number) => void;
   onStatusFilterChange: (value: string) => void;
   onEmailKeywordChange: (value: string) => void;
+  onUserIDKeywordChange: (value: string) => void;
   selectedUserIds: string[];
   setSelectedUserIds: (value: string[]) => void;
   loading: boolean;
@@ -108,6 +110,8 @@ export function UserManagement(props: UserManagementProps) {
         onStatusFilterChange={props.onStatusFilterChange}
         emailKeyword={props.emailKeyword}
         onEmailKeywordChange={props.onEmailKeywordChange}
+        userIDKeyword={props.userIDKeyword}
+        onUserIDKeywordChange={props.onUserIDKeywordChange}
         onRefresh={props.onRefresh}
         onFreeze={props.onBatchFreeze}
         onUnfreeze={props.onBatchUnfreeze}
@@ -158,11 +162,13 @@ export function UserManagement(props: UserManagementProps) {
         open={Boolean(operationLogsUser)}
         sessionToken={props.sessionToken}
         user={operationLogsUser}
+        isMobile={isMobile}
         onCancel={() => setOperationLogsUser(undefined)}
       />
       <UserDetailModal
         open={Boolean(detailUser)}
         user={detailUser}
+        isMobile={isMobile}
         onCancel={() => setDetailUser(undefined)}
       />
       <UserSecurityPolicyModal
@@ -170,6 +176,7 @@ export function UserManagement(props: UserManagementProps) {
         user={props.securityPolicyUser}
         policy={props.securityPolicy}
         loading={props.loadingSecurityPolicy || props.updatingSecurityPolicy}
+        isMobile={isMobile}
         onCancel={props.onCloseSecurityPolicy}
         onSubmit={props.onUpdateSecurityPolicy}
       />
@@ -177,6 +184,7 @@ export function UserManagement(props: UserManagementProps) {
         open={Boolean(editingTargetUser)}
         user={editingTargetUser}
         loading={props.editingUser}
+        isMobile={isMobile}
         onCancel={() => setEditingTargetUser(undefined)}
         onSubmit={async (userId, values) => {
           await props.onUpdateUser(userId, values);

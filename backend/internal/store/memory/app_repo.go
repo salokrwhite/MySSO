@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"sort"
 	"strings"
 
 	"mysso/backend/internal/domain"
@@ -29,6 +30,41 @@ func (s *MemoryStore) ListApps() []domain.ClientApp {
 		apps = append(apps, app)
 	}
 	return apps
+}
+
+func (s *MemoryStore) ListAppsPaginated(page, pageSize int, statusFilter, nameKeyword string) ([]domain.ClientApp, int, error) {
+	allApps := s.ListApps()
+	normalizedStatus := strings.TrimSpace(statusFilter)
+	keyword := strings.ToLower(strings.TrimSpace(nameKeyword))
+	apps := make([]domain.ClientApp, 0, len(allApps))
+	for _, app := range allApps {
+		if normalizedStatus != "" && normalizedStatus != "all" && string(app.Status) != normalizedStatus {
+			continue
+		}
+		if keyword != "" && !strings.Contains(strings.ToLower(app.Name), keyword) {
+			continue
+		}
+		apps = append(apps, app)
+	}
+	sort.Slice(apps, func(i, j int) bool {
+		return apps[i].CreatedAt.After(apps[j].CreatedAt)
+	})
+	total := len(apps)
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+	start := (page - 1) * pageSize
+	if start >= total {
+		return []domain.ClientApp{}, total, nil
+	}
+	end := start + pageSize
+	if end > total {
+		end = total
+	}
+	return apps[start:end], total, nil
 }
 
 func (s *MemoryStore) CountApps(status string) (int, error) {

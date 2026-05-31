@@ -1,4 +1,4 @@
-import { Descriptions, Modal, Typography } from "antd";
+import { Descriptions, Drawer, Typography } from "antd";
 import { getCountries } from "../../../../utils/countries";
 import { useAdminI18n } from "../../i18n";
 import type { User } from "../../types";
@@ -18,6 +18,7 @@ function formatCountry(value?: string, locale?: string) {
 type UserDetailModalProps = {
   open: boolean;
   user?: User;
+  isMobile?: boolean;
   onCancel: () => void;
 };
 
@@ -42,18 +43,19 @@ function formatDateTime(value: string | undefined, locale: "zh-CN" | "en-US") {
 export function UserDetailModal({
   open,
   user,
+  isMobile,
   onCancel,
 }: UserDetailModalProps) {
   const { t, locale } = useAdminI18n();
 
   return (
-    <Modal
+    <Drawer
       title={t("用户详情")}
       open={open}
-      footer={null}
-      onCancel={onCancel}
+      width={isMobile ? "100vw" : 720}
+      placement="right"
+      onClose={onCancel}
       destroyOnHidden
-      width={720}
     >
       {user ? (
         <>
@@ -119,6 +121,6 @@ export function UserDetailModal({
           </Descriptions>
         </>
       ) : null}
-    </Modal>
+    </Drawer>
   );
 }

@@ -246,6 +246,8 @@ function translateAuthorizeError(rawMessage: string, t: (key: string, options?: 
       return t("auth.authorize.errors.applicationAccessBanned");
     case "application not approved":
       return t("auth.authorize.errors.applicationNotApproved");
+    case "application disabled":
+      return t("auth.authorize.errors.applicationDisabled");
     case "application not found":
       return t("auth.authorize.errors.applicationNotFound");
     case "forbidden":

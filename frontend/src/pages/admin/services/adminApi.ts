@@ -2,11 +2,14 @@ import { api, API_BASE } from "../../../api/client";
 import { defaultSettings } from "../constants";
 import type {
   AppItem,
+  AppListResponse,
   AuditLog,
+  AuditLogListResponse,
   AdminPasskeyLogs,
   AdminDashboardSummary,
   CreateUserInput,
   DeveloperAccessLog,
+  DeveloperAccessLogListResponse,
   EmailSendLog,
   PhoneSendLog,
   Policy,
@@ -132,6 +135,7 @@ export async function fetchAdminUsers(
     pageSize?: number;
     emailKeyword?: string;
     status?: string;
+    userID?: string;
   },
   options?: { force?: boolean },
 ) {
@@ -144,6 +148,9 @@ export async function fetchAdminUsers(
   }
   if (query?.emailKeyword?.trim()) {
     params.set("email_keyword", query.emailKeyword.trim());
+  }
+  if (query?.userID?.trim()) {
+    params.set("user_id", query.userID.trim());
   }
   if (query?.status?.trim() && query.status !== "all") {
     params.set("status", query.status.trim());
@@ -177,58 +184,102 @@ export async function fetchAdminDashboardSummary(
 
 export async function fetchAdminApps(
   sessionToken: string,
+  query?: {
+    page?: number;
+    pageSize?: number;
+    status?: string;
+    nameKeyword?: string;
+  },
   options?: { force?: boolean },
 ) {
-  return loadCachedResource(
-    appsCache,
+  const params = new URLSearchParams();
+  if (typeof query?.page === "number" && query.page > 0) {
+    params.set("page", String(query.page));
+  }
+  if (typeof query?.pageSize === "number" && query.pageSize > 0) {
+    params.set("page_size", String(query.pageSize));
+  }
+  if (query?.status && query.status !== "all") {
+    params.set("status", query.status);
+  }
+  if (query?.nameKeyword?.trim()) {
+    params.set("name_keyword", query.nameKeyword.trim());
+  }
+  return api<AppListResponse>(
+    `/admin/apps${params.size > 0 ? `?${params.toString()}` : ""}`,
+    undefined,
     sessionToken,
-    async () => {
-      const result = await api<{ items: AppItem[] }>(
-        "/admin/apps",
-        undefined,
-        sessionToken,
-      );
-      return result.items;
+  );
+}
+
+export async function fetchAdminAppAuditLogs(
+  sessionToken: string,
+  appID: string,
+) {
+  const result = await api<{ items: AuditLog[] }>(
+    `/admin/apps/${appID}/audit-logs`,
+    undefined,
+    sessionToken,
+  );
+  return result.items;
+}
+
+export async function deleteAdminAppAuditLogs(
+  sessionToken: string,
+  appID: string,
+  input: { start_at: string; end_at: string },
+) {
+  return api<{ deleted: number }>(
+    `/admin/apps/${appID}/audit-logs/delete`,
+    {
+      method: "POST",
+      body: JSON.stringify(input),
     },
-    options,
+    sessionToken,
   );
 }
 
 export async function fetchAdminAuditLogs(
   sessionToken: string,
+  query?: {
+    page?: number;
+    pageSize?: number;
+  },
   options?: { force?: boolean },
 ) {
-  return loadCachedResource(
-    auditLogsCache,
+  const params = new URLSearchParams();
+  if (typeof query?.page === "number" && query.page > 0) {
+    params.set("page", String(query.page));
+  }
+  if (typeof query?.pageSize === "number" && query.pageSize > 0) {
+    params.set("page_size", String(query.pageSize));
+  }
+  return api<AuditLogListResponse>(
+    `/admin/audit-logs${params.size > 0 ? `?${params.toString()}` : ""}`,
+    undefined,
     sessionToken,
-    async () => {
-      const result = await api<{ items: AuditLog[] }>(
-        "/admin/audit-logs",
-        undefined,
-        sessionToken,
-      );
-      return result.items;
-    },
-    options,
   );
 }
 
 export async function fetchAdminDeveloperAccessLogs(
   sessionToken: string,
+  query?: {
+    page?: number;
+    pageSize?: number;
+  },
   options?: { force?: boolean },
 ) {
-  return loadCachedResource(
-    developerAccessLogsCache,
+  const params = new URLSearchParams();
+  if (typeof query?.page === "number" && query.page > 0) {
+    params.set("page", String(query.page));
+  }
+  if (typeof query?.pageSize === "number" && query.pageSize > 0) {
+    params.set("page_size", String(query.pageSize));
+  }
+  return api<DeveloperAccessLogListResponse>(
+    `/admin/developer-access-logs${params.size > 0 ? `?${params.toString()}` : ""}`,
+    undefined,
     sessionToken,
-    async () => {
-      const result = await api<{ items: DeveloperAccessLog[] }>(
-        "/admin/developer-access-logs",
-        undefined,
-        sessionToken,
-      );
-      return result.items;
-    },
-    options,
   );
 }
 
@@ -405,6 +456,29 @@ export async function reviewApp(
   );
 }
 
+export async function createApp(
+  sessionToken: string,
+  input: {
+    name: string;
+    icon_url?: string;
+    description?: string;
+    redirect_uris: string[];
+    post_logout_redirect_uris?: string[];
+    frontchannel_logout_uri?: string;
+    allow_get_session_logout?: boolean;
+    scopes: string[];
+  },
+) {
+  return api<AppItem>(
+    "/admin/apps",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+    },
+    sessionToken,
+  );
+}
+
 export async function updateApp(
   sessionToken: string,
   id: string,
@@ -415,14 +489,38 @@ export async function updateApp(
     redirect_uris: string[];
     post_logout_redirect_uris?: string[];
     frontchannel_logout_uri?: string;
+    allow_get_session_logout?: boolean;
     scopes: string[];
   },
 ) {
-  return api(
+  return api<AppItem>(
     `/admin/apps/${id}`,
     {
       method: "PUT",
       body: JSON.stringify(input),
+    },
+    sessionToken,
+  );
+}
+
+export async function resetAdminAppSecret(sessionToken: string, id: string) {
+  return api<AppItem>(
+    `/admin/apps/${id}/reset-secret`,
+    { method: "POST" },
+    sessionToken,
+  );
+}
+
+export async function setAdminAppDisabled(
+  sessionToken: string,
+  id: string,
+  disabled: boolean,
+) {
+  return api<AppItem>(
+    `/admin/apps/${id}/disabled`,
+    {
+      method: "POST",
+      body: JSON.stringify({ disabled }),
     },
     sessionToken,
   );

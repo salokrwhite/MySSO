@@ -93,6 +93,25 @@ type DashboardSummary struct {
 	Policies     int
 }
 
+type AppListResult struct {
+	Items    []domain.ClientApp
+	Total    int
+	Page     int
+	PageSize int
+}
+
+func (s *AdminService) AppOwnerIsAdmin(app domain.ClientApp) bool {
+	owner, err := s.deps.Store.GetUser(app.OwnerUserID)
+	return err == nil && owner.Role == domain.RoleAdmin
+}
+
+type AuditLogListResult struct {
+	Items    []domain.AuditLog
+	Total    int
+	Page     int
+	PageSize int
+}
+
 type UserSecurityPolicyView struct {
 	ForcePhoneBindingNextLogin  bool     `json:"force_phone_binding_next_login"`
 	ForceMFAEnrollmentNextLogin bool     `json:"force_mfa_enrollment_next_login"`
@@ -393,6 +412,53 @@ func (s *AdminService) DeleteApp(adminID, appID string) error {
 	return nil
 }
 
+func (s *AdminService) CreateApp(
+	adminID,
+	name,
+	iconURL,
+	description,
+	frontChannelLogoutURI string,
+	allowGetSessionLogout bool,
+	redirectURIs,
+	postLogoutRedirectURIs,
+	scopes []string,
+) (domain.ClientApp, error) {
+	scopes, err := apps.New(s.deps, s.audit).ValidateRequestedScopes(scopes, false)
+	if err != nil {
+		return domain.ClientApp{}, err
+	}
+	redirectURIs, postLogoutRedirectURIs, frontChannelLogoutURI, err = appurl.NormalizeAppOAuthURLs(
+		redirectURIs,
+		postLogoutRedirectURIs,
+		frontChannelLogoutURI,
+	)
+	if err != nil {
+		return domain.ClientApp{}, err
+	}
+	now := time.Now().UTC()
+	app := domain.ClientApp{
+		ID:                     uuid.NewString(),
+		Name:                   strings.TrimSpace(name),
+		IconURL:                strings.TrimSpace(iconURL),
+		OwnerUserID:            adminID,
+		ClientID:               "app_" + strings.ReplaceAll(uuid.NewString(), "-", ""),
+		ClientSecret:           "",
+		RedirectURIs:           redirectURIs,
+		PostLogoutRedirectURIs: postLogoutRedirectURIs,
+		FrontChannelLogoutURI:  strings.TrimSpace(frontChannelLogoutURI),
+		AllowGetSessionLogout:  allowGetSessionLogout,
+		Scopes:                 scopes,
+		Status:                 domain.AppApproved,
+		Description:            strings.TrimSpace(description),
+		ReviewComment:          "管理员创建",
+		CreatedAt:              now,
+		UpdatedAt:              now,
+	}
+	app = s.deps.Store.CreateApp(app)
+	s.audit.Record(adminID, domain.RoleAdmin, "admin.app.create", app.ID, appurl.BuildAppCreateAuditDetail(app))
+	return app, nil
+}
+
 func (s *AdminService) UpdateApp(
 	adminID,
 	appID,
@@ -441,6 +507,59 @@ func (s *AdminService) UpdateApp(
 	return app, nil
 }
 
+func (s *AdminService) ResetAdminOwnedAppSecret(adminID, appID string) (domain.ClientApp, error) {
+	app, err := s.deps.Store.GetApp(appID)
+	if err != nil {
+		return domain.ClientApp{}, err
+	}
+	if app.OwnerUserID != adminID {
+		return domain.ClientApp{}, appurl.ErrForbidden
+	}
+	if app.Status != domain.AppApproved {
+		return domain.ClientApp{}, appurl.ErrAppSecretRequiresApproval
+	}
+	action := "admin.app.reset_secret"
+	if !app.HasClientSecret {
+		action = "admin.app.create_secret"
+	}
+	app.ClientSecret = "sec_" + strings.ReplaceAll(uuid.NewString(), "-", "")
+	app.HasClientSecret = true
+	app.UpdatedAt = time.Now().UTC()
+	if err := s.deps.Store.UpdateApp(app); err != nil {
+		return domain.ClientApp{}, err
+	}
+	s.audit.Record(adminID, domain.RoleAdmin, action, app.ID, nil)
+	return app, nil
+}
+
+func (s *AdminService) SetAdminOwnedAppDisabled(adminID, appID string, disabled bool) (domain.ClientApp, error) {
+	app, err := s.deps.Store.GetApp(appID)
+	if err != nil {
+		return domain.ClientApp{}, err
+	}
+	if app.OwnerUserID != adminID {
+		return domain.ClientApp{}, appurl.ErrForbidden
+	}
+	before := app
+	if disabled {
+		app.Status = domain.AppDisabled
+	} else {
+		app.Status = domain.AppApproved
+	}
+	app.UpdatedAt = time.Now().UTC()
+	if err := s.deps.Store.UpdateApp(app); err != nil {
+		return domain.ClientApp{}, err
+	}
+	action := "admin.app.disable"
+	if !disabled {
+		action = "admin.app.enable"
+	}
+	s.audit.Record(adminID, domain.RoleAdmin, action, app.ID, map[string]any{
+		"changes": appurl.BuildAppChangeDetails(before, app),
+	})
+	return app, nil
+}
+
 func (s *AdminService) DeleteApps(adminID string, appIDs []string) error {
 	if len(appIDs) == 0 {
 		return fmt.Errorf("no apps selected")
@@ -457,13 +576,27 @@ func (s *AdminService) ListUsers() []domain.User {
 	return s.deps.Store.ListUsers()
 }
 
-func (s *AdminService) ListUsersPaginated(page, pageSize int, emailKeyword, statusFilter string) (UserListResult, error) {
+func (s *AdminService) ListUsersPaginated(page, pageSize int, emailKeyword, statusFilter, userID string) (UserListResult, error) {
 	page, pageSize = normalizePagination(page, pageSize)
-	items, total, err := s.deps.Store.ListUsersPaginated(page, pageSize, emailKeyword, statusFilter)
+	items, total, err := s.deps.Store.ListUsersPaginated(page, pageSize, emailKeyword, statusFilter, userID)
 	if err != nil {
 		return UserListResult{}, err
 	}
 	return UserListResult{
+		Items:    items,
+		Total:    total,
+		Page:     page,
+		PageSize: pageSize,
+	}, nil
+}
+
+func (s *AdminService) ListAppsPaginated(page, pageSize int, statusFilter, nameKeyword string) (AppListResult, error) {
+	page, pageSize = normalizePagination(page, pageSize)
+	items, total, err := s.deps.Store.ListAppsPaginated(page, pageSize, statusFilter, nameKeyword)
+	if err != nil {
+		return AppListResult{}, err
+	}
+	return AppListResult{
 		Items:    items,
 		Total:    total,
 		Page:     page,
@@ -656,6 +789,24 @@ func (s *AdminService) ListAuditLogs() []domain.AuditLog {
 	return s.deps.Store.ListAudit()
 }
 
+func (s *AdminService) ListAuditLogsPaginated(page, pageSize int) (AuditLogListResult, error) {
+	page, pageSize = normalizePagination(page, pageSize)
+	items, total, err := s.deps.Store.ListAuditPaginated(page, pageSize)
+	if err != nil {
+		return AuditLogListResult{}, err
+	}
+	return AuditLogListResult{
+		Items:    items,
+		Total:    total,
+		Page:     page,
+		PageSize: pageSize,
+	}, nil
+}
+
+func (s *AdminService) ListAppAuditLogs(appID string) []domain.AuditLog {
+	return s.deps.Store.ListAuditByTarget(appID)
+}
+
 func (s *AdminService) ListEmailSendLogs() []domain.EmailSendLog {
 	return s.deps.Store.ListEmailSendLogs()
 }
@@ -765,6 +916,28 @@ func (s *AdminService) DeleteAuditLogs(adminID string, logIDs []string) error {
 		"log_ids": logIDs,
 	})
 	return nil
+}
+
+func (s *AdminService) DeleteAppAuditLogs(adminID, appID string, startAt, endAt *time.Time) (int64, error) {
+	if _, err := s.deps.Store.GetApp(appID); err != nil {
+		return 0, err
+	}
+	if startAt == nil || endAt == nil {
+		return 0, fmt.Errorf("delete range is required")
+	}
+	if startAt.After(*endAt) {
+		return 0, fmt.Errorf("start time must be before end time")
+	}
+	deleted, err := s.deps.Store.DeleteAuditLogsByTarget(appID, startAt, endAt)
+	if err != nil {
+		return 0, err
+	}
+	s.audit.Record(adminID, domain.RoleAdmin, "admin.app_audit_log.delete", appID, map[string]any{
+		"deleted":  deleted,
+		"start_at": startAt,
+		"end_at":   endAt,
+	})
+	return deleted, nil
 }
 
 func (s *AdminService) ListGatewayPolicies() []domain.GatewayPolicy {

@@ -38,6 +38,21 @@ export function useAdminData(
     pageSize: number;
     emailKeyword: string;
     status: string;
+    userID: string;
+  },
+  appsQuery?: {
+    page: number;
+    pageSize: number;
+    status: string;
+    nameKeyword: string;
+  },
+  auditLogsQuery?: {
+    page: number;
+    pageSize: number;
+  },
+  developerAccessLogsQuery?: {
+    page: number;
+    pageSize: number;
   },
 ) {
   const [loading, setLoading] = useState(false);
@@ -52,10 +67,13 @@ export function useAdminData(
     policies: 0,
   });
   const [apps, setApps] = useState<AppItem[]>([]);
+  const [appsTotal, setAppsTotal] = useState(0);
   const [logs, setLogs] = useState<AuditLog[]>([]);
+  const [logsTotal, setLogsTotal] = useState(0);
   const [developerAccessLogs, setDeveloperAccessLogs] = useState<
     DeveloperAccessLog[]
   >([]);
+  const [developerAccessLogsTotal, setDeveloperAccessLogsTotal] = useState(0);
   const [riskLogs, setRiskLogs] = useState<RiskLog[]>([]);
   const [passkeyLogs, setPasskeyLogs] = useState<AdminPasskeyLogs>({
     passkeys: [],
@@ -92,26 +110,27 @@ export function useAdminData(
       }
 
       if (pageType === "apps") {
-        const [nextApps, nextLogs, nextScopes] = await Promise.all([
-          fetchAdminApps(sessionToken, options),
-          fetchAdminAuditLogs(sessionToken, options),
+        const [nextApps, nextScopes] = await Promise.all([
+          fetchAdminApps(sessionToken, appsQuery, options),
           fetchAdminScopes(sessionToken, options),
         ]);
-        setApps(nextApps);
-        setLogs(nextLogs);
+        setApps(nextApps.items);
+        setAppsTotal(nextApps.total);
         setScopes(nextScopes);
         return;
       }
 
       if (pageType === "auditLogs") {
-        setLogs(await fetchAdminAuditLogs(sessionToken, options));
+        const nextLogs = await fetchAdminAuditLogs(sessionToken, auditLogsQuery, options);
+        setLogs(nextLogs.items);
+        setLogsTotal(nextLogs.total);
         return;
       }
 
       if (pageType === "developerAccessLogs") {
-        setDeveloperAccessLogs(
-          await fetchAdminDeveloperAccessLogs(sessionToken, options),
-        );
+        const nextLogs = await fetchAdminDeveloperAccessLogs(sessionToken, developerAccessLogsQuery, options);
+        setDeveloperAccessLogs(nextLogs.items);
+        setDeveloperAccessLogsTotal(nextLogs.total);
         return;
       }
 
@@ -148,7 +167,7 @@ export function useAdminData(
     } finally {
       setLoading(false);
     }
-  }, [pageType, sessionToken, usersQuery]);
+  }, [appsQuery, auditLogsQuery, developerAccessLogsQuery, pageType, sessionToken, usersQuery]);
 
   const activeUsers = useMemo(() => users.filter((item) => item.status === "active").length, [users]);
   const pendingApps = useMemo(() => apps.filter((item) => item.status === "pending_review").length, [apps]);
@@ -160,8 +179,11 @@ export function useAdminData(
     dashboardSummary,
     setUsers,
     apps,
+    appsTotal,
     logs,
+    logsTotal,
     developerAccessLogs,
+    developerAccessLogsTotal,
     riskLogs,
     passkeyLogs,
     emailSendLogs,

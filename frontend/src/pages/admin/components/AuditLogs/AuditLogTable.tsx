@@ -9,6 +9,7 @@ type AuditLogTableProps = {
   title?: string;
   pagination?: false | TablePaginationConfig;
   rowSelection?: TableRowSelection<AuditLog>;
+  loading?: boolean;
   cardless?: boolean;
 };
 
@@ -26,6 +27,7 @@ export function AuditLogTable({
   title = "最近审计日志",
   pagination,
   rowSelection,
+  loading = false,
   cardless = false
 }: AuditLogTableProps) {
   const { t } = useAdminI18n();
@@ -34,6 +36,7 @@ export function AuditLogTable({
       rowKey="id"
       dataSource={logs}
       rowSelection={rowSelection}
+      loading={loading}
       scroll={{ x: 1080 }}
       pagination={pagination ?? { pageSize: 5 }}
       columns={[

@@ -1,5 +1,4 @@
 import { Card } from "antd";
-import { useEffect, useState } from "react";
 import type { AuditLog } from "../../types";
 import { BatchActions } from "./BatchActions";
 import { AuditLogTable } from "./AuditLogTable";
@@ -7,29 +6,30 @@ import { useAdminI18n } from "../../i18n";
 
 type AuditLogsPanelProps = {
   logs: AuditLog[];
+  logsTotal: number;
+  currentPage: number;
+  pageSize: number;
   selectedAuditLogIds: string[];
   setSelectedAuditLogIds: (value: string[]) => void;
   deletingAuditLogs: boolean;
+  refreshing: boolean;
+  onPageChange: (page: number, pageSize: number) => void;
   onBatchDelete: () => void;
 };
 
 export function AuditLogsPanel({
   logs,
+  logsTotal,
+  currentPage,
+  pageSize,
   selectedAuditLogIds,
   setSelectedAuditLogIds,
   deletingAuditLogs,
+  refreshing,
+  onPageChange,
   onBatchDelete
 }: AuditLogsPanelProps) {
   const { t } = useAdminI18n();
-  const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-
-  useEffect(() => {
-    const maxPage = Math.max(1, Math.ceil(logs.length / pageSize));
-    if (current > maxPage) {
-      setCurrent(maxPage);
-    }
-  }, [current, logs.length, pageSize]);
 
   return (
     <Card title={t("审计日志列表")}>
@@ -38,21 +38,16 @@ export function AuditLogsPanel({
         logs={logs}
         cardless
         pagination={{
-          current,
+          current: currentPage,
           pageSize,
+          total: logsTotal,
           showSizeChanger: true,
           pageSizeOptions: ["10", "20", "50", "100"],
-          onChange: (page, nextPageSize) => {
-            setCurrent(page);
-            if (nextPageSize && nextPageSize !== pageSize) {
-              setPageSize(nextPageSize);
-            }
-          },
-          onShowSizeChange: (_, nextPageSize) => {
-            setCurrent(1);
-            setPageSize(nextPageSize);
-          }
+          showTotal: (total, range) => `${range[0]}-${range[1]} / ${total}`,
+          onChange: (page, nextPageSize) => onPageChange(page, nextPageSize || pageSize),
+          onShowSizeChange: (_, nextPageSize) => onPageChange(1, nextPageSize)
         }}
+        loading={refreshing}
         rowSelection={{
           selectedRowKeys: selectedAuditLogIds,
           onChange: (selectedRowKeys) => setSelectedAuditLogIds(selectedRowKeys as string[])

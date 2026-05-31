@@ -237,10 +237,26 @@ func (s *Server) handleAdminHardDeleteDeveloperAccessLogs(c *gin.Context) {
 }
 
 func (s *Server) handleAdminDeveloperAccessLogs(c *gin.Context) {
-	items, err := s.services.AccessControl.ListAllDeveloperAccessLogs()
+	page, _ := strconv.Atoi(strings.TrimSpace(c.Query("page")))
+	pageSize, _ := strconv.Atoi(strings.TrimSpace(c.Query("page_size")))
+	if page <= 0 && pageSize <= 0 {
+		items, err := s.services.AccessControl.ListAllDeveloperAccessLogs()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"items": items})
+		return
+	}
+	result, err := s.services.AccessControl.ListAllDeveloperAccessLogsPaginated(page, pageSize)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"items": items})
+	c.JSON(http.StatusOK, gin.H{
+		"items":     result.Items,
+		"total":     result.Total,
+		"page":      result.Page,
+		"page_size": result.PageSize,
+	})
 }

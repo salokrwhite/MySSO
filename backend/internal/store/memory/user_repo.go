@@ -71,7 +71,7 @@ func (s *MemoryStore) ListUsers() []domain.User {
 	return users
 }
 
-func (s *MemoryStore) ListUsersPaginated(page, pageSize int, emailKeyword, statusFilter string) ([]domain.User, int, error) {
+func (s *MemoryStore) ListUsersPaginated(page, pageSize int, emailKeyword, statusFilter, userID string) ([]domain.User, int, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -84,8 +84,12 @@ func (s *MemoryStore) ListUsersPaginated(page, pageSize int, emailKeyword, statu
 
 	normalizedKeyword := strings.ToLower(strings.TrimSpace(emailKeyword))
 	normalizedStatus := strings.ToLower(strings.TrimSpace(statusFilter))
+	normalizedUserID := strings.TrimSpace(userID)
 	filtered := make([]domain.User, 0, len(s.users))
 	for _, user := range s.users {
+		if normalizedUserID != "" && user.ID != normalizedUserID {
+			continue
+		}
 		if normalizedKeyword != "" && !strings.Contains(strings.ToLower(user.Email), normalizedKeyword) {
 			continue
 		}

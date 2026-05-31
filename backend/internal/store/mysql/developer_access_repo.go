@@ -442,6 +442,50 @@ func (s *MySQLStore) ListAllDeveloperAccessLogs(includeDeleted bool) ([]domain.D
 	return items, nil
 }
 
+func (s *MySQLStore) ListAllDeveloperAccessLogsPaginated(includeDeleted bool, page, pageSize int) ([]domain.DeveloperAccessLog, int, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+	countQuery := `SELECT COUNT(*) FROM developer_access_logs`
+	if !includeDeleted {
+		countQuery += ` WHERE deleted_at IS NULL`
+	}
+	var total int
+	if err := s.db.QueryRow(countQuery).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
+	query := `
+		SELECT id, owner_user_id, actor_id, action, target_type, target_id, app_id, user_id, group_id, detail_json, created_at, deleted_at
+		FROM developer_access_logs
+	`
+	if !includeDeleted {
+		query += ` WHERE deleted_at IS NULL`
+	}
+	query += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`
+	rows, err := s.db.Query(query, pageSize, (page-1)*pageSize)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	items := make([]domain.DeveloperAccessLog, 0, pageSize)
+	for rows.Next() {
+		item, err := scanDeveloperAccessLog(rows)
+		if err != nil {
+			return nil, 0, err
+		}
+		items = append(items, item)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, 0, err
+	}
+	return items, total, nil
+}
+
 func (s *MySQLStore) SoftDeleteDeveloperAccessLogs(ownerUserID string, ids []string, deletedAt time.Time) error {
 	if len(ids) == 0 {
 		return nil

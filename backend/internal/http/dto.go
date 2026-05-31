@@ -6,6 +6,11 @@ type deleteUserOperationLogsRequest struct {
 	EndAt     string `json:"end_at"`
 }
 
+type deleteAppAuditLogsRequest struct {
+	StartAt string `json:"start_at"`
+	EndAt   string `json:"end_at"`
+}
+
 type loginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -322,6 +327,10 @@ type createAppRequest struct {
 type reviewAppRequest struct {
 	Approved bool   `json:"approved"`
 	Comment  string `json:"comment"`
+}
+
+type setAppDisabledRequest struct {
+	Disabled bool `json:"disabled"`
 }
 
 type freezeUserRequest struct {

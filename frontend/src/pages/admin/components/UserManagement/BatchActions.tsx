@@ -9,6 +9,8 @@ type BatchActionsProps = {
   onStatusFilterChange: (value: string) => void;
   emailKeyword: string;
   onEmailKeywordChange: (value: string) => void;
+  userIDKeyword: string;
+  onUserIDKeywordChange: (value: string) => void;
   onRefresh: () => void;
   onFreeze: () => void;
   onUnfreeze: () => void;
@@ -23,6 +25,8 @@ export function BatchActions({
   onStatusFilterChange,
   emailKeyword,
   onEmailKeywordChange,
+  userIDKeyword,
+  onUserIDKeywordChange,
   onRefresh,
   onFreeze,
   onUnfreeze,
@@ -64,6 +68,13 @@ export function BatchActions({
           placeholder={t("搜索用户邮箱")}
           style={{ width: isMobile ? "100%" : 260 }}
           onChange={(event) => onEmailKeywordChange(event.target.value)}
+        />
+        <Input.Search
+          allowClear
+          value={userIDKeyword}
+          placeholder={t("输入用户 ID 精确搜索")}
+          style={{ width: isMobile ? "100%" : 260 }}
+          onChange={(event) => onUserIDKeywordChange(event.target.value)}
         />
       </Space>
 

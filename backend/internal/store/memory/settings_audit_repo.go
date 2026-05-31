@@ -2,6 +2,7 @@ package memory
 
 import (
 	"slices"
+	"sort"
 	"time"
 
 	"mysso/backend/internal/domain"
@@ -19,10 +20,46 @@ func (s *MemoryStore) ListAudit() []domain.AuditLog {
 	return slices.Clone(s.auditLogs)
 }
 
+func (s *MemoryStore) ListAuditPaginated(page, pageSize int) ([]domain.AuditLog, int, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+	total := len(s.auditLogs)
+	start := (page - 1) * pageSize
+	if start >= total {
+		return []domain.AuditLog{}, total, nil
+	}
+	end := start + pageSize
+	if end > total {
+		end = total
+	}
+	return slices.Clone(s.auditLogs[start:end]), total, nil
+}
+
 func (s *MemoryStore) CountAuditLogs() (int, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	return len(s.auditLogs), nil
+}
+
+func (s *MemoryStore) ListAuditByTarget(targetID string) []domain.AuditLog {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	items := []domain.AuditLog{}
+	for _, log := range s.auditLogs {
+		if log.TargetID == targetID {
+			items = append(items, log)
+		}
+	}
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].CreatedAt.After(items[j].CreatedAt)
+	})
+	return items
 }
 
 func (s *MemoryStore) DeleteAuditLogs(ids []string) error {
@@ -46,6 +83,31 @@ func (s *MemoryStore) DeleteAuditLogs(ids []string) error {
 	}
 	s.auditLogs = filtered
 	return nil
+}
+
+func (s *MemoryStore) DeleteAuditLogsByTarget(targetID string, startAt, endAt *time.Time) (int64, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	filtered := s.auditLogs[:0]
+	var deleted int64
+	for _, log := range s.auditLogs {
+		if log.TargetID != targetID {
+			filtered = append(filtered, log)
+			continue
+		}
+		if startAt != nil && log.CreatedAt.Before(*startAt) {
+			filtered = append(filtered, log)
+			continue
+		}
+		if endAt != nil && log.CreatedAt.After(*endAt) {
+			filtered = append(filtered, log)
+			continue
+		}
+		deleted++
+	}
+	s.auditLogs = filtered
+	return deleted, nil
 }
 
 func (s *MemoryStore) AppendUserOperationLog(log domain.UserOperationLog) {
