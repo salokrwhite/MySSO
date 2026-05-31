@@ -50,6 +50,7 @@ type AppFormValues = {
   redirect_uris: string;
   post_logout_redirect_uris?: string;
   frontchannel_logout_uri?: string;
+  allow_get_session_logout?: boolean;
   scopes: string[];
 };
 
@@ -73,6 +74,7 @@ function mapAppPayload(values: AppFormValues) {
       .map((item) => item.trim())
       .filter(Boolean),
     frontchannel_logout_uri: values.frontchannel_logout_uri?.trim() || "",
+    allow_get_session_logout: Boolean(values.allow_get_session_logout),
     scopes: values.scopes,
   };
 }

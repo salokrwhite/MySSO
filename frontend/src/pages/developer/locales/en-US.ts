@@ -186,6 +186,9 @@ const enUS = {
     redirectUris: "Redirect URIs (one per line)",
     postLogoutUris: "Post Logout Redirect URIs (one per line)",
     frontchannelLogoutUri: "Front-Channel Logout URI",
+    allowGetSessionLogout: "Allow GET session logout",
+    allowGetSessionLogoutHint:
+      "Allow registered apps to initiate browser session logout with GET /oauth2/logout. Use this for OIDC clients such as Cloudreve that only support redirect-based logout.",
     scopes: "Scopes",
     selectScopes: "Select scopes enabled by admins",
     nameRequired: "Please enter the app name",

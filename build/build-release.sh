@@ -21,10 +21,100 @@ TARGET_ARCH="${TARGET_ARCH:-amd64}"
 CGO_ENABLED="${CGO_ENABLED:-0}"
 RUN_TESTS="${RUN_TESTS:-0}"
 VERSION="${VERSION:-$(date -u +"%Y%m%d%H%M%S")}"
+ARCHIVE_NAME_FROM_ENV="${ARCHIVE_NAME+x}"
 ARCHIVE_NAME="${ARCHIVE_NAME:-mysso-${TARGET_OS}-${TARGET_ARCH}-${VERSION}.tar.gz}"
 ASSET_CDN_BASE="${ASSET_CDN_BASE:-}"
 LOCALE_CDN_BASE="${LOCALE_CDN_BASE:-}"
 VITE_API_ORIGIN="${VITE_API_ORIGIN:-}"
+PUBLIC_BASE_URL="${PUBLIC_BASE_URL:-}"
+FRONTEND_BASE_URL="${FRONTEND_BASE_URL:-}"
+ARCHIVE_NAME_CLI_SET=0
+
+print_usage() {
+  cat <<'EOF'
+Usage: ./build.sh [options]
+
+Options:
+  --app-name <name>              Backend binary name.
+  --target-os <os>               Go target OS. Default: linux.
+  --target-arch <arch>           Go target architecture. Default: amd64.
+  --cgo-enabled <0|1>            CGO_ENABLED value. Default: 0.
+  --run-tests                    Run backend tests before building.
+  --run-tests <0|1>              Enable or disable backend tests.
+  --version <version>            Release version used in archive name.
+  --archive-name <name>          Release archive file name.
+  --api-origin <url>             Frontend API backend origin, for example https://backend.example.com.
+  --vite-api-origin <url>        Alias for --api-origin.
+  --asset-cdn-base <url>         CDN base for main frontend assets, usually ending in /assets.
+  --locale-cdn-base <url>        CDN base for remote locale chunks, usually ending in /assets.
+  --public-base-url <url>        Backend public / OIDC origin written to backend .env.
+  --frontend-base-url <url>      Public frontend origin written to backend .env.
+  -h, --help                     Show this help message.
+
+Environment variables with the matching uppercase names are still supported.
+Command-line options override environment variables.
+EOF
+}
+
+read_option_value() {
+  local option="$1"
+  local value="${2:-}"
+  if [ -z "$value" ]; then
+    echo "Missing value for $option" >&2
+    exit 1
+  fi
+  printf '%s' "$value"
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --app-name=*) APP_NAME="${1#*=}" ;;
+    --app-name) APP_NAME="$(read_option_value "$1" "${2:-}")"; shift ;;
+    --target-os=*) TARGET_OS="${1#*=}" ;;
+    --target-os) TARGET_OS="$(read_option_value "$1" "${2:-}")"; shift ;;
+    --target-arch=*) TARGET_ARCH="${1#*=}" ;;
+    --target-arch) TARGET_ARCH="$(read_option_value "$1" "${2:-}")"; shift ;;
+    --cgo-enabled=*) CGO_ENABLED="${1#*=}" ;;
+    --cgo-enabled) CGO_ENABLED="$(read_option_value "$1" "${2:-}")"; shift ;;
+    --run-tests)
+      case "${2:-}" in
+        ""|--*) RUN_TESTS="1" ;;
+        *) RUN_TESTS="$(read_option_value "$1" "${2:-}")"; shift ;;
+      esac
+      ;;
+    --run-tests=*) RUN_TESTS="${1#*=}" ;;
+    --version=*) VERSION="${1#*=}" ;;
+    --version) VERSION="$(read_option_value "$1" "${2:-}")"; shift ;;
+    --archive-name=*) ARCHIVE_NAME="${1#*=}"; ARCHIVE_NAME_CLI_SET=1 ;;
+    --archive-name) ARCHIVE_NAME="$(read_option_value "$1" "${2:-}")"; ARCHIVE_NAME_CLI_SET=1; shift ;;
+    --api-origin=*) VITE_API_ORIGIN="${1#*=}" ;;
+    --api-origin) VITE_API_ORIGIN="$(read_option_value "$1" "${2:-}")"; shift ;;
+    --vite-api-origin=*) VITE_API_ORIGIN="${1#*=}" ;;
+    --vite-api-origin) VITE_API_ORIGIN="$(read_option_value "$1" "${2:-}")"; shift ;;
+    --asset-cdn-base=*) ASSET_CDN_BASE="${1#*=}" ;;
+    --asset-cdn-base) ASSET_CDN_BASE="$(read_option_value "$1" "${2:-}")"; shift ;;
+    --locale-cdn-base=*) LOCALE_CDN_BASE="${1#*=}" ;;
+    --locale-cdn-base) LOCALE_CDN_BASE="$(read_option_value "$1" "${2:-}")"; shift ;;
+    --public-base-url=*) PUBLIC_BASE_URL="${1#*=}" ;;
+    --public-base-url) PUBLIC_BASE_URL="$(read_option_value "$1" "${2:-}")"; shift ;;
+    --frontend-base-url=*) FRONTEND_BASE_URL="${1#*=}" ;;
+    --frontend-base-url) FRONTEND_BASE_URL="$(read_option_value "$1" "${2:-}")"; shift ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      echo "Run ./build.sh --help for usage." >&2
+      exit 1
+      ;;
+  esac
+  shift
+done
+
+if [ -z "$ARCHIVE_NAME_FROM_ENV" ] && [ "$ARCHIVE_NAME_CLI_SET" != "1" ]; then
+  ARCHIVE_NAME="mysso-${TARGET_OS}-${TARGET_ARCH}-${VERSION}.tar.gz"
+fi
 
 require_cmd() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -58,14 +148,14 @@ echo "==> Building backend binary for ${TARGET_OS}/${TARGET_ARCH}"
 )
 
 echo "==> Copying backend runtime files"
-cat > "$BACKEND_OUT/.env" <<'EOF'
+cat > "$BACKEND_OUT/.env" <<EOF
 INSTALL_ENABLED=
 INSTALL_ALLOW_REMOTE=
 INSTALL_ALLOWED_DB_HOSTS=127.0.0.1,localhost,::1
 
 HTTP_ADDR=:
-PUBLIC_BASE_URL=
-FRONTEND_BASE_URL=
+PUBLIC_BASE_URL=$PUBLIC_BASE_URL
+FRONTEND_BASE_URL=$FRONTEND_BASE_URL
 EOF
 cp -R "$BACKEND_DIR/migrations" "$BACKEND_OUT/migrations"
 
@@ -121,7 +211,11 @@ echo "==> Installing frontend dependencies"
 
   if [ -n "$ASSET_CDN_BASE" ]; then
     mkdir -p "$ASSET_CDN_OUT/assets"
-    find dist/assets -maxdepth 1 -type f ! -name 'languages-*.chunk.js' -exec cp {} "$ASSET_CDN_OUT/assets/" \;
+    if [ -n "$LOCALE_CDN_BASE" ]; then
+      find dist/assets -maxdepth 1 -type f ! -name 'languages-*.chunk.js' -exec cp {} "$ASSET_CDN_OUT/assets/" \;
+    else
+      find dist/assets -maxdepth 1 -type f -exec cp {} "$ASSET_CDN_OUT/assets/" \;
+    fi
   fi
 
   cp -R dist/. "$FRONTEND_OUT/"
@@ -166,5 +260,11 @@ if [ -n "$VITE_API_ORIGIN" ]; then
   echo "Frontend API origin: $VITE_API_ORIGIN"
 else
   echo "Frontend API origin: runtime auto-detect"
+fi
+if [ -n "$PUBLIC_BASE_URL" ]; then
+  echo "Backend public base URL: $PUBLIC_BASE_URL"
+fi
+if [ -n "$FRONTEND_BASE_URL" ]; then
+  echo "Frontend public base URL: $FRONTEND_BASE_URL"
 fi
 echo "Release archive: $RELEASE_DIR/$ARCHIVE_NAME"

@@ -708,6 +708,60 @@ func (s *OAuthService) Logout(sessionToken, clientID, idTokenHint, postLogoutRed
 	return result, nil
 }
 
+func (s *OAuthService) ResolveAllowedGetSessionLogoutClientID(clientID, idTokenHint, postLogoutRedirectURI, referer string) (string, bool) {
+	resolvedClientID, err := s.resolveLogoutClientID(strings.TrimSpace(clientID), strings.TrimSpace(idTokenHint))
+	if err != nil {
+		return "", false
+	}
+	postLogoutRedirectURI = strings.TrimSpace(postLogoutRedirectURI)
+	refererOrigin := urlOrigin(referer)
+	if resolvedClientID != "" {
+		app, err := s.deps.Store.FindAppByClientID(resolvedClientID)
+		if err == nil && appAllowsGetSessionLogout(app) && allowedGetSessionLogoutSource(app, postLogoutRedirectURI, refererOrigin) {
+			return app.ClientID, true
+		}
+		return "", false
+	}
+
+	matchedClientID := ""
+	for _, app := range s.deps.Store.ListApps() {
+		if appAllowsGetSessionLogout(app) && allowedGetSessionLogoutSource(app, postLogoutRedirectURI, refererOrigin) {
+			if matchedClientID != "" {
+				return "", false
+			}
+			matchedClientID = app.ClientID
+		}
+	}
+	return matchedClientID, matchedClientID != ""
+}
+
+func appAllowsGetSessionLogout(app domain.ClientApp) bool {
+	return app.Status == domain.AppApproved && app.AllowGetSessionLogout
+}
+
+func allowedGetSessionLogoutSource(app domain.ClientApp, postLogoutRedirectURI, refererOrigin string) bool {
+	if strings.TrimSpace(postLogoutRedirectURI) != "" && logoutRedirectAllowed(app, postLogoutRedirectURI) {
+		return true
+	}
+	if refererOrigin == "" {
+		return false
+	}
+	for _, candidate := range append(append([]string{}, app.RedirectURIs...), app.PostLogoutRedirectURIs...) {
+		if urlOrigin(candidate) == refererOrigin {
+			return true
+		}
+	}
+	return urlOrigin(app.FrontChannelLogoutURI) == refererOrigin
+}
+
+func urlOrigin(rawURL string) string {
+	parsed, err := url.Parse(strings.TrimSpace(rawURL))
+	if err != nil || parsed.Scheme == "" || parsed.Host == "" {
+		return ""
+	}
+	return strings.ToLower(parsed.Scheme + "://" + parsed.Host)
+}
+
 func (s *OAuthService) resolveLogoutClientID(clientID, idTokenHint string) (string, error) {
 	clientID = strings.TrimSpace(clientID)
 	idTokenHint = strings.TrimSpace(idTokenHint)

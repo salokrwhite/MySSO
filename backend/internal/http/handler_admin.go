@@ -334,6 +334,7 @@ func (s *Server) handleUpdateAdminApp(c *gin.Context) {
 		req.IconURL,
 		req.Description,
 		req.FrontChannelLogoutURI,
+		req.AllowGetSessionLogout,
 		req.RedirectURIs,
 		req.PostLogoutRedirectURIs,
 		req.Scopes,

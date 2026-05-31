@@ -153,6 +153,7 @@ type ClientApp struct {
 	RedirectURIs           []string  `json:"redirect_uris"`
 	PostLogoutRedirectURIs []string  `json:"post_logout_redirect_uris"`
 	FrontChannelLogoutURI  string    `json:"frontchannel_logout_uri"`
+	AllowGetSessionLogout  bool      `json:"allow_get_session_logout"`
 	Scopes                 []string  `json:"scopes"`
 	Status                 AppStatus `json:"status"`
 	Description            string    `json:"description"`

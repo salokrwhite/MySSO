@@ -113,6 +113,7 @@ export type AppItem = {
   redirect_uris?: string[];
   post_logout_redirect_uris?: string[];
   frontchannel_logout_uri?: string;
+  allow_get_session_logout?: boolean;
   scopes?: string[];
   status: string;
   review_comment?: string;

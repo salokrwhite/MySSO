@@ -37,6 +37,7 @@ CREATE TABLE `client_apps` (
   `client_secret` varchar(255) NOT NULL,
   `description` text,
   `frontchannel_logout_uri` varchar(255) NOT NULL DEFAULT '',
+  `allow_get_session_logout` tinyint(1) NOT NULL DEFAULT '0',
   `status` varchar(32) NOT NULL,
   `review_comment` varchar(255) DEFAULT '',
   `created_at` datetime NOT NULL,

@@ -56,6 +56,7 @@ func (s *AppsService) CreateDeveloperApp(
 	iconURL,
 	description,
 	frontChannelLogoutURI string,
+	allowGetSessionLogout bool,
 	redirectURIs,
 	postLogoutRedirectURIs,
 	scopes []string,
@@ -83,6 +84,7 @@ func (s *AppsService) CreateDeveloperApp(
 		RedirectURIs:           redirectURIs,
 		PostLogoutRedirectURIs: postLogoutRedirectURIs,
 		FrontChannelLogoutURI:  strings.TrimSpace(frontChannelLogoutURI),
+		AllowGetSessionLogout:  allowGetSessionLogout,
 		Scopes:                 scopes,
 		Status:                 domain.AppPending,
 		Description:            strings.TrimSpace(description),
@@ -101,6 +103,7 @@ func (s *AppsService) UpdateDeveloperApp(
 	iconURL,
 	description,
 	frontChannelLogoutURI string,
+	allowGetSessionLogout bool,
 	redirectURIs,
 	postLogoutRedirectURIs,
 	scopes []string,
@@ -132,6 +135,7 @@ func (s *AppsService) UpdateDeveloperApp(
 	app.RedirectURIs = redirectURIs
 	app.PostLogoutRedirectURIs = postLogoutRedirectURIs
 	app.FrontChannelLogoutURI = strings.TrimSpace(frontChannelLogoutURI)
+	app.AllowGetSessionLogout = allowGetSessionLogout
 	app.Scopes = scopes
 	app.Status = domain.AppPending
 	app.ReviewComment = ""

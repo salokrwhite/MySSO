@@ -1,5 +1,5 @@
 import { UploadOutlined } from "@ant-design/icons";
-import { Avatar, Button, Card, Descriptions, Form, Grid, Input, List, Modal, Select, Space, Tag, Timeline, Typography, Upload, message } from "antd";
+import { Avatar, Button, Card, Descriptions, Form, Grid, Input, List, Modal, Select, Space, Switch, Tag, Timeline, Typography, Upload, message } from "antd";
 import { useMemo, useState } from "react";
 import type { AppItem, AuditLog, ScopeDefinition } from "../../types";
 import { useAdminI18n } from "../../i18n";
@@ -27,6 +27,7 @@ type AppReviewProps = {
       redirect_uris: string[];
       post_logout_redirect_uris?: string[];
       frontchannel_logout_uri?: string;
+      allow_get_session_logout?: boolean;
       scopes: string[];
     }
   ) => void | Promise<void>;
@@ -58,6 +59,7 @@ export function AppReview({
     redirect_uris: string;
     post_logout_redirect_uris: string;
     frontchannel_logout_uri: string;
+    allow_get_session_logout: boolean;
     scopes: string[];
   }>();
   const [rejectingAppId, setRejectingAppId] = useState<string>();
@@ -198,6 +200,7 @@ export function AppReview({
           .map((item) => item.trim())
           .filter(Boolean),
         frontchannel_logout_uri: values.frontchannel_logout_uri?.trim() || "",
+        allow_get_session_logout: Boolean(values.allow_get_session_logout),
         scopes: values.scopes || []
       });
       editForm.resetFields();
@@ -277,6 +280,7 @@ export function AppReview({
               redirect_uris: (app.redirect_uris || []).join("\n"),
               post_logout_redirect_uris: (app.post_logout_redirect_uris || []).join("\n"),
               frontchannel_logout_uri: app.frontchannel_logout_uri || "",
+              allow_get_session_logout: Boolean(app.allow_get_session_logout),
               scopes: app.scopes || []
             });
             setEditingApp(app);
@@ -411,6 +415,14 @@ export function AppReview({
           </Form.Item>
           <Form.Item label={t("Front-Channel Logout 地址")} name="frontchannel_logout_uri">
             <Input />
+          </Form.Item>
+          <Form.Item
+            label={t("允许 GET 会话退出")}
+            name="allow_get_session_logout"
+            valuePropName="checked"
+            extra={t("开启后，已登记的应用可通过 GET /oauth2/logout 发起浏览器会话退出。")}
+          >
+            <Switch />
           </Form.Item>
           <Form.Item label="Scopes" name="scopes" rules={[{ required: true, type: "array", min: 1, message: t("请至少选择一个 scope") }]}>
             <Select

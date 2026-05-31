@@ -35,9 +35,9 @@ func (s *MySQLStore) CountApps(status string) (int, error) {
 func (s *MySQLStore) CreateApp(app domain.ClientApp) domain.ClientApp {
 	app.HasClientSecret = strings.TrimSpace(app.ClientSecret) != ""
 	_, _ = s.db.Exec(`
-		INSERT INTO client_apps (id, owner_user_id, name, icon_url, client_id, client_secret, description, frontchannel_logout_uri, status, review_comment, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, app.ID, app.OwnerUserID, app.Name, app.IconURL, app.ClientID, app.ClientSecret, app.Description, app.FrontChannelLogoutURI, app.Status, app.ReviewComment, app.CreatedAt, app.UpdatedAt)
+		INSERT INTO client_apps (id, owner_user_id, name, icon_url, client_id, client_secret, description, frontchannel_logout_uri, allow_get_session_logout, status, review_comment, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, app.ID, app.OwnerUserID, app.Name, app.IconURL, app.ClientID, app.ClientSecret, app.Description, app.FrontChannelLogoutURI, app.AllowGetSessionLogout, app.Status, app.ReviewComment, app.CreatedAt, app.UpdatedAt)
 	s.replaceAppCollections(app)
 	return app
 }
@@ -53,9 +53,9 @@ func (s *MySQLStore) UpdateApp(app domain.ClientApp) error {
 	app.HasClientSecret = strings.TrimSpace(app.ClientSecret) != ""
 	if _, err := s.db.Exec(`
 		UPDATE client_apps
-		SET owner_user_id = ?, name = ?, icon_url = ?, client_id = ?, client_secret = ?, description = ?, frontchannel_logout_uri = ?, status = ?, review_comment = ?, updated_at = ?
+		SET owner_user_id = ?, name = ?, icon_url = ?, client_id = ?, client_secret = ?, description = ?, frontchannel_logout_uri = ?, allow_get_session_logout = ?, status = ?, review_comment = ?, updated_at = ?
 		WHERE id = ?
-	`, app.OwnerUserID, app.Name, app.IconURL, app.ClientID, app.ClientSecret, app.Description, app.FrontChannelLogoutURI, app.Status, app.ReviewComment, app.UpdatedAt, app.ID); err != nil {
+	`, app.OwnerUserID, app.Name, app.IconURL, app.ClientID, app.ClientSecret, app.Description, app.FrontChannelLogoutURI, app.AllowGetSessionLogout, app.Status, app.ReviewComment, app.UpdatedAt, app.ID); err != nil {
 		return err
 	}
 	s.replaceAppCollections(app)
@@ -101,7 +101,7 @@ func (s *MySQLStore) DeleteApp(id string) error {
 
 func (s *MySQLStore) FindAppByClientID(clientID string) (domain.ClientApp, error) {
 	row := s.db.QueryRow(`
-		SELECT id, owner_user_id, name, icon_url, client_id, client_secret, description, frontchannel_logout_uri, status, review_comment, created_at, updated_at
+		SELECT id, owner_user_id, name, icon_url, client_id, client_secret, description, frontchannel_logout_uri, allow_get_session_logout, status, review_comment, created_at, updated_at
 		FROM client_apps WHERE client_id = ?
 	`, clientID)
 	return s.scanApp(row)
@@ -109,7 +109,7 @@ func (s *MySQLStore) FindAppByClientID(clientID string) (domain.ClientApp, error
 
 func (s *MySQLStore) GetApp(id string) (domain.ClientApp, error) {
 	row := s.db.QueryRow(`
-		SELECT id, owner_user_id, name, icon_url, client_id, client_secret, description, frontchannel_logout_uri, status, review_comment, created_at, updated_at
+		SELECT id, owner_user_id, name, icon_url, client_id, client_secret, description, frontchannel_logout_uri, allow_get_session_logout, status, review_comment, created_at, updated_at
 		FROM client_apps WHERE id = ?
 	`, id)
 	return s.scanApp(row)
@@ -117,7 +117,7 @@ func (s *MySQLStore) GetApp(id string) (domain.ClientApp, error) {
 
 func (s *MySQLStore) listApps(whereClause string, arg any) []domain.ClientApp {
 	query := `
-		SELECT id, owner_user_id, name, icon_url, client_id, client_secret, description, frontchannel_logout_uri, status, review_comment, created_at, updated_at
+		SELECT id, owner_user_id, name, icon_url, client_id, client_secret, description, frontchannel_logout_uri, allow_get_session_logout, status, review_comment, created_at, updated_at
 		FROM client_apps
 	`
 	args := []any{}
@@ -144,7 +144,7 @@ func (s *MySQLStore) listApps(whereClause string, arg any) []domain.ClientApp {
 
 func (s *MySQLStore) scanApp(scanner interface{ Scan(dest ...any) error }) (domain.ClientApp, error) {
 	var item domain.ClientApp
-	if err := scanner.Scan(&item.ID, &item.OwnerUserID, &item.Name, &item.IconURL, &item.ClientID, &item.ClientSecret, &item.Description, &item.FrontChannelLogoutURI, &item.Status, &item.ReviewComment, &item.CreatedAt, &item.UpdatedAt); err != nil {
+	if err := scanner.Scan(&item.ID, &item.OwnerUserID, &item.Name, &item.IconURL, &item.ClientID, &item.ClientSecret, &item.Description, &item.FrontChannelLogoutURI, &item.AllowGetSessionLogout, &item.Status, &item.ReviewComment, &item.CreatedAt, &item.UpdatedAt); err != nil {
 		if err == sql.ErrNoRows {
 			return domain.ClientApp{}, ErrNotFound
 		}

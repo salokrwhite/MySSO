@@ -177,6 +177,9 @@ const zhCN = {
     redirectUris: "回调地址（每行一个）",
     postLogoutUris: "退出后回跳地址（每行一个）",
     frontchannelLogoutUri: "Front-Channel Logout 地址",
+    allowGetSessionLogout: "允许 GET 会话退出",
+    allowGetSessionLogoutHint:
+      "开启后，已登记的应用可通过 GET /oauth2/logout 发起浏览器会话退出，用于兼容 Cloudreve 等只支持跳转式退出的 OIDC 客户端。",
     scopes: "Scopes",
     selectScopes: "请选择管理员开放的 scope",
     nameRequired: "请输入应用名称",

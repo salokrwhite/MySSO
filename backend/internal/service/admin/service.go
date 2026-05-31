@@ -400,6 +400,7 @@ func (s *AdminService) UpdateApp(
 	iconURL,
 	description,
 	frontChannelLogoutURI string,
+	allowGetSessionLogout bool,
 	redirectURIs,
 	postLogoutRedirectURIs,
 	scopes []string,
@@ -428,6 +429,7 @@ func (s *AdminService) UpdateApp(
 	app.RedirectURIs = redirectURIs
 	app.PostLogoutRedirectURIs = postLogoutRedirectURIs
 	app.FrontChannelLogoutURI = strings.TrimSpace(frontChannelLogoutURI)
+	app.AllowGetSessionLogout = allowGetSessionLogout
 	app.Scopes = scopes
 	app.UpdatedAt = time.Now().UTC()
 	if err := s.deps.Store.UpdateApp(app); err != nil {

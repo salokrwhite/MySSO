@@ -248,8 +248,14 @@ func (s *Server) handleOIDCLogout(c *gin.Context) {
 
 	sessionToken := s.extractSessionToken(c)
 	if c.Request.Method == http.MethodGet && strings.TrimSpace(sessionToken) != "" && idTokenHint == "" {
-		c.JSON(http.StatusMethodNotAllowed, gin.H{"error": "GET logout requires id_token_hint; use POST for browser session logout"})
-		return
+		resolvedClientID, ok := s.services.OAuth.ResolveAllowedGetSessionLogoutClientID(clientID, idTokenHint, postLogoutRedirectURI, c.GetHeader("Referer"))
+		if !ok {
+			c.JSON(http.StatusMethodNotAllowed, gin.H{"error": "GET logout requires id_token_hint; use POST for browser session logout"})
+			return
+		}
+		if clientID == "" {
+			clientID = resolvedClientID
+		}
 	}
 
 	result, err := s.services.OAuth.Logout(sessionToken, clientID, idTokenHint, postLogoutRedirectURI, state)

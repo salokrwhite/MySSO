@@ -66,6 +66,7 @@ func BuildAppCreateAuditDetail(app domain.ClientApp) map[string]any {
 		"redirect_uris":             app.RedirectURIs,
 		"post_logout_redirect_uris": app.PostLogoutRedirectURIs,
 		"frontchannel_logout_uri":   app.FrontChannelLogoutURI,
+		"allow_get_session_logout":  app.AllowGetSessionLogout,
 		"scopes":                    app.Scopes,
 		"status":                    app.Status,
 	}
@@ -90,6 +91,7 @@ func BuildAppChangeDetails(before, after domain.ClientApp) []map[string]any {
 	appendChange("redirect_uris", before.RedirectURIs, after.RedirectURIs, !stringSlicesEqual(before.RedirectURIs, after.RedirectURIs))
 	appendChange("post_logout_redirect_uris", before.PostLogoutRedirectURIs, after.PostLogoutRedirectURIs, !stringSlicesEqual(before.PostLogoutRedirectURIs, after.PostLogoutRedirectURIs))
 	appendChange("frontchannel_logout_uri", before.FrontChannelLogoutURI, after.FrontChannelLogoutURI, before.FrontChannelLogoutURI != after.FrontChannelLogoutURI)
+	appendChange("allow_get_session_logout", before.AllowGetSessionLogout, after.AllowGetSessionLogout, before.AllowGetSessionLogout != after.AllowGetSessionLogout)
 	appendChange("scopes", before.Scopes, after.Scopes, !stringSlicesEqual(before.Scopes, after.Scopes))
 	appendChange("status", before.Status, after.Status, before.Status != after.Status)
 	appendChange("review_comment", before.ReviewComment, after.ReviewComment, before.ReviewComment != after.ReviewComment)

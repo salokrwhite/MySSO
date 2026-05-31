@@ -566,6 +566,9 @@ func ApplyRuntimeSettings(db *sql.DB, cfg *config.Config) error {
 	if err := ensureClientAppFrontChannelLogoutColumn(db); err != nil {
 		return err
 	}
+	if err := ensureClientAppAllowGetSessionLogoutColumn(db); err != nil {
+		return err
+	}
 	if err := ensureClientPostLogoutRedirectURIsTable(db); err != nil {
 		return err
 	}
@@ -1297,6 +1300,21 @@ func ensureClientAppFrontChannelLogoutColumn(db *sql.DB) error {
 		return nil
 	}
 	_, err := db.Exec(`ALTER TABLE client_apps ADD COLUMN frontchannel_logout_uri VARCHAR(255) NOT NULL DEFAULT '' AFTER description`)
+	return err
+}
+
+func ensureClientAppAllowGetSessionLogoutColumn(db *sql.DB) error {
+	var count int
+	if err := db.QueryRow(`
+		SELECT COUNT(*) FROM information_schema.columns
+		WHERE table_schema = DATABASE() AND table_name = 'client_apps' AND column_name = 'allow_get_session_logout'
+	`).Scan(&count); err != nil {
+		return err
+	}
+	if count > 0 {
+		return nil
+	}
+	_, err := db.Exec(`ALTER TABLE client_apps ADD COLUMN allow_get_session_logout TINYINT(1) NOT NULL DEFAULT 0 AFTER frontchannel_logout_uri`)
 	return err
 }
 

@@ -3,11 +3,12 @@ import {
   Avatar,
   Button,
   Card,
+  Drawer,
   Form,
   Input,
-  Modal,
   Select,
   Space,
+  Switch,
   Table,
   Tag,
   Typography,
@@ -31,6 +32,7 @@ type AppFormValues = {
   redirect_uris: string;
   post_logout_redirect_uris?: string;
   frontchannel_logout_uri?: string;
+  allow_get_session_logout?: boolean;
   scopes: string[];
 };
 
@@ -95,6 +97,7 @@ export function DeveloperConsole({
       icon_url: "",
       post_logout_redirect_uris: "",
       frontchannel_logout_uri: "",
+      allow_get_session_logout: false,
     });
     setEditingApp(undefined);
     setCreateModalOpen(true);
@@ -110,6 +113,7 @@ export function DeveloperConsole({
         "\n",
       ),
       frontchannel_logout_uri: app.frontchannel_logout_uri || "",
+      allow_get_session_logout: Boolean(app.allow_get_session_logout),
       scopes: app.scopes || [],
     });
     setCreateModalOpen(false);
@@ -227,16 +231,14 @@ export function DeveloperConsole({
         />
       </Card>
 
-      <Modal
+      <Drawer
         title={editingApp ? t("console.editApp") : t("console.createApp")}
         open={createModalOpen || Boolean(editingApp)}
-        okText={
-          editingApp ? t("common.saveAndResubmit") : t("common.submitForReview")
-        }
-        cancelText={t("common.cancel")}
-        confirmLoading={loading}
-        onOk={() => void form.submit()}
-        onCancel={() => {
+        width={560}
+        placement="right"
+        destroyOnClose
+        maskClosable={!loading}
+        onClose={() => {
           if (loading) {
             return;
           }
@@ -244,6 +246,29 @@ export function DeveloperConsole({
           setCreateModalOpen(false);
           setEditingApp(undefined);
         }}
+        footer={
+          <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+            <Button
+              disabled={loading}
+              onClick={() => {
+                form.resetFields();
+                setCreateModalOpen(false);
+                setEditingApp(undefined);
+              }}
+            >
+              {t("common.cancel")}
+            </Button>
+            <Button
+              type="primary"
+              loading={loading}
+              onClick={() => void form.submit()}
+            >
+              {editingApp
+                ? t("common.saveAndResubmit")
+                : t("common.submitForReview")}
+            </Button>
+          </Space>
+        }
       >
         <Form
           form={form}
@@ -259,6 +284,7 @@ export function DeveloperConsole({
               .map((item) => item.key),
             post_logout_redirect_uris: "",
             frontchannel_logout_uri: "",
+            allow_get_session_logout: false,
           }}
           onFinish={(values) =>
             void (editingApp ? handleEditApp(values) : handleCreateApp(values))
@@ -341,6 +367,14 @@ export function DeveloperConsole({
             <Input placeholder="http://localhost:3000/frontchannel-logout" />
           </Form.Item>
           <Form.Item
+            label={t("console.allowGetSessionLogout")}
+            name="allow_get_session_logout"
+            valuePropName="checked"
+            extra={t("console.allowGetSessionLogoutHint")}
+          >
+            <Switch />
+          </Form.Item>
+          <Form.Item
             label={t("console.scopes")}
             name="scopes"
             rules={[
@@ -364,7 +398,7 @@ export function DeveloperConsole({
             />
           </Form.Item>
         </Form>
-      </Modal>
+      </Drawer>
     </Space>
   );
 }

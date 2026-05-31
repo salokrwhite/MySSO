@@ -38,6 +38,7 @@ export function useAppReview(sessionToken: string, reload: () => Promise<void>, 
         redirect_uris: string[];
         post_logout_redirect_uris?: string[];
         frontchannel_logout_uri?: string;
+        allow_get_session_logout?: boolean;
         scopes: string[];
       }
     ) => {
