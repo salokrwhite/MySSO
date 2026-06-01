@@ -347,7 +347,6 @@ const locale = {
       mfaChallengeExpiredOrInvalid: "Verifikasi dua langkah telah kedaluwarsa, silakan login kembali",
       challengeRequired: "Silakan selesaikan tantangan keamanan sebelum mengirim kode",
       captchaRequired: "Frekuensi permintaan saat ini tinggi, silakan selesaikan verifikasi keamanan terlebih dahulu",
-      rateLimitExceeded: "Permintaan saat ini terlalu sering, silakan coba lagi nanti",
       circuitOpen: "Saluran pengiriman saat ini telah memasuki status perlindungan, silakan coba lagi nanti",
       cooldownActive: "Permintaan target saat ini terlalu sering, silakan coba lagi nanti",
       passkeyChallengeExpired: "Sesi passkey telah kedaluwarsa, silakan coba lagi",

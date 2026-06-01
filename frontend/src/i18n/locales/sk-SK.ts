@@ -347,7 +347,6 @@ const locale = {
       mfaChallengeExpiredOrInvalid: "Dvojfaktorové overenie vypršalo, prosím, prihláste sa znova",
       challengeRequired: "Pred odoslaním kódu prosím dokončite bezpečnostnévýzva",
       captchaRequired: "Aktuálny počet požiadaviek je vysoký. Prosím, najprv dokončite bezpečnostnú verifikáciu",
-      rateLimitExceeded: "Príliš veľa požiadaviek. Prosím, skúste to neskôr",
       circuitOpen: "Kanál odosielania momentálne ochraňuje, prosím, skúste to neskôr",
       cooldownActive: "Cieľové požiadavky sú príliš časté, prosím, skúste to neskôr",
       passkeyChallengeExpired: "Sesia passkey vypršala, prosím, skúste to znova",

@@ -393,7 +393,6 @@ const locale = {
         "Završite sigurnosni izazov pre nego što zatražite kod.",
       captchaRequired:
         "Volumen zahteva je visok. Prvo završite sigurnosnu proveru.",
-      rateLimitExceeded: "Previše zahteva. Molimo pokušajte ponovo kasnije.",
       circuitOpen:
         "Kanal za slanje je privremeno zaštićen. Molimo pokušajte ponovo kasnije.",
       cooldownActive:

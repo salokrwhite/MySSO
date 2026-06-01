@@ -347,7 +347,6 @@ const locale = {
       mfaChallengeExpiredOrInvalid: "Xác thực cấp hai đã hết hạn, vui lòng đăng nhập lại",
       challengeRequired: "Vui lòng hoàn thành thử thách bảo mật trước khi gửi mã xác thực.",
       captchaRequired: "Tần suất yêu cầu hiện tại cao, vui lòng hoàn thành xác minh bảo mật trước",
-      rateLimitExceeded: "Yêu cầu hiện tại quá nhiều, vui lòng thử lại sau.",
       circuitOpen: "Kênh gửi hiện tại đã vào trạng thái bảo vệ, vui lòng thử lại sau.",
       cooldownActive: "Yêu cầu mục tiêu quá nhiều, vui lòng thử lại sau.",
       passkeyChallengeExpired: "Phiên khóa truy cập đã hết hạn, vui lòng bắt đầu lại",

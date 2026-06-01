@@ -333,7 +333,6 @@ const locale = {
       mfaChallengeExpiredOrInvalid: "La session de vérification à deux facteurs a expiré. Veuillez vous reconnecter.",
       challengeRequired: "Complétez le défi de sécurité avant de demander un code.",
       captchaRequired: "Le volume de requêtes est élevé. Complétez d'abord la vérification de sécurité.",
-      rateLimitExceeded: "Trop de requêtes. Veuillez réessayer plus tard.",
       circuitOpen: "Le canal d'envoi est temporairement protégé. Veuillez réessayer plus tard.",
       cooldownActive: "Ce destinataire a demandé des codes trop fréquemment. Veuillez réessayer plus tard.",
       passkeyChallengeExpired: "La session de clé d'accès a expiré. Veuillez réessayer.",

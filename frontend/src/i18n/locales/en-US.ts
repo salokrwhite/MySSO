@@ -401,7 +401,6 @@ const locale = {
         "Complete the security challenge before requesting a code.",
       captchaRequired:
         "Request volume is high. Complete the security check first.",
-      rateLimitExceeded: "Too many requests. Please try again later.",
       circuitOpen:
         "The delivery channel is temporarily protected. Please try again later.",
       cooldownActive:

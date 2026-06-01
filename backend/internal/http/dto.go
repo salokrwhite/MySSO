@@ -27,17 +27,9 @@ type smsLoginRequest struct {
 }
 
 type emailCodeRequest struct {
-	Email          string `json:"email"`
-	Country        string `json:"country"`
-	Purpose        string `json:"purpose"`
-	ChallengeToken string `json:"challenge_token"`
-	CaptchaToken   string `json:"captcha_token"`
-}
-
-type sendChallengeRequest struct {
+	Email   string `json:"email"`
+	Country string `json:"country"`
 	Purpose string `json:"purpose"`
-	Channel string `json:"channel"`
-	Target  string `json:"target"`
 }
 
 type mfaChallengeRequest struct {
@@ -248,10 +240,8 @@ type testSMSRequest struct {
 }
 
 type smsCodeRequest struct {
-	Phone          string `json:"phone"`
-	Purpose        string `json:"purpose"`
-	ChallengeToken string `json:"challenge_token"`
-	CaptchaToken   string `json:"captcha_token"`
+	Phone   string `json:"phone"`
+	Purpose string `json:"purpose"`
 }
 
 type firstPartyTokenExchangeRequest struct {

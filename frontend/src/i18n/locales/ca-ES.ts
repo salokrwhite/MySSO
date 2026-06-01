@@ -335,7 +335,6 @@ const locale = {
       mfaChallengeExpiredOrInvalid: "La sessió de verificació de dos factors ha caducat. Inicieu sessió de nou.",
       challengeRequired: "Completeu el repte de seguretat abans de sol·licitar un codi.",
       captchaRequired: "El volum de sol·licituds és alt. Completeu primer la verificació de seguretat.",
-      rateLimitExceeded: "Massa sol·licituds. Torneu-ho a provar més tard.",
       circuitOpen: "El canal de lliurament està temporalment protegit. Torneu-ho a provar més tard.",
       cooldownActive: "S'han sol·licitat massa codis per a aquest objectiu. Torneu-ho a provar més tard.",
       passkeyChallengeExpired: "La sessió de clau d'accés ha caducat. Torneu-ho a provar.",

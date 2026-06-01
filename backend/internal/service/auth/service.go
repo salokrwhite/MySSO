@@ -7,7 +7,6 @@ import (
 
 	"github.com/google/uuid"
 
-	"mysso/backend/internal/appdefaults"
 	"mysso/backend/internal/domain"
 	"mysso/backend/internal/notify"
 	"mysso/backend/internal/security"
@@ -59,12 +58,6 @@ type RegisterResult struct {
 	RequiresPhoneBinding       bool
 	PhoneBindingChallengeToken string
 	PhoneBindingReason         string
-}
-
-type SendChallengeResult struct {
-	ChallengeToken  string `json:"challenge_token,omitempty"`
-	ExpiresIn       int    `json:"expires_in"`
-	CaptchaRequired bool   `json:"captcha_required"`
 }
 
 func preferredLocaleForRegistrationCountry(country string) string {
@@ -636,11 +629,7 @@ func (s *AuthService) Register(input settings.RegisterInput) (RegisterResult, er
 	return result, nil
 }
 
-func (s *AuthService) CreatePublicSendChallenge(purpose, channel, target, ip, userAgent string) (SendChallengeResult, error) {
-	return SendChallengeResult{ExpiresIn: appdefaults.DefaultChallengeTokenTTLSeconds}, nil
-}
-
-func (s *AuthService) SendPublicEmailVerificationCode(email, country, purpose, challengeToken, captchaToken, ip, userAgent string) (int, error) {
+func (s *AuthService) SendPublicEmailVerificationCode(email, country, purpose string) (int, error) {
 	email = strings.ToLower(strings.TrimSpace(email))
 	cooldownSeconds, err := s.sendEmailVerificationCode(email, country, purpose, false)
 	if shouldMaskPublicVerificationError(err) {
@@ -649,7 +638,7 @@ func (s *AuthService) SendPublicEmailVerificationCode(email, country, purpose, c
 	return cooldownSeconds, err
 }
 
-func (s *AuthService) SendPublicSMSVerificationCode(phone, purpose, challengeToken, captchaToken, ip, userAgent string) (int, error) {
+func (s *AuthService) SendPublicSMSVerificationCode(phone, purpose string) (int, error) {
 	phone = strings.TrimSpace(phone)
 	if strings.EqualFold(strings.TrimSpace(purpose), "login") && !s.settings.IsPhoneVerificationEnabled() {
 		return 0, fmt.Errorf("phone verification is disabled")

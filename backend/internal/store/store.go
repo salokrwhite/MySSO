@@ -61,12 +61,6 @@ type VerificationStore interface {
 	DeleteDeletionLoginChallenge(token string) error
 }
 
-type RequestChallengeStore interface {
-	SaveRequestChallenge(challenge domain.RequestChallenge) error
-	GetRequestChallenge(token string) (domain.RequestChallenge, error)
-	ConsumeRequestChallenge(token string, consumedAt time.Time) error
-}
-
 type PasskeyStore interface {
 	ListPasskeysByUser(userID string) ([]domain.Passkey, error)
 	ListAllPasskeys() []domain.Passkey
@@ -216,7 +210,6 @@ type CleanupStore interface {
 type Store interface {
 	UserStore
 	VerificationStore
-	RequestChallengeStore
 	PasskeyStore
 	PhoneBindingChallengeStore
 	SecurityPolicyStore

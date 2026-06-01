@@ -14,7 +14,6 @@ import { useTranslation } from "react-i18next";
 import { buildFirstPartyLoginPath } from "./oidc";
 import { AccountLanguageModal } from "../../components/AccountLanguageModal";
 import { AuthPageFooter } from "../../components/AuthPageFooter";
-import { getRetryAfterSeconds, requestSendChallenge } from "./sendCodeSecurity";
 import { getStoredSiteName, persistSiteBranding, resolveSiteNameForLocale } from "../../siteBranding";
 import { browserSupportsPasskey, getPasskeyAssertion } from "../../utils/webauthn";
 import { handleLoginFlowResult, type LoginFlowResponse } from "./authLoginFlow";
@@ -38,10 +37,6 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [otpSending, setOtpSending] = useState(false);
   const [smsSending, setSMSSending] = useState(false);
-  const [otpCaptchaRequired, setOtpCaptchaRequired] = useState(false);
-  const [otpCaptchaToken, setOtpCaptchaToken] = useState("");
-  const [smsCaptchaRequired, setSMSCaptchaRequired] = useState(false);
-  const [smsCaptchaToken, setSMSCaptchaToken] = useState("");
   const [passkeyLoading, setPasskeyLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -128,14 +123,6 @@ export function LoginPage() {
         return t("errors.smtpNotConfigured");
       case "invalid mfa code":
         return t("errors.invalidMfaCode");
-      case "challenge_required":
-        return t("errors.challengeRequired");
-      case "captcha_required":
-        return t("errors.captchaRequired");
-      case "rate_limit_exceeded":
-        return t("errors.rateLimitExceeded");
-      case "circuit_open":
-        return t("errors.circuitOpen");
       case "cooldown_active":
         return t("errors.cooldownActive");
       case "passkey challenge expired":
@@ -320,33 +307,16 @@ export function LoginPage() {
     }
     setOtpSending(true);
     try {
-      const challenge = await requestSendChallenge("login", "email", email);
-      if (challenge.captcha_required && !otpCaptchaToken.trim()) {
-        setOtpCaptchaRequired(true);
-        messageApi.error(t("auth.securityCaptchaRequiredTip"));
-        return;
-      }
       const result = await api<{ cooldown_seconds?: number }>("/auth/email-code", {
         method: "POST",
         body: JSON.stringify({
           email,
-          purpose: "login",
-          challenge_token: challenge.challenge_token || "",
-          captcha_token: otpCaptchaToken
+          purpose: "login"
         })
       });
-      setOtpCaptchaRequired(Boolean(challenge.captcha_required));
       startCooldown(Number(result.cooldown_seconds || 0), email);
       messageApi.success(t("auth.sendOtpCodeSuccess"));
     } catch (err) {
-      const retryAfterSeconds = getRetryAfterSeconds(err);
-      if (retryAfterSeconds > 0) {
-        startCooldown(retryAfterSeconds, email);
-        return;
-      }
-      if (err instanceof Error && err.message === "captcha_required") {
-        setOtpCaptchaRequired(true);
-      }
       messageApi.error(translateLoginError(err instanceof Error ? err.message : t("auth.sendOtpCodeFailed")));
     } finally {
       setOtpSending(false);
@@ -360,33 +330,16 @@ export function LoginPage() {
     }
     setSMSSending(true);
     try {
-      const challenge = await requestSendChallenge("login", "sms", phone);
-      if (challenge.captcha_required && !smsCaptchaToken.trim()) {
-        setSMSCaptchaRequired(true);
-        messageApi.error(t("auth.securityCaptchaRequiredTip"));
-        return;
-      }
       const result = await api<{ cooldown_seconds?: number }>("/auth/sms-code", {
         method: "POST",
         body: JSON.stringify({
           phone,
-          purpose: "login",
-          challenge_token: challenge.challenge_token || "",
-          captcha_token: smsCaptchaToken
+          purpose: "login"
         })
       });
-      setSMSCaptchaRequired(Boolean(challenge.captcha_required));
       startSMSCooldown(Number(result.cooldown_seconds || 0), phone);
       messageApi.success(t("auth.sendPhoneOtpCodeSuccess"));
     } catch (err) {
-      const retryAfterSeconds = getRetryAfterSeconds(err);
-      if (retryAfterSeconds > 0) {
-        startSMSCooldown(retryAfterSeconds, phone);
-        return;
-      }
-      if (err instanceof Error && err.message === "captcha_required") {
-        setSMSCaptchaRequired(true);
-      }
       messageApi.error(translateLoginError(err instanceof Error ? err.message : t("auth.sendPhoneOtpCodeFailed")));
     } finally {
       setSMSSending(false);
@@ -536,11 +489,6 @@ export function LoginPage() {
                         </Button>
                       </Space.Compact>
                     </Form.Item>
-                    {otpCaptchaRequired ? (
-                      <Form.Item label={t("auth.securityCaptcha")} extra={t("auth.securityCaptchaHelp")} required>
-                        <Input value={otpCaptchaToken} onChange={(event) => setOtpCaptchaToken(event.target.value)} placeholder={t("auth.securityCaptchaPlaceholder")} />
-                      </Form.Item>
-                    ) : null}
                     <Button type="primary" htmlType="submit" block loading={loading}>
                       {t("auth.login")}
                     </Button>
@@ -579,11 +527,6 @@ export function LoginPage() {
                               </Button>
                             </Space.Compact>
                           </Form.Item>
-                          {smsCaptchaRequired ? (
-                            <Form.Item label={t("auth.securityCaptcha")} extra={t("auth.securityCaptchaHelp")} required>
-                              <Input value={smsCaptchaToken} onChange={(event) => setSMSCaptchaToken(event.target.value)} placeholder={t("auth.securityCaptchaPlaceholder")} />
-                            </Form.Item>
-                          ) : null}
                           <Button type="primary" htmlType="submit" block loading={loading}>
                             {t("auth.login")}
                           </Button>

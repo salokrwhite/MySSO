@@ -393,7 +393,6 @@ const locale = {
         "Kompletoni sfidën e sigurisë përpara se të kërkoni një kod.",
       captchaRequired:
         "Sasia e kërkesave është e lartë. Kompletoni kontrollin e sigurisë së pari.",
-      rateLimitExceeded: "Shumë kërkesa. Ju lutem provoni më vonë.",
       circuitOpen:
         "Kanalet e dorëzimit janë të mbrojtura përkohësisht. Ju lutem provoni më vonë.",
       cooldownActive:

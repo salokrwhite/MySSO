@@ -1188,17 +1188,6 @@ func migrateLegacyAuthChallenges(db *sql.DB) error {
 				WHERE expires_at >= UTC_TIMESTAMP()
 			`,
 		},
-		{
-			table: "request_challenges",
-			query: `
-				INSERT IGNORE INTO auth_challenges (token, challenge_type, user_id, channel, target, acr, payload_json, expires_at, consumed_at, created_at)
-				SELECT token, 'request', '', channel, purpose, '',
-					JSON_OBJECT('ip_hash', ip_hash, 'ua_hash', ua_hash, 'target_hash', target_hash, 'captcha_passed', captcha_passed),
-					expires_at, consumed_at, created_at
-				FROM request_challenges
-				WHERE consumed_at IS NULL AND expires_at >= UTC_TIMESTAMP()
-			`,
-		},
 	}
 	for _, migration := range migrations {
 		exists, err := tableExists(db, migration.table)

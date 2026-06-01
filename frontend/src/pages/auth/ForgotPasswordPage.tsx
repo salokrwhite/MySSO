@@ -19,7 +19,6 @@ import {
 import { buildFirstPartyForgotPasswordPath } from "./oidc";
 import { AccountLanguageModal } from "../../components/AccountLanguageModal";
 import { AuthPageFooter } from "../../components/AuthPageFooter";
-import { getRetryAfterSeconds, requestSendChallenge } from "./sendCodeSecurity";
 
 export function ForgotPasswordPage() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -30,8 +29,6 @@ export function ForgotPasswordPage() {
   const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [sendingCode, setSendingCode] = useState(false);
-  const [captchaRequired, setCaptchaRequired] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState("");
   const [siteFooterText, setSiteFooterText] = useState(
     localStorage.getItem("site_footer_text") || "",
   );
@@ -49,14 +46,6 @@ export function ForgotPasswordPage() {
     switch (rawMessage) {
       case "new password must be different from current password":
         return t("errors.newPasswordMustBeDifferentFromCurrentPassword");
-      case "captcha_required":
-        return t("errors.captchaRequired");
-      case "challenge_required":
-        return t("errors.challengeRequired");
-      case "rate_limit_exceeded":
-        return t("errors.rateLimitExceeded");
-      case "circuit_open":
-        return t("errors.circuitOpen");
       case "cooldown_active":
         return t("errors.cooldownActive");
       default:
@@ -149,16 +138,6 @@ export function ForgotPasswordPage() {
     try {
       setSendingCode(true);
       const values = await form.validateFields(["email"]);
-      const challenge = await requestSendChallenge(
-        "reset_password",
-        "email",
-        values.email,
-      );
-      if (challenge.captcha_required && !captchaToken.trim()) {
-        setCaptchaRequired(true);
-        messageApi.error(t("auth.securityCaptchaRequiredTip"));
-        return;
-      }
       const result = await api<{ cooldown_seconds?: number }>(
         "/auth/email-code",
         {
@@ -166,23 +145,12 @@ export function ForgotPasswordPage() {
           body: JSON.stringify({
             email: values.email,
             purpose: "reset_password",
-            challenge_token: challenge.challenge_token || "",
-            captcha_token: captchaToken,
           }),
         },
       );
-      setCaptchaRequired(Boolean(challenge.captcha_required));
       startCooldown(Number(result.cooldown_seconds || 0), values.email);
       messageApi.success(t("auth.sendResetCodeSuccess"));
     } catch (err) {
-      const retryAfterSeconds = getRetryAfterSeconds(err);
-      if (retryAfterSeconds > 0) {
-        startCooldown(retryAfterSeconds, form.getFieldValue("email"));
-        return;
-      }
-      if (err instanceof Error && err.message === "captcha_required") {
-        setCaptchaRequired(true);
-      }
       messageApi.error(
         err instanceof Error
           ? translateSecurityError(err.message)
@@ -274,19 +242,6 @@ export function ForgotPasswordPage() {
                 </Button>
               </Space.Compact>
             </Form.Item>
-            {captchaRequired ? (
-              <Form.Item
-                label={t("auth.securityCaptcha")}
-                extra={t("auth.securityCaptchaHelp")}
-                required
-              >
-                <Input
-                  value={captchaToken}
-                  onChange={(event) => setCaptchaToken(event.target.value)}
-                  placeholder={t("auth.securityCaptchaPlaceholder")}
-                />
-              </Form.Item>
-            ) : null}
             <Form.Item
               label={t("auth.newPassword")}
               name="new_password"

@@ -333,7 +333,6 @@ const locale = {
       mfaChallengeExpiredOrInvalid: "A sesión de verificación de dous factores caducou. Conéctate de novo.",
       challengeRequired: "Completa o reto de seguranza antes de solicitar un código.",
       captchaRequired: "O volume de solicitudes é alto. Completa antes a verificación de seguranza.",
-      rateLimitExceeded: "Demasiadas solicitudes. Téntao de novo máis tarde.",
       circuitOpen: "A canle de envío está temporalmente protexida. Téntao de novo máis tarde.",
       cooldownActive: "Este destinatario solicitou códigos con demasiada frecuencia. Téntao de novo máis tarde.",
       passkeyChallengeExpired: "A sesión de clave de acceso caducou. Téntao de novo.",

@@ -395,7 +395,6 @@ const locale = {
         "Dokončete bezpečnostní výzvu před požádáním o kód.",
       captchaRequired:
         "Objem požadavků je vysoký. Nejprve dokončete bezpečnostní kontrolu.",
-      rateLimitExceeded: "Příliš mnoho požadavků. Zkuste to prosím později.",
       circuitOpen:
         "Dodací kanál je dočasně chráněn. Zkuste to prosím později.",
       cooldownActive:

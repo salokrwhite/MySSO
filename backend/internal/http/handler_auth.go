@@ -169,7 +169,7 @@ func (s *Server) handleSendEmailCode(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	cooldownSeconds, err := s.services.Auth.SendPublicEmailVerificationCode(req.Email, req.Country, req.Purpose, req.ChallengeToken, req.CaptchaToken, c.ClientIP(), c.Request.UserAgent())
+	cooldownSeconds, err := s.services.Auth.SendPublicEmailVerificationCode(req.Email, req.Country, req.Purpose)
 	if err != nil {
 		var cooldownErr *service.VerificationCooldownError
 		if errors.As(err, &cooldownErr) {
@@ -187,30 +187,6 @@ func (s *Server) handleSendEmailCode(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"sent": true, "cooldown_seconds": cooldownSeconds})
-}
-
-func (s *Server) handleSendChallenge(c *gin.Context) {
-	if !s.requireInstalled(c) {
-		return
-	}
-	var req sendChallengeRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	result, err := s.services.Auth.CreatePublicSendChallenge(req.Purpose, req.Channel, req.Target, c.ClientIP(), c.Request.UserAgent())
-	if err != nil {
-		if writeSecurityFlowError(c, err) {
-			return
-		}
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"challenge_token":  result.ChallengeToken,
-		"expires_in":       result.ExpiresIn,
-		"captcha_required": result.CaptchaRequired,
-	})
 }
 
 func (s *Server) handleSendMFAChallenge(c *gin.Context) {
@@ -324,7 +300,7 @@ func (s *Server) handleSendSMSCode(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	cooldownSeconds, err := s.services.Auth.SendPublicSMSVerificationCode(req.Phone, req.Purpose, req.ChallengeToken, req.CaptchaToken, c.ClientIP(), c.Request.UserAgent())
+	cooldownSeconds, err := s.services.Auth.SendPublicSMSVerificationCode(req.Phone, req.Purpose)
 	if err != nil {
 		var cooldownErr *service.VerificationCooldownError
 		if errors.As(err, &cooldownErr) {

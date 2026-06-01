@@ -67,8 +67,6 @@ export function LoginMFAPage() {
     switch (rawMessage) {
       case "invalid mfa code":
         return t("errors.invalidMfaCode");
-      case "rate_limit_exceeded":
-        return t("errors.rateLimitExceeded");
       case "mfa challenge expired or invalid":
         return t("errors.mfaChallengeExpiredOrInvalid");
       case "unsupported mfa method":

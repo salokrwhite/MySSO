@@ -335,7 +335,6 @@ const locale = {
       mfaChallengeExpiredOrInvalid: "Zweistufige Verifizierung abgelaufen. Bitte melden Sie sich erneut an.",
       challengeRequired: "Bitte schließen Sie zuerst die Sicherheitsherausforderung ab, bevor Sie einen Bestätigungscode anfordern",
       captchaRequired: "Aktuelle Anfragefrequenz ist hoch. Bitte schließen Sie zuerst die Sicherheitsüberprüfung ab",
-      rateLimitExceeded: "Zu viele Anfragen. Bitte versuchen Sie es später erneut.",
       circuitOpen: "Aktueller Sendekanal im Schutzmodus. Bitte versuchen Sie es später erneut.",
       cooldownActive: "Zu viele Anfragen für dieses Ziel. Bitte versuchen Sie es später erneut.",
       passkeyChallengeExpired: "Passkey-Sitzung abgelaufen. Bitte starten Sie erneut.",

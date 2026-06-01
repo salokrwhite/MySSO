@@ -49,8 +49,6 @@ export function translateAccountError(rawMessage: string, t: TranslateFn) {
       return t("errors.invalidMfaCode");
     case "current account uses a manual mfa code":
       return t("errors.manualMfaCodeNotSendable");
-    case "rate_limit_exceeded":
-      return t("errors.rateLimitExceeded");
     case "passkey challenge expired":
       return t("errors.passkeyChallengeExpired");
     case "passkey verification failed":
@@ -67,4 +65,3 @@ export function translateAccountError(rawMessage: string, t: TranslateFn) {
       return rawMessage;
   }
 }
-

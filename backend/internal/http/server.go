@@ -132,7 +132,6 @@ func (s *Server) registerRoutes() {
 	api.POST("/auth/login-otp", s.handleOTPLogin)
 	api.POST("/auth/login-sms", s.handleSMSLogin)
 	api.POST("/auth/mfa-code", s.handleSendMFAChallenge)
-	api.POST("/auth/send-challenge", s.handleSendChallenge)
 	api.POST("/auth/email-code", s.handleSendEmailCode)
 	api.POST("/auth/sms-code", s.handleSendSMSCode)
 	api.POST("/auth/phone-binding/code", s.handleSendPhoneBindingCode)

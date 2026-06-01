@@ -395,7 +395,6 @@ const locale = {
         "Fullfør sikkerhetsutfordringen før du ber om en kode.",
       captchaRequired:
         "Forespørselsvolumet er høyt. Fullfør sikkerhetskontrollen først.",
-      rateLimitExceeded: "For mange forespørsler. Vennligst prøv igjen senere.",
       circuitOpen:
         "Leveringskanalen er midlertidig beskyttet. Vennligst prøv igjen senere.",
       cooldownActive:

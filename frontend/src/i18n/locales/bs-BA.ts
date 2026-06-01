@@ -335,7 +335,6 @@ const locale = {
       mfaChallengeExpiredOrInvalid: "Sesija dvofaktorske verifikacije je istekla. Prijavite se ponovo.",
       challengeRequired: "Dovršite sigurnosni izazov prije zahtjeva za kod.",
       captchaRequired: "Opseg zahtjeva je visok. Prvo dovršite sigurnosnu provjeru.",
-      rateLimitExceeded: "Previše zahtjeva. Pokušajte ponovo kasnije.",
       circuitOpen: "Kanal za dostavu je privremeno zaštićen. Pokušajte ponovo kasnije.",
       cooldownActive: "Previše kodova je zatraženo za ovaj cilj. Pokušajte ponovo kasnije.",
       passkeyChallengeExpired: "Sesija pristupnog ključa je istekla. Pokušajte ponovo.",

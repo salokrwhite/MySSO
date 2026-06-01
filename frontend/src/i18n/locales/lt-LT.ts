@@ -393,7 +393,6 @@ const locale = {
         "Užpildykite saugumo uždavinį prieš prašydami kodo.",
       captchaRequired:
         "Užklausų apimtis yra didelė. Pirmiausia užpildykite saugumo patikrą.",
-      rateLimitExceeded: "Per daug užklausų. Prašome bandyti vėliau.",
       circuitOpen:
         "Pristatymo kanalas laikinai apsaugotas. Prašome bandyti vėliau.",
       cooldownActive:

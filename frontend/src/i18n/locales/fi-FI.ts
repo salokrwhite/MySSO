@@ -393,7 +393,6 @@ const locale = {
         "Suorita turvallisuustarkistus ennen koodin pyytämistä.",
       captchaRequired:
         "Kyselymäärä on suuri. Suorita ensin turvallisuustarkistus.",
-      rateLimitExceeded: "Liian monta kyselyä. Yritä myöhemmin uudelleen.",
       circuitOpen:
         "Lähetyskanava on väliaikaisesti suojattu. Yritä myöhemmin uudelleen.",
       cooldownActive:

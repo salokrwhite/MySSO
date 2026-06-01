@@ -12,7 +12,6 @@ import (
 const (
 	authChallengeTypeMFA                 = "mfa_login"
 	authChallengeTypeDeletionLogin       = "deletion_login"
-	authChallengeTypeRequest             = "request"
 	authChallengeTypePasskeyRegistration = "passkey_registration"
 	authChallengeTypePasskeyLogin        = "passkey_login"
 	authChallengeTypePhoneBinding        = "phone_binding"

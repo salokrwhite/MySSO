@@ -395,7 +395,6 @@ const locale = {
         "Fejezze be a biztonsági kihívást, mielőtt kódot kérne.",
       captchaRequired:
         "A kérések száma magas. Kérjük, először fejezze be a biztonsági ellenőrzést.",
-      rateLimitExceeded: "Túl sok kérés. Kérjük, próbálja később.",
       circuitOpen:
         "A szállítási csatorna átmenetileg védett. Kérjük, próbálja később.",
       cooldownActive:

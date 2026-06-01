@@ -374,7 +374,6 @@ const locale = {
         "Kod istemeden önce güvenlik zorluğunu tamamlayın.",
       captchaRequired:
         "İstek hacmi yüksek. Önce güvenlik doğrulamasını tamamlayın.",
-      rateLimitExceeded: "Çok fazla istek. Lütfen daha sonra yeniden deneyin.",
       circuitOpen:
         "Teslimat kanalı geçici olarak korunuyor. Lütfen daha sonra yeniden deneyin.",
       cooldownActive:

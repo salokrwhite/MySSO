@@ -393,7 +393,6 @@ const locale = {
         "Osatu segurtasun-erronka kode bat eskatu aurretik.",
       captchaRequired:
         "Eskaeren bolumena altua da. Osatu segurtasun-egiaztapena lehenik.",
-      rateLimitExceeded: "Eskaera gehiegi. Saiatu berriro geroago.",
       circuitOpen:
         "Entrega-kanala aldi baterako babestuta dago. Saiatu berriro geroago.",
       cooldownActive:

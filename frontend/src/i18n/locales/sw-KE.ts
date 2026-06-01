@@ -395,7 +395,6 @@ const locale = {
         "Kamilisha changamoto ya usalama kabla ya kuomba nambari.",
       captchaRequired:
         "Kiasi cha maombi ni kikubwa. Kamilisha ukaguzi wa usalama kwanza.",
-      rateLimitExceeded: "Maombi mengi sana. Tafadhali jaribu tena baadaye.",
       circuitOpen:
         "Kituo cha utoaji cha muda kinalindwa. Tafadhali jaribu tena baadaye.",
       cooldownActive:

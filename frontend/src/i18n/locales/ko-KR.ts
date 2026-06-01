@@ -347,7 +347,6 @@ const locale = {
       mfaChallengeExpiredOrInvalid: "2단계 인증이 만료되었습니다. 다시 로그인하세요",
       challengeRequired: "인증 코드를 보내기 전에 보안 챌린지를 완료하세요.",
       captchaRequired: "현재 요청 빈도가 높습니다. 먼저 보안 확인을 완료하세요",
-      rateLimitExceeded: "현재 요청이 너무 빈번합니다. 나중에 다시 시도하세요",
       circuitOpen: "현재 발신 채널이 보호 상태에 들어갔습니다. 나중에 다시 시도하세요",
       cooldownActive: "현재 대상 요청이 너무 빈번합니다. 나중에 다시 시도하세요",
       passkeyChallengeExpired: "패스키 세션이 만료되었습니다. 다시 시작하세요",

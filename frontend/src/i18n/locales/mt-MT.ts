@@ -395,7 +395,6 @@ const locale = {
         "Tkompli l-isfida ta' sigurtà qabel ma ttitlob kodiċi.",
       captchaRequired:
         "Il-volum tal-talbiet huwa għoli. Tkompli l-ċekk ta' sigurtà l-ewwel.",
-      rateLimitExceeded: "Wisq talbiet. Jekk jogħġbok ipprova mill-ġdid aktar tard.",
       circuitOpen:
         "Il-kanal ta' deliverja huwa protett temporanjament. Jekk jogħġbok ipprova mill-ġdid aktar tard.",
       cooldownActive:

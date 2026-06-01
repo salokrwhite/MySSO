@@ -350,7 +350,6 @@ const locale = {
       mfaChallengeExpiredOrInvalid: "Dubbelverifieringen har utgått. Vänligen logga in igen.",
       challengeRequired: "Slutför säkerhetsutmaningen innan du skickar verifieringskod.",
       captchaRequired: "Begäranfrekvensen är för hög. Slutför säkerhetskontrollen först.",
-      rateLimitExceeded: "För många begäranden. Vänligen försök igen senare.",
       circuitOpen: "Den aktuella sändningskanalen har gått in i skyddsläge. Vänligen försök igen senare.",
       cooldownActive: "Den aktuella målet har begärt för många koder. Vänligen försök igen senare.",
       passkeyChallengeExpired: "Passkeysessionen har utgått. Vänligen starta om.",

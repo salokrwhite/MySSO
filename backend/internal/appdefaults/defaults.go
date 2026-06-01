@@ -68,7 +68,6 @@ const (
 	DefaultRiskImmediateBindProbability       = 50
 	DefaultRiskDelayedBindProbability         = 50
 	DefaultRiskDelayedBindLoginCount          = 3
-	DefaultChallengeTokenTTLSeconds           = 60
 	DefaultTestSMSContentMaxLength            = 500
 )
 

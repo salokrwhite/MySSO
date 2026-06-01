@@ -350,7 +350,6 @@ const locale = {
       mfaChallengeExpiredOrInvalid: "二级验证已失效，请重新登录",
       challengeRequired: "请先完成安全挑战后再发送验证码",
       captchaRequired: "当前请求频率较高，请先完成安全校验",
-      rateLimitExceeded: "当前请求过于频繁，请稍后再试",
       circuitOpen: "当前发信通道已进入保护状态，请稍后再试",
       cooldownActive: "当前目标请求过于频繁，请稍后再试",
       passkeyChallengeExpired: "通行密钥会话已失效，请重新发起",

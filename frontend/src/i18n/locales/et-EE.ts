@@ -393,7 +393,6 @@ const locale = {
         "Täitke turvakontroll enne koodi taotlemist.",
       captchaRequired:
         "Päringute maht on kõrge. Täitke kõigepealt turvakontroll.",
-      rateLimitExceeded: "Liiga palju päringuid. Palun proovige hiljem uuesti.",
       circuitOpen:
         "Edastuskanal on ajutiselt kaitstud. Palun proovige hiljem uuesti.",
       cooldownActive:

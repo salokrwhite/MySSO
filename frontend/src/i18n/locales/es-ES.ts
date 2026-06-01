@@ -393,7 +393,6 @@ const locale = {
         "Complete el desafío de seguridad antes de solicitar un código.",
       captchaRequired:
         "El volumen de solicitudes es alto. Complete la verificación de seguridad primero.",
-      rateLimitExceeded: "Demasiadas solicitudes. Por favor inténtelo de nuevo más tarde.",
       circuitOpen:
         "El canal de entrega está temporalmente protegido. Por favor inténtelo de nuevo más tarde.",
       cooldownActive:

@@ -347,7 +347,6 @@ const locale = {
       mfaChallengeExpiredOrInvalid: "Dvojna overovitev je potekla, prosimo, prijavite se znova",
       challengeRequired: "Pred pošiljanjem kode prosimo, dokončajte varnostno izziv",
       captchaRequired: "Trenutno je število zahtev visoko. Prosimo, najprej dokončajte varnostno verifikacijo",
-      rateLimitExceeded: "Preveč zahtev. Prosimo, poskusite kasneje",
       circuitOpen: "Povezava za pošiljanje je trenutno v zaščitnem stanju, prosimo, poskusite kasneje",
       cooldownActive: "Ciljne zahteve so preveč pogoste, prosimo, poskusite kasneje",
       passkeyChallengeExpired: "Seja passkey je potekla, prosimo, poskusite znova",

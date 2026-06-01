@@ -347,7 +347,6 @@ const locale = {
       mfaChallengeExpiredOrInvalid: "二段階認証が期限切れになりました。もう一度ログインしてください",
       challengeRequired: "コードを要求する前にセキュリティチャレンジを完了してください",
       captchaRequired: "現在のリクエスト量が多いです。まずセキュリティ確認を完了してください",
-      rateLimitExceeded: "現在のリクエストが頻繁すぎます。後で再試行してください",
       circuitOpen: "現在、配信チャネルは保護状態にあります。後で再試行してください",
       cooldownActive: "現在、このターゲットへのリクエストが頻繁すぎます。後で再試行してください",
       passkeyChallengeExpired: "パスキーセッションが期限切れになりました。再試行してください",

@@ -228,19 +228,6 @@ type PhoneSendLog struct {
 	CreatedAt    time.Time `json:"created_at"`
 }
 
-type RequestChallenge struct {
-	Token         string
-	Purpose       string
-	Channel       string
-	IPHash        string
-	UAHash        string
-	TargetHash    string
-	CaptchaPassed bool
-	ExpiresAt     time.Time
-	ConsumedAt    *time.Time
-	CreatedAt     time.Time
-}
-
 type AuthChallenge struct {
 	Token         string
 	ChallengeType string

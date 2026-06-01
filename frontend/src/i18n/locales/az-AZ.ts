@@ -347,7 +347,6 @@ const locale = {
       mfaChallengeExpiredOrInvalid: "İki faktorlu doğrulama sessiyasının vaxtı bitdi. Yenidən daxil olun.",
       challengeRequired: "Kod istəməzdən əvvəl təhlükəsizlik çağırışını tamamlayın.",
       captchaRequired: "Sorğu həcmi yüksəkdir. Əvvəlcə təhlükəsizlik yoxlamasını tamamlayın.",
-      rateLimitExceeded: "Çoxlu sorğular. Sonra yenidən cəhd edin.",
       circuitOpen: "Çatdırılma kanalı müvəqqəti olaraq qorunur. Sonra yenidən cəhd edin.",
       cooldownActive: "Bu hədəf çox tez-tez kod istəyir. Sonra yenidən cəhd edin.",
       passkeyChallengeExpired: "Keçid açarı sessiyasının vaxtı bitdi. Yenidən cəhd edin.",

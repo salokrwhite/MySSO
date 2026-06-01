@@ -395,7 +395,6 @@ const locale = {
         "Voltooi de beveiligingsuitdaging voordat u een code aanvraagt.",
       captchaRequired:
         "Aanvraagvolume is hoog. Voltooi eerst de beveiligingscontrole.",
-      rateLimitExceeded: "Te veel aanvragen. Probeer het later opnieuw.",
       circuitOpen:
         "Het bezorgkanaal is tijdelijk beschermd. Probeer het later opnieuw.",
       cooldownActive:

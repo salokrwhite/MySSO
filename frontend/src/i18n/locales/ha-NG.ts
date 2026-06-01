@@ -395,7 +395,6 @@ const locale = {
         "Kammala ƙalubalen tsaro kafin neman lambar.",
       captchaRequired:
         "Yawan buƙatu yana da girma. Kammala bincike na tsaro da farko.",
-      rateLimitExceeded: "Buƙatun da yawa. Lura da gwada daga baya daga baya.",
       circuitOpen:
         "Tashar aika tana cikin yanayin tsaro na ɗan lokaci. Lura da gwada daga baya daga baya.",
       cooldownActive:

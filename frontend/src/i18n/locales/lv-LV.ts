@@ -393,7 +393,6 @@ const locale = {
         "Pabeidziet drošības pārbaudi, pirms pieprasāt kodu.",
       captchaRequired:
         "Pieprasījumu apjoms ir augsts. Pirmkārt pabeidziet drošības pārbaudi.",
-      rateLimitExceeded: "Pārāk daudz pieprasījumu. Lūdzu, mēģiniet vēlāk.",
       circuitOpen:
         "Sūtīšanas kanāls ir pagaidām aizsargāts. Lūdzu, mēģiniet vēlāk.",
       cooldownActive:

@@ -393,7 +393,6 @@ const locale = {
         "Finalizați provocarea de securitate înainte de a solicita un cod.",
       captchaRequired:
         "Volumul de solicitări este mare. Finalizați verificarea de securitate mai întâi.",
-      rateLimitExceeded: "Prea multe solicitări. Vă rugăm să încercați mai târziu.",
       circuitOpen:
         "Canalul de livrare este temporar protejat. Vă rugăm să încercați mai târziu.",
       cooldownActive:

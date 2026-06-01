@@ -347,7 +347,6 @@ const locale = {
       mfaChallengeExpiredOrInvalid: "Verifikasi tahap kedua telah tamat tempoh, sila log masuk semula",
       challengeRequired: "Sila lengkapkan cabaran keselamatan terlebih dahulu sebelum menghantar kod verifikasi",
       captchaRequired: "Kekerapan permintaan semasa adalah tinggi, sila lengkapkan semakan keselamatan terlebih dahulu",
-      rateLimitExceeded: "Permintaan semasa terlalu kerap, sila cuba lagi kemudian",
       circuitOpen: "Laluan penghantaran semasa telah memasuki keadaan perlindungan, sila cuba lagi kemudian",
       cooldownActive: "Permintaan sasaran semasa terlalu kerap, sila cuba lagi kemudian",
       passkeyChallengeExpired: "Sesi kunci akses telah tamat tempoh, sila mulakan semula",

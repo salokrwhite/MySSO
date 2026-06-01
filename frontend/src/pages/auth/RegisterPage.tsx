@@ -15,7 +15,6 @@ import { buildFirstPartyRegisterPath } from "./oidc";
 import { getCountries } from "../../utils/countries";
 import { AccountLanguageModal } from "../../components/AccountLanguageModal";
 import { AuthPageFooter } from "../../components/AuthPageFooter";
-import { getRetryAfterSeconds, requestSendChallenge } from "./sendCodeSecurity";
 
 export function RegisterPage() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -26,8 +25,6 @@ export function RegisterPage() {
   const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [sendingCode, setSendingCode] = useState(false);
-  const [captchaRequired, setCaptchaRequired] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState("");
   const [registrationAllowed, setRegistrationAllowed] = useState(true);
   const [checkingSettings, setCheckingSettings] = useState(true);
   const [siteFooterText, setSiteFooterText] = useState(localStorage.getItem("site_footer_text") || "");
@@ -41,14 +38,6 @@ export function RegisterPage() {
 
   function translateSecurityError(rawMessage: string) {
     switch (rawMessage) {
-      case "captcha_required":
-        return t("errors.captchaRequired");
-      case "challenge_required":
-        return t("errors.challengeRequired");
-      case "rate_limit_exceeded":
-        return t("errors.rateLimitExceeded");
-      case "circuit_open":
-        return t("errors.circuitOpen");
       case "cooldown_active":
         return t("errors.cooldownActive");
       default:
@@ -128,34 +117,17 @@ export function RegisterPage() {
     try {
       setSendingCode(true);
       const values = await form.validateFields(["country", "email"]);
-      const challenge = await requestSendChallenge("register", "email", values.email);
-      if (challenge.captcha_required && !captchaToken.trim()) {
-        setCaptchaRequired(true);
-        messageApi.error(t("auth.securityCaptchaRequiredTip"));
-        return;
-      }
       const result = await api<{ cooldown_seconds?: number }>("/auth/email-code", {
         method: "POST",
         body: JSON.stringify({
           country: values.country,
           email: values.email,
-          purpose: "register",
-          challenge_token: challenge.challenge_token || "",
-          captcha_token: captchaToken
+          purpose: "register"
         })
       });
-      setCaptchaRequired(Boolean(challenge.captcha_required));
       startCooldown(Number(result.cooldown_seconds || 0), values.email);
       messageApi.success(t("auth.sendRegisterCodeSuccess"));
     } catch (err) {
-      const retryAfterSeconds = getRetryAfterSeconds(err);
-      if (retryAfterSeconds > 0) {
-        startCooldown(retryAfterSeconds, form.getFieldValue("email"));
-        return;
-      }
-      if (err instanceof Error && err.message === "captcha_required") {
-        setCaptchaRequired(true);
-      }
       messageApi.error(err instanceof Error ? translateSecurityError(err.message) : t("auth.sendRegisterCodeFailed"));
     } finally {
       setSendingCode(false);
@@ -279,11 +251,6 @@ export function RegisterPage() {
                 </Button>
               </Space.Compact>
             </Form.Item>
-            {captchaRequired ? (
-              <Form.Item label={t("auth.securityCaptcha")} extra={t("auth.securityCaptchaHelp")} required>
-                <Input value={captchaToken} onChange={(event) => setCaptchaToken(event.target.value)} placeholder={t("auth.securityCaptchaPlaceholder")} />
-              </Form.Item>
-            ) : null}
             <Form.Item
               label={t("auth.password")}
               name="password"

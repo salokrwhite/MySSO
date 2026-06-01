@@ -392,7 +392,6 @@ const locale = {
         "Ukończ wyzwanie bezpieczeństwa przed żądaniem kodu.",
       captchaRequired:
         "Wolumen żądań jest wysoki. Najpierw ukończ weryfikację bezpieczeństwa.",
-      rateLimitExceeded: "Zbyt wiele żądań. Spróbuj ponownie później.",
       circuitOpen:
         "Kanał dostawy jest tymczasowo chroniony. Spróbuj ponownie później.",
       cooldownActive:

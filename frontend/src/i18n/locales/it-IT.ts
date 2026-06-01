@@ -347,7 +347,6 @@ const locale = {
       mfaChallengeExpiredOrInvalid: "La verifica a due fattori è scaduta. Accedi di nuovo.",
       challengeRequired: "Completa la sfida di sicurezza prima di richiedere un codice.",
       captchaRequired: "Il volume di richieste è elevato. Completa prima la verifica di sicurezza.",
-      rateLimitExceeded: "Troppe richieste. Riprova più tardi.",
       circuitOpen: "Il canale di consegna è temporaneamente protetto. Riprova più tardi.",
       cooldownActive: "Questo target ha richiesto codici troppo frequentemente. Riprova più tardi.",
       passkeyChallengeExpired: "La sessione passkey è scaduta. Riprova.",

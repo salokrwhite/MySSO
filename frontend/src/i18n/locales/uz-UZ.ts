@@ -394,7 +394,6 @@ const locale = {
         "Kodni so'ramdan oldin xavfsizlik muammosini hal qiling.",
       captchaRequired:
         "So'rovlar miqdori yuqori. Birinchi xavfsizlik tekshiruvini yakunlang.",
-      rateLimitExceeded: "Juda ko'p so'rovlar. Iltimos, keyinroq qayta urining.",
       circuitOpen:
         "Etkazib berish kanali vaqtinchalik himoyalangan. Iltimos, keyinroq qayta urining.",
       cooldownActive:
