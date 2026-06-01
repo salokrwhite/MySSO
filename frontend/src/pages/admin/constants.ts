@@ -90,37 +90,7 @@ export const defaultSettings: SystemSettings = {
   risk_control_enabled: false,
   risk_immediate_bind_probability: 50,
   risk_delayed_bind_probability: 50,
-  risk_delayed_bind_login_count: 3,
-  rate_limit_enabled: true,
-  send_challenge_enabled: true,
-  challenge_token_ttl_seconds: 60,
-  challenge_required_after_ip_minute_count: 5,
-  captcha_required_after_ip_hour_count: 20,
-  email_target_cooldown_seconds: 60,
-  email_ip_minute_limit: 10,
-  email_ip_hour_limit: 50,
-  email_ip_hour_unique_target_limit: 20,
-  email_global_minute_limit: 100,
-  email_global_hour_limit: 1000,
-  email_fuse_minutes: 10,
-  sms_target_cooldown_seconds: 60,
-  sms_ip_minute_limit: 5,
-  sms_ip_hour_limit: 20,
-  sms_ip_hour_unique_target_limit: 10,
-  sms_global_minute_limit: 20,
-  sms_global_hour_limit: 200,
-  sms_fuse_minutes: 20,
-  admin_test_email_minute_limit: 5,
-  admin_test_email_daily_limit: 20,
-  admin_test_sms_minute_limit: 3,
-  admin_test_sms_daily_limit: 10,
-  auth_attempt_window_minutes: 15,
-  auth_attempt_lock_minutes: 15,
-  password_login_account_attempt_limit: 5,
-  otp_login_account_attempt_limit: 6,
-  mfa_login_account_attempt_limit: 6,
-  auth_attempt_ip_limit: 30,
-  auth_attempt_device_limit: 15
+  risk_delayed_bind_login_count: 3
 };
 
 export function getSettingsTabs(t: (key: string) => string): SettingsTab[] {
@@ -133,7 +103,6 @@ export function getSettingsTabs(t: (key: string) => string): SettingsTab[] {
     { key: "media", label: t("公告配置") },
     { key: "addons", label: t("风控管理") },
     { key: "email", label: t("邮件") },
-    { key: "queue", label: t("限流管理") },
     { key: "scope", label: t("Scope 设置") }
   ];
 }
@@ -148,7 +117,6 @@ export function getSettingsTabMeta(t: (key: string) => string): Record<SettingsT
     media: { title: t("公告配置"), description: t("分别配置用户中心和开发者后台的顶部公告，互不影响，可独立开启和编辑。") },
     addons: { title: t("风控管理"), description: t("管理中国大陆注册用户的手机号绑定风控策略与触发概率。") },
     email: { title: t("邮件"), description: t("管理 SMTP 连接、发件人和测试邮件。") },
-    queue: { title: t("限流管理"), description: t("管理认证失败限流、公开发码接口、挑战参数、熔断阈值和管理员测试发信限额。") },
     scope: { title: t("Scope 设置"), description: t("集中管理系统可用 scope、是否启用，以及开发者是否可在创建应用时直接申请。") }
   };
 }
@@ -184,8 +152,8 @@ export function getAdminPageMeta(t: (key: string) => string) {
       description: t("查看开发者侧用户组、访问限制和封禁操作记录，支持管理员硬删除。")
     },
     riskLogs: {
-      title: t("风控日志"),
-      description: t("查看公开发码风控命中与放行记录，并在同页查看 Passkey 相关数据表信息，支持批量删除。")
+      title: t("Passkey 日志"),
+      description: t("查看 Passkey 相关数据表信息，支持批量删除。")
     },
     settings: {
       title: t("参数设置"),

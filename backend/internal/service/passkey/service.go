@@ -19,7 +19,6 @@ import (
 	"mysso/backend/internal/service/auth"
 	"mysso/backend/internal/service/common/authutil"
 	"mysso/backend/internal/service/common/deps"
-	"mysso/backend/internal/service/ratelimit"
 	"mysso/backend/internal/service/settings"
 	"mysso/backend/internal/service/user"
 )
@@ -27,17 +26,16 @@ import (
 const passkeyChallengeTTL = 5 * time.Minute
 
 type PasskeyService struct {
-	deps      *deps.Deps
-	audit     *audit.Service
-	settings  *settings.Service
-	user      *user.Service
-	rateLimit *ratelimit.Service
+	deps     *deps.Deps
+	audit    *audit.Service
+	settings *settings.Service
+	user     *user.Service
 }
 
 type Service = PasskeyService
 
-func New(dependencies *deps.Deps, auditService *audit.Service, settingsService *settings.Service, userService *user.Service, rateLimitService *ratelimit.Service) *Service {
-	return &PasskeyService{deps: dependencies, audit: auditService, settings: settingsService, user: userService, rateLimit: rateLimitService}
+func New(dependencies *deps.Deps, auditService *audit.Service, settingsService *settings.Service, userService *user.Service) *Service {
+	return &PasskeyService{deps: dependencies, audit: auditService, settings: settingsService, user: userService}
 }
 
 type PreparePasskeyOptionsResult struct {
@@ -229,7 +227,6 @@ func (s *PasskeyService) CompleteRegistration(userID, challengeToken, credential
 	if challenge.UserID != user.ID {
 		return domain.Passkey{}, fmt.Errorf("passkey challenge expired")
 	}
-	defer func() { _ = s.deps.Store.DeletePasskeyRegistrationChallenge(challengeToken) }()
 
 	var sessionData webauthn.SessionData
 	if err := json.Unmarshal([]byte(challenge.SessionDataJSON), &sessionData); err != nil {
@@ -251,6 +248,10 @@ func (s *PasskeyService) CompleteRegistration(userID, challengeToken, credential
 	if err != nil {
 		return domain.Passkey{}, fmt.Errorf("passkey verification failed")
 	}
+	if err := s.deps.Store.ConsumePasskeyRegistrationChallenge(challengeToken, time.Now().UTC()); err != nil {
+		return domain.Passkey{}, fmt.Errorf("passkey challenge expired")
+	}
+	defer func() { _ = s.deps.Store.DeletePasskeyRegistrationChallenge(challengeToken) }()
 	credentialJSON, err := json.Marshal(credential)
 	if err != nil {
 		return domain.Passkey{}, err
@@ -336,7 +337,6 @@ func (s *PasskeyService) CompleteLogin(challengeToken, credentialResponse, ip, d
 	if err != nil {
 		return auth.PasswordLoginResult{}, fmt.Errorf("passkey challenge expired")
 	}
-	defer func() { _ = s.deps.Store.DeletePasskeyLoginChallenge(challengeToken) }()
 
 	var sessionData webauthn.SessionData
 	if err := json.Unmarshal([]byte(challenge.SessionDataJSON), &sessionData); err != nil {
@@ -377,6 +377,10 @@ func (s *PasskeyService) CompleteLogin(challengeToken, credentialResponse, ip, d
 	if err != nil {
 		return auth.PasswordLoginResult{}, fmt.Errorf("passkey verification failed")
 	}
+	if err := s.deps.Store.ConsumePasskeyLoginChallenge(challengeToken, time.Now().UTC()); err != nil {
+		return auth.PasswordLoginResult{}, fmt.Errorf("passkey challenge expired")
+	}
+	defer func() { _ = s.deps.Store.DeletePasskeyLoginChallenge(challengeToken) }()
 	usedPasskey, err := s.deps.Store.GetPasskeyByCredentialID(base64.RawURLEncoding.EncodeToString(credential.ID))
 	if err != nil {
 		return auth.PasswordLoginResult{}, fmt.Errorf("passkey verification failed")
@@ -400,7 +404,7 @@ func (s *PasskeyService) CompleteLogin(challengeToken, credentialResponse, ip, d
 		CreatedAt:    time.Now().UTC(),
 	})
 
-	auth := auth.New(s.deps, s.audit, s.settings, s.user, s.rateLimit)
+	auth := auth.New(s.deps, s.audit, s.settings, s.user)
 	return auth.ContinuePostAuthentication(loginUser, ip, "passkey", "urn:mysso:acr:passkey")
 }
 

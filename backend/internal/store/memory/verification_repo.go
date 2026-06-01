@@ -112,53 +112,99 @@ func (s *MemoryStore) ConsumeSMSVerificationCode(id string) error {
 func (s *MemoryStore) SaveMFALoginChallenge(challenge domain.MFALoginChallenge) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.mfaChallenges[challenge.Token] = challenge
+	s.saveAuthChallengeLocked(domain.AuthChallenge{
+		Token:         challenge.Token,
+		ChallengeType: authChallengeTypeMFA,
+		UserID:        challenge.UserID,
+		Channel:       challenge.Method,
+		Target:        challenge.Target,
+		ExpiresAt:     challenge.ExpiresAt,
+		CreatedAt:     challenge.CreatedAt,
+	})
 	return nil
 }
 
 func (s *MemoryStore) GetMFALoginChallenge(token string) (domain.MFALoginChallenge, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	challenge, ok := s.mfaChallenges[token]
-	if !ok {
+	item, err := s.getAuthChallengeLocked(token, authChallengeTypeMFA, true)
+	if err != nil {
 		return domain.MFALoginChallenge{}, ErrNotFound
 	}
-	return challenge, nil
+	return domain.MFALoginChallenge{
+		Token:     item.Token,
+		UserID:    item.UserID,
+		Method:    item.Channel,
+		Target:    item.Target,
+		ExpiresAt: item.ExpiresAt,
+		CreatedAt: item.CreatedAt,
+	}, nil
 }
 
 func (s *MemoryStore) DeleteMFALoginChallenge(token string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if _, ok := s.mfaChallenges[token]; !ok {
-		return ErrNotFound
-	}
-	delete(s.mfaChallenges, token)
-	return nil
+	return s.deleteAuthChallengeLocked(token, authChallengeTypeMFA)
+}
+
+func (s *MemoryStore) ConsumeMFALoginChallenge(token string, consumedAt time.Time) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.consumeAuthChallengeLocked(token, authChallengeTypeMFA, consumedAt)
 }
 
 func (s *MemoryStore) SaveDeletionLoginChallenge(challenge domain.DeletionLoginChallenge) error {
+	payload, err := authChallengePayload(struct {
+		DeletionScheduledAt time.Time `json:"deletion_scheduled_at"`
+	}{DeletionScheduledAt: challenge.DeletionScheduledAt})
+	if err != nil {
+		return err
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.deletionLoginChallenges[challenge.Token] = challenge
+	s.saveAuthChallengeLocked(domain.AuthChallenge{
+		Token:         challenge.Token,
+		ChallengeType: authChallengeTypeDeletionLogin,
+		UserID:        challenge.UserID,
+		ACR:           challenge.ACR,
+		PayloadJSON:   payload,
+		ExpiresAt:     challenge.ExpiresAt,
+		CreatedAt:     challenge.CreatedAt,
+	})
 	return nil
 }
 
 func (s *MemoryStore) GetDeletionLoginChallenge(token string) (domain.DeletionLoginChallenge, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	challenge, ok := s.deletionLoginChallenges[token]
-	if !ok || challenge.ExpiresAt.Before(time.Now().UTC()) {
+	item, err := s.getAuthChallengeLocked(token, authChallengeTypeDeletionLogin, true)
+	if err != nil {
 		return domain.DeletionLoginChallenge{}, ErrNotFound
 	}
-	return challenge, nil
+	payload, err := parseAuthChallengePayload[struct {
+		DeletionScheduledAt time.Time `json:"deletion_scheduled_at"`
+	}](item.PayloadJSON)
+	if err != nil {
+		return domain.DeletionLoginChallenge{}, err
+	}
+	return domain.DeletionLoginChallenge{
+		Token:               item.Token,
+		UserID:              item.UserID,
+		ACR:                 item.ACR,
+		DeletionScheduledAt: payload.DeletionScheduledAt,
+		ExpiresAt:           item.ExpiresAt,
+		CreatedAt:           item.CreatedAt,
+	}, nil
 }
 
 func (s *MemoryStore) DeleteDeletionLoginChallenge(token string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if _, ok := s.deletionLoginChallenges[token]; !ok {
-		return ErrNotFound
-	}
-	delete(s.deletionLoginChallenges, token)
-	return nil
+	return s.deleteAuthChallengeLocked(token, authChallengeTypeDeletionLogin)
+}
+
+func (s *MemoryStore) ConsumeDeletionLoginChallenge(token string, consumedAt time.Time) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.consumeAuthChallengeLocked(token, authChallengeTypeDeletionLogin, consumedAt)
 }

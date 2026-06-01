@@ -8,7 +8,6 @@ import {
   fetchAdminPasskeyLogs,
   fetchAdminPhoneSendLogs,
   fetchAdminPolicies,
-  fetchAdminRiskLogs,
   fetchAdminScopes,
   fetchAdminSystemSettings,
   fetchAdminUsers,
@@ -24,7 +23,6 @@ import type {
   EmailSendLog,
   PhoneSendLog,
   Policy,
-  RiskLog,
   ScopeDefinition,
   SystemSettings,
   User,
@@ -74,7 +72,6 @@ export function useAdminData(
     DeveloperAccessLog[]
   >([]);
   const [developerAccessLogsTotal, setDeveloperAccessLogsTotal] = useState(0);
-  const [riskLogs, setRiskLogs] = useState<RiskLog[]>([]);
   const [passkeyLogs, setPasskeyLogs] = useState<AdminPasskeyLogs>({
     passkeys: [],
     registration_challenges: [],
@@ -135,12 +132,7 @@ export function useAdminData(
       }
 
       if (pageType === "riskLogs") {
-        const [nextRiskLogs, nextPasskeyLogs] = await Promise.all([
-          fetchAdminRiskLogs(sessionToken, options),
-          fetchAdminPasskeyLogs(sessionToken, options),
-        ]);
-        setRiskLogs(nextRiskLogs);
-        setPasskeyLogs(nextPasskeyLogs);
+        setPasskeyLogs(await fetchAdminPasskeyLogs(sessionToken, options));
         return;
       }
 
@@ -184,7 +176,6 @@ export function useAdminData(
     logsTotal,
     developerAccessLogs,
     developerAccessLogsTotal,
-    riskLogs,
     passkeyLogs,
     emailSendLogs,
     phoneSendLogs,

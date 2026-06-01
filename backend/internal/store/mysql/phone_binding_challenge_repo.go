@@ -1,36 +1,42 @@
 package mysql
 
 import (
-	"database/sql"
+	"time"
 
 	"mysso/backend/internal/domain"
 )
 
 func (s *MySQLStore) SavePhoneBindingChallenge(challenge domain.PhoneBindingChallenge) error {
-	_, err := s.db.Exec(`
-		INSERT INTO phone_binding_challenges (token, user_id, reason, acr, expires_at, created_at)
-		VALUES (?, ?, ?, ?, ?, ?)
-	`, challenge.Token, challenge.UserID, challenge.Reason, challenge.ACR, challenge.ExpiresAt, challenge.CreatedAt)
-	return err
+	return s.saveAuthChallenge(domain.AuthChallenge{
+		Token:         challenge.Token,
+		ChallengeType: authChallengeTypePhoneBinding,
+		UserID:        challenge.UserID,
+		Target:        challenge.Reason,
+		ACR:           challenge.ACR,
+		ExpiresAt:     challenge.ExpiresAt,
+		CreatedAt:     challenge.CreatedAt,
+	})
 }
 
 func (s *MySQLStore) GetPhoneBindingChallenge(token string) (domain.PhoneBindingChallenge, error) {
-	var challenge domain.PhoneBindingChallenge
-	err := s.db.QueryRow(`
-		SELECT token, user_id, reason, acr, expires_at, created_at
-		FROM phone_binding_challenges
-		WHERE token = ? AND expires_at > UTC_TIMESTAMP()
-	`, token).Scan(&challenge.Token, &challenge.UserID, &challenge.Reason, &challenge.ACR, &challenge.ExpiresAt, &challenge.CreatedAt)
+	item, err := s.getAuthChallenge(token, authChallengeTypePhoneBinding, true)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return domain.PhoneBindingChallenge{}, ErrNotFound
-		}
 		return domain.PhoneBindingChallenge{}, err
 	}
-	return challenge, nil
+	return domain.PhoneBindingChallenge{
+		Token:     item.Token,
+		UserID:    item.UserID,
+		Reason:    item.Target,
+		ACR:       item.ACR,
+		ExpiresAt: item.ExpiresAt,
+		CreatedAt: item.CreatedAt,
+	}, nil
 }
 
 func (s *MySQLStore) DeletePhoneBindingChallenge(token string) error {
-	_, err := s.db.Exec(`DELETE FROM phone_binding_challenges WHERE token = ?`, token)
-	return err
+	return s.deleteAuthChallenge(token, authChallengeTypePhoneBinding)
+}
+
+func (s *MySQLStore) ConsumePhoneBindingChallenge(token string, consumedAt time.Time) error {
+	return s.consumeAuthChallenge(token, authChallengeTypePhoneBinding, consumedAt)
 }

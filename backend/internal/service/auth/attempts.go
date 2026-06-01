@@ -3,7 +3,6 @@ package auth
 import (
 	"mysso/backend/internal/domain"
 	"mysso/backend/internal/service/common/authutil"
-	"mysso/backend/internal/service/ratelimit"
 )
 
 type authAttemptAuditContext struct {
@@ -15,47 +14,14 @@ type authAttemptAuditContext struct {
 }
 
 func (s *AuthService) checkAuthAttempt(ctx authAttemptAuditContext) error {
-	if s.rateLimit == nil {
-		return nil
-	}
-	if err := s.rateLimit.CheckAuthAttempt(ratelimit.AuthAttemptOptions{
-		Kind:       ctx.Kind,
-		Identifier: ctx.Identifier,
-		IP:         ctx.IP,
-		DeviceID:   ctx.DeviceID,
-	}); err != nil {
-		s.auditAuthAttempt(ctx, "blocked", "rate_limited")
-		return err
-	}
 	return nil
 }
 
 func (s *AuthService) resetAuthAttempt(ctx authAttemptAuditContext) {
-	if s.rateLimit == nil {
-		return
-	}
-	_ = s.rateLimit.ResetAuthAttempts(ratelimit.AuthAttemptOptions{
-		Kind:       ctx.Kind,
-		Identifier: ctx.Identifier,
-		IP:         ctx.IP,
-		DeviceID:   ctx.DeviceID,
-	})
 }
 
 func (s *AuthService) failAuthAttempt(ctx authAttemptAuditContext, reason string) error {
 	s.auditAuthAttempt(ctx, "failed", reason)
-	if s.rateLimit == nil {
-		return nil
-	}
-	if err := s.rateLimit.RecordFailedAuthAttempt(ratelimit.AuthAttemptOptions{
-		Kind:       ctx.Kind,
-		Identifier: ctx.Identifier,
-		IP:         ctx.IP,
-		DeviceID:   ctx.DeviceID,
-	}); err != nil {
-		s.auditAuthAttempt(ctx, "blocked", "rate_limited")
-		return err
-	}
 	return nil
 }
 

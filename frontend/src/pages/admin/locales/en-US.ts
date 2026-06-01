@@ -242,7 +242,6 @@ const enUS: Record<string, string> = {
   "保存公告配置": "Save Announcement Settings",
   "风控管理": "Risk Control",
   "邮件": "Email",
-  "限流管理": "Rate Limits",
   "Scope 设置": "Scope Settings",
   "预留站点名称、域名和品牌信息配置。": "Configure site name, domains, and branding information.",
   "预留登录会话、超时和单点登录策略配置。": "Configure login sessions, timeout, and SSO strategy.",
@@ -302,7 +301,6 @@ const enUS: Record<string, string> = {
   "测试短信每分钟上限": "Test SMS Limit per Minute",
   "测试短信每日上限": "Test SMS Limit per Day",
   "认证限流会按账号、IP 和首方设备 ID cookie 执行。公开发码接口会先校验挑战参数，再执行目标冷却、来源限流和全局熔断。": "Authentication rate limits are enforced by account, IP, and first-party device ID cookie. Public code-sending endpoints validate challenge parameters first, then apply target cooldowns, source rate limits, and the global fuse.",
-  "保存限流管理": "Save Rate Limit Settings",
   "管理统一身份平台支持的 scope。开发者创建应用时只能选择这里已定义且“允许开发者选择”的 scope。": "Manage the scopes supported by the identity platform. Developers can only choose scopes defined here and marked as developer-selectable when creating applications.",
   "显示名称": "Display Name",
   "操作": "Actions",
@@ -595,7 +593,6 @@ const enUS: Record<string, string> = {
   "两个概率之和必须等于 100。未绑定手机号时，用户账号会保持或切换为“待激活”，绑定完成后恢复正常。": "The two probabilities must add up to 100. If the phone number is not bound, the account remains or switches to pending activation, and returns to normal after binding is completed.",
   "保存风控管理": "Save Risk Control Settings",
   "风控管理已保存": "Risk control settings saved",
-  "限流管理已保存": "Rate limit settings saved",
 };
 
 export default enUS;

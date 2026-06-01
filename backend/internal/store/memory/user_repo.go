@@ -200,29 +200,9 @@ func (s *MemoryStore) UpdateUserAndInvalidateAuth(user domain.User) error {
 			s.refreshTokens[tokenValue] = token
 		}
 	}
-	for token, challenge := range s.mfaChallenges {
+	for token, challenge := range s.authChallenges {
 		if challenge.UserID == user.ID {
-			delete(s.mfaChallenges, token)
-		}
-	}
-	for token, challenge := range s.phoneBindingChallenges {
-		if challenge.UserID == user.ID {
-			delete(s.phoneBindingChallenges, token)
-		}
-	}
-	for token, challenge := range s.loginStepUpChallenges {
-		if challenge.UserID == user.ID {
-			delete(s.loginStepUpChallenges, token)
-		}
-	}
-	for token, challenge := range s.mfaEnrollmentChallenges {
-		if challenge.UserID == user.ID {
-			delete(s.mfaEnrollmentChallenges, token)
-		}
-	}
-	for token, challenge := range s.deletionLoginChallenges {
-		if challenge.UserID == user.ID {
-			delete(s.deletionLoginChallenges, token)
+			delete(s.authChallenges, token)
 		}
 	}
 	for codeValue, code := range s.authCodes {
@@ -269,39 +249,14 @@ func (s *MemoryStore) DeleteUser(id string) error {
 			delete(s.smsCodes, codeID)
 		}
 	}
-	for token, challenge := range s.mfaChallenges {
+	for token, challenge := range s.authChallenges {
 		if challenge.UserID == id {
-			delete(s.mfaChallenges, token)
-		}
-	}
-	for token, challenge := range s.phoneBindingChallenges {
-		if challenge.UserID == id {
-			delete(s.phoneBindingChallenges, token)
-		}
-	}
-	for token, challenge := range s.loginStepUpChallenges {
-		if challenge.UserID == id {
-			delete(s.loginStepUpChallenges, token)
-		}
-	}
-	for token, challenge := range s.mfaEnrollmentChallenges {
-		if challenge.UserID == id {
-			delete(s.mfaEnrollmentChallenges, token)
-		}
-	}
-	for token, challenge := range s.deletionLoginChallenges {
-		if challenge.UserID == id {
-			delete(s.deletionLoginChallenges, token)
+			delete(s.authChallenges, token)
 		}
 	}
 	for passkeyID, passkey := range s.passkeys {
 		if passkey.UserID == id {
 			delete(s.passkeys, passkeyID)
-		}
-	}
-	for token, challenge := range s.passkeyRegChallenges {
-		if challenge.UserID == id {
-			delete(s.passkeyRegChallenges, token)
 		}
 	}
 	filteredPasskeyUsageLogs := s.passkeyUsageLogs[:0]
@@ -357,9 +312,6 @@ func (s *MemoryStore) DeleteUser(id string) error {
 	delete(s.settings, "user_avatar_"+id)
 	delete(s.settings, domain.UserAnnouncementEnabledKey(id))
 	delete(s.settings, domain.UserAnnouncementContentKey(id))
-	delete(s.settings, domain.UserRiskPhoneBindingModeKey(id))
-	delete(s.settings, domain.UserRiskPhoneBindingRequiredKey(id))
-	delete(s.settings, domain.UserRiskPhoneBindingLoginCountKey(id))
 	delete(s.userSecurityPolicies, id)
 	return nil
 }

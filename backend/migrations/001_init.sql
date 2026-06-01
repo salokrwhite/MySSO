@@ -86,16 +86,24 @@ CREATE TABLE `consents` (
   KEY `idx_consents_revoked_at` (`revoked_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `deletion_login_challenges` (
+CREATE TABLE `auth_challenges` (
   `token` varchar(64) NOT NULL,
-  `user_id` varchar(64) NOT NULL,
+  `challenge_type` varchar(64) NOT NULL,
+  `user_id` varchar(64) NOT NULL DEFAULT '',
+  `channel` varchar(32) NOT NULL DEFAULT '',
+  `target` varchar(255) NOT NULL DEFAULT '',
   `acr` varchar(255) NOT NULL DEFAULT '',
-  `deletion_scheduled_at` datetime NOT NULL,
+  `payload_json` json DEFAULT NULL,
   `expires_at` datetime NOT NULL,
+  `consumed_at` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`token`),
-  KEY `idx_deletion_login_challenges_user_id` (`user_id`),
-  KEY `idx_deletion_login_challenges_expires_at` (`expires_at`)
+  KEY `idx_auth_challenges_type_expires` (`challenge_type`,`expires_at`),
+  KEY `idx_auth_challenges_type_user` (`challenge_type`,`user_id`),
+  KEY `idx_auth_challenges_user_id` (`user_id`),
+  KEY `idx_auth_challenges_type_created` (`challenge_type`,`created_at`),
+  KEY `idx_auth_challenges_consumed_at` (`consumed_at`),
+  KEY `idx_auth_challenges_expires_at` (`expires_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `developer_groups` (
@@ -208,65 +216,6 @@ CREATE TABLE `gateway_policies` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `login_mfa_enrollment_challenges` (
-  `token` varchar(64) NOT NULL,
-  `user_id` varchar(64) NOT NULL,
-  `login_method` varchar(32) NOT NULL,
-  `acr` varchar(255) NOT NULL DEFAULT '',
-  `expires_at` datetime NOT NULL,
-  `created_at` datetime NOT NULL,
-  PRIMARY KEY (`token`),
-  KEY `idx_login_mfa_enrollment_challenges_user_id` (`user_id`),
-  KEY `idx_login_mfa_enrollment_challenges_expires_at` (`expires_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `login_step_up_challenges` (
-  `token` varchar(64) NOT NULL,
-  `user_id` varchar(64) NOT NULL,
-  `login_method` varchar(32) NOT NULL,
-  `acr` varchar(255) NOT NULL DEFAULT '',
-  `effective_mode` varchar(32) NOT NULL,
-  `email_target` varchar(255) NOT NULL DEFAULT '',
-  `phone_target` varchar(32) NOT NULL DEFAULT '',
-  `expires_at` datetime NOT NULL,
-  `created_at` datetime NOT NULL,
-  PRIMARY KEY (`token`),
-  KEY `idx_login_step_up_challenges_user_id` (`user_id`),
-  KEY `idx_login_step_up_challenges_expires_at` (`expires_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `mfa_login_challenges` (
-  `token` varchar(64) NOT NULL,
-  `user_id` varchar(64) NOT NULL,
-  `method` varchar(32) NOT NULL,
-  `target` varchar(255) NOT NULL,
-  `expires_at` datetime NOT NULL,
-  `created_at` datetime NOT NULL,
-  PRIMARY KEY (`token`),
-  KEY `idx_mfa_login_challenges_user_id` (`user_id`),
-  KEY `idx_mfa_login_challenges_expires_at` (`expires_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `passkey_login_challenges` (
-  `token` varchar(64) NOT NULL,
-  `session_data_json` json NOT NULL,
-  `expires_at` datetime NOT NULL,
-  `created_at` datetime NOT NULL,
-  PRIMARY KEY (`token`),
-  KEY `idx_passkey_login_challenges_expires_at` (`expires_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `passkey_registration_challenges` (
-  `token` varchar(64) NOT NULL,
-  `user_id` varchar(64) NOT NULL,
-  `session_data_json` json NOT NULL,
-  `expires_at` datetime NOT NULL,
-  `created_at` datetime NOT NULL,
-  PRIMARY KEY (`token`),
-  KEY `idx_passkey_registration_challenges_user_id` (`user_id`),
-  KEY `idx_passkey_registration_challenges_expires_at` (`expires_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE `passkey_usage_logs` (
   `id` varchar(64) NOT NULL,
   `user_id` varchar(64) NOT NULL,
@@ -301,18 +250,6 @@ CREATE TABLE `passkeys` (
   KEY `idx_passkeys_user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `phone_binding_challenges` (
-  `token` varchar(64) NOT NULL,
-  `user_id` varchar(64) NOT NULL,
-  `reason` varchar(32) NOT NULL DEFAULT '',
-  `acr` varchar(255) NOT NULL DEFAULT '',
-  `expires_at` datetime NOT NULL,
-  `created_at` datetime NOT NULL,
-  PRIMARY KEY (`token`),
-  KEY `idx_phone_binding_challenges_user_id` (`user_id`),
-  KEY `idx_phone_binding_challenges_expires_at` (`expires_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE `phone_send_logs` (
   `id` varchar(64) NOT NULL,
   `target_phone` varchar(32) NOT NULL,
@@ -321,31 +258,6 @@ CREATE TABLE `phone_send_logs` (
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_phone_send_logs_created_at` (`created_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `rate_limit_counters` (
-  `counter_key` varchar(255) NOT NULL,
-  `window_type` varchar(32) NOT NULL,
-  `count` int(11) NOT NULL DEFAULT '0',
-  `window_started_at` datetime NOT NULL,
-  `expires_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`counter_key`),
-  KEY `idx_rate_limit_counters_expires_at` (`expires_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `rate_limit_events` (
-  `id` varchar(64) NOT NULL,
-  `channel` varchar(16) NOT NULL,
-  `purpose` varchar(32) NOT NULL,
-  `target_hash` varchar(64) NOT NULL DEFAULT '',
-  `source_ip` varchar(64) NOT NULL DEFAULT '',
-  `user_agent_hash` varchar(64) NOT NULL DEFAULT '',
-  `result` varchar(32) NOT NULL,
-  `matched_rule` varchar(64) NOT NULL DEFAULT '',
-  `created_at` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idx_rate_limit_events_created_at` (`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `refresh_tokens` (
@@ -361,21 +273,6 @@ CREATE TABLE `refresh_tokens` (
   `revoked_at` datetime DEFAULT NULL,
   PRIMARY KEY (`token`),
   KEY `idx_refresh_tokens_expires_at` (`expires_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `request_challenges` (
-  `token` varchar(64) NOT NULL,
-  `purpose` varchar(32) NOT NULL,
-  `channel` varchar(16) NOT NULL,
-  `ip_hash` varchar(64) NOT NULL,
-  `ua_hash` varchar(64) NOT NULL,
-  `target_hash` varchar(64) NOT NULL DEFAULT '',
-  `captcha_passed` tinyint(1) NOT NULL DEFAULT '0',
-  `expires_at` datetime NOT NULL,
-  `consumed_at` datetime DEFAULT NULL,
-  `created_at` datetime NOT NULL,
-  PRIMARY KEY (`token`),
-  KEY `idx_request_challenges_expires_at` (`expires_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `scope_definitions` (
@@ -439,6 +336,9 @@ CREATE TABLE `user_security_policies` (
   `force_phone_binding_next_login` tinyint(1) NOT NULL DEFAULT '0',
   `force_mfa_enrollment_next_login` tinyint(1) NOT NULL DEFAULT '0',
   `login_step_up_mode` varchar(32) NOT NULL DEFAULT 'none',
+  `phone_binding_risk_mode` varchar(32) NOT NULL DEFAULT '',
+  `phone_binding_risk_required` tinyint(1) NOT NULL DEFAULT '0',
+  `phone_binding_risk_login_count` int(11) NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`user_id`),

@@ -34,7 +34,6 @@ export function useSystemSettings(
   const [smsForm] = Form.useForm<SystemSettings>();
   const [announcementForm] = Form.useForm<SystemSettings>();
   const [riskForm] = Form.useForm<SystemSettings>();
-  const [rateLimitForm] = Form.useForm<SystemSettings>();
 
   const siteLogoFieldValue = Form.useWatch("site_logo_data_url", siteForm);
   const smsProviderFieldValue = Form.useWatch("sms_provider", smsForm);
@@ -95,10 +94,7 @@ export function useSystemSettings(
       intlForm.setFieldsValue(settings);
       return;
     }
-    if (activeSettingsTab === "queue") {
-      rateLimitForm.setFieldsValue(settings);
-    }
-  }, [activeSettingsTab, announcementForm, intlForm, pageType, rateLimitForm, riskForm, settings, siteForm, smtpForm, verificationForm, sessionForm, smsForm]);
+  }, [activeSettingsTab, announcementForm, intlForm, pageType, riskForm, settings, siteForm, smtpForm, verificationForm, sessionForm, smsForm]);
 
   const saveSystemSettings = useCallback(
     async (values: Partial<SystemSettings>, successText: string) => {
@@ -257,11 +253,6 @@ export function useSystemSettings(
     await saveSystemSettings(values, "风控管理已保存");
   }, [riskForm, saveSystemSettings]);
 
-  const saveRateLimitSettings = useCallback(async () => {
-    const values = await rateLimitForm.validateFields();
-    await saveSystemSettings(values, "限流管理已保存");
-  }, [rateLimitForm, saveSystemSettings]);
-
   const handleSiteLogoUpload = useCallback(
     async (file: File) => {
       setError(undefined);
@@ -332,7 +323,6 @@ export function useSystemSettings(
     smsForm,
     announcementForm,
     riskForm,
-    rateLimitForm,
     siteLogoFieldValue,
     smsProviderFieldValue,
     smsTemplateProviderFieldValue,
@@ -344,7 +334,6 @@ export function useSystemSettings(
     saveSessionSettings,
     saveAnnouncementSettings,
     saveRiskSettings,
-    saveRateLimitSettings,
     handleSiteLogoUpload,
     clearSiteLogo,
     sendTestEmail,

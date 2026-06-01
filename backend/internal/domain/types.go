@@ -108,6 +108,9 @@ type UserSecurityPolicy struct {
 	ForcePhoneBindingNextLogin  bool            `json:"force_phone_binding_next_login"`
 	ForceMFAEnrollmentNextLogin bool            `json:"force_mfa_enrollment_next_login"`
 	LoginStepUpMode             LoginStepUpMode `json:"login_step_up_mode"`
+	PhoneBindingRiskMode        string          `json:"phone_binding_risk_mode"`
+	PhoneBindingRiskRequired    bool            `json:"phone_binding_risk_required"`
+	PhoneBindingRiskLoginCount  int             `json:"phone_binding_risk_login_count"`
 	CreatedAt                   time.Time       `json:"created_at"`
 	UpdatedAt                   time.Time       `json:"updated_at"`
 }
@@ -225,15 +228,6 @@ type PhoneSendLog struct {
 	CreatedAt    time.Time `json:"created_at"`
 }
 
-type RateLimitCounter struct {
-	CounterKey      string
-	WindowType      string
-	Count           int
-	WindowStartedAt time.Time
-	ExpiresAt       time.Time
-	UpdatedAt       time.Time
-}
-
 type RequestChallenge struct {
 	Token         string
 	Purpose       string
@@ -247,16 +241,17 @@ type RequestChallenge struct {
 	CreatedAt     time.Time
 }
 
-type RateLimitEvent struct {
-	ID            string    `json:"id"`
-	Channel       string    `json:"channel"`
-	Purpose       string    `json:"purpose"`
-	TargetHash    string    `json:"target_hash"`
-	SourceIP      string    `json:"source_ip"`
-	UserAgentHash string    `json:"user_agent_hash"`
-	Result        string    `json:"result"`
-	MatchedRule   string    `json:"matched_rule"`
-	CreatedAt     time.Time `json:"created_at"`
+type AuthChallenge struct {
+	Token         string
+	ChallengeType string
+	UserID        string
+	Channel       string
+	Target        string
+	ACR           string
+	PayloadJSON   string
+	ExpiresAt     time.Time
+	ConsumedAt    *time.Time
+	CreatedAt     time.Time
 }
 
 type MFALoginChallenge struct {

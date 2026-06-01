@@ -68,37 +68,8 @@ const (
 	DefaultRiskImmediateBindProbability       = 50
 	DefaultRiskDelayedBindProbability         = 50
 	DefaultRiskDelayedBindLoginCount          = 3
-	DefaultRateLimitEnabled                   = true
-	DefaultSendChallengeEnabled               = true
 	DefaultChallengeTokenTTLSeconds           = 60
-	DefaultChallengeIPMinuteThreshold         = 5
-	DefaultCaptchaIPHourThreshold             = 20
-	DefaultEmailTargetCooldownSeconds         = 60
-	DefaultSMSCodeTargetCooldownSeconds       = 60
-	DefaultEmailIPMinuteLimit                 = 10
-	DefaultEmailIPHourLimit                   = 50
-	DefaultEmailIPHourUniqueTargetLimit       = 20
-	DefaultSMSIPMinuteLimit                   = 5
-	DefaultSMSIPHourLimit                     = 20
-	DefaultSMSIPHourUniqueTargetLimit         = 10
-	DefaultEmailGlobalMinuteLimit             = 100
-	DefaultEmailGlobalHourLimit               = 1000
-	DefaultEmailFuseMinutes                   = 10
-	DefaultSMSGlobalMinuteLimit               = 20
-	DefaultSMSGlobalHourLimit                 = 200
-	DefaultSMSFuseMinutes                     = 20
-	DefaultAdminTestEmailMinuteLimit          = 5
-	DefaultAdminTestSMSMinuteLimit            = 3
-	DefaultAdminTestEmailDailyLimit           = 20
-	DefaultAdminTestSMSDailyLimit             = 10
 	DefaultTestSMSContentMaxLength            = 500
-	DefaultAuthAttemptWindowMinutes           = 15
-	DefaultAuthAttemptLockMinutes             = 15
-	DefaultPasswordLoginAccountAttemptLimit   = 5
-	DefaultOTPLoginAccountAttemptLimit        = 6
-	DefaultMFALoginAccountAttemptLimit        = 6
-	DefaultAuthAttemptIPLimit                 = 30
-	DefaultAuthAttemptDeviceLimit             = 15
 )
 
 var AccountDeletionGracePeriod = 7 * 24 * time.Hour

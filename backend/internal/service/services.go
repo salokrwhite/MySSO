@@ -22,7 +22,6 @@ import (
 	"mysso/backend/internal/service/consent"
 	"mysso/backend/internal/service/oauth"
 	"mysso/backend/internal/service/passkey"
-	"mysso/backend/internal/service/ratelimit"
 	"mysso/backend/internal/service/settings"
 	"mysso/backend/internal/service/user"
 	"mysso/backend/internal/store"
@@ -33,7 +32,6 @@ type Services struct {
 	Passkey       *passkey.Service
 	User          *user.Service
 	Settings      *settings.Service
-	RateLimit     *ratelimit.Service
 	OAuth         *oauth.Service
 	Apps          *apps.Service
 	AccessControl *accesscontrol.Service
@@ -70,12 +68,10 @@ func NewServices(cfg config.Config, dataStore store.Store) (*Services, error) {
 	services := &Services{}
 	services.Audit = audit.New(dependencies)
 	services.Settings = settings.New(dependencies)
-	services.RateLimit = ratelimit.New(dependencies, services.Settings)
-	services.Settings.SetRateLimitChecker(services.RateLimit)
 	services.AccessControl = accesscontrol.New(dependencies, services.Audit)
-	services.User = user.New(dependencies, services.Audit, services.Settings, services.RateLimit)
-	services.Auth = auth.New(dependencies, services.Audit, services.Settings, services.User, services.RateLimit)
-	services.Passkey = passkey.New(dependencies, services.Audit, services.Settings, services.User, services.RateLimit)
+	services.User = user.New(dependencies, services.Audit, services.Settings)
+	services.Auth = auth.New(dependencies, services.Audit, services.Settings, services.User)
+	services.Passkey = passkey.New(dependencies, services.Audit, services.Settings, services.User)
 	services.OAuth = oauth.New(dependencies, services.Audit, services.Settings, services.AccessControl)
 	services.Apps = apps.New(dependencies, services.Audit)
 	services.Admin = admin.New(dependencies, services.Audit)

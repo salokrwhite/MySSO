@@ -3,7 +3,6 @@ import type { ScopeDefinition, SettingsTabKey, SystemSettings } from "../../type
 import { AnnouncementSettings } from "./settings-panels/AnnouncementSettings";
 import { EmailSettings } from "./settings-panels/EmailSettings";
 import { InternationalizationSettings } from "./settings-panels/InternationalizationSettings";
-import { RateLimitSettings } from "./settings-panels/RateLimitSettings";
 import { RiskControlSettings } from "./settings-panels/RiskControlSettings";
 import { ScopeSettings } from "./settings-panels/ScopeSettings";
 import { SessionSettings } from "./settings-panels/SessionSettings";
@@ -22,7 +21,6 @@ type SettingsTabContentProps = {
   smsForm: FormInstance<SystemSettings>;
   announcementForm: FormInstance<SystemSettings>;
   riskForm: FormInstance<SystemSettings>;
-  rateLimitForm: FormInstance<SystemSettings>;
   scopes: ScopeDefinition[];
   savingSettings: boolean;
   savingScopeKey?: string;
@@ -49,7 +47,6 @@ type SettingsTabContentProps = {
   onSaveSMS: () => void;
   onSaveAnnouncement: () => void;
   onSaveRisk: () => void;
-  onSaveRateLimit: () => void;
   onSaveScope: (scope: ScopeDefinition) => void;
   onDeleteScope: (key: string) => void;
   onUploadSiteLogo: (file: File) => void;
@@ -161,17 +158,6 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
         initialValues={props.settings}
         saving={props.savingSettings}
         onSave={props.onSaveRisk}
-      />
-    );
-  }
-
-  if (props.tabKey === "queue") {
-    return (
-      <RateLimitSettings
-        form={props.rateLimitForm}
-        initialValues={props.settings}
-        saving={props.savingSettings}
-        onSave={props.onSaveRateLimit}
       />
     );
   }

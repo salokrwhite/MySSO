@@ -2,13 +2,23 @@ package mysql
 
 import (
 	"database/sql"
+	"strings"
+	"time"
 
 	"mysso/backend/internal/domain"
 )
 
 func (s *MySQLStore) GetUserSecurityPolicy(userID string) (domain.UserSecurityPolicy, error) {
 	row := s.db.QueryRow(`
-		SELECT user_id, force_phone_binding_next_login, force_mfa_enrollment_next_login, login_step_up_mode, created_at, updated_at
+		SELECT user_id,
+			force_phone_binding_next_login,
+			force_mfa_enrollment_next_login,
+			login_step_up_mode,
+			phone_binding_risk_mode,
+			phone_binding_risk_required,
+			phone_binding_risk_login_count,
+			created_at,
+			updated_at
 		FROM user_security_policies
 		WHERE user_id = ?
 		LIMIT 1
@@ -20,6 +30,9 @@ func (s *MySQLStore) GetUserSecurityPolicy(userID string) (domain.UserSecurityPo
 		&item.ForcePhoneBindingNextLogin,
 		&item.ForceMFAEnrollmentNextLogin,
 		&loginStepUpMode,
+		&item.PhoneBindingRiskMode,
+		&item.PhoneBindingRiskRequired,
+		&item.PhoneBindingRiskLoginCount,
 		&item.CreatedAt,
 		&item.UpdatedAt,
 	); err != nil {
@@ -45,16 +58,49 @@ func (s *MySQLStore) UpsertUserSecurityPolicy(policy domain.UserSecurityPolicy) 
 			force_phone_binding_next_login,
 			force_mfa_enrollment_next_login,
 			login_step_up_mode,
+			phone_binding_risk_mode,
+			phone_binding_risk_required,
+			phone_binding_risk_login_count,
 			created_at,
 			updated_at
 		)
-		VALUES (?, ?, ?, ?, ?, ?)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 		ON DUPLICATE KEY UPDATE
 			force_phone_binding_next_login = VALUES(force_phone_binding_next_login),
 			force_mfa_enrollment_next_login = VALUES(force_mfa_enrollment_next_login),
 			login_step_up_mode = VALUES(login_step_up_mode),
+			phone_binding_risk_mode = VALUES(phone_binding_risk_mode),
+			phone_binding_risk_required = VALUES(phone_binding_risk_required),
+			phone_binding_risk_login_count = VALUES(phone_binding_risk_login_count),
 			updated_at = VALUES(updated_at)
-	`, policy.UserID, policy.ForcePhoneBindingNextLogin, policy.ForceMFAEnrollmentNextLogin, string(policy.LoginStepUpMode), policy.CreatedAt, policy.UpdatedAt)
+	`, policy.UserID, policy.ForcePhoneBindingNextLogin, policy.ForceMFAEnrollmentNextLogin, string(policy.LoginStepUpMode), policy.PhoneBindingRiskMode, policy.PhoneBindingRiskRequired, policy.PhoneBindingRiskLoginCount, policy.CreatedAt, policy.UpdatedAt)
+	return err
+}
+
+func (s *MySQLStore) UpdatePhoneBindingRiskState(userID, mode string, required bool, loginCount int) error {
+	if loginCount < 0 {
+		loginCount = 0
+	}
+	now := time.Now().UTC()
+	_, err := s.db.Exec(`
+		INSERT INTO user_security_policies (
+			user_id,
+			force_phone_binding_next_login,
+			force_mfa_enrollment_next_login,
+			login_step_up_mode,
+			phone_binding_risk_mode,
+			phone_binding_risk_required,
+			phone_binding_risk_login_count,
+			created_at,
+			updated_at
+		)
+		VALUES (?, 0, 0, 'none', ?, ?, ?, ?, ?)
+		ON DUPLICATE KEY UPDATE
+			phone_binding_risk_mode = VALUES(phone_binding_risk_mode),
+			phone_binding_risk_required = VALUES(phone_binding_risk_required),
+			phone_binding_risk_login_count = VALUES(phone_binding_risk_login_count),
+			updated_at = VALUES(updated_at)
+	`, userID, strings.TrimSpace(mode), required, loginCount, now, now)
 	return err
 }
 
@@ -64,68 +110,99 @@ func (s *MySQLStore) DeleteUserSecurityPolicy(userID string) error {
 }
 
 func (s *MySQLStore) SaveLoginStepUpChallenge(challenge domain.LoginStepUpChallenge) error {
-	_, err := s.db.Exec(`
-		INSERT INTO login_step_up_challenges (
-			token, user_id, login_method, acr, effective_mode, email_target, phone_target, expires_at, created_at
-		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, challenge.Token, challenge.UserID, challenge.LoginMethod, challenge.ACR, string(challenge.EffectiveMode), challenge.EmailTarget, challenge.PhoneTarget, challenge.ExpiresAt, challenge.CreatedAt)
-	return err
+	payload, err := authChallengePayload(struct {
+		EffectiveMode string `json:"effective_mode"`
+		EmailTarget   string `json:"email_target"`
+		PhoneTarget   string `json:"phone_target"`
+	}{
+		EffectiveMode: string(challenge.EffectiveMode),
+		EmailTarget:   challenge.EmailTarget,
+		PhoneTarget:   challenge.PhoneTarget,
+	})
+	if err != nil {
+		return err
+	}
+	return s.saveAuthChallenge(domain.AuthChallenge{
+		Token:         challenge.Token,
+		ChallengeType: authChallengeTypeLoginStepUp,
+		UserID:        challenge.UserID,
+		Channel:       challenge.LoginMethod,
+		ACR:           challenge.ACR,
+		PayloadJSON:   payload,
+		ExpiresAt:     challenge.ExpiresAt,
+		CreatedAt:     challenge.CreatedAt,
+	})
 }
 
 func (s *MySQLStore) GetLoginStepUpChallenge(token string) (domain.LoginStepUpChallenge, error) {
-	row := s.db.QueryRow(`
-		SELECT token, user_id, login_method, acr, effective_mode, email_target, phone_target, expires_at, created_at
-		FROM login_step_up_challenges
-		WHERE token = ? AND expires_at >= UTC_TIMESTAMP()
-		LIMIT 1
-	`, token)
-	var item domain.LoginStepUpChallenge
-	var effectiveMode string
-	if err := row.Scan(&item.Token, &item.UserID, &item.LoginMethod, &item.ACR, &effectiveMode, &item.EmailTarget, &item.PhoneTarget, &item.ExpiresAt, &item.CreatedAt); err != nil {
-		if err == sql.ErrNoRows {
-			return domain.LoginStepUpChallenge{}, ErrNotFound
-		}
+	item, err := s.getAuthChallenge(token, authChallengeTypeLoginStepUp, true)
+	if err != nil {
 		return domain.LoginStepUpChallenge{}, err
 	}
-	item.EffectiveMode = domain.LoginStepUpMode(effectiveMode)
-	if item.EffectiveMode == "" {
-		item.EffectiveMode = domain.LoginStepUpModeNone
+	payload, err := parseAuthChallengePayload[struct {
+		EffectiveMode string `json:"effective_mode"`
+		EmailTarget   string `json:"email_target"`
+		PhoneTarget   string `json:"phone_target"`
+	}](item.PayloadJSON)
+	if err != nil {
+		return domain.LoginStepUpChallenge{}, err
 	}
-	return item, nil
+	effectiveMode := domain.LoginStepUpMode(payload.EffectiveMode)
+	if effectiveMode == "" {
+		effectiveMode = domain.LoginStepUpModeNone
+	}
+	return domain.LoginStepUpChallenge{
+		Token:         item.Token,
+		UserID:        item.UserID,
+		LoginMethod:   item.Channel,
+		ACR:           item.ACR,
+		EffectiveMode: effectiveMode,
+		EmailTarget:   payload.EmailTarget,
+		PhoneTarget:   payload.PhoneTarget,
+		ExpiresAt:     item.ExpiresAt,
+		CreatedAt:     item.CreatedAt,
+	}, nil
 }
 
 func (s *MySQLStore) DeleteLoginStepUpChallenge(token string) error {
-	_, err := s.db.Exec(`DELETE FROM login_step_up_challenges WHERE token = ?`, token)
-	return err
+	return s.deleteAuthChallenge(token, authChallengeTypeLoginStepUp)
+}
+
+func (s *MySQLStore) ConsumeLoginStepUpChallenge(token string, consumedAt time.Time) error {
+	return s.consumeAuthChallenge(token, authChallengeTypeLoginStepUp, consumedAt)
 }
 
 func (s *MySQLStore) SaveLoginMFAEnrollmentChallenge(challenge domain.LoginMFAEnrollmentChallenge) error {
-	_, err := s.db.Exec(`
-		INSERT INTO login_mfa_enrollment_challenges (token, user_id, login_method, acr, expires_at, created_at)
-		VALUES (?, ?, ?, ?, ?, ?)
-	`, challenge.Token, challenge.UserID, challenge.LoginMethod, challenge.ACR, challenge.ExpiresAt, challenge.CreatedAt)
-	return err
+	return s.saveAuthChallenge(domain.AuthChallenge{
+		Token:         challenge.Token,
+		ChallengeType: authChallengeTypeLoginMFAEnrollment,
+		UserID:        challenge.UserID,
+		Channel:       challenge.LoginMethod,
+		ACR:           challenge.ACR,
+		ExpiresAt:     challenge.ExpiresAt,
+		CreatedAt:     challenge.CreatedAt,
+	})
 }
 
 func (s *MySQLStore) GetLoginMFAEnrollmentChallenge(token string) (domain.LoginMFAEnrollmentChallenge, error) {
-	row := s.db.QueryRow(`
-		SELECT token, user_id, login_method, acr, expires_at, created_at
-		FROM login_mfa_enrollment_challenges
-		WHERE token = ? AND expires_at >= UTC_TIMESTAMP()
-		LIMIT 1
-	`, token)
-	var item domain.LoginMFAEnrollmentChallenge
-	if err := row.Scan(&item.Token, &item.UserID, &item.LoginMethod, &item.ACR, &item.ExpiresAt, &item.CreatedAt); err != nil {
-		if err == sql.ErrNoRows {
-			return domain.LoginMFAEnrollmentChallenge{}, ErrNotFound
-		}
+	item, err := s.getAuthChallenge(token, authChallengeTypeLoginMFAEnrollment, true)
+	if err != nil {
 		return domain.LoginMFAEnrollmentChallenge{}, err
 	}
-	return item, nil
+	return domain.LoginMFAEnrollmentChallenge{
+		Token:       item.Token,
+		UserID:      item.UserID,
+		LoginMethod: item.Channel,
+		ACR:         item.ACR,
+		ExpiresAt:   item.ExpiresAt,
+		CreatedAt:   item.CreatedAt,
+	}, nil
 }
 
 func (s *MySQLStore) DeleteLoginMFAEnrollmentChallenge(token string) error {
-	_, err := s.db.Exec(`DELETE FROM login_mfa_enrollment_challenges WHERE token = ?`, token)
-	return err
+	return s.deleteAuthChallenge(token, authChallengeTypeLoginMFAEnrollment)
+}
+
+func (s *MySQLStore) ConsumeLoginMFAEnrollmentChallenge(token string, consumedAt time.Time) error {
+	return s.consumeAuthChallenge(token, authChallengeTypeLoginMFAEnrollment, consumedAt)
 }

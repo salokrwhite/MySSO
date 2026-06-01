@@ -206,13 +206,8 @@ func (s *MySQLStore) UpdateUserAndInvalidateAuth(user domain.User) error {
 	}{
 		{query: `DELETE FROM sessions WHERE user_id = ?`, args: []any{user.ID}},
 		{query: `UPDATE refresh_tokens SET revoked = 1, revoked_at = UTC_TIMESTAMP() WHERE user_id = ? AND revoked = 0`, args: []any{user.ID}},
-		{query: `DELETE FROM mfa_login_challenges WHERE user_id = ?`, args: []any{user.ID}},
-		{query: `DELETE FROM phone_binding_challenges WHERE user_id = ?`, args: []any{user.ID}},
-		{query: `DELETE FROM login_step_up_challenges WHERE user_id = ?`, args: []any{user.ID}},
-		{query: `DELETE FROM login_mfa_enrollment_challenges WHERE user_id = ?`, args: []any{user.ID}},
-		{query: `DELETE FROM deletion_login_challenges WHERE user_id = ?`, args: []any{user.ID}},
+		{query: `DELETE FROM auth_challenges WHERE user_id = ?`, args: []any{user.ID}},
 		{query: `DELETE FROM passkeys WHERE user_id = ?`, args: []any{user.ID}},
-		{query: `DELETE FROM passkey_registration_challenges WHERE user_id = ?`, args: []any{user.ID}},
 		{query: `DELETE FROM authorization_codes WHERE user_id = ?`, args: []any{user.ID}},
 	}
 	for _, stmt := range statements {
@@ -321,14 +316,9 @@ func (s *MySQLStore) DeleteUser(id string) error {
 	}{
 		{query: `DELETE FROM sessions WHERE user_id = ?`, args: []any{id}},
 		{query: `DELETE FROM refresh_tokens WHERE user_id = ?`, args: []any{id}},
-		{query: `DELETE FROM mfa_login_challenges WHERE user_id = ?`, args: []any{id}},
-		{query: `DELETE FROM phone_binding_challenges WHERE user_id = ?`, args: []any{id}},
-		{query: `DELETE FROM login_step_up_challenges WHERE user_id = ?`, args: []any{id}},
-		{query: `DELETE FROM login_mfa_enrollment_challenges WHERE user_id = ?`, args: []any{id}},
-		{query: `DELETE FROM deletion_login_challenges WHERE user_id = ?`, args: []any{id}},
+		{query: `DELETE FROM auth_challenges WHERE user_id = ?`, args: []any{id}},
 		{query: `DELETE FROM passkey_usage_logs WHERE user_id = ?`, args: []any{id}},
 		{query: `DELETE FROM passkeys WHERE user_id = ?`, args: []any{id}},
-		{query: `DELETE FROM passkey_registration_challenges WHERE user_id = ?`, args: []any{id}},
 		{query: `DELETE FROM authorization_codes WHERE user_id = ?`, args: []any{id}},
 		{query: `DELETE FROM consents WHERE user_id = ?`, args: []any{id}},
 		{query: `DELETE FROM email_verification_codes WHERE email = ?`, args: []any{email}},
@@ -338,9 +328,6 @@ func (s *MySQLStore) DeleteUser(id string) error {
 		{query: `DELETE FROM system_settings WHERE setting_key = ?`, args: []any{"user_avatar_" + strings.TrimSpace(id)}},
 		{query: `DELETE FROM system_settings WHERE setting_key = ?`, args: []any{domain.UserAnnouncementEnabledKey(id)}},
 		{query: `DELETE FROM system_settings WHERE setting_key = ?`, args: []any{domain.UserAnnouncementContentKey(id)}},
-		{query: `DELETE FROM system_settings WHERE setting_key = ?`, args: []any{domain.UserRiskPhoneBindingModeKey(id)}},
-		{query: `DELETE FROM system_settings WHERE setting_key = ?`, args: []any{domain.UserRiskPhoneBindingRequiredKey(id)}},
-		{query: `DELETE FROM system_settings WHERE setting_key = ?`, args: []any{domain.UserRiskPhoneBindingLoginCountKey(id)}},
 		{query: `DELETE FROM user_security_policies WHERE user_id = ?`, args: []any{id}},
 		{query: `DELETE FROM users WHERE id = ?`, args: []any{id}},
 	}

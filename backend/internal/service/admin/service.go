@@ -815,10 +815,6 @@ func (s *AdminService) ListPhoneSendLogs() []domain.PhoneSendLog {
 	return s.deps.Store.ListPhoneSendLogs()
 }
 
-func (s *AdminService) ListRateLimitEvents() []domain.RateLimitEvent {
-	return s.deps.Store.ListRateLimitEvents()
-}
-
 func (s *AdminService) ListPasskeyLogs() AdminPasskeyLogs {
 	return AdminPasskeyLogs{
 		Passkeys:               s.deps.Store.ListAllPasskeys(),
@@ -826,20 +822,6 @@ func (s *AdminService) ListPasskeyLogs() AdminPasskeyLogs {
 		LoginChallenges:        s.deps.Store.ListPasskeyLoginChallenges(),
 		UsageLogs:              s.deps.Store.ListPasskeyUsageLogs(),
 	}
-}
-
-func (s *AdminService) DeleteRateLimitEvents(adminID string, logIDs []string) error {
-	if len(logIDs) == 0 {
-		return fmt.Errorf("no risk logs selected")
-	}
-	if err := s.deps.Store.DeleteRateLimitEvents(logIDs); err != nil {
-		return err
-	}
-	s.audit.Record(adminID, domain.RoleAdmin, "admin.risk_log.batch_delete", "", map[string]any{
-		"count":   len(logIDs),
-		"log_ids": logIDs,
-	})
-	return nil
 }
 
 func (s *AdminService) DeletePasskeyLogs(adminID, table string, recordIDs []string) error {

@@ -28,43 +28,34 @@ var (
 )
 
 type MemoryStore struct {
-	mu                      sync.RWMutex
-	users                   map[string]domain.User
-	usersByEmail            map[string]string
-	apps                    map[string]domain.ClientApp
-	appsByClientID          map[string]string
-	sessions                map[string]domain.Session
-	emailCodes              map[string]domain.EmailVerificationCode
-	smsCodes                map[string]domain.SMSVerificationCode
-	rateLimitCounters       map[string]domain.RateLimitCounter
-	requestChallenges       map[string]domain.RequestChallenge
-	mfaChallenges           map[string]domain.MFALoginChallenge
-	passkeys                map[string]domain.Passkey
-	passkeyRegChallenges    map[string]domain.PasskeyRegistrationChallenge
-	passkeyLoginChallenges  map[string]domain.PasskeyLoginChallenge
-	passkeyUsageLogs        []domain.PasskeyUsageLog
-	phoneBindingChallenges  map[string]domain.PhoneBindingChallenge
-	userSecurityPolicies    map[string]domain.UserSecurityPolicy
-	loginStepUpChallenges   map[string]domain.LoginStepUpChallenge
-	mfaEnrollmentChallenges map[string]domain.LoginMFAEnrollmentChallenge
-	deletionLoginChallenges map[string]domain.DeletionLoginChallenge
-	authCodes               map[string]domain.AuthorizationCode
-	consents                map[string]domain.Consent
-	refreshTokens           map[string]domain.RefreshToken
-	developerGroups         map[string]domain.DeveloperGroup
-	developerGroupMembers   map[string]map[string]struct{}
-	appGroupBindings        map[string]map[string]domain.AppGroupBinding
-	appUserBans             map[string]domain.AppUserBan
-	appUserAccessVersions   map[string]domain.AppUserAccessVersion
-	developerAccessLogs     []domain.DeveloperAccessLog
-	auditLogs               []domain.AuditLog
-	userOperationLogs       []domain.UserOperationLog
-	emailSendLogs           []domain.EmailSendLog
-	phoneSendLogs           []domain.PhoneSendLog
-	rateLimitEvents         []domain.RateLimitEvent
-	policies                map[string]domain.GatewayPolicy
-	scopes                  map[string]domain.ScopeDefinition
-	settings                map[string]string
+	mu                    sync.RWMutex
+	users                 map[string]domain.User
+	usersByEmail          map[string]string
+	apps                  map[string]domain.ClientApp
+	appsByClientID        map[string]string
+	sessions              map[string]domain.Session
+	emailCodes            map[string]domain.EmailVerificationCode
+	smsCodes              map[string]domain.SMSVerificationCode
+	authChallenges        map[string]domain.AuthChallenge
+	passkeys              map[string]domain.Passkey
+	passkeyUsageLogs      []domain.PasskeyUsageLog
+	userSecurityPolicies  map[string]domain.UserSecurityPolicy
+	authCodes             map[string]domain.AuthorizationCode
+	consents              map[string]domain.Consent
+	refreshTokens         map[string]domain.RefreshToken
+	developerGroups       map[string]domain.DeveloperGroup
+	developerGroupMembers map[string]map[string]struct{}
+	appGroupBindings      map[string]map[string]domain.AppGroupBinding
+	appUserBans           map[string]domain.AppUserBan
+	appUserAccessVersions map[string]domain.AppUserAccessVersion
+	developerAccessLogs   []domain.DeveloperAccessLog
+	auditLogs             []domain.AuditLog
+	userOperationLogs     []domain.UserOperationLog
+	emailSendLogs         []domain.EmailSendLog
+	phoneSendLogs         []domain.PhoneSendLog
+	policies              map[string]domain.GatewayPolicy
+	scopes                map[string]domain.ScopeDefinition
+	settings              map[string]string
 }
 
 var _ store.Store = (*MemoryStore)(nil)
@@ -154,37 +145,28 @@ func NewStore(defaultMFACode string) *MemoryStore {
 			"dev@example.com":   devID,
 			"user@example.com":  userID,
 		},
-		apps:                    map[string]domain.ClientApp{appID: app},
-		appsByClientID:          map[string]string{appdefaults.DefaultFirstPartyClientID: appID},
-		sessions:                map[string]domain.Session{},
-		emailCodes:              map[string]domain.EmailVerificationCode{},
-		smsCodes:                map[string]domain.SMSVerificationCode{},
-		rateLimitCounters:       map[string]domain.RateLimitCounter{},
-		requestChallenges:       map[string]domain.RequestChallenge{},
-		mfaChallenges:           map[string]domain.MFALoginChallenge{},
-		passkeys:                map[string]domain.Passkey{},
-		passkeyRegChallenges:    map[string]domain.PasskeyRegistrationChallenge{},
-		passkeyLoginChallenges:  map[string]domain.PasskeyLoginChallenge{},
-		passkeyUsageLogs:        []domain.PasskeyUsageLog{},
-		phoneBindingChallenges:  map[string]domain.PhoneBindingChallenge{},
-		userSecurityPolicies:    map[string]domain.UserSecurityPolicy{},
-		loginStepUpChallenges:   map[string]domain.LoginStepUpChallenge{},
-		mfaEnrollmentChallenges: map[string]domain.LoginMFAEnrollmentChallenge{},
-		deletionLoginChallenges: map[string]domain.DeletionLoginChallenge{},
-		authCodes:               map[string]domain.AuthorizationCode{},
-		consents:                map[string]domain.Consent{},
-		refreshTokens:           map[string]domain.RefreshToken{},
-		developerGroups:         map[string]domain.DeveloperGroup{},
-		developerGroupMembers:   map[string]map[string]struct{}{},
-		appGroupBindings:        map[string]map[string]domain.AppGroupBinding{},
-		appUserBans:             map[string]domain.AppUserBan{},
-		appUserAccessVersions:   map[string]domain.AppUserAccessVersion{},
-		developerAccessLogs:     []domain.DeveloperAccessLog{},
-		auditLogs:               []domain.AuditLog{},
-		userOperationLogs:       []domain.UserOperationLog{},
-		emailSendLogs:           []domain.EmailSendLog{},
-		phoneSendLogs:           []domain.PhoneSendLog{},
-		rateLimitEvents:         []domain.RateLimitEvent{},
+		apps:                  map[string]domain.ClientApp{appID: app},
+		appsByClientID:        map[string]string{appdefaults.DefaultFirstPartyClientID: appID},
+		sessions:              map[string]domain.Session{},
+		emailCodes:            map[string]domain.EmailVerificationCode{},
+		smsCodes:              map[string]domain.SMSVerificationCode{},
+		authChallenges:        map[string]domain.AuthChallenge{},
+		passkeys:              map[string]domain.Passkey{},
+		passkeyUsageLogs:      []domain.PasskeyUsageLog{},
+		userSecurityPolicies:  map[string]domain.UserSecurityPolicy{},
+		authCodes:             map[string]domain.AuthorizationCode{},
+		consents:              map[string]domain.Consent{},
+		refreshTokens:         map[string]domain.RefreshToken{},
+		developerGroups:       map[string]domain.DeveloperGroup{},
+		developerGroupMembers: map[string]map[string]struct{}{},
+		appGroupBindings:      map[string]map[string]domain.AppGroupBinding{},
+		appUserBans:           map[string]domain.AppUserBan{},
+		appUserAccessVersions: map[string]domain.AppUserAccessVersion{},
+		developerAccessLogs:   []domain.DeveloperAccessLog{},
+		auditLogs:             []domain.AuditLog{},
+		userOperationLogs:     []domain.UserOperationLog{},
+		emailSendLogs:         []domain.EmailSendLog{},
+		phoneSendLogs:         []domain.PhoneSendLog{},
 		policies: map[string]domain.GatewayPolicy{
 			policyID: {
 				ID:          policyID,

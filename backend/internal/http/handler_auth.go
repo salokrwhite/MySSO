@@ -345,19 +345,7 @@ func (s *Server) handleSendSMSCode(c *gin.Context) {
 }
 
 func writeSecurityFlowError(c *gin.Context, err error) bool {
-	var securityErr *service.SecurityFlowError
-	if !errors.As(err, &securityErr) {
-		return false
-	}
-	status := http.StatusBadRequest
-	if securityErr.Code == "rate_limit_exceeded" || securityErr.Code == "circuit_open" || securityErr.Code == "cooldown_active" {
-		status = http.StatusTooManyRequests
-	}
-	c.JSON(status, gin.H{
-		"error":               securityErr.Code,
-		"retry_after_seconds": securityErr.RetryAfterSeconds,
-	})
-	return true
+	return false
 }
 
 func (s *Server) handleRegister(c *gin.Context) {

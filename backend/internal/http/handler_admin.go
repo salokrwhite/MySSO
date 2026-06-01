@@ -535,10 +535,6 @@ func (s *Server) handleDeleteAppAuditLogs(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"deleted": deleted})
 }
 
-func (s *Server) handleRiskLogs(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"items": s.services.Admin.ListRateLimitEvents()})
-}
-
 func (s *Server) handlePasskeyLogs(c *gin.Context) {
 	passkeyLogs := s.services.Admin.ListPasskeyLogs()
 	users := s.services.Admin.ListUsers()
@@ -656,20 +652,6 @@ func (s *Server) handleBatchDeleteAuditLogs(c *gin.Context) {
 		return
 	}
 	if err := s.services.Admin.DeleteAuditLogs(admin.ID, req.LogIDs); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"deleted": true})
-}
-
-func (s *Server) handleBatchDeleteRiskLogs(c *gin.Context) {
-	admin := c.MustGet("user").(domain.User)
-	var req batchAuditLogsRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	if err := s.services.Admin.DeleteRateLimitEvents(admin.ID, req.LogIDs); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

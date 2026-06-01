@@ -46,61 +46,12 @@ func (s *MemoryStore) CleanupRuntimeData(plan CleanupPlan) error {
 		}
 	}
 
-	for key, item := range s.rateLimitCounters {
-		if item.ExpiresAt.Before(plan.ExpiredBefore) {
-			delete(s.rateLimitCounters, key)
-		}
-	}
-
-	for token, item := range s.requestChallenges {
+	for token, item := range s.authChallenges {
 		if item.ExpiresAt.Before(plan.ExpiredBefore) || item.ConsumedAt != nil {
-			delete(s.requestChallenges, token)
+			delete(s.authChallenges, token)
 		}
 	}
 
-	for token, item := range s.mfaChallenges {
-		if item.ExpiresAt.Before(plan.ExpiredBefore) {
-			delete(s.mfaChallenges, token)
-		}
-	}
-
-	for token, item := range s.passkeyRegChallenges {
-		if item.ExpiresAt.Before(plan.ExpiredBefore) {
-			delete(s.passkeyRegChallenges, token)
-		}
-	}
-
-	for token, item := range s.passkeyLoginChallenges {
-		if item.ExpiresAt.Before(plan.ExpiredBefore) {
-			delete(s.passkeyLoginChallenges, token)
-		}
-	}
-
-	for token, item := range s.phoneBindingChallenges {
-		if item.ExpiresAt.Before(plan.ExpiredBefore) {
-			delete(s.phoneBindingChallenges, token)
-		}
-	}
-
-	for token, item := range s.loginStepUpChallenges {
-		if item.ExpiresAt.Before(plan.ExpiredBefore) {
-			delete(s.loginStepUpChallenges, token)
-		}
-	}
-
-	for token, item := range s.mfaEnrollmentChallenges {
-		if item.ExpiresAt.Before(plan.ExpiredBefore) {
-			delete(s.mfaEnrollmentChallenges, token)
-		}
-	}
-
-	for token, item := range s.deletionLoginChallenges {
-		if item.ExpiresAt.Before(plan.ExpiredBefore) {
-			delete(s.deletionLoginChallenges, token)
-		}
-	}
-
-	s.rateLimitEvents = filterRateLimitEventsByCreatedAt(s.rateLimitEvents, plan.RateLimitEventBefore)
 	s.passkeyUsageLogs = filterPasskeyUsageLogsByCreatedAt(s.passkeyUsageLogs, plan.PasskeyUsageLogBefore)
 	s.emailSendLogs = filterEmailSendLogsByCreatedAt(s.emailSendLogs, plan.EmailSendLogBefore)
 	s.phoneSendLogs = filterPhoneSendLogsByCreatedAt(s.phoneSendLogs, plan.PhoneSendLogBefore)
@@ -108,16 +59,6 @@ func (s *MemoryStore) CleanupRuntimeData(plan CleanupPlan) error {
 	s.userOperationLogs = filterUserOperationLogsByCreatedAt(s.userOperationLogs, plan.UserOperationLogBefore)
 
 	return nil
-}
-
-func filterRateLimitEventsByCreatedAt(items []domain.RateLimitEvent, cutoff time.Time) []domain.RateLimitEvent {
-	filtered := make([]domain.RateLimitEvent, 0, len(items))
-	for _, item := range items {
-		if !item.CreatedAt.Before(cutoff) {
-			filtered = append(filtered, item)
-		}
-	}
-	return filtered
 }
 
 func filterPasskeyUsageLogsByCreatedAt(items []domain.PasskeyUsageLog, cutoff time.Time) []domain.PasskeyUsageLog {

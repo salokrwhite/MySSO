@@ -13,7 +13,6 @@ import type {
   EmailSendLog,
   PhoneSendLog,
   Policy,
-  RiskLog,
   ScopeDefinition,
   SystemSettings,
   UpdateUserInput,
@@ -92,10 +91,6 @@ const auditLogsCache: SessionScopedCache<AuditLog[]> = {
   inflight: null,
 };
 const developerAccessLogsCache: SessionScopedCache<DeveloperAccessLog[]> = {
-  value: null,
-  inflight: null,
-};
-const riskLogsCache: SessionScopedCache<RiskLog[]> = {
   value: null,
   inflight: null,
 };
@@ -283,25 +278,6 @@ export async function fetchAdminDeveloperAccessLogs(
   );
 }
 
-export async function fetchAdminRiskLogs(
-  sessionToken: string,
-  options?: { force?: boolean },
-) {
-  return loadCachedResource(
-    riskLogsCache,
-    sessionToken,
-    async () => {
-      const result = await api<{ items: RiskLog[] }>(
-        "/admin/risk-logs",
-        undefined,
-        sessionToken,
-      );
-      return result.items;
-    },
-    options,
-  );
-}
-
 export async function fetchAdminPasskeyLogs(
   sessionToken: string,
   options?: { force?: boolean },
@@ -428,7 +404,6 @@ export function clearAdminResourceCaches(sessionToken: string) {
   readSessionScopedCache(appsCache, sessionToken).value = null;
   readSessionScopedCache(auditLogsCache, sessionToken).value = null;
   readSessionScopedCache(developerAccessLogsCache, sessionToken).value = null;
-  readSessionScopedCache(riskLogsCache, sessionToken).value = null;
   readSessionScopedCache(passkeyLogsCache, sessionToken).value = null;
   readSessionScopedCache(emailSendLogsCache, sessionToken).value = null;
   readSessionScopedCache(phoneSendLogsCache, sessionToken).value = null;
@@ -744,20 +719,6 @@ export async function batchDeleteDeveloperAccessLogs(
 ) {
   return api(
     "/admin/developer-access-logs/batch-delete",
-    {
-      method: "POST",
-      body: JSON.stringify({ log_ids: logIds }),
-    },
-    sessionToken,
-  );
-}
-
-export async function batchDeleteRiskLogs(
-  sessionToken: string,
-  logIds: string[],
-) {
-  return api(
-    "/admin/risk-logs/batch-delete",
     {
       method: "POST",
       body: JSON.stringify({ log_ids: logIds }),

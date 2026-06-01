@@ -1,4 +1,4 @@
-import { Button, Card, Col, Input, Row, Select, Space, Statistic, Table, Tabs, Tag, Typography } from "antd";
+import { Button, Card, Col, Row, Space, Statistic, Table, Tabs, Tag, Typography } from "antd";
 import { useMemo, useState } from "react";
 import type { TableRowSelection } from "antd/es/table/interface";
 import type {
@@ -6,92 +6,31 @@ import type {
   AdminPasskeyLoginChallenge,
   AdminPasskeyLogs,
   AdminPasskeyRegistrationChallenge,
-  AdminPasskeyUsageLog,
-  RiskLog
+  AdminPasskeyUsageLog
 } from "../../types";
 import { useAdminI18n } from "../../i18n";
 import { formatAdminDateTime } from "../../utils/time";
 
 type RiskLogsPanelProps = {
-  logs: RiskLog[];
   passkeyLogs: AdminPasskeyLogs;
   refreshing: boolean;
-  deletingLogs: boolean;
-  selectedLogIds: string[];
-  setSelectedLogIds: (value: string[]) => void;
   deletingPasskeyTable?: string;
   onRefresh: () => void;
-  onBatchDelete: () => void;
   onBatchDeletePasskeyLogs: (table: string, recordIds: string[]) => void;
 };
 
-function resultColor(result: string) {
-  switch (result) {
-    case "sent":
-      return "green";
-    case "blocked":
-      return "red";
-    default:
-      return "default";
-  }
-}
-
 export function RiskLogsPanel({
-  logs,
   passkeyLogs,
   refreshing,
-  deletingLogs,
-  selectedLogIds,
-  setSelectedLogIds,
   deletingPasskeyTable,
   onRefresh,
-  onBatchDelete,
   onBatchDeletePasskeyLogs
 }: RiskLogsPanelProps) {
   const { t } = useAdminI18n();
-  const [channelFilter, setChannelFilter] = useState<string>("all");
-  const [resultFilter, setResultFilter] = useState<string>("all");
-  const [keyword, setKeyword] = useState("");
   const [activePasskeyTable, setActivePasskeyTable] = useState("passkeys");
   const [selectedPasskeyIds, setSelectedPasskeyIds] = useState<string[]>([]);
 
-  const filteredLogs = useMemo(() => {
-    const normalizedKeyword = keyword.trim().toLowerCase();
-    return logs.filter((item) => {
-      if (channelFilter !== "all" && item.channel !== channelFilter) {
-        return false;
-      }
-      if (resultFilter !== "all" && item.result !== resultFilter) {
-        return false;
-      }
-      if (!normalizedKeyword) {
-        return true;
-      }
-      return [
-        item.purpose,
-        item.matched_rule,
-        item.source_ip,
-        item.target_hash,
-        item.user_agent_hash
-      ]
-        .join(" ")
-        .toLowerCase()
-        .includes(normalizedKeyword);
-    });
-  }, [channelFilter, keyword, logs, resultFilter]);
-
-  const blockedCount = useMemo(() => logs.filter((item) => item.result === "blocked").length, [logs]);
-  const sentCount = useMemo(() => logs.filter((item) => item.result === "sent").length, [logs]);
-  const emailCount = useMemo(() => logs.filter((item) => item.channel === "email").length, [logs]);
-  const smsCount = useMemo(() => logs.filter((item) => item.channel === "sms").length, [logs]);
   const passkeyUserCount = useMemo(() => new Set(passkeyLogs.passkeys.map((item) => item.user_id)).size, [passkeyLogs.passkeys]);
-  const rowSelection = useMemo<TableRowSelection<RiskLog>>(
-    () => ({
-      selectedRowKeys: selectedLogIds,
-      onChange: (keys) => setSelectedLogIds(keys as string[])
-    }),
-    [selectedLogIds, setSelectedLogIds]
-  );
   const activePasskeyRows = useMemo<any[]>(() => {
     if (activePasskeyTable === "passkey_registration_challenges") {
       return passkeyLogs.registration_challenges;
@@ -112,20 +51,6 @@ export function RiskLogsPanel({
     }),
     [selectedPasskeyIds]
   );
-
-  function channelLabel(channel: string) {
-    return channel === "sms"
-      ? t("短信")
-      : channel === "email"
-        ? t("邮件")
-        : channel === "auth"
-          ? t("认证")
-          : channel || "-";
-  }
-
-  function resultLabel(result: string) {
-    return result === "sent" ? t("放行") : result === "blocked" ? t("拦截") : result || "-";
-  }
 
   const passkeyColumns = useMemo<any[]>(() => {
     if (activePasskeyTable === "passkey_registration_challenges") {
@@ -343,142 +268,6 @@ export function RiskLogsPanel({
 
   return (
     <Space direction="vertical" size={20} style={{ width: "100%" }}>
-      <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} xl={6}>
-          <Card>
-            <Statistic title={t("日志总数")} value={logs.length} />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} xl={6}>
-          <Card>
-            <Statistic title={t("已拦截")} value={blockedCount} valueStyle={{ color: "#cf1322" }} />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} xl={6}>
-          <Card>
-            <Statistic title={t("已放行")} value={sentCount} valueStyle={{ color: "#389e0d" }} />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} xl={6}>
-          <Card>
-            <Statistic title={t("邮件 / 短信")} value={`${emailCount} / ${smsCount}`} />
-          </Card>
-        </Col>
-      </Row>
-
-      <Card
-        title={t("风控日志列表")}
-        extra={
-          <Space>
-            <Tag color="blue">{t("目标与设备摘要为脱敏摘要")}</Tag>
-            <Button size="small" onClick={onRefresh} loading={refreshing}>
-              {t("刷新")}
-            </Button>
-          </Space>
-        }
-      >
-        <Row gutter={[12, 12]} align="middle" justify="space-between" style={{ marginBottom: 16 }}>
-          <Col flex="auto">
-            <Space wrap>
-              <Select
-                value={channelFilter}
-                style={{ width: 140 }}
-                options={[
-                  { label: t("全部渠道"), value: "all" },
-                  { label: t("邮件"), value: "email" },
-                  { label: t("短信"), value: "sms" }
-                ]}
-                onChange={setChannelFilter}
-              />
-              <Select
-                value={resultFilter}
-                style={{ width: 140 }}
-                options={[
-                  { label: t("全部结果"), value: "all" },
-                  { label: t("放行"), value: "sent" },
-                  { label: t("拦截"), value: "blocked" }
-                ]}
-                onChange={setResultFilter}
-              />
-              <Input.Search
-                allowClear
-                style={{ width: 320, maxWidth: "100%" }}
-                placeholder={t("搜索用途、命中规则、来源 IP 或设备摘要")}
-                value={keyword}
-                onChange={(event) => setKeyword(event.target.value)}
-              />
-            </Space>
-          </Col>
-          <Col>
-            <Space wrap style={{ justifyContent: "flex-end" }}>
-              <Typography.Text type="secondary">{t("已选择 {{count}} 条日志", { count: selectedLogIds.length })}</Typography.Text>
-              <Button danger disabled={selectedLogIds.length === 0} loading={deletingLogs} onClick={onBatchDelete}>
-                {t("批量删除")}
-              </Button>
-            </Space>
-          </Col>
-        </Row>
-
-        <Table
-          rowKey="id"
-          loading={refreshing}
-          dataSource={filteredLogs}
-          rowSelection={rowSelection}
-          scroll={{ x: 1260 }}
-          pagination={{ pageSize: 10, showSizeChanger: true, pageSizeOptions: ["10", "20", "50", "100"] }}
-          columns={[
-            {
-              title: t("结果"),
-              dataIndex: "result",
-              width: 100,
-              render: (value: string) => <Tag color={resultColor(value)}>{resultLabel(value)}</Tag>
-            },
-            {
-              title: t("渠道"),
-              dataIndex: "channel",
-              width: 100,
-              render: (value: string) => <Tag>{channelLabel(value)}</Tag>
-            },
-            {
-              title: t("用途"),
-              dataIndex: "purpose",
-              width: 140,
-              render: (value: string) => <Typography.Text code>{value || "-"}</Typography.Text>
-            },
-            {
-              title: t("命中规则"),
-              dataIndex: "matched_rule",
-              width: 180,
-              render: (value: string) => <Typography.Text code>{value || "-"}</Typography.Text>
-            },
-            {
-              title: t("来源 IP"),
-              dataIndex: "source_ip",
-              width: 150,
-              render: (value: string) => value || "-"
-            },
-            {
-              title: t("目标摘要"),
-              dataIndex: "target_hash",
-              width: 260,
-              render: (value: string) => <Typography.Text copyable={{ text: value }}>{value || "-"}</Typography.Text>
-            },
-            {
-              title: t("设备 / UA 摘要"),
-              dataIndex: "user_agent_hash",
-              width: 260,
-              render: (value: string) => <Typography.Text type="secondary" copyable={{ text: value }}>{value || "-"}</Typography.Text>
-            },
-            {
-              title: t("时间"),
-              dataIndex: "created_at",
-              width: 200,
-              render: (value: string) => formatAdminDateTime(value)
-            }
-          ]}
-        />
-      </Card>
-
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} xl={6}>
           <Card>

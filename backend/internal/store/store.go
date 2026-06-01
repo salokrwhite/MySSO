@@ -21,7 +21,6 @@ var (
 type CleanupPlan struct {
 	ExpiredBefore          time.Time
 	RevokedConsentBefore   time.Time
-	RateLimitEventBefore   time.Time
 	PasskeyUsageLogBefore  time.Time
 	EmailSendLogBefore     time.Time
 	PhoneSendLogBefore     time.Time
@@ -54,24 +53,18 @@ type VerificationStore interface {
 	ConsumeSMSVerificationCode(id string) error
 	SaveMFALoginChallenge(challenge domain.MFALoginChallenge) error
 	GetMFALoginChallenge(token string) (domain.MFALoginChallenge, error)
+	ConsumeMFALoginChallenge(token string, consumedAt time.Time) error
 	DeleteMFALoginChallenge(token string) error
 	SaveDeletionLoginChallenge(challenge domain.DeletionLoginChallenge) error
 	GetDeletionLoginChallenge(token string) (domain.DeletionLoginChallenge, error)
+	ConsumeDeletionLoginChallenge(token string, consumedAt time.Time) error
 	DeleteDeletionLoginChallenge(token string) error
 }
 
-type RateLimitStore interface {
-	GetRateLimitCounter(counterKey string) (domain.RateLimitCounter, error)
-	IncrementRateLimitCounter(counterKey, windowType string, windowStartedAt, expiresAt time.Time, delta int) (domain.RateLimitCounter, error)
-	SetRateLimitCounter(counter domain.RateLimitCounter) error
-	DeleteRateLimitCounter(counterKey string) error
-	CountActiveRateLimitCountersByPrefix(prefix string, now time.Time) (int, error)
+type RequestChallengeStore interface {
 	SaveRequestChallenge(challenge domain.RequestChallenge) error
 	GetRequestChallenge(token string) (domain.RequestChallenge, error)
 	ConsumeRequestChallenge(token string, consumedAt time.Time) error
-	AppendRateLimitEvent(event domain.RateLimitEvent) error
-	ListRateLimitEvents() []domain.RateLimitEvent
-	DeleteRateLimitEvents(ids []string) error
 }
 
 type PasskeyStore interface {
@@ -85,11 +78,13 @@ type PasskeyStore interface {
 	DeletePasskeys(ids []string) error
 	SavePasskeyRegistrationChallenge(challenge domain.PasskeyRegistrationChallenge) error
 	GetPasskeyRegistrationChallenge(token string) (domain.PasskeyRegistrationChallenge, error)
+	ConsumePasskeyRegistrationChallenge(token string, consumedAt time.Time) error
 	DeletePasskeyRegistrationChallenge(token string) error
 	ListPasskeyRegistrationChallenges() []domain.PasskeyRegistrationChallenge
 	DeletePasskeyRegistrationChallenges(tokens []string) error
 	SavePasskeyLoginChallenge(challenge domain.PasskeyLoginChallenge) error
 	GetPasskeyLoginChallenge(token string) (domain.PasskeyLoginChallenge, error)
+	ConsumePasskeyLoginChallenge(token string, consumedAt time.Time) error
 	DeletePasskeyLoginChallenge(token string) error
 	ListPasskeyLoginChallenges() []domain.PasskeyLoginChallenge
 	DeletePasskeyLoginChallenges(tokens []string) error
@@ -102,18 +97,22 @@ type PasskeyStore interface {
 type PhoneBindingChallengeStore interface {
 	SavePhoneBindingChallenge(challenge domain.PhoneBindingChallenge) error
 	GetPhoneBindingChallenge(token string) (domain.PhoneBindingChallenge, error)
+	ConsumePhoneBindingChallenge(token string, consumedAt time.Time) error
 	DeletePhoneBindingChallenge(token string) error
 }
 
 type SecurityPolicyStore interface {
 	GetUserSecurityPolicy(userID string) (domain.UserSecurityPolicy, error)
 	UpsertUserSecurityPolicy(policy domain.UserSecurityPolicy) error
+	UpdatePhoneBindingRiskState(userID, mode string, required bool, loginCount int) error
 	DeleteUserSecurityPolicy(userID string) error
 	SaveLoginStepUpChallenge(challenge domain.LoginStepUpChallenge) error
 	GetLoginStepUpChallenge(token string) (domain.LoginStepUpChallenge, error)
+	ConsumeLoginStepUpChallenge(token string, consumedAt time.Time) error
 	DeleteLoginStepUpChallenge(token string) error
 	SaveLoginMFAEnrollmentChallenge(challenge domain.LoginMFAEnrollmentChallenge) error
 	GetLoginMFAEnrollmentChallenge(token string) (domain.LoginMFAEnrollmentChallenge, error)
+	ConsumeLoginMFAEnrollmentChallenge(token string, consumedAt time.Time) error
 	DeleteLoginMFAEnrollmentChallenge(token string) error
 }
 
@@ -217,7 +216,7 @@ type CleanupStore interface {
 type Store interface {
 	UserStore
 	VerificationStore
-	RateLimitStore
+	RequestChallengeStore
 	PasskeyStore
 	PhoneBindingChallengeStore
 	SecurityPolicyStore

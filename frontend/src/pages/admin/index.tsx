@@ -16,7 +16,6 @@ import { useAppReview } from "./hooks/useAppReview";
 import { useBatchAppActions } from "./hooks/useBatchAppActions";
 import { useBatchUserActions } from "./hooks/useBatchUserActions";
 import { useDeveloperAccessLogActions } from "./hooks/useDeveloperAccessLogActions";
-import { useRiskLogActions } from "./hooks/useRiskLogActions";
 import { usePasskeyLogActions } from "./hooks/usePasskeyLogActions";
 import {
   useEmailSendLogActions,
@@ -43,7 +42,6 @@ export function AdminPage() {
   const [selectedAuditLogIds, setSelectedAuditLogIds] = useState<string[]>([]);
   const [selectedDeveloperAccessLogIds, setSelectedDeveloperAccessLogIds] =
     useState<string[]>([]);
-  const [selectedRiskLogIds, setSelectedRiskLogIds] = useState<string[]>([]);
   const [selectedEmailSendLogIds, setSelectedEmailSendLogIds] = useState<
     string[]
   >([]);
@@ -145,7 +143,6 @@ export function AdminPage() {
     logsTotal,
     developerAccessLogs,
     developerAccessLogsTotal,
-    riskLogs,
     passkeyLogs,
     emailSendLogs,
     phoneSendLogs,
@@ -240,14 +237,6 @@ export function AdminPage() {
     sessionToken,
     selectedDeveloperAccessLogIds,
     setSelectedDeveloperAccessLogIds,
-    reloadCurrentPage,
-    setError,
-    systemSettings.messageApi,
-  );
-  const { deletingRiskLogs, confirmBatchDeleteRiskLogs } = useRiskLogActions(
-    sessionToken,
-    selectedRiskLogIds,
-    setSelectedRiskLogIds,
     reloadCurrentPage,
     setError,
     systemSettings.messageApi,
@@ -555,15 +544,10 @@ export function AdminPage() {
 
       {pageType === "riskLogs" ? (
         <RiskLogsPanel
-          logs={riskLogs}
           passkeyLogs={passkeyLogs}
           refreshing={loading}
-          deletingLogs={deletingRiskLogs}
-          selectedLogIds={selectedRiskLogIds}
-          setSelectedLogIds={setSelectedRiskLogIds}
           deletingPasskeyTable={deletingPasskeyTable}
           onRefresh={() => void reloadCurrentPage()}
-          onBatchDelete={confirmBatchDeleteRiskLogs}
           onBatchDeletePasskeyLogs={(table, recordIds) =>
             confirmBatchDeletePasskeyLogs(table, recordIds)
           }
@@ -608,7 +592,6 @@ export function AdminPage() {
           smsForm={systemSettings.smsForm}
           announcementForm={systemSettings.announcementForm}
           riskForm={systemSettings.riskForm}
-          rateLimitForm={systemSettings.rateLimitForm}
           scopes={scopes}
           savingSettings={systemSettings.savingSettings}
           savingScopeKey={savingScopeKey}
@@ -644,7 +627,6 @@ export function AdminPage() {
             void systemSettings.saveAnnouncementSettings()
           }
           onSaveRisk={() => void systemSettings.saveRiskSettings()}
-          onSaveRateLimit={() => void systemSettings.saveRateLimitSettings()}
           onSaveScope={(scope) => void saveScope(scope)}
           onDeleteScope={(key) => void deleteScope(key)}
           onUploadSiteLogo={(file) =>

@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"strings"
 	"time"
 
 	"mysso/backend/internal/domain"
@@ -40,6 +41,30 @@ func (s *MemoryStore) UpsertUserSecurityPolicy(policy domain.UserSecurityPolicy)
 	return nil
 }
 
+func (s *MemoryStore) UpdatePhoneBindingRiskState(userID, mode string, required bool, loginCount int) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	policy, ok := s.userSecurityPolicies[userID]
+	now := time.Now().UTC()
+	if !ok {
+		policy = domain.UserSecurityPolicy{
+			UserID:          userID,
+			LoginStepUpMode: domain.LoginStepUpModeNone,
+			CreatedAt:       now,
+		}
+	}
+	if loginCount < 0 {
+		loginCount = 0
+	}
+	policy.PhoneBindingRiskMode = strings.TrimSpace(mode)
+	policy.PhoneBindingRiskRequired = required
+	policy.PhoneBindingRiskLoginCount = loginCount
+	policy.UpdatedAt = now
+	s.userSecurityPolicies[userID] = policy
+	return nil
+}
+
 func (s *MemoryStore) DeleteUserSecurityPolicy(userID string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -48,49 +73,117 @@ func (s *MemoryStore) DeleteUserSecurityPolicy(userID string) error {
 }
 
 func (s *MemoryStore) SaveLoginStepUpChallenge(challenge domain.LoginStepUpChallenge) error {
+	payload, err := authChallengePayload(struct {
+		EffectiveMode string `json:"effective_mode"`
+		EmailTarget   string `json:"email_target"`
+		PhoneTarget   string `json:"phone_target"`
+	}{
+		EffectiveMode: string(challenge.EffectiveMode),
+		EmailTarget:   challenge.EmailTarget,
+		PhoneTarget:   challenge.PhoneTarget,
+	})
+	if err != nil {
+		return err
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.loginStepUpChallenges[challenge.Token] = challenge
+	s.saveAuthChallengeLocked(domain.AuthChallenge{
+		Token:         challenge.Token,
+		ChallengeType: authChallengeTypeLoginStepUp,
+		UserID:        challenge.UserID,
+		Channel:       challenge.LoginMethod,
+		ACR:           challenge.ACR,
+		PayloadJSON:   payload,
+		ExpiresAt:     challenge.ExpiresAt,
+		CreatedAt:     challenge.CreatedAt,
+	})
 	return nil
 }
 
 func (s *MemoryStore) GetLoginStepUpChallenge(token string) (domain.LoginStepUpChallenge, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	challenge, ok := s.loginStepUpChallenges[token]
-	if !ok || challenge.ExpiresAt.Before(time.Now().UTC()) {
+	item, err := s.getAuthChallengeLocked(token, authChallengeTypeLoginStepUp, true)
+	if err != nil {
 		return domain.LoginStepUpChallenge{}, ErrNotFound
 	}
-	return challenge, nil
+	payload, err := parseAuthChallengePayload[struct {
+		EffectiveMode string `json:"effective_mode"`
+		EmailTarget   string `json:"email_target"`
+		PhoneTarget   string `json:"phone_target"`
+	}](item.PayloadJSON)
+	if err != nil {
+		return domain.LoginStepUpChallenge{}, err
+	}
+	effectiveMode := domain.LoginStepUpMode(payload.EffectiveMode)
+	if effectiveMode == "" {
+		effectiveMode = domain.LoginStepUpModeNone
+	}
+	return domain.LoginStepUpChallenge{
+		Token:         item.Token,
+		UserID:        item.UserID,
+		LoginMethod:   item.Channel,
+		ACR:           item.ACR,
+		EffectiveMode: effectiveMode,
+		EmailTarget:   payload.EmailTarget,
+		PhoneTarget:   payload.PhoneTarget,
+		ExpiresAt:     item.ExpiresAt,
+		CreatedAt:     item.CreatedAt,
+	}, nil
 }
 
 func (s *MemoryStore) DeleteLoginStepUpChallenge(token string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	delete(s.loginStepUpChallenges, token)
-	return nil
+	return s.deleteAuthChallengeLocked(token, authChallengeTypeLoginStepUp)
+}
+
+func (s *MemoryStore) ConsumeLoginStepUpChallenge(token string, consumedAt time.Time) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.consumeAuthChallengeLocked(token, authChallengeTypeLoginStepUp, consumedAt)
 }
 
 func (s *MemoryStore) SaveLoginMFAEnrollmentChallenge(challenge domain.LoginMFAEnrollmentChallenge) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.mfaEnrollmentChallenges[challenge.Token] = challenge
+	s.saveAuthChallengeLocked(domain.AuthChallenge{
+		Token:         challenge.Token,
+		ChallengeType: authChallengeTypeLoginMFAEnrollment,
+		UserID:        challenge.UserID,
+		Channel:       challenge.LoginMethod,
+		ACR:           challenge.ACR,
+		ExpiresAt:     challenge.ExpiresAt,
+		CreatedAt:     challenge.CreatedAt,
+	})
 	return nil
 }
 
 func (s *MemoryStore) GetLoginMFAEnrollmentChallenge(token string) (domain.LoginMFAEnrollmentChallenge, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	challenge, ok := s.mfaEnrollmentChallenges[token]
-	if !ok || challenge.ExpiresAt.Before(time.Now().UTC()) {
+	item, err := s.getAuthChallengeLocked(token, authChallengeTypeLoginMFAEnrollment, true)
+	if err != nil {
 		return domain.LoginMFAEnrollmentChallenge{}, ErrNotFound
 	}
-	return challenge, nil
+	return domain.LoginMFAEnrollmentChallenge{
+		Token:       item.Token,
+		UserID:      item.UserID,
+		LoginMethod: item.Channel,
+		ACR:         item.ACR,
+		ExpiresAt:   item.ExpiresAt,
+		CreatedAt:   item.CreatedAt,
+	}, nil
 }
 
 func (s *MemoryStore) DeleteLoginMFAEnrollmentChallenge(token string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	delete(s.mfaEnrollmentChallenges, token)
-	return nil
+	return s.deleteAuthChallengeLocked(token, authChallengeTypeLoginMFAEnrollment)
+}
+
+func (s *MemoryStore) ConsumeLoginMFAEnrollmentChallenge(token string, consumedAt time.Time) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.consumeAuthChallengeLocked(token, authChallengeTypeLoginMFAEnrollment, consumedAt)
 }

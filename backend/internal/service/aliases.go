@@ -6,7 +6,6 @@ import (
 	"mysso/backend/internal/service/common/appurl"
 	"mysso/backend/internal/service/common/templateutil"
 	"mysso/backend/internal/service/oauth"
-	"mysso/backend/internal/service/ratelimit"
 	"mysso/backend/internal/service/settings"
 )
 
@@ -14,8 +13,7 @@ type PasswordLoginResult = auth.PasswordLoginResult
 type RegisterInput = settings.RegisterInput
 type VerificationCooldownError = settings.VerificationCooldownError
 type SystemSettings = settings.SystemSettings
-type SecurityFlowError = ratelimit.SecurityFlowError
-type SendChallengeResult = ratelimit.SendChallengeResult
+type SendChallengeResult = auth.SendChallengeResult
 type LogoutResult = oauth.LogoutResult
 type CreateUserInput = admin.CreateUserInput
 type UpdateUserInput = admin.UpdateUserInput

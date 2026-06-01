@@ -99,36 +99,6 @@ type SystemSettings struct {
 	RiskImmediateBindProbability         int    `json:"risk_immediate_bind_probability"`
 	RiskDelayedBindProbability           int    `json:"risk_delayed_bind_probability"`
 	RiskDelayedBindLoginCount            int    `json:"risk_delayed_bind_login_count"`
-	RateLimitEnabled                     bool   `json:"rate_limit_enabled"`
-	SendChallengeEnabled                 bool   `json:"send_challenge_enabled"`
-	ChallengeTokenTTLSeconds             int    `json:"challenge_token_ttl_seconds"`
-	ChallengeRequiredAfterIPMinuteCount  int    `json:"challenge_required_after_ip_minute_count"`
-	CaptchaRequiredAfterIPHourCount      int    `json:"captcha_required_after_ip_hour_count"`
-	EmailTargetCooldownSeconds           int    `json:"email_target_cooldown_seconds"`
-	EmailIPMinuteLimit                   int    `json:"email_ip_minute_limit"`
-	EmailIPHourLimit                     int    `json:"email_ip_hour_limit"`
-	EmailIPHourUniqueTargetLimit         int    `json:"email_ip_hour_unique_target_limit"`
-	EmailGlobalMinuteLimit               int    `json:"email_global_minute_limit"`
-	EmailGlobalHourLimit                 int    `json:"email_global_hour_limit"`
-	EmailFuseMinutes                     int    `json:"email_fuse_minutes"`
-	SMSTargetCooldownSeconds             int    `json:"sms_target_cooldown_seconds"`
-	SMSIPMinuteLimit                     int    `json:"sms_ip_minute_limit"`
-	SMSIPHourLimit                       int    `json:"sms_ip_hour_limit"`
-	SMSIPHourUniqueTargetLimit           int    `json:"sms_ip_hour_unique_target_limit"`
-	SMSGlobalMinuteLimit                 int    `json:"sms_global_minute_limit"`
-	SMSGlobalHourLimit                   int    `json:"sms_global_hour_limit"`
-	SMSFuseMinutes                       int    `json:"sms_fuse_minutes"`
-	AdminTestEmailMinuteLimit            int    `json:"admin_test_email_minute_limit"`
-	AdminTestEmailDailyLimit             int    `json:"admin_test_email_daily_limit"`
-	AdminTestSMSMinuteLimit              int    `json:"admin_test_sms_minute_limit"`
-	AdminTestSMSDailyLimit               int    `json:"admin_test_sms_daily_limit"`
-	AuthAttemptWindowMinutes             int    `json:"auth_attempt_window_minutes"`
-	AuthAttemptLockMinutes               int    `json:"auth_attempt_lock_minutes"`
-	PasswordLoginAccountAttemptLimit     int    `json:"password_login_account_attempt_limit"`
-	OTPLoginAccountAttemptLimit          int    `json:"otp_login_account_attempt_limit"`
-	MFALoginAccountAttemptLimit          int    `json:"mfa_login_account_attempt_limit"`
-	AuthAttemptIPLimit                   int    `json:"auth_attempt_ip_limit"`
-	AuthAttemptDeviceLimit               int    `json:"auth_attempt_device_limit"`
 }
 
 type VerificationCooldownError struct {
@@ -150,22 +120,13 @@ type RegisterInput struct {
 }
 
 type SettingsService struct {
-	deps      *deps.Deps
-	rateLimit interface {
-		CheckAdminTestSend(adminID, channel string) error
-	}
+	deps *deps.Deps
 }
 
 type Service = SettingsService
 
 func New(dependencies *deps.Deps) *Service {
 	return &SettingsService{deps: dependencies}
-}
-
-func (s *SettingsService) SetRateLimitChecker(checker interface {
-	CheckAdminTestSend(adminID, channel string) error
-}) {
-	s.rateLimit = checker
 }
 
 func (s *SettingsService) GetFirstPartyClientCredentials() (string, string, string, error) {
@@ -261,36 +222,6 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 		"risk_immediate_bind_probability",
 		"risk_delayed_bind_probability",
 		"risk_delayed_bind_login_count",
-		"rate_limit_enabled",
-		"send_challenge_enabled",
-		"challenge_token_ttl_seconds",
-		"challenge_required_after_ip_minute_count",
-		"captcha_required_after_ip_hour_count",
-		"email_target_cooldown_seconds",
-		"email_ip_minute_limit",
-		"email_ip_hour_limit",
-		"email_ip_hour_unique_target_limit",
-		"email_global_minute_limit",
-		"email_global_hour_limit",
-		"email_fuse_minutes",
-		"sms_target_cooldown_seconds",
-		"sms_ip_minute_limit",
-		"sms_ip_hour_limit",
-		"sms_ip_hour_unique_target_limit",
-		"sms_global_minute_limit",
-		"sms_global_hour_limit",
-		"sms_fuse_minutes",
-		"admin_test_email_minute_limit",
-		"admin_test_email_daily_limit",
-		"admin_test_sms_minute_limit",
-		"admin_test_sms_daily_limit",
-		"auth_attempt_window_minutes",
-		"auth_attempt_lock_minutes",
-		"password_login_account_attempt_limit",
-		"otp_login_account_attempt_limit",
-		"mfa_login_account_attempt_limit",
-		"auth_attempt_ip_limit",
-		"auth_attempt_device_limit",
 	)
 	if err != nil {
 		return SystemSettings{}, err
@@ -333,52 +264,6 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 			riskDelayedLoginCount = parsed
 		}
 	}
-
-	parseNonNegative := func(key string, fallback int) int {
-		if raw := strings.TrimSpace(values[key]); raw != "" {
-			if parsed, parseErr := strconv.Atoi(raw); parseErr == nil && parsed >= 0 {
-				return parsed
-			}
-		}
-		return fallback
-	}
-	parsePositive := func(key string, fallback int) int {
-		if raw := strings.TrimSpace(values[key]); raw != "" {
-			if parsed, parseErr := strconv.Atoi(raw); parseErr == nil && parsed > 0 {
-				return parsed
-			}
-		}
-		return fallback
-	}
-
-	challengeTTLSeconds := parsePositive("challenge_token_ttl_seconds", appdefaults.DefaultChallengeTokenTTLSeconds)
-	challengeRequiredAfterIPMinuteCount := parseNonNegative("challenge_required_after_ip_minute_count", appdefaults.DefaultChallengeIPMinuteThreshold)
-	captchaRequiredAfterIPHourCount := parseNonNegative("captcha_required_after_ip_hour_count", appdefaults.DefaultCaptchaIPHourThreshold)
-	emailTargetCooldownSeconds := parseNonNegative("email_target_cooldown_seconds", appdefaults.DefaultEmailTargetCooldownSeconds)
-	emailIPMinuteLimit := parseNonNegative("email_ip_minute_limit", appdefaults.DefaultEmailIPMinuteLimit)
-	emailIPHourLimit := parseNonNegative("email_ip_hour_limit", appdefaults.DefaultEmailIPHourLimit)
-	emailIPHourUniqueTargetLimit := parseNonNegative("email_ip_hour_unique_target_limit", appdefaults.DefaultEmailIPHourUniqueTargetLimit)
-	emailGlobalMinuteLimit := parseNonNegative("email_global_minute_limit", appdefaults.DefaultEmailGlobalMinuteLimit)
-	emailGlobalHourLimit := parseNonNegative("email_global_hour_limit", appdefaults.DefaultEmailGlobalHourLimit)
-	emailFuseMinutes := parsePositive("email_fuse_minutes", appdefaults.DefaultEmailFuseMinutes)
-	smsTargetCooldownSeconds := parseNonNegative("sms_target_cooldown_seconds", appdefaults.DefaultSMSCodeTargetCooldownSeconds)
-	smsIPMinuteLimit := parseNonNegative("sms_ip_minute_limit", appdefaults.DefaultSMSIPMinuteLimit)
-	smsIPHourLimit := parseNonNegative("sms_ip_hour_limit", appdefaults.DefaultSMSIPHourLimit)
-	smsIPHourUniqueTargetLimit := parseNonNegative("sms_ip_hour_unique_target_limit", appdefaults.DefaultSMSIPHourUniqueTargetLimit)
-	smsGlobalMinuteLimit := parseNonNegative("sms_global_minute_limit", appdefaults.DefaultSMSGlobalMinuteLimit)
-	smsGlobalHourLimit := parseNonNegative("sms_global_hour_limit", appdefaults.DefaultSMSGlobalHourLimit)
-	smsFuseMinutes := parsePositive("sms_fuse_minutes", appdefaults.DefaultSMSFuseMinutes)
-	adminTestEmailMinuteLimit := parseNonNegative("admin_test_email_minute_limit", appdefaults.DefaultAdminTestEmailMinuteLimit)
-	adminTestEmailDailyLimit := parseNonNegative("admin_test_email_daily_limit", appdefaults.DefaultAdminTestEmailDailyLimit)
-	adminTestSMSMinuteLimit := parseNonNegative("admin_test_sms_minute_limit", appdefaults.DefaultAdminTestSMSMinuteLimit)
-	adminTestSMSDailyLimit := parseNonNegative("admin_test_sms_daily_limit", appdefaults.DefaultAdminTestSMSDailyLimit)
-	authAttemptWindowMinutes := parsePositive("auth_attempt_window_minutes", appdefaults.DefaultAuthAttemptWindowMinutes)
-	authAttemptLockMinutes := parsePositive("auth_attempt_lock_minutes", appdefaults.DefaultAuthAttemptLockMinutes)
-	passwordLoginAccountAttemptLimit := parseNonNegative("password_login_account_attempt_limit", appdefaults.DefaultPasswordLoginAccountAttemptLimit)
-	otpLoginAccountAttemptLimit := parseNonNegative("otp_login_account_attempt_limit", appdefaults.DefaultOTPLoginAccountAttemptLimit)
-	mfaLoginAccountAttemptLimit := parseNonNegative("mfa_login_account_attempt_limit", appdefaults.DefaultMFALoginAccountAttemptLimit)
-	authAttemptIPLimit := parseNonNegative("auth_attempt_ip_limit", appdefaults.DefaultAuthAttemptIPLimit)
-	authAttemptDeviceLimit := parseNonNegative("auth_attempt_device_limit", appdefaults.DefaultAuthAttemptDeviceLimit)
 
 	oidcFirstPartyClientSecret := strings.TrimSpace(authutil.FallbackSetting(values["oidc_first_party_client_secret"], s.deps.Cfg.OIDC.FirstPartyClientSecret))
 	smtpPassword := strings.TrimSpace(authutil.FallbackSetting(values["smtp_password"], s.deps.Cfg.SMTP.Password))
@@ -466,36 +351,6 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 		RiskImmediateBindProbability:         riskImmediateProbability,
 		RiskDelayedBindProbability:           riskDelayedProbability,
 		RiskDelayedBindLoginCount:            riskDelayedLoginCount,
-		RateLimitEnabled:                     authutil.FallbackBoolSetting(values["rate_limit_enabled"], appdefaults.DefaultRateLimitEnabled),
-		SendChallengeEnabled:                 authutil.FallbackBoolSetting(values["send_challenge_enabled"], appdefaults.DefaultSendChallengeEnabled),
-		ChallengeTokenTTLSeconds:             challengeTTLSeconds,
-		ChallengeRequiredAfterIPMinuteCount:  challengeRequiredAfterIPMinuteCount,
-		CaptchaRequiredAfterIPHourCount:      captchaRequiredAfterIPHourCount,
-		EmailTargetCooldownSeconds:           emailTargetCooldownSeconds,
-		EmailIPMinuteLimit:                   emailIPMinuteLimit,
-		EmailIPHourLimit:                     emailIPHourLimit,
-		EmailIPHourUniqueTargetLimit:         emailIPHourUniqueTargetLimit,
-		EmailGlobalMinuteLimit:               emailGlobalMinuteLimit,
-		EmailGlobalHourLimit:                 emailGlobalHourLimit,
-		EmailFuseMinutes:                     emailFuseMinutes,
-		SMSTargetCooldownSeconds:             smsTargetCooldownSeconds,
-		SMSIPMinuteLimit:                     smsIPMinuteLimit,
-		SMSIPHourLimit:                       smsIPHourLimit,
-		SMSIPHourUniqueTargetLimit:           smsIPHourUniqueTargetLimit,
-		SMSGlobalMinuteLimit:                 smsGlobalMinuteLimit,
-		SMSGlobalHourLimit:                   smsGlobalHourLimit,
-		SMSFuseMinutes:                       smsFuseMinutes,
-		AdminTestEmailMinuteLimit:            adminTestEmailMinuteLimit,
-		AdminTestEmailDailyLimit:             adminTestEmailDailyLimit,
-		AdminTestSMSMinuteLimit:              adminTestSMSMinuteLimit,
-		AdminTestSMSDailyLimit:               adminTestSMSDailyLimit,
-		AuthAttemptWindowMinutes:             authAttemptWindowMinutes,
-		AuthAttemptLockMinutes:               authAttemptLockMinutes,
-		PasswordLoginAccountAttemptLimit:     passwordLoginAccountAttemptLimit,
-		OTPLoginAccountAttemptLimit:          otpLoginAccountAttemptLimit,
-		MFALoginAccountAttemptLimit:          mfaLoginAccountAttemptLimit,
-		AuthAttemptIPLimit:                   authAttemptIPLimit,
-		AuthAttemptDeviceLimit:               authAttemptDeviceLimit,
 	}, nil
 }
 
@@ -665,90 +520,6 @@ func (s *SettingsService) UpdateSystemSettings(input SystemSettings) error {
 	if input.RiskImmediateBindProbability+input.RiskDelayedBindProbability != 100 {
 		return fmt.Errorf("risk probabilities must add up to 100")
 	}
-	if input.ChallengeTokenTTLSeconds <= 0 {
-		input.ChallengeTokenTTLSeconds = appdefaults.DefaultChallengeTokenTTLSeconds
-	}
-	if input.ChallengeRequiredAfterIPMinuteCount < 0 {
-		input.ChallengeRequiredAfterIPMinuteCount = appdefaults.DefaultChallengeIPMinuteThreshold
-	}
-	if input.CaptchaRequiredAfterIPHourCount < 0 {
-		input.CaptchaRequiredAfterIPHourCount = appdefaults.DefaultCaptchaIPHourThreshold
-	}
-	if input.EmailTargetCooldownSeconds < 0 {
-		input.EmailTargetCooldownSeconds = appdefaults.DefaultEmailTargetCooldownSeconds
-	}
-	if input.EmailIPMinuteLimit < 0 {
-		input.EmailIPMinuteLimit = appdefaults.DefaultEmailIPMinuteLimit
-	}
-	if input.EmailIPHourLimit < 0 {
-		input.EmailIPHourLimit = appdefaults.DefaultEmailIPHourLimit
-	}
-	if input.EmailIPHourUniqueTargetLimit < 0 {
-		input.EmailIPHourUniqueTargetLimit = appdefaults.DefaultEmailIPHourUniqueTargetLimit
-	}
-	if input.EmailGlobalMinuteLimit < 0 {
-		input.EmailGlobalMinuteLimit = appdefaults.DefaultEmailGlobalMinuteLimit
-	}
-	if input.EmailGlobalHourLimit < 0 {
-		input.EmailGlobalHourLimit = appdefaults.DefaultEmailGlobalHourLimit
-	}
-	if input.EmailFuseMinutes <= 0 {
-		input.EmailFuseMinutes = appdefaults.DefaultEmailFuseMinutes
-	}
-	if input.SMSTargetCooldownSeconds < 0 {
-		input.SMSTargetCooldownSeconds = appdefaults.DefaultSMSCodeTargetCooldownSeconds
-	}
-	if input.SMSIPMinuteLimit < 0 {
-		input.SMSIPMinuteLimit = appdefaults.DefaultSMSIPMinuteLimit
-	}
-	if input.SMSIPHourLimit < 0 {
-		input.SMSIPHourLimit = appdefaults.DefaultSMSIPHourLimit
-	}
-	if input.SMSIPHourUniqueTargetLimit < 0 {
-		input.SMSIPHourUniqueTargetLimit = appdefaults.DefaultSMSIPHourUniqueTargetLimit
-	}
-	if input.SMSGlobalMinuteLimit < 0 {
-		input.SMSGlobalMinuteLimit = appdefaults.DefaultSMSGlobalMinuteLimit
-	}
-	if input.SMSGlobalHourLimit < 0 {
-		input.SMSGlobalHourLimit = appdefaults.DefaultSMSGlobalHourLimit
-	}
-	if input.SMSFuseMinutes <= 0 {
-		input.SMSFuseMinutes = appdefaults.DefaultSMSFuseMinutes
-	}
-	if input.AdminTestEmailMinuteLimit < 0 {
-		input.AdminTestEmailMinuteLimit = appdefaults.DefaultAdminTestEmailMinuteLimit
-	}
-	if input.AdminTestEmailDailyLimit < 0 {
-		input.AdminTestEmailDailyLimit = appdefaults.DefaultAdminTestEmailDailyLimit
-	}
-	if input.AdminTestSMSMinuteLimit < 0 {
-		input.AdminTestSMSMinuteLimit = appdefaults.DefaultAdminTestSMSMinuteLimit
-	}
-	if input.AdminTestSMSDailyLimit < 0 {
-		input.AdminTestSMSDailyLimit = appdefaults.DefaultAdminTestSMSDailyLimit
-	}
-	if input.AuthAttemptWindowMinutes <= 0 {
-		input.AuthAttemptWindowMinutes = appdefaults.DefaultAuthAttemptWindowMinutes
-	}
-	if input.AuthAttemptLockMinutes <= 0 {
-		input.AuthAttemptLockMinutes = appdefaults.DefaultAuthAttemptLockMinutes
-	}
-	if input.PasswordLoginAccountAttemptLimit < 0 {
-		input.PasswordLoginAccountAttemptLimit = appdefaults.DefaultPasswordLoginAccountAttemptLimit
-	}
-	if input.OTPLoginAccountAttemptLimit < 0 {
-		input.OTPLoginAccountAttemptLimit = appdefaults.DefaultOTPLoginAccountAttemptLimit
-	}
-	if input.MFALoginAccountAttemptLimit < 0 {
-		input.MFALoginAccountAttemptLimit = appdefaults.DefaultMFALoginAccountAttemptLimit
-	}
-	if input.AuthAttemptIPLimit < 0 {
-		input.AuthAttemptIPLimit = appdefaults.DefaultAuthAttemptIPLimit
-	}
-	if input.AuthAttemptDeviceLimit < 0 {
-		input.AuthAttemptDeviceLimit = appdefaults.DefaultAuthAttemptDeviceLimit
-	}
 	if input.RiskControlEnabled {
 		if err := validateRiskControlPrerequisites(input); err != nil {
 			return err
@@ -756,112 +527,82 @@ func (s *SettingsService) UpdateSystemSettings(input SystemSettings) error {
 	}
 
 	if err := s.deps.Store.UpsertSettings(map[string]string{
-		"allow_user_registration":                  strconv.FormatBool(input.AllowUserRegistration),
-		"enable_phone_verification":                strconv.FormatBool(input.EnablePhoneVerification),
-		"site_name":                                strings.TrimSpace(input.SiteName),
-		"site_name_en":                             strings.TrimSpace(input.SiteNameEN),
-		"site_browser_title":                       strings.TrimSpace(input.SiteBrowserTitle),
-		"site_browser_title_en":                    strings.TrimSpace(input.SiteBrowserTitleEN),
-		"site_logo_data_url":                       strings.TrimSpace(input.SiteLogoDataURL),
-		"site_footer_text":                         input.SiteFooterText,
-		"site_icp_record_number":                   strings.TrimSpace(input.SiteICPRecordNumber),
-		"site_public_security_record_number":       strings.TrimSpace(input.SitePublicSecurityRecordNumber),
-		"home_page_announcement_enabled":           strconv.FormatBool(input.HomePageAnnouncementEnabled),
-		"home_page_announcement_content":           strings.TrimSpace(input.HomePageAnnouncementContent),
-		"user_center_announcement_enabled":         strconv.FormatBool(input.UserCenterAnnouncementEnabled),
-		"user_center_announcement_content":         strings.TrimSpace(input.UserCenterAnnouncementContent),
-		"developer_announcement_enabled":           strconv.FormatBool(input.DeveloperAnnouncementEnabled),
-		"developer_announcement_content":           strings.TrimSpace(input.DeveloperAnnouncementContent),
-		"public_base_url":                          strings.TrimSpace(input.PublicBaseURL),
-		"frontend_base_url":                        strings.TrimSpace(input.FrontendBaseURL),
-		"oidc_first_party_client_id":               strings.TrimSpace(input.OIDCFirstPartyClientID),
-		"oidc_first_party_client_secret":           strings.TrimSpace(input.OIDCFirstPartyClientSecret),
-		"oidc_first_party_scope":                   strings.TrimSpace(input.OIDCFirstPartyScope),
-		"oidc_auto_approve_client_ids":             templateutil.NormalizeListSetting(input.OIDCAutoApproveClientIDs),
-		"oidc_auto_approve_redirect_hosts":         templateutil.NormalizeListSetting(input.OIDCAutoApproveRedirectHosts),
-		"smtp_host":                                strings.TrimSpace(input.SMTPHost),
-		"smtp_port":                                strings.TrimSpace(input.SMTPPort),
-		"smtp_username":                            strings.TrimSpace(input.SMTPUsername),
-		"smtp_password":                            input.SMTPPassword,
-		"smtp_from":                                strings.TrimSpace(input.SMTPFrom),
-		"smtp_force_ssl":                           strconv.FormatBool(input.SMTPForceSSL),
-		"smtp_verification_code_ttl_minutes":       strconv.Itoa(input.SMTPVerificationCodeTTLMinute),
-		"smtp_verification_code_cooldown_seconds":  strconv.Itoa(input.SMTPVerificationCodeCooldownSecond),
-		"login_code_subject_template":              strings.TrimSpace(input.LoginCodeSubjectTemplate),
-		"login_code_body_template":                 input.LoginCodeBodyTemplate,
-		"login_code_subject_template_en":           strings.TrimSpace(input.LoginCodeSubjectTemplateEN),
-		"login_code_body_template_en":              input.LoginCodeBodyTemplateEN,
-		"register_code_subject_template":           strings.TrimSpace(input.RegisterCodeSubjectTemplate),
-		"register_code_body_template":              input.RegisterCodeBodyTemplate,
-		"register_code_subject_template_en":        strings.TrimSpace(input.RegisterCodeSubjectTemplateEN),
-		"register_code_body_template_en":           input.RegisterCodeBodyTemplateEN,
-		"reset_password_code_subject_template":     strings.TrimSpace(input.ResetPasswordCodeSubjectTemplate),
-		"reset_password_code_body_template":        input.ResetPasswordCodeBodyTemplate,
-		"reset_password_code_subject_template_en":  strings.TrimSpace(input.ResetPasswordCodeSubjectTemplateEN),
-		"reset_password_code_body_template_en":     input.ResetPasswordCodeBodyTemplateEN,
-		"delete_account_code_subject_template":     strings.TrimSpace(input.DeleteAccountCodeSubjectTemplate),
-		"delete_account_code_body_template":        input.DeleteAccountCodeBodyTemplate,
-		"delete_account_code_subject_template_en":  strings.TrimSpace(input.DeleteAccountCodeSubjectTemplateEN),
-		"delete_account_code_body_template_en":     input.DeleteAccountCodeBodyTemplateEN,
-		"change_email_code_subject_template":       strings.TrimSpace(input.ChangeEmailCodeSubjectTemplate),
-		"change_email_code_body_template":          input.ChangeEmailCodeBodyTemplate,
-		"change_email_code_subject_template_en":    strings.TrimSpace(input.ChangeEmailCodeSubjectTemplateEN),
-		"change_email_code_body_template_en":       input.ChangeEmailCodeBodyTemplateEN,
-		"sms_provider":                             strings.TrimSpace(input.SMSProvider),
-		"sms_template_provider":                    strings.TrimSpace(input.SMSTemplateProvider),
-		"sms_api_base":                             strings.TrimSpace(input.SMSAPIBase),
-		"sms_username":                             strings.TrimSpace(input.SMSUsername),
-		"sms_password":                             input.SMSPassword,
-		"sms_signature":                            strings.TrimSpace(input.SMSSignature),
-		"sms_login_template":                       input.SMSLoginTemplate,
-		"sms_register_template":                    input.SMSRegisterTemplate,
-		"sms_reset_password_template":              input.SMSResetPasswordTemplate,
-		"sms_bind_phone_template":                  input.SMSBindPhoneTemplate,
-		"sms_delete_account_template":              input.SMSDeleteAccountTemplate,
-		"aliyun_sms_access_key_id":                 strings.TrimSpace(input.AliyunSMSAccessKeyID),
-		"aliyun_sms_access_key_secret":             input.AliyunSMSAccessKeySecret,
-		"aliyun_sms_endpoint":                      strings.TrimSpace(input.AliyunSMSEndpoint),
-		"aliyun_sms_region_id":                     strings.TrimSpace(input.AliyunSMSRegionID),
-		"aliyun_sms_sign_name":                     strings.TrimSpace(input.AliyunSMSSignName),
-		"aliyun_sms_login_template_code":           strings.TrimSpace(input.AliyunSMSLoginTemplateCode),
-		"aliyun_sms_register_template_code":        strings.TrimSpace(input.AliyunSMSRegisterTemplateCode),
-		"aliyun_sms_reset_template_code":           strings.TrimSpace(input.AliyunSMSResetTemplateCode),
-		"aliyun_sms_bind_phone_template_code":      strings.TrimSpace(input.AliyunSMSBindPhoneTemplateCode),
-		"aliyun_sms_delete_template_code":          strings.TrimSpace(input.AliyunSMSDeleteTemplateCode),
-		"risk_control_enabled":                     strconv.FormatBool(input.RiskControlEnabled),
-		"risk_immediate_bind_probability":          strconv.Itoa(input.RiskImmediateBindProbability),
-		"risk_delayed_bind_probability":            strconv.Itoa(input.RiskDelayedBindProbability),
-		"risk_delayed_bind_login_count":            strconv.Itoa(input.RiskDelayedBindLoginCount),
-		"rate_limit_enabled":                       strconv.FormatBool(input.RateLimitEnabled),
-		"send_challenge_enabled":                   strconv.FormatBool(input.SendChallengeEnabled),
-		"challenge_token_ttl_seconds":              strconv.Itoa(input.ChallengeTokenTTLSeconds),
-		"challenge_required_after_ip_minute_count": strconv.Itoa(input.ChallengeRequiredAfterIPMinuteCount),
-		"captcha_required_after_ip_hour_count":     strconv.Itoa(input.CaptchaRequiredAfterIPHourCount),
-		"email_target_cooldown_seconds":            strconv.Itoa(input.EmailTargetCooldownSeconds),
-		"email_ip_minute_limit":                    strconv.Itoa(input.EmailIPMinuteLimit),
-		"email_ip_hour_limit":                      strconv.Itoa(input.EmailIPHourLimit),
-		"email_ip_hour_unique_target_limit":        strconv.Itoa(input.EmailIPHourUniqueTargetLimit),
-		"email_global_minute_limit":                strconv.Itoa(input.EmailGlobalMinuteLimit),
-		"email_global_hour_limit":                  strconv.Itoa(input.EmailGlobalHourLimit),
-		"email_fuse_minutes":                       strconv.Itoa(input.EmailFuseMinutes),
-		"sms_target_cooldown_seconds":              strconv.Itoa(input.SMSTargetCooldownSeconds),
-		"sms_ip_minute_limit":                      strconv.Itoa(input.SMSIPMinuteLimit),
-		"sms_ip_hour_limit":                        strconv.Itoa(input.SMSIPHourLimit),
-		"sms_ip_hour_unique_target_limit":          strconv.Itoa(input.SMSIPHourUniqueTargetLimit),
-		"sms_global_minute_limit":                  strconv.Itoa(input.SMSGlobalMinuteLimit),
-		"sms_global_hour_limit":                    strconv.Itoa(input.SMSGlobalHourLimit),
-		"sms_fuse_minutes":                         strconv.Itoa(input.SMSFuseMinutes),
-		"admin_test_email_minute_limit":            strconv.Itoa(input.AdminTestEmailMinuteLimit),
-		"admin_test_email_daily_limit":             strconv.Itoa(input.AdminTestEmailDailyLimit),
-		"admin_test_sms_minute_limit":              strconv.Itoa(input.AdminTestSMSMinuteLimit),
-		"admin_test_sms_daily_limit":               strconv.Itoa(input.AdminTestSMSDailyLimit),
-		"auth_attempt_window_minutes":              strconv.Itoa(input.AuthAttemptWindowMinutes),
-		"auth_attempt_lock_minutes":                strconv.Itoa(input.AuthAttemptLockMinutes),
-		"password_login_account_attempt_limit":     strconv.Itoa(input.PasswordLoginAccountAttemptLimit),
-		"otp_login_account_attempt_limit":          strconv.Itoa(input.OTPLoginAccountAttemptLimit),
-		"mfa_login_account_attempt_limit":          strconv.Itoa(input.MFALoginAccountAttemptLimit),
-		"auth_attempt_ip_limit":                    strconv.Itoa(input.AuthAttemptIPLimit),
-		"auth_attempt_device_limit":                strconv.Itoa(input.AuthAttemptDeviceLimit),
+		"allow_user_registration":                 strconv.FormatBool(input.AllowUserRegistration),
+		"enable_phone_verification":               strconv.FormatBool(input.EnablePhoneVerification),
+		"site_name":                               strings.TrimSpace(input.SiteName),
+		"site_name_en":                            strings.TrimSpace(input.SiteNameEN),
+		"site_browser_title":                      strings.TrimSpace(input.SiteBrowserTitle),
+		"site_browser_title_en":                   strings.TrimSpace(input.SiteBrowserTitleEN),
+		"site_logo_data_url":                      strings.TrimSpace(input.SiteLogoDataURL),
+		"site_footer_text":                        input.SiteFooterText,
+		"site_icp_record_number":                  strings.TrimSpace(input.SiteICPRecordNumber),
+		"site_public_security_record_number":      strings.TrimSpace(input.SitePublicSecurityRecordNumber),
+		"home_page_announcement_enabled":          strconv.FormatBool(input.HomePageAnnouncementEnabled),
+		"home_page_announcement_content":          strings.TrimSpace(input.HomePageAnnouncementContent),
+		"user_center_announcement_enabled":        strconv.FormatBool(input.UserCenterAnnouncementEnabled),
+		"user_center_announcement_content":        strings.TrimSpace(input.UserCenterAnnouncementContent),
+		"developer_announcement_enabled":          strconv.FormatBool(input.DeveloperAnnouncementEnabled),
+		"developer_announcement_content":          strings.TrimSpace(input.DeveloperAnnouncementContent),
+		"public_base_url":                         strings.TrimSpace(input.PublicBaseURL),
+		"frontend_base_url":                       strings.TrimSpace(input.FrontendBaseURL),
+		"oidc_first_party_client_id":              strings.TrimSpace(input.OIDCFirstPartyClientID),
+		"oidc_first_party_client_secret":          strings.TrimSpace(input.OIDCFirstPartyClientSecret),
+		"oidc_first_party_scope":                  strings.TrimSpace(input.OIDCFirstPartyScope),
+		"oidc_auto_approve_client_ids":            templateutil.NormalizeListSetting(input.OIDCAutoApproveClientIDs),
+		"oidc_auto_approve_redirect_hosts":        templateutil.NormalizeListSetting(input.OIDCAutoApproveRedirectHosts),
+		"smtp_host":                               strings.TrimSpace(input.SMTPHost),
+		"smtp_port":                               strings.TrimSpace(input.SMTPPort),
+		"smtp_username":                           strings.TrimSpace(input.SMTPUsername),
+		"smtp_password":                           input.SMTPPassword,
+		"smtp_from":                               strings.TrimSpace(input.SMTPFrom),
+		"smtp_force_ssl":                          strconv.FormatBool(input.SMTPForceSSL),
+		"smtp_verification_code_ttl_minutes":      strconv.Itoa(input.SMTPVerificationCodeTTLMinute),
+		"smtp_verification_code_cooldown_seconds": strconv.Itoa(input.SMTPVerificationCodeCooldownSecond),
+		"login_code_subject_template":             strings.TrimSpace(input.LoginCodeSubjectTemplate),
+		"login_code_body_template":                input.LoginCodeBodyTemplate,
+		"login_code_subject_template_en":          strings.TrimSpace(input.LoginCodeSubjectTemplateEN),
+		"login_code_body_template_en":             input.LoginCodeBodyTemplateEN,
+		"register_code_subject_template":          strings.TrimSpace(input.RegisterCodeSubjectTemplate),
+		"register_code_body_template":             input.RegisterCodeBodyTemplate,
+		"register_code_subject_template_en":       strings.TrimSpace(input.RegisterCodeSubjectTemplateEN),
+		"register_code_body_template_en":          input.RegisterCodeBodyTemplateEN,
+		"reset_password_code_subject_template":    strings.TrimSpace(input.ResetPasswordCodeSubjectTemplate),
+		"reset_password_code_body_template":       input.ResetPasswordCodeBodyTemplate,
+		"reset_password_code_subject_template_en": strings.TrimSpace(input.ResetPasswordCodeSubjectTemplateEN),
+		"reset_password_code_body_template_en":    input.ResetPasswordCodeBodyTemplateEN,
+		"delete_account_code_subject_template":    strings.TrimSpace(input.DeleteAccountCodeSubjectTemplate),
+		"delete_account_code_body_template":       input.DeleteAccountCodeBodyTemplate,
+		"delete_account_code_subject_template_en": strings.TrimSpace(input.DeleteAccountCodeSubjectTemplateEN),
+		"delete_account_code_body_template_en":    input.DeleteAccountCodeBodyTemplateEN,
+		"change_email_code_subject_template":      strings.TrimSpace(input.ChangeEmailCodeSubjectTemplate),
+		"change_email_code_body_template":         input.ChangeEmailCodeBodyTemplate,
+		"change_email_code_subject_template_en":   strings.TrimSpace(input.ChangeEmailCodeSubjectTemplateEN),
+		"change_email_code_body_template_en":      input.ChangeEmailCodeBodyTemplateEN,
+		"sms_provider":                            strings.TrimSpace(input.SMSProvider),
+		"sms_template_provider":                   strings.TrimSpace(input.SMSTemplateProvider),
+		"sms_api_base":                            strings.TrimSpace(input.SMSAPIBase),
+		"sms_username":                            strings.TrimSpace(input.SMSUsername),
+		"sms_password":                            input.SMSPassword,
+		"sms_signature":                           strings.TrimSpace(input.SMSSignature),
+		"sms_login_template":                      input.SMSLoginTemplate,
+		"sms_register_template":                   input.SMSRegisterTemplate,
+		"sms_reset_password_template":             input.SMSResetPasswordTemplate,
+		"sms_bind_phone_template":                 input.SMSBindPhoneTemplate,
+		"sms_delete_account_template":             input.SMSDeleteAccountTemplate,
+		"aliyun_sms_access_key_id":                strings.TrimSpace(input.AliyunSMSAccessKeyID),
+		"aliyun_sms_access_key_secret":            input.AliyunSMSAccessKeySecret,
+		"aliyun_sms_endpoint":                     strings.TrimSpace(input.AliyunSMSEndpoint),
+		"aliyun_sms_region_id":                    strings.TrimSpace(input.AliyunSMSRegionID),
+		"aliyun_sms_sign_name":                    strings.TrimSpace(input.AliyunSMSSignName),
+		"aliyun_sms_login_template_code":          strings.TrimSpace(input.AliyunSMSLoginTemplateCode),
+		"aliyun_sms_register_template_code":       strings.TrimSpace(input.AliyunSMSRegisterTemplateCode),
+		"aliyun_sms_reset_template_code":          strings.TrimSpace(input.AliyunSMSResetTemplateCode),
+		"aliyun_sms_bind_phone_template_code":     strings.TrimSpace(input.AliyunSMSBindPhoneTemplateCode),
+		"aliyun_sms_delete_template_code":         strings.TrimSpace(input.AliyunSMSDeleteTemplateCode),
+		"risk_control_enabled":                    strconv.FormatBool(input.RiskControlEnabled),
+		"risk_immediate_bind_probability":         strconv.Itoa(input.RiskImmediateBindProbability),
+		"risk_delayed_bind_probability":           strconv.Itoa(input.RiskDelayedBindProbability),
+		"risk_delayed_bind_login_count":           strconv.Itoa(input.RiskDelayedBindLoginCount),
 	}); err != nil {
 		return err
 	}
@@ -929,11 +670,6 @@ func (s *SettingsService) SendTestEmail(senderUserID, to string) error {
 	if !s.deps.Mail.Enabled() {
 		return fmt.Errorf("smtp not configured")
 	}
-	if s.rateLimit != nil {
-		if err := s.rateLimit.CheckAdminTestSend(senderUserID, "email"); err != nil {
-			return err
-		}
-	}
 	subject := "MySSO SMTP Test"
 	body := "This is a test email from MySSO system settings."
 	if err := s.deps.Mail.Send(to, subject, body); err != nil {
@@ -956,12 +692,6 @@ func (s *SettingsService) SendTestSMS(senderUserID, provider, phone, content str
 	if len([]rune(content)) > appdefaults.DefaultTestSMSContentMaxLength {
 		return fmt.Errorf("test sms content is too long")
 	}
-	if s.rateLimit != nil {
-		if err := s.rateLimit.CheckAdminTestSend(senderUserID, "sms"); err != nil {
-			return err
-		}
-	}
-
 	sender := s.deps.SMS
 	if provider != "" {
 		testConfig := s.deps.Cfg.SMS

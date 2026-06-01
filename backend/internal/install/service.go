@@ -405,75 +405,6 @@ func seedInitialData(db *sql.DB, req CompleteRequest, cfg config.Config) error {
 	if err := upsertSetting(db, "aliyun_sms_delete_template_code", appdefaults.DefaultAliyunSMSDeleteTemplateCode, now); err != nil {
 		return err
 	}
-	if err := upsertSetting(db, "rate_limit_enabled", strconv.FormatBool(appdefaults.DefaultRateLimitEnabled), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "send_challenge_enabled", strconv.FormatBool(appdefaults.DefaultSendChallengeEnabled), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "challenge_token_ttl_seconds", strconv.Itoa(appdefaults.DefaultChallengeTokenTTLSeconds), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "challenge_required_after_ip_minute_count", strconv.Itoa(appdefaults.DefaultChallengeIPMinuteThreshold), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "captcha_required_after_ip_hour_count", strconv.Itoa(appdefaults.DefaultCaptchaIPHourThreshold), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "email_target_cooldown_seconds", strconv.Itoa(appdefaults.DefaultEmailTargetCooldownSeconds), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "email_ip_minute_limit", strconv.Itoa(appdefaults.DefaultEmailIPMinuteLimit), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "email_ip_hour_limit", strconv.Itoa(appdefaults.DefaultEmailIPHourLimit), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "email_ip_hour_unique_target_limit", strconv.Itoa(appdefaults.DefaultEmailIPHourUniqueTargetLimit), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "email_global_minute_limit", strconv.Itoa(appdefaults.DefaultEmailGlobalMinuteLimit), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "email_global_hour_limit", strconv.Itoa(appdefaults.DefaultEmailGlobalHourLimit), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "email_fuse_minutes", strconv.Itoa(appdefaults.DefaultEmailFuseMinutes), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "sms_target_cooldown_seconds", strconv.Itoa(appdefaults.DefaultSMSCodeTargetCooldownSeconds), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "sms_ip_minute_limit", strconv.Itoa(appdefaults.DefaultSMSIPMinuteLimit), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "sms_ip_hour_limit", strconv.Itoa(appdefaults.DefaultSMSIPHourLimit), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "sms_ip_hour_unique_target_limit", strconv.Itoa(appdefaults.DefaultSMSIPHourUniqueTargetLimit), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "sms_global_minute_limit", strconv.Itoa(appdefaults.DefaultSMSGlobalMinuteLimit), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "sms_global_hour_limit", strconv.Itoa(appdefaults.DefaultSMSGlobalHourLimit), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "sms_fuse_minutes", strconv.Itoa(appdefaults.DefaultSMSFuseMinutes), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "admin_test_email_minute_limit", strconv.Itoa(appdefaults.DefaultAdminTestEmailMinuteLimit), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "admin_test_email_daily_limit", strconv.Itoa(appdefaults.DefaultAdminTestEmailDailyLimit), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "admin_test_sms_minute_limit", strconv.Itoa(appdefaults.DefaultAdminTestSMSMinuteLimit), now); err != nil {
-		return err
-	}
-	if err := upsertSetting(db, "admin_test_sms_daily_limit", strconv.Itoa(appdefaults.DefaultAdminTestSMSDailyLimit), now); err != nil {
-		return err
-	}
 	appID := uuid.NewString()
 	hashedFirstPartySecret, err := security.HashPassword(cfg.OIDC.FirstPartyClientSecret)
 	if err != nil {
@@ -542,19 +473,13 @@ func ApplyRuntimeSettings(db *sql.DB, cfg *config.Config) error {
 	if err := ensureSMSVerificationCodesTable(db); err != nil {
 		return err
 	}
-	if err := ensureMFALoginChallengesTable(db); err != nil {
+	if err := ensureAuthChallengesTable(db); err != nil {
 		return err
 	}
-	if err := ensureDeletionLoginChallengesTable(db); err != nil {
+	if err := migrateLegacyAuthChallenges(db); err != nil {
 		return err
 	}
 	if err := ensurePasskeysTable(db); err != nil {
-		return err
-	}
-	if err := ensurePasskeyRegistrationChallengesTable(db); err != nil {
-		return err
-	}
-	if err := ensurePasskeyLoginChallengesTable(db); err != nil {
 		return err
 	}
 	if err := ensurePasskeyUsageLogsTable(db); err != nil {
@@ -576,15 +501,6 @@ func ApplyRuntimeSettings(db *sql.DB, cfg *config.Config) error {
 		return err
 	}
 	if err := ensurePhoneSendLogsTable(db); err != nil {
-		return err
-	}
-	if err := ensureRateLimitCountersTable(db); err != nil {
-		return err
-	}
-	if err := ensureRequestChallengesTable(db); err != nil {
-		return err
-	}
-	if err := ensureRateLimitEventsTable(db); err != nil {
 		return err
 	}
 	if err := ensureScopeDefinitionsTable(db); err != nil {
@@ -1112,55 +1028,232 @@ func ensureSMSVerificationCodesTable(db *sql.DB) error {
 	return err
 }
 
-func ensureMFALoginChallengesTable(db *sql.DB) error {
+func ensureAuthChallengesTable(db *sql.DB) error {
 	var count int
 	if err := db.QueryRow(`
 		SELECT COUNT(*) FROM information_schema.tables
-		WHERE table_schema = DATABASE() AND table_name = 'mfa_login_challenges'
+		WHERE table_schema = DATABASE() AND table_name = 'auth_challenges'
 	`).Scan(&count); err != nil {
 		return err
 	}
 	if count > 0 {
-		return nil
+		return ensureAuthChallengeColumnsAndIndexes(db)
 	}
 	_, err := db.Exec(`
-		CREATE TABLE mfa_login_challenges (
+		CREATE TABLE auth_challenges (
 			token VARCHAR(64) PRIMARY KEY,
-			user_id VARCHAR(64) NOT NULL,
-			method VARCHAR(32) NOT NULL,
-			target VARCHAR(255) NOT NULL,
+			challenge_type VARCHAR(64) NOT NULL,
+			user_id VARCHAR(64) NOT NULL DEFAULT '',
+			channel VARCHAR(32) NOT NULL DEFAULT '',
+			target VARCHAR(255) NOT NULL DEFAULT '',
+			acr VARCHAR(255) NOT NULL DEFAULT '',
+			payload_json JSON NULL,
 			expires_at DATETIME NOT NULL,
+			consumed_at DATETIME NULL,
 			created_at DATETIME NOT NULL,
-			INDEX idx_mfa_login_challenges_user_id (user_id),
-			INDEX idx_mfa_login_challenges_expires_at (expires_at)
+			INDEX idx_auth_challenges_type_expires (challenge_type, expires_at),
+			INDEX idx_auth_challenges_type_user (challenge_type, user_id),
+			INDEX idx_auth_challenges_user_id (user_id),
+			INDEX idx_auth_challenges_type_created (challenge_type, created_at),
+			INDEX idx_auth_challenges_consumed_at (consumed_at),
+			INDEX idx_auth_challenges_expires_at (expires_at)
 		)
 	`)
+	if err != nil {
+		return err
+	}
+	return ensureAuthChallengeColumnsAndIndexes(db)
+}
+
+func ensureAuthChallengeColumnsAndIndexes(db *sql.DB) error {
+	columns := []struct {
+		name  string
+		query string
+	}{
+		{name: "challenge_type", query: `ALTER TABLE auth_challenges ADD COLUMN challenge_type VARCHAR(64) NOT NULL DEFAULT '' AFTER token`},
+		{name: "user_id", query: `ALTER TABLE auth_challenges ADD COLUMN user_id VARCHAR(64) NOT NULL DEFAULT '' AFTER challenge_type`},
+		{name: "channel", query: `ALTER TABLE auth_challenges ADD COLUMN channel VARCHAR(32) NOT NULL DEFAULT '' AFTER user_id`},
+		{name: "target", query: `ALTER TABLE auth_challenges ADD COLUMN target VARCHAR(255) NOT NULL DEFAULT '' AFTER channel`},
+		{name: "acr", query: `ALTER TABLE auth_challenges ADD COLUMN acr VARCHAR(255) NOT NULL DEFAULT '' AFTER target`},
+		{name: "payload_json", query: `ALTER TABLE auth_challenges ADD COLUMN payload_json JSON NULL AFTER acr`},
+		{name: "expires_at", query: `ALTER TABLE auth_challenges ADD COLUMN expires_at DATETIME NOT NULL AFTER payload_json`},
+		{name: "consumed_at", query: `ALTER TABLE auth_challenges ADD COLUMN consumed_at DATETIME NULL AFTER expires_at`},
+		{name: "created_at", query: `ALTER TABLE auth_challenges ADD COLUMN created_at DATETIME NOT NULL AFTER consumed_at`},
+	}
+	for _, column := range columns {
+		if err := ensureColumn(db, "auth_challenges", column.name, column.query); err != nil {
+			return err
+		}
+	}
+	indexes := []struct {
+		name  string
+		query string
+	}{
+		{name: "idx_auth_challenges_type_expires", query: `ALTER TABLE auth_challenges ADD INDEX idx_auth_challenges_type_expires (challenge_type, expires_at)`},
+		{name: "idx_auth_challenges_type_user", query: `ALTER TABLE auth_challenges ADD INDEX idx_auth_challenges_type_user (challenge_type, user_id)`},
+		{name: "idx_auth_challenges_user_id", query: `ALTER TABLE auth_challenges ADD INDEX idx_auth_challenges_user_id (user_id)`},
+		{name: "idx_auth_challenges_type_created", query: `ALTER TABLE auth_challenges ADD INDEX idx_auth_challenges_type_created (challenge_type, created_at)`},
+		{name: "idx_auth_challenges_consumed_at", query: `ALTER TABLE auth_challenges ADD INDEX idx_auth_challenges_consumed_at (consumed_at)`},
+		{name: "idx_auth_challenges_expires_at", query: `ALTER TABLE auth_challenges ADD INDEX idx_auth_challenges_expires_at (expires_at)`},
+	}
+	for _, index := range indexes {
+		if err := ensureIndex(db, "auth_challenges", index.name, index.query); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func ensureColumn(db *sql.DB, tableName, columnName, alterQuery string) error {
+	exists, err := columnExists(db, tableName, columnName)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return nil
+	}
+	_, err = db.Exec(alterQuery)
 	return err
 }
 
-func ensureDeletionLoginChallengesTable(db *sql.DB) error {
+func columnExists(db *sql.DB, tableName, columnName string) (bool, error) {
+	var count int
+	if err := db.QueryRow(`
+		SELECT COUNT(*) FROM information_schema.columns
+		WHERE table_schema = DATABASE() AND table_name = ? AND column_name = ?
+	`, tableName, columnName).Scan(&count); err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
+func migrateLegacyAuthChallenges(db *sql.DB) error {
+	migrations := []struct {
+		table string
+		query string
+	}{
+		{
+			table: "mfa_login_challenges",
+			query: `
+				INSERT IGNORE INTO auth_challenges (token, challenge_type, user_id, channel, target, acr, payload_json, expires_at, consumed_at, created_at)
+				SELECT token, 'mfa_login', user_id, method, target, '', NULL, expires_at, NULL, created_at
+				FROM mfa_login_challenges
+				WHERE expires_at >= UTC_TIMESTAMP()
+			`,
+		},
+		{
+			table: "passkey_registration_challenges",
+			query: `
+				INSERT IGNORE INTO auth_challenges (token, challenge_type, user_id, channel, target, acr, payload_json, expires_at, consumed_at, created_at)
+				SELECT token, 'passkey_registration', user_id, '', '', '', session_data_json, expires_at, NULL, created_at
+				FROM passkey_registration_challenges
+				WHERE expires_at >= UTC_TIMESTAMP()
+			`,
+		},
+		{
+			table: "passkey_login_challenges",
+			query: `
+				INSERT IGNORE INTO auth_challenges (token, challenge_type, user_id, channel, target, acr, payload_json, expires_at, consumed_at, created_at)
+				SELECT token, 'passkey_login', '', '', '', '', session_data_json, expires_at, NULL, created_at
+				FROM passkey_login_challenges
+				WHERE expires_at >= UTC_TIMESTAMP()
+			`,
+		},
+		{
+			table: "phone_binding_challenges",
+			query: `
+				INSERT IGNORE INTO auth_challenges (token, challenge_type, user_id, channel, target, acr, payload_json, expires_at, consumed_at, created_at)
+				SELECT token, 'phone_binding', user_id, '', reason, acr, NULL, expires_at, NULL, created_at
+				FROM phone_binding_challenges
+				WHERE expires_at >= UTC_TIMESTAMP()
+			`,
+		},
+		{
+			table: "login_step_up_challenges",
+			query: `
+				INSERT IGNORE INTO auth_challenges (token, challenge_type, user_id, channel, target, acr, payload_json, expires_at, consumed_at, created_at)
+				SELECT token, 'login_step_up', user_id, login_method, '', acr,
+					JSON_OBJECT('effective_mode', effective_mode, 'email_target', email_target, 'phone_target', phone_target),
+					expires_at, NULL, created_at
+				FROM login_step_up_challenges
+				WHERE expires_at >= UTC_TIMESTAMP()
+			`,
+		},
+		{
+			table: "login_mfa_enrollment_challenges",
+			query: `
+				INSERT IGNORE INTO auth_challenges (token, challenge_type, user_id, channel, target, acr, payload_json, expires_at, consumed_at, created_at)
+				SELECT token, 'login_mfa_enrollment', user_id, login_method, '', acr, NULL, expires_at, NULL, created_at
+				FROM login_mfa_enrollment_challenges
+				WHERE expires_at >= UTC_TIMESTAMP()
+			`,
+		},
+		{
+			table: "request_challenges",
+			query: `
+				INSERT IGNORE INTO auth_challenges (token, challenge_type, user_id, channel, target, acr, payload_json, expires_at, consumed_at, created_at)
+				SELECT token, 'request', '', channel, purpose, '',
+					JSON_OBJECT('ip_hash', ip_hash, 'ua_hash', ua_hash, 'target_hash', target_hash, 'captcha_passed', captcha_passed),
+					expires_at, consumed_at, created_at
+				FROM request_challenges
+				WHERE consumed_at IS NULL AND expires_at >= UTC_TIMESTAMP()
+			`,
+		},
+	}
+	for _, migration := range migrations {
+		exists, err := tableExists(db, migration.table)
+		if err != nil {
+			return err
+		}
+		if !exists {
+			continue
+		}
+		if _, err := db.Exec(migration.query); err != nil {
+			return err
+		}
+	}
+	if err := migrateLegacyDeletionLoginChallenges(db); err != nil {
+		return err
+	}
+	return nil
+}
+
+func migrateLegacyDeletionLoginChallenges(db *sql.DB) error {
+	exists, err := tableExists(db, "deletion_login_challenges")
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return nil
+	}
+	hasACR, err := columnExists(db, "deletion_login_challenges", "acr")
+	if err != nil {
+		return err
+	}
+	acrExpr := "''"
+	if hasACR {
+		acrExpr = "acr"
+	}
+	_, err = db.Exec(fmt.Sprintf(`
+		INSERT IGNORE INTO auth_challenges (token, challenge_type, user_id, channel, target, acr, payload_json, expires_at, consumed_at, created_at)
+		SELECT token, 'deletion_login', user_id, '', '', %s,
+			JSON_OBJECT('deletion_scheduled_at', DATE_FORMAT(deletion_scheduled_at, '%%Y-%%m-%%dT%%H:%%i:%%sZ')),
+			expires_at, NULL, created_at
+		FROM deletion_login_challenges
+		WHERE expires_at >= UTC_TIMESTAMP()
+	`, acrExpr))
+	return err
+}
+
+func tableExists(db *sql.DB, tableName string) (bool, error) {
 	var count int
 	if err := db.QueryRow(`
 		SELECT COUNT(*) FROM information_schema.tables
-		WHERE table_schema = DATABASE() AND table_name = 'deletion_login_challenges'
-	`).Scan(&count); err != nil {
-		return err
+		WHERE table_schema = DATABASE() AND table_name = ?
+	`, tableName).Scan(&count); err != nil {
+		return false, err
 	}
-	if count > 0 {
-		return nil
-	}
-	_, err := db.Exec(`
-		CREATE TABLE deletion_login_challenges (
-			token VARCHAR(64) PRIMARY KEY,
-			user_id VARCHAR(64) NOT NULL,
-			deletion_scheduled_at DATETIME NOT NULL,
-			expires_at DATETIME NOT NULL,
-			created_at DATETIME NOT NULL,
-			INDEX idx_deletion_login_challenges_user_id (user_id),
-			INDEX idx_deletion_login_challenges_expires_at (expires_at)
-		)
-	`)
-	return err
+	return count > 0, nil
 }
 
 func ensurePasskeysTable(db *sql.DB) error {
@@ -1189,54 +1282,6 @@ func ensurePasskeysTable(db *sql.DB) error {
 			updated_at DATETIME NOT NULL,
 			UNIQUE KEY uniq_passkeys_credential_id (credential_id),
 			INDEX idx_passkeys_user_id (user_id)
-		)
-	`)
-	return err
-}
-
-func ensurePasskeyRegistrationChallengesTable(db *sql.DB) error {
-	var count int
-	if err := db.QueryRow(`
-		SELECT COUNT(*) FROM information_schema.tables
-		WHERE table_schema = DATABASE() AND table_name = 'passkey_registration_challenges'
-	`).Scan(&count); err != nil {
-		return err
-	}
-	if count > 0 {
-		return nil
-	}
-	_, err := db.Exec(`
-		CREATE TABLE passkey_registration_challenges (
-			token VARCHAR(64) PRIMARY KEY,
-			user_id VARCHAR(64) NOT NULL,
-			session_data_json JSON NOT NULL,
-			expires_at DATETIME NOT NULL,
-			created_at DATETIME NOT NULL,
-			INDEX idx_passkey_registration_challenges_user_id (user_id),
-			INDEX idx_passkey_registration_challenges_expires_at (expires_at)
-		)
-	`)
-	return err
-}
-
-func ensurePasskeyLoginChallengesTable(db *sql.DB) error {
-	var count int
-	if err := db.QueryRow(`
-		SELECT COUNT(*) FROM information_schema.tables
-		WHERE table_schema = DATABASE() AND table_name = 'passkey_login_challenges'
-	`).Scan(&count); err != nil {
-		return err
-	}
-	if count > 0 {
-		return nil
-	}
-	_, err := db.Exec(`
-		CREATE TABLE passkey_login_challenges (
-			token VARCHAR(64) PRIMARY KEY,
-			session_data_json JSON NOT NULL,
-			expires_at DATETIME NOT NULL,
-			created_at DATETIME NOT NULL,
-			INDEX idx_passkey_login_challenges_expires_at (expires_at)
 		)
 	`)
 	return err
@@ -1383,88 +1428,6 @@ func ensurePhoneSendLogsTable(db *sql.DB) error {
 			account_email VARCHAR(255) NOT NULL DEFAULT '',
 			created_at DATETIME NOT NULL,
 			INDEX idx_phone_send_logs_created_at (created_at)
-		)
-	`)
-	return err
-}
-
-func ensureRateLimitCountersTable(db *sql.DB) error {
-	var count int
-	if err := db.QueryRow(`
-		SELECT COUNT(*) FROM information_schema.tables
-		WHERE table_schema = DATABASE() AND table_name = 'rate_limit_counters'
-	`).Scan(&count); err != nil {
-		return err
-	}
-	if count > 0 {
-		return nil
-	}
-	_, err := db.Exec(`
-		CREATE TABLE rate_limit_counters (
-			counter_key VARCHAR(255) PRIMARY KEY,
-			window_type VARCHAR(32) NOT NULL,
-			count INT NOT NULL DEFAULT 0,
-			window_started_at DATETIME NOT NULL,
-			expires_at DATETIME NOT NULL,
-			updated_at DATETIME NOT NULL,
-			INDEX idx_rate_limit_counters_expires_at (expires_at)
-		)
-	`)
-	return err
-}
-
-func ensureRequestChallengesTable(db *sql.DB) error {
-	var count int
-	if err := db.QueryRow(`
-		SELECT COUNT(*) FROM information_schema.tables
-		WHERE table_schema = DATABASE() AND table_name = 'request_challenges'
-	`).Scan(&count); err != nil {
-		return err
-	}
-	if count > 0 {
-		return nil
-	}
-	_, err := db.Exec(`
-		CREATE TABLE request_challenges (
-			token VARCHAR(64) PRIMARY KEY,
-			purpose VARCHAR(32) NOT NULL,
-			channel VARCHAR(16) NOT NULL,
-			ip_hash VARCHAR(64) NOT NULL,
-			ua_hash VARCHAR(64) NOT NULL,
-			target_hash VARCHAR(64) NOT NULL DEFAULT '',
-			captcha_passed TINYINT(1) NOT NULL DEFAULT 0,
-			expires_at DATETIME NOT NULL,
-			consumed_at DATETIME NULL,
-			created_at DATETIME NOT NULL,
-			INDEX idx_request_challenges_expires_at (expires_at)
-		)
-	`)
-	return err
-}
-
-func ensureRateLimitEventsTable(db *sql.DB) error {
-	var count int
-	if err := db.QueryRow(`
-		SELECT COUNT(*) FROM information_schema.tables
-		WHERE table_schema = DATABASE() AND table_name = 'rate_limit_events'
-	`).Scan(&count); err != nil {
-		return err
-	}
-	if count > 0 {
-		return nil
-	}
-	_, err := db.Exec(`
-		CREATE TABLE rate_limit_events (
-			id VARCHAR(64) PRIMARY KEY,
-			channel VARCHAR(16) NOT NULL,
-			purpose VARCHAR(32) NOT NULL,
-			target_hash VARCHAR(64) NOT NULL DEFAULT '',
-			source_ip VARCHAR(64) NOT NULL DEFAULT '',
-			user_agent_hash VARCHAR(64) NOT NULL DEFAULT '',
-			result VARCHAR(32) NOT NULL,
-			matched_rule VARCHAR(64) NOT NULL DEFAULT '',
-			created_at DATETIME NOT NULL,
-			INDEX idx_rate_limit_events_created_at (created_at)
 		)
 	`)
 	return err

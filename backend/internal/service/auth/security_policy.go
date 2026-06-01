@@ -335,9 +335,10 @@ func (s *AuthService) CompleteLoginStepUp(challengeToken, emailOTP, smsOTP, ip s
 	default:
 		return PasswordLoginResult{}, fmt.Errorf("unsupported login step-up mode")
 	}
-	if err := s.deps.Store.DeleteLoginStepUpChallenge(challenge.Token); err != nil {
+	if err := s.deps.Store.ConsumeLoginStepUpChallenge(challenge.Token, time.Now().UTC()); err != nil {
 		return PasswordLoginResult{}, err
 	}
+	_ = s.deps.Store.DeleteLoginStepUpChallenge(challenge.Token)
 	if err := s.clearUserSecurityPolicy(user.ID, false, true, false); err != nil {
 		return PasswordLoginResult{}, err
 	}
@@ -362,13 +363,14 @@ func (s *AuthService) CompleteForcedMFAEnrollment(challengeToken, method, ip str
 	if !authutil.SupportsUserMFA(user) {
 		return PasswordLoginResult{}, fmt.Errorf("mfa is disabled for admin accounts")
 	}
+	if err := s.deps.Store.ConsumeLoginMFAEnrollmentChallenge(challenge.Token, time.Now().UTC()); err != nil {
+		return PasswordLoginResult{}, err
+	}
+	_ = s.deps.Store.DeleteLoginMFAEnrollmentChallenge(challenge.Token)
 	user.MFAEnabled = true
 	user.MFAMethod = method
 	user.AuthVersion++
 	if err := s.deps.Store.UpdateUserAndInvalidateAuth(user); err != nil {
-		return PasswordLoginResult{}, err
-	}
-	if err := s.deps.Store.DeleteLoginMFAEnrollmentChallenge(challenge.Token); err != nil {
 		return PasswordLoginResult{}, err
 	}
 	if err := s.clearUserSecurityPolicy(user.ID, false, false, true); err != nil {

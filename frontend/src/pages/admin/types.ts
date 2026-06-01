@@ -186,18 +186,6 @@ export type PhoneSendLog = {
   created_at: string;
 };
 
-export type RiskLog = {
-  id: string;
-  channel: string;
-  purpose: string;
-  target_hash: string;
-  source_ip: string;
-  user_agent_hash: string;
-  result: string;
-  matched_rule: string;
-  created_at: string;
-};
-
 export type AdminPasskeyLog = {
   id: string;
   user_id: string;
@@ -349,36 +337,6 @@ export type SystemSettings = {
   risk_immediate_bind_probability: number;
   risk_delayed_bind_probability: number;
   risk_delayed_bind_login_count: number;
-  rate_limit_enabled: boolean;
-  send_challenge_enabled: boolean;
-  challenge_token_ttl_seconds: number;
-  challenge_required_after_ip_minute_count: number;
-  captcha_required_after_ip_hour_count: number;
-  email_target_cooldown_seconds: number;
-  email_ip_minute_limit: number;
-  email_ip_hour_limit: number;
-  email_ip_hour_unique_target_limit: number;
-  email_global_minute_limit: number;
-  email_global_hour_limit: number;
-  email_fuse_minutes: number;
-  sms_target_cooldown_seconds: number;
-  sms_ip_minute_limit: number;
-  sms_ip_hour_limit: number;
-  sms_ip_hour_unique_target_limit: number;
-  sms_global_minute_limit: number;
-  sms_global_hour_limit: number;
-  sms_fuse_minutes: number;
-  admin_test_email_minute_limit: number;
-  admin_test_email_daily_limit: number;
-  admin_test_sms_minute_limit: number;
-  admin_test_sms_daily_limit: number;
-  auth_attempt_window_minutes: number;
-  auth_attempt_lock_minutes: number;
-  password_login_account_attempt_limit: number;
-  otp_login_account_attempt_limit: number;
-  mfa_login_account_attempt_limit: number;
-  auth_attempt_ip_limit: number;
-  auth_attempt_device_limit: number;
 };
 
 export type SettingsTabKey =
@@ -390,7 +348,6 @@ export type SettingsTabKey =
   | "media"
   | "addons"
   | "email"
-  | "queue"
   | "scope";
 
 export type AdminPageType =
@@ -419,7 +376,6 @@ export type AdminDataResponse = {
   users: User[];
   apps: AppItem[];
   logs: AuditLog[];
-  riskLogs: RiskLog[];
   passkeyLogs: AdminPasskeyLogs;
   emailSendLogs: EmailSendLog[];
   phoneSendLogs: PhoneSendLog[];

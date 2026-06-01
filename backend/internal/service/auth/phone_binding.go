@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"fmt"
 	"math/big"
-	"strconv"
 	"strings"
 	"time"
 
@@ -12,7 +11,6 @@ import (
 
 	"mysso/backend/internal/appdefaults"
 	"mysso/backend/internal/domain"
-	"mysso/backend/internal/service/common/authutil"
 	"mysso/backend/internal/service/settings"
 )
 
@@ -29,35 +27,19 @@ type phoneBindingRiskState struct {
 }
 
 func (s *AuthService) getPhoneBindingRiskState(userID string) (phoneBindingRiskState, error) {
-	values, err := s.deps.Store.GetSettings(
-		domain.UserRiskPhoneBindingModeKey(userID),
-		domain.UserRiskPhoneBindingRequiredKey(userID),
-		domain.UserRiskPhoneBindingLoginCountKey(userID),
-	)
+	policy, err := s.getUserSecurityPolicy(userID)
 	if err != nil {
 		return phoneBindingRiskState{}, err
 	}
-
-	loginCount := 0
-	if raw := strings.TrimSpace(values[domain.UserRiskPhoneBindingLoginCountKey(userID)]); raw != "" {
-		if parsed, parseErr := strconv.Atoi(raw); parseErr == nil && parsed >= 0 {
-			loginCount = parsed
-		}
-	}
-
 	return phoneBindingRiskState{
-		Mode:       strings.TrimSpace(values[domain.UserRiskPhoneBindingModeKey(userID)]),
-		Required:   authutil.FallbackBoolSetting(values[domain.UserRiskPhoneBindingRequiredKey(userID)], false),
-		LoginCount: loginCount,
+		Mode:       strings.TrimSpace(policy.PhoneBindingRiskMode),
+		Required:   policy.PhoneBindingRiskRequired,
+		LoginCount: max(policy.PhoneBindingRiskLoginCount, 0),
 	}, nil
 }
 
 func (s *AuthService) savePhoneBindingRiskState(userID string, state phoneBindingRiskState) error {
-	return s.deps.Store.UpsertSettings(map[string]string{
-		domain.UserRiskPhoneBindingModeKey(userID):       strings.TrimSpace(state.Mode),
-		domain.UserRiskPhoneBindingRequiredKey(userID):   strconv.FormatBool(state.Required),
-		domain.UserRiskPhoneBindingLoginCountKey(userID): strconv.Itoa(max(state.LoginCount, 0)),
-	})
+	return s.deps.Store.UpdatePhoneBindingRiskState(userID, strings.TrimSpace(state.Mode), state.Required, max(state.LoginCount, 0))
 }
 
 func (s *AuthService) selectPhoneBindingRiskMode(country string) (string, error) {
@@ -175,7 +157,7 @@ func (s *AuthService) maybeRequirePhoneBindingBeforeLogin(user domain.User, acr 
 	if err != nil {
 		return PasswordLoginResult{}, false, err
 	}
-	if user.Status == domain.UserPending && state.Required {
+	if user.Status == domain.UserPending {
 		result, resultErr := s.enforcePendingPhoneBinding(user, "pending_activation", acr)
 		return result, true, resultErr
 	}
@@ -275,6 +257,10 @@ func (s *AuthService) CompletePhoneBinding(challengeToken, phone, code, ip, devi
 	if err := s.deps.Store.ConsumeSMSVerificationCode(verification.ID); err != nil {
 		return PasswordLoginResult{}, err
 	}
+	if err := s.deps.Store.ConsumePhoneBindingChallenge(challenge.Token, time.Now().UTC()); err != nil {
+		return PasswordLoginResult{}, err
+	}
+	_ = s.deps.Store.DeletePhoneBindingChallenge(challenge.Token)
 	s.resetAuthAttempt(attempt)
 	user.Phone = phone
 	user.Status = domain.UserActive
@@ -287,9 +273,6 @@ func (s *AuthService) CompletePhoneBinding(challengeToken, phone, code, ip, devi
 		return PasswordLoginResult{}, err
 	}
 	if err := s.clearUserSecurityPolicy(user.ID, true, false, false); err != nil {
-		return PasswordLoginResult{}, err
-	}
-	if err := s.deps.Store.DeletePhoneBindingChallenge(challenge.Token); err != nil {
 		return PasswordLoginResult{}, err
 	}
 	s.audit.Record(user.ID, user.Role, "user.risk.phone_bound", user.ID, map[string]any{

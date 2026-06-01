@@ -153,141 +153,110 @@ func (s *MySQLStore) DeletePasskeys(ids []string) error {
 }
 
 func (s *MySQLStore) SavePasskeyRegistrationChallenge(challenge domain.PasskeyRegistrationChallenge) error {
-	_, err := s.db.Exec(`
-		INSERT INTO passkey_registration_challenges (token, user_id, session_data_json, expires_at, created_at)
-		VALUES (?, ?, ?, ?, ?)
-	`, challenge.Token, challenge.UserID, challenge.SessionDataJSON, challenge.ExpiresAt, challenge.CreatedAt)
-	return err
+	return s.saveAuthChallenge(domain.AuthChallenge{
+		Token:         challenge.Token,
+		ChallengeType: authChallengeTypePasskeyRegistration,
+		UserID:        challenge.UserID,
+		PayloadJSON:   challenge.SessionDataJSON,
+		ExpiresAt:     challenge.ExpiresAt,
+		CreatedAt:     challenge.CreatedAt,
+	})
 }
 
 func (s *MySQLStore) GetPasskeyRegistrationChallenge(token string) (domain.PasskeyRegistrationChallenge, error) {
-	row := s.db.QueryRow(`
-		SELECT token, user_id, session_data_json, expires_at, created_at
-		FROM passkey_registration_challenges
-		WHERE token = ? AND expires_at >= UTC_TIMESTAMP()
-	`, token)
-	var item domain.PasskeyRegistrationChallenge
-	if err := row.Scan(&item.Token, &item.UserID, &item.SessionDataJSON, &item.ExpiresAt, &item.CreatedAt); err != nil {
-		if err == sql.ErrNoRows {
-			return domain.PasskeyRegistrationChallenge{}, ErrNotFound
-		}
+	item, err := s.getAuthChallenge(token, authChallengeTypePasskeyRegistration, true)
+	if err != nil {
 		return domain.PasskeyRegistrationChallenge{}, err
 	}
-	return item, nil
+	return domain.PasskeyRegistrationChallenge{
+		Token:           item.Token,
+		UserID:          item.UserID,
+		SessionDataJSON: item.PayloadJSON,
+		ExpiresAt:       item.ExpiresAt,
+		CreatedAt:       item.CreatedAt,
+	}, nil
 }
 
 func (s *MySQLStore) DeletePasskeyRegistrationChallenge(token string) error {
-	_, err := s.db.Exec(`DELETE FROM passkey_registration_challenges WHERE token = ?`, token)
-	return err
+	return s.deleteAuthChallenge(token, authChallengeTypePasskeyRegistration)
+}
+
+func (s *MySQLStore) ConsumePasskeyRegistrationChallenge(token string, consumedAt time.Time) error {
+	return s.consumeAuthChallenge(token, authChallengeTypePasskeyRegistration, consumedAt)
 }
 
 func (s *MySQLStore) ListPasskeyRegistrationChallenges() []domain.PasskeyRegistrationChallenge {
-	rows, err := s.db.Query(`
-		SELECT token, user_id, session_data_json, expires_at, created_at
-		FROM passkey_registration_challenges
-		ORDER BY created_at DESC
-		LIMIT 1000
-	`)
+	rows, err := s.listAuthChallenges(authChallengeTypePasskeyRegistration, 1000)
 	if err != nil {
 		return nil
 	}
-	defer rows.Close()
-
-	items := make([]domain.PasskeyRegistrationChallenge, 0)
-	for rows.Next() {
-		var item domain.PasskeyRegistrationChallenge
-		if err := rows.Scan(&item.Token, &item.UserID, &item.SessionDataJSON, &item.ExpiresAt, &item.CreatedAt); err != nil {
-			continue
-		}
-		items = append(items, item)
+	items := make([]domain.PasskeyRegistrationChallenge, 0, len(rows))
+	for _, row := range rows {
+		items = append(items, domain.PasskeyRegistrationChallenge{
+			Token:           row.Token,
+			UserID:          row.UserID,
+			SessionDataJSON: row.PayloadJSON,
+			ExpiresAt:       row.ExpiresAt,
+			CreatedAt:       row.CreatedAt,
+		})
 	}
 	return items
 }
 
 func (s *MySQLStore) DeletePasskeyRegistrationChallenges(tokens []string) error {
-	if len(tokens) == 0 {
-		return nil
-	}
-	placeholders := make([]string, len(tokens))
-	args := make([]any, 0, len(tokens))
-	for i, token := range tokens {
-		placeholders[i] = "?"
-		args = append(args, token)
-	}
-	_, err := s.db.Exec(
-		fmt.Sprintf("DELETE FROM passkey_registration_challenges WHERE token IN (%s)", strings.Join(placeholders, ",")),
-		args...,
-	)
-	return err
+	return s.deleteAuthChallenges(tokens, authChallengeTypePasskeyRegistration)
 }
 
 func (s *MySQLStore) SavePasskeyLoginChallenge(challenge domain.PasskeyLoginChallenge) error {
-	_, err := s.db.Exec(`
-		INSERT INTO passkey_login_challenges (token, session_data_json, expires_at, created_at)
-		VALUES (?, ?, ?, ?)
-	`, challenge.Token, challenge.SessionDataJSON, challenge.ExpiresAt, challenge.CreatedAt)
-	return err
+	return s.saveAuthChallenge(domain.AuthChallenge{
+		Token:         challenge.Token,
+		ChallengeType: authChallengeTypePasskeyLogin,
+		PayloadJSON:   challenge.SessionDataJSON,
+		ExpiresAt:     challenge.ExpiresAt,
+		CreatedAt:     challenge.CreatedAt,
+	})
 }
 
 func (s *MySQLStore) GetPasskeyLoginChallenge(token string) (domain.PasskeyLoginChallenge, error) {
-	row := s.db.QueryRow(`
-		SELECT token, session_data_json, expires_at, created_at
-		FROM passkey_login_challenges
-		WHERE token = ? AND expires_at >= UTC_TIMESTAMP()
-	`, token)
-	var item domain.PasskeyLoginChallenge
-	if err := row.Scan(&item.Token, &item.SessionDataJSON, &item.ExpiresAt, &item.CreatedAt); err != nil {
-		if err == sql.ErrNoRows {
-			return domain.PasskeyLoginChallenge{}, ErrNotFound
-		}
+	item, err := s.getAuthChallenge(token, authChallengeTypePasskeyLogin, true)
+	if err != nil {
 		return domain.PasskeyLoginChallenge{}, err
 	}
-	return item, nil
+	return domain.PasskeyLoginChallenge{
+		Token:           item.Token,
+		SessionDataJSON: item.PayloadJSON,
+		ExpiresAt:       item.ExpiresAt,
+		CreatedAt:       item.CreatedAt,
+	}, nil
 }
 
 func (s *MySQLStore) DeletePasskeyLoginChallenge(token string) error {
-	_, err := s.db.Exec(`DELETE FROM passkey_login_challenges WHERE token = ?`, token)
-	return err
+	return s.deleteAuthChallenge(token, authChallengeTypePasskeyLogin)
+}
+
+func (s *MySQLStore) ConsumePasskeyLoginChallenge(token string, consumedAt time.Time) error {
+	return s.consumeAuthChallenge(token, authChallengeTypePasskeyLogin, consumedAt)
 }
 
 func (s *MySQLStore) ListPasskeyLoginChallenges() []domain.PasskeyLoginChallenge {
-	rows, err := s.db.Query(`
-		SELECT token, session_data_json, expires_at, created_at
-		FROM passkey_login_challenges
-		ORDER BY created_at DESC
-		LIMIT 1000
-	`)
+	rows, err := s.listAuthChallenges(authChallengeTypePasskeyLogin, 1000)
 	if err != nil {
 		return nil
 	}
-	defer rows.Close()
-
-	items := make([]domain.PasskeyLoginChallenge, 0)
-	for rows.Next() {
-		var item domain.PasskeyLoginChallenge
-		if err := rows.Scan(&item.Token, &item.SessionDataJSON, &item.ExpiresAt, &item.CreatedAt); err != nil {
-			continue
-		}
-		items = append(items, item)
+	items := make([]domain.PasskeyLoginChallenge, 0, len(rows))
+	for _, row := range rows {
+		items = append(items, domain.PasskeyLoginChallenge{
+			Token:           row.Token,
+			SessionDataJSON: row.PayloadJSON,
+			ExpiresAt:       row.ExpiresAt,
+			CreatedAt:       row.CreatedAt,
+		})
 	}
 	return items
 }
 
 func (s *MySQLStore) DeletePasskeyLoginChallenges(tokens []string) error {
-	if len(tokens) == 0 {
-		return nil
-	}
-	placeholders := make([]string, len(tokens))
-	args := make([]any, 0, len(tokens))
-	for i, token := range tokens {
-		placeholders[i] = "?"
-		args = append(args, token)
-	}
-	_, err := s.db.Exec(
-		fmt.Sprintf("DELETE FROM passkey_login_challenges WHERE token IN (%s)", strings.Join(placeholders, ",")),
-		args...,
-	)
-	return err
+	return s.deleteAuthChallenges(tokens, authChallengeTypePasskeyLogin)
 }
 
 func (s *MySQLStore) AppendPasskeyUsageLog(log domain.PasskeyUsageLog) error {

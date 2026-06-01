@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"database/sql"
+	"time"
 
 	"mysso/backend/internal/domain"
 )
@@ -105,61 +106,83 @@ func (s *MySQLStore) ConsumeSMSVerificationCode(id string) error {
 }
 
 func (s *MySQLStore) SaveMFALoginChallenge(challenge domain.MFALoginChallenge) error {
-	_, err := s.db.Exec(`
-		INSERT INTO mfa_login_challenges (token, user_id, method, target, expires_at, created_at)
-		VALUES (?, ?, ?, ?, ?, ?)
-	`, challenge.Token, challenge.UserID, challenge.Method, challenge.Target, challenge.ExpiresAt, challenge.CreatedAt)
-	return err
+	return s.saveAuthChallenge(domain.AuthChallenge{
+		Token:         challenge.Token,
+		ChallengeType: authChallengeTypeMFA,
+		UserID:        challenge.UserID,
+		Channel:       challenge.Method,
+		Target:        challenge.Target,
+		ExpiresAt:     challenge.ExpiresAt,
+		CreatedAt:     challenge.CreatedAt,
+	})
 }
 
 func (s *MySQLStore) GetMFALoginChallenge(token string) (domain.MFALoginChallenge, error) {
-	row := s.db.QueryRow(`
-		SELECT token, user_id, method, target, expires_at, created_at
-		FROM mfa_login_challenges
-		WHERE token = ? AND expires_at >= UTC_TIMESTAMP()
-		LIMIT 1
-	`, token)
-	var item domain.MFALoginChallenge
-	if err := row.Scan(&item.Token, &item.UserID, &item.Method, &item.Target, &item.ExpiresAt, &item.CreatedAt); err != nil {
-		if err == sql.ErrNoRows {
-			return domain.MFALoginChallenge{}, ErrNotFound
-		}
+	item, err := s.getAuthChallenge(token, authChallengeTypeMFA, true)
+	if err != nil {
 		return domain.MFALoginChallenge{}, err
 	}
-	return item, nil
+	return domain.MFALoginChallenge{
+		Token:     item.Token,
+		UserID:    item.UserID,
+		Method:    item.Channel,
+		Target:    item.Target,
+		ExpiresAt: item.ExpiresAt,
+		CreatedAt: item.CreatedAt,
+	}, nil
 }
 
 func (s *MySQLStore) DeleteMFALoginChallenge(token string) error {
-	_, err := s.db.Exec(`DELETE FROM mfa_login_challenges WHERE token = ?`, token)
-	return err
+	return s.deleteAuthChallenge(token, authChallengeTypeMFA)
+}
+
+func (s *MySQLStore) ConsumeMFALoginChallenge(token string, consumedAt time.Time) error {
+	return s.consumeAuthChallenge(token, authChallengeTypeMFA, consumedAt)
 }
 
 func (s *MySQLStore) SaveDeletionLoginChallenge(challenge domain.DeletionLoginChallenge) error {
-	_, err := s.db.Exec(`
-		INSERT INTO deletion_login_challenges (token, user_id, acr, deletion_scheduled_at, expires_at, created_at)
-		VALUES (?, ?, ?, ?, ?, ?)
-	`, challenge.Token, challenge.UserID, challenge.ACR, challenge.DeletionScheduledAt, challenge.ExpiresAt, challenge.CreatedAt)
-	return err
+	payload, err := authChallengePayload(struct {
+		DeletionScheduledAt time.Time `json:"deletion_scheduled_at"`
+	}{DeletionScheduledAt: challenge.DeletionScheduledAt})
+	if err != nil {
+		return err
+	}
+	return s.saveAuthChallenge(domain.AuthChallenge{
+		Token:         challenge.Token,
+		ChallengeType: authChallengeTypeDeletionLogin,
+		UserID:        challenge.UserID,
+		ACR:           challenge.ACR,
+		PayloadJSON:   payload,
+		ExpiresAt:     challenge.ExpiresAt,
+		CreatedAt:     challenge.CreatedAt,
+	})
 }
 
 func (s *MySQLStore) GetDeletionLoginChallenge(token string) (domain.DeletionLoginChallenge, error) {
-	row := s.db.QueryRow(`
-		SELECT token, user_id, acr, deletion_scheduled_at, expires_at, created_at
-		FROM deletion_login_challenges
-		WHERE token = ? AND expires_at >= UTC_TIMESTAMP()
-		LIMIT 1
-	`, token)
-	var item domain.DeletionLoginChallenge
-	if err := row.Scan(&item.Token, &item.UserID, &item.ACR, &item.DeletionScheduledAt, &item.ExpiresAt, &item.CreatedAt); err != nil {
-		if err == sql.ErrNoRows {
-			return domain.DeletionLoginChallenge{}, ErrNotFound
-		}
+	item, err := s.getAuthChallenge(token, authChallengeTypeDeletionLogin, true)
+	if err != nil {
 		return domain.DeletionLoginChallenge{}, err
 	}
-	return item, nil
+	payload, err := parseAuthChallengePayload[struct {
+		DeletionScheduledAt time.Time `json:"deletion_scheduled_at"`
+	}](item.PayloadJSON)
+	if err != nil {
+		return domain.DeletionLoginChallenge{}, err
+	}
+	return domain.DeletionLoginChallenge{
+		Token:               item.Token,
+		UserID:              item.UserID,
+		ACR:                 item.ACR,
+		DeletionScheduledAt: payload.DeletionScheduledAt,
+		ExpiresAt:           item.ExpiresAt,
+		CreatedAt:           item.CreatedAt,
+	}, nil
 }
 
 func (s *MySQLStore) DeleteDeletionLoginChallenge(token string) error {
-	_, err := s.db.Exec(`DELETE FROM deletion_login_challenges WHERE token = ?`, token)
-	return err
+	return s.deleteAuthChallenge(token, authChallengeTypeDeletionLogin)
+}
+
+func (s *MySQLStore) ConsumeDeletionLoginChallenge(token string, consumedAt time.Time) error {
+	return s.consumeAuthChallenge(token, authChallengeTypeDeletionLogin, consumedAt)
 }

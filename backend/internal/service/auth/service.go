@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"mysso/backend/internal/appdefaults"
 	"mysso/backend/internal/domain"
 	"mysso/backend/internal/notify"
 	"mysso/backend/internal/security"
@@ -14,22 +15,20 @@ import (
 	"mysso/backend/internal/service/common/authutil"
 	"mysso/backend/internal/service/common/deps"
 	"mysso/backend/internal/service/common/templateutil"
-	"mysso/backend/internal/service/ratelimit"
 	"mysso/backend/internal/service/settings"
 )
 
 type AuthService struct {
-	deps      *deps.Deps
-	audit     *audit.Service
-	settings  *settings.Service
-	user      interface{ CleanupExpiredDeletionRequests() error }
-	rateLimit *ratelimit.Service
+	deps     *deps.Deps
+	audit    *audit.Service
+	settings *settings.Service
+	user     interface{ CleanupExpiredDeletionRequests() error }
 }
 
 type Service = AuthService
 
-func New(dependencies *deps.Deps, auditService *audit.Service, settingsService *settings.Service, userService interface{ CleanupExpiredDeletionRequests() error }, rateLimitService *ratelimit.Service) *Service {
-	return &AuthService{deps: dependencies, audit: auditService, settings: settingsService, user: userService, rateLimit: rateLimitService}
+func New(dependencies *deps.Deps, auditService *audit.Service, settingsService *settings.Service, userService interface{ CleanupExpiredDeletionRequests() error }) *Service {
+	return &AuthService{deps: dependencies, audit: auditService, settings: settingsService, user: userService}
 }
 
 type PasswordLoginResult struct {
@@ -60,6 +59,12 @@ type RegisterResult struct {
 	RequiresPhoneBinding       bool
 	PhoneBindingChallengeToken string
 	PhoneBindingReason         string
+}
+
+type SendChallengeResult struct {
+	ChallengeToken  string `json:"challenge_token,omitempty"`
+	ExpiresIn       int    `json:"expires_in"`
+	CaptchaRequired bool   `json:"captcha_required"`
 }
 
 func preferredLocaleForRegistrationCountry(country string) string {
@@ -201,9 +206,10 @@ func (s *AuthService) CompletePasswordLoginMFA(challengeToken, otp, ip, deviceID
 	default:
 		return PasswordLoginResult{}, fmt.Errorf("unsupported mfa method")
 	}
-	if err := s.deps.Store.DeleteMFALoginChallenge(challenge.Token); err != nil {
+	if err := s.deps.Store.ConsumeMFALoginChallenge(challenge.Token, time.Now().UTC()); err != nil {
 		return PasswordLoginResult{}, err
 	}
+	_ = s.deps.Store.DeleteMFALoginChallenge(challenge.Token)
 	s.resetAuthAttempt(attempt)
 	return s.ContinuePostAuthentication(user, ip, "password", "urn:mysso:acr:password+mfa")
 }
@@ -307,14 +313,15 @@ func (s *AuthService) ConfirmDeletionLogin(challengeToken, ip string) (PasswordL
 	if user.Status != domain.UserActive {
 		return PasswordLoginResult{}, loginBlockedByUserStatus(user, fmt.Sprintf("user status is %s", user.Status))
 	}
+	if err := s.deps.Store.ConsumeDeletionLoginChallenge(challenge.Token, time.Now().UTC()); err != nil {
+		return PasswordLoginResult{}, err
+	}
+	_ = s.deps.Store.DeleteDeletionLoginChallenge(challenge.Token)
 	if user.DeletionScheduledAt != nil {
 		user, err = cancelUserDeletion(s.deps, s.audit, user, "deletion_login_confirm")
 		if err != nil {
 			return PasswordLoginResult{}, err
 		}
-	}
-	if err := s.deps.Store.DeleteDeletionLoginChallenge(challenge.Token); err != nil {
-		return PasswordLoginResult{}, err
 	}
 	return s.ContinuePostAuthentication(user, ip, deriveLoginMethodFromACR(challenge.ACR), challenge.ACR)
 }
@@ -348,17 +355,6 @@ func (s *AuthService) ResendPasswordLoginMFAChallenge(challengeToken, ip, device
 		IP:         strings.TrimSpace(ip),
 		DeviceID:   strings.TrimSpace(deviceID),
 		User:       &user,
-	}
-	if s.rateLimit != nil {
-		if err := s.rateLimit.CheckAndRecordAuthAction(ratelimit.AuthAttemptOptions{
-			Kind:       attempt.Kind,
-			Identifier: attempt.Identifier,
-			IP:         attempt.IP,
-			DeviceID:   attempt.DeviceID,
-		}); err != nil {
-			s.auditAuthAttempt(attempt, "blocked", "rate_limited")
-			return 0, "", "", err
-		}
 	}
 	cooldownSeconds, err := s.sendMFALoginCode(challenge.Method, challenge.Target)
 	if err != nil {
@@ -613,12 +609,14 @@ func (s *AuthService) Register(input settings.RegisterInput) (RegisterResult, er
 		}
 		return cause
 	}
-	if err := s.savePhoneBindingRiskState(user.ID, phoneBindingRiskState{
-		Mode:       riskMode,
-		Required:   riskRequired,
-		LoginCount: 0,
-	}); err != nil {
-		return RegisterResult{}, rollbackUser(err)
+	if riskMode != phoneBindingModeNone || riskRequired {
+		if err := s.savePhoneBindingRiskState(user.ID, phoneBindingRiskState{
+			Mode:       riskMode,
+			Required:   riskRequired,
+			LoginCount: 0,
+		}); err != nil {
+			return RegisterResult{}, rollbackUser(err)
+		}
 	}
 	s.audit.Record(user.ID, user.Role, "user.register", user.ID, map[string]any{
 		"country": country,
@@ -638,26 +636,12 @@ func (s *AuthService) Register(input settings.RegisterInput) (RegisterResult, er
 	return result, nil
 }
 
-func (s *AuthService) CreatePublicSendChallenge(purpose, channel, target, ip, userAgent string) (ratelimit.SendChallengeResult, error) {
-	if s.rateLimit == nil {
-		return ratelimit.SendChallengeResult{}, fmt.Errorf("rate limiter is unavailable")
-	}
-	return s.rateLimit.CreateSendChallenge(purpose, channel, target, ip, userAgent)
+func (s *AuthService) CreatePublicSendChallenge(purpose, channel, target, ip, userAgent string) (SendChallengeResult, error) {
+	return SendChallengeResult{ExpiresIn: appdefaults.DefaultChallengeTokenTTLSeconds}, nil
 }
 
 func (s *AuthService) SendPublicEmailVerificationCode(email, country, purpose, challengeToken, captchaToken, ip, userAgent string) (int, error) {
 	email = strings.ToLower(strings.TrimSpace(email))
-	if err := s.rateLimit.ValidateAndRecordPublicSend(ratelimit.PublicSendOptions{
-		Channel:        "email",
-		Purpose:        purpose,
-		Target:         email,
-		ChallengeToken: challengeToken,
-		CaptchaToken:   captchaToken,
-		IP:             ip,
-		UserAgent:      userAgent,
-	}); err != nil {
-		return 0, err
-	}
 	cooldownSeconds, err := s.sendEmailVerificationCode(email, country, purpose, false)
 	if shouldMaskPublicVerificationError(err) {
 		return s.settings.GetVerificationCodeCooldownSeconds(), nil
@@ -669,17 +653,6 @@ func (s *AuthService) SendPublicSMSVerificationCode(phone, purpose, challengeTok
 	phone = strings.TrimSpace(phone)
 	if strings.EqualFold(strings.TrimSpace(purpose), "login") && !s.settings.IsPhoneVerificationEnabled() {
 		return 0, fmt.Errorf("phone verification is disabled")
-	}
-	if err := s.rateLimit.ValidateAndRecordPublicSend(ratelimit.PublicSendOptions{
-		Channel:        "sms",
-		Purpose:        purpose,
-		Target:         phone,
-		ChallengeToken: challengeToken,
-		CaptchaToken:   captchaToken,
-		IP:             ip,
-		UserAgent:      userAgent,
-	}); err != nil {
-		return 0, err
 	}
 	cooldownSeconds, err := s.sendSMSVerificationCode(phone, purpose, false)
 	if shouldMaskPublicVerificationError(err) {

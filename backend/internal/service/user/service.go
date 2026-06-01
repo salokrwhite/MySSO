@@ -20,21 +20,20 @@ import (
 	"mysso/backend/internal/service/common/authutil"
 	"mysso/backend/internal/service/common/deps"
 	"mysso/backend/internal/service/common/templateutil"
-	"mysso/backend/internal/service/ratelimit"
 	"mysso/backend/internal/service/settings"
+	"mysso/backend/internal/store"
 )
 
 type UserService struct {
-	deps      *deps.Deps
-	audit     *audit.Service
-	settings  *settings.Service
-	rateLimit *ratelimit.Service
+	deps     *deps.Deps
+	audit    *audit.Service
+	settings *settings.Service
 }
 
 type Service = UserService
 
-func New(dependencies *deps.Deps, auditService *audit.Service, settingsService *settings.Service, rateLimitService *ratelimit.Service) *Service {
-	return &UserService{deps: dependencies, audit: auditService, settings: settingsService, rateLimit: rateLimitService}
+func New(dependencies *deps.Deps, auditService *audit.Service, settingsService *settings.Service) *Service {
+	return &UserService{deps: dependencies, audit: auditService, settings: settingsService}
 }
 
 func (s *UserService) invalidateUserSessionsAndRefreshTokens(userID string) error {
@@ -173,7 +172,7 @@ func (s *UserService) SendCurrentMFACode(userID, currentPassword, ip, deviceID s
 	if !authutil.EffectiveUserMFAEnabled(user) {
 		return 0, "", fmt.Errorf("mfa is not enabled")
 	}
-	authService := auth.New(s.deps, s.audit, s.settings, s, s.rateLimit)
+	authService := auth.New(s.deps, s.audit, s.settings, s)
 
 	switch authutil.EffectiveUserMFAMethod(user) {
 	case "email":
@@ -355,13 +354,13 @@ func (s *UserService) UpdateUserPhone(userID, phone, code, currentPhoneCode, cur
 
 	previousPhone := user.Phone
 	user.Phone = phone
-	values, _ := s.deps.Store.GetSettings(domain.UserRiskPhoneBindingRequiredKey(user.ID))
-	if authutil.FallbackBoolSetting(values[domain.UserRiskPhoneBindingRequiredKey(user.ID)], false) {
+	policy, policyErr := s.deps.Store.GetUserSecurityPolicy(user.ID)
+	if policyErr != nil && policyErr != store.ErrNotFound {
+		return domain.User{}, policyErr
+	}
+	if policy.PhoneBindingRiskRequired {
 		user.Status = domain.UserActive
-		_ = s.deps.Store.UpsertSettings(map[string]string{
-			domain.UserRiskPhoneBindingRequiredKey(user.ID):   "false",
-			domain.UserRiskPhoneBindingLoginCountKey(user.ID): "0",
-		})
+		_ = s.deps.Store.UpdatePhoneBindingRiskState(user.ID, policy.PhoneBindingRiskMode, false, 0)
 	}
 	if err := s.InvalidateAuthForSecurityEvent(&user); err != nil {
 		return domain.User{}, err
