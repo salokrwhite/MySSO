@@ -219,15 +219,16 @@ func (s *MySQLStore) ListAppIDsByGroup(groupID string) ([]string, error) {
 
 func (s *MySQLStore) CreateOrUpdateAppUserBan(ban domain.AppUserBan) error {
 	_, err := s.db.Exec(`
-		INSERT INTO app_user_bans (id, app_id, user_id, reason, expires_at, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO app_user_access_states (app_id, user_id, access_version, ban_id, ban_reason, ban_expires_at, ban_created_at, ban_updated_at, updated_at)
+		VALUES (?, ?, 1, ?, ?, ?, ?, ?, ?)
 		ON DUPLICATE KEY UPDATE
-			reason = VALUES(reason),
-			expires_at = VALUES(expires_at),
+			ban_reason = VALUES(ban_reason),
+			ban_expires_at = VALUES(ban_expires_at),
+			ban_updated_at = VALUES(ban_updated_at),
 			updated_at = VALUES(updated_at),
-			id = VALUES(id),
-			created_at = LEAST(created_at, VALUES(created_at))
-	`, ban.ID, ban.AppID, ban.UserID, ban.Reason, nullableTime(ban.ExpiresAt), ban.CreatedAt, ban.UpdatedAt)
+			ban_id = VALUES(ban_id),
+			ban_created_at = COALESCE(LEAST(ban_created_at, VALUES(ban_created_at)), VALUES(ban_created_at))
+	`, ban.AppID, ban.UserID, ban.ID, ban.Reason, nullableTime(ban.ExpiresAt), ban.CreatedAt, ban.UpdatedAt, ban.UpdatedAt)
 	return err
 }
 
@@ -249,25 +250,25 @@ func scanAppUserBan(scanner interface{ Scan(dest ...any) error }) (domain.AppUse
 
 func (s *MySQLStore) GetActiveAppUserBan(appID, userID string, now time.Time) (domain.AppUserBan, error) {
 	row := s.db.QueryRow(`
-		SELECT id, app_id, user_id, reason, expires_at, created_at, updated_at
-		FROM app_user_bans
-		WHERE app_id = ? AND user_id = ? AND (expires_at IS NULL OR expires_at > ?)
+		SELECT ban_id, app_id, user_id, ban_reason, ban_expires_at, ban_created_at, ban_updated_at
+		FROM app_user_access_states
+		WHERE app_id = ? AND user_id = ? AND ban_id <> '' AND (ban_expires_at IS NULL OR ban_expires_at > ?)
 	`, appID, userID, now)
 	return scanAppUserBan(row)
 }
 
 func (s *MySQLStore) ListAppUserBans(appID string, includeExpired bool, now time.Time) ([]domain.AppUserBan, error) {
 	query := `
-		SELECT id, app_id, user_id, reason, expires_at, created_at, updated_at
-		FROM app_user_bans
-		WHERE app_id = ?
+		SELECT ban_id, app_id, user_id, ban_reason, ban_expires_at, ban_created_at, ban_updated_at
+		FROM app_user_access_states
+		WHERE app_id = ? AND ban_id <> ''
 	`
 	args := []any{appID}
 	if !includeExpired {
-		query += ` AND (expires_at IS NULL OR expires_at > ?)`
+		query += ` AND (ban_expires_at IS NULL OR ban_expires_at > ?)`
 		args = append(args, now)
 	}
-	query += ` ORDER BY updated_at DESC, created_at DESC`
+	query += ` ORDER BY ban_updated_at DESC, ban_created_at DESC`
 	rows, err := s.db.Query(query, args...)
 	if err != nil {
 		return nil, err
@@ -285,16 +286,20 @@ func (s *MySQLStore) ListAppUserBans(appID string, includeExpired bool, now time
 }
 
 func (s *MySQLStore) DeleteAppUserBan(appID, userID string) error {
-	_, err := s.db.Exec(`DELETE FROM app_user_bans WHERE app_id = ? AND user_id = ?`, appID, userID)
+	_, err := s.db.Exec(`
+		UPDATE app_user_access_states
+		SET ban_id = '', ban_reason = '', ban_expires_at = NULL, ban_created_at = NULL, ban_updated_at = NULL, updated_at = UTC_TIMESTAMP()
+		WHERE app_id = ? AND user_id = ?
+	`, appID, userID)
 	return err
 }
 
 func (s *MySQLStore) GetAppUserAccessVersion(appID, userID string) (domain.AppUserAccessVersion, error) {
 	var item domain.AppUserAccessVersion
 	err := s.db.QueryRow(`
-		SELECT app_id, user_id, version, updated_at
-		FROM app_user_access_versions
-		WHERE app_id = ? AND user_id = ?
+		SELECT app_id, user_id, access_version, updated_at
+		FROM app_user_access_states
+		WHERE app_id = ? AND user_id = ? AND access_version > 1
 	`, appID, userID).Scan(&item.AppID, &item.UserID, &item.Version, &item.UpdatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -307,10 +312,10 @@ func (s *MySQLStore) GetAppUserAccessVersion(appID, userID string) (domain.AppUs
 
 func (s *MySQLStore) BumpAppUserAccessVersion(appID, userID string, updatedAt time.Time) (domain.AppUserAccessVersion, error) {
 	if _, err := s.db.Exec(`
-		INSERT INTO app_user_access_versions (app_id, user_id, version, updated_at)
+		INSERT INTO app_user_access_states (app_id, user_id, access_version, updated_at)
 		VALUES (?, ?, 2, ?)
 		ON DUPLICATE KEY UPDATE
-			version = version + 1,
+			access_version = access_version + 1,
 			updated_at = VALUES(updated_at)
 	`, appID, userID, updatedAt); err != nil {
 		return domain.AppUserAccessVersion{}, err

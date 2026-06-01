@@ -9,17 +9,17 @@ import (
 
 func (s *MySQLStore) SaveEmailVerificationCode(code domain.EmailVerificationCode) error {
 	_, err := s.db.Exec(`
-		INSERT INTO email_verification_codes (id, email, country, purpose, code, expires_at, consumed, created_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO verification_codes (id, channel, target, country, purpose, code, expires_at, consumed, created_at)
+		VALUES (?, 'email', ?, ?, ?, ?, ?, ?, ?)
 	`, code.ID, code.Email, code.Country, code.Purpose, code.Code, code.ExpiresAt, code.Consumed, code.CreatedAt)
 	return err
 }
 
 func (s *MySQLStore) GetEmailVerificationCode(email, purpose, code string) (domain.EmailVerificationCode, error) {
 	row := s.db.QueryRow(`
-		SELECT id, email, country, purpose, code, expires_at, consumed, created_at
-		FROM email_verification_codes
-		WHERE email = ? AND purpose = ? AND code = ? AND consumed = 0 AND expires_at >= UTC_TIMESTAMP()
+		SELECT id, target, country, purpose, code, expires_at, consumed, created_at
+		FROM verification_codes
+		WHERE channel = 'email' AND target = ? AND purpose = ? AND code = ? AND consumed = 0 AND expires_at >= UTC_TIMESTAMP()
 		ORDER BY created_at DESC
 		LIMIT 1
 	`, email, purpose, code)
@@ -35,9 +35,9 @@ func (s *MySQLStore) GetEmailVerificationCode(email, purpose, code string) (doma
 
 func (s *MySQLStore) GetLatestEmailVerificationCode(email, purpose string) (domain.EmailVerificationCode, error) {
 	row := s.db.QueryRow(`
-		SELECT id, email, country, purpose, code, expires_at, consumed, created_at
-		FROM email_verification_codes
-		WHERE email = ? AND purpose = ?
+		SELECT id, target, country, purpose, code, expires_at, consumed, created_at
+		FROM verification_codes
+		WHERE channel = 'email' AND target = ? AND purpose = ?
 		ORDER BY created_at DESC
 		LIMIT 1
 	`, email, purpose)
@@ -52,23 +52,23 @@ func (s *MySQLStore) GetLatestEmailVerificationCode(email, purpose string) (doma
 }
 
 func (s *MySQLStore) ConsumeEmailVerificationCode(id string) error {
-	_, err := s.db.Exec(`UPDATE email_verification_codes SET consumed = 1 WHERE id = ?`, id)
+	_, err := s.db.Exec(`UPDATE verification_codes SET consumed = 1 WHERE id = ? AND channel = 'email'`, id)
 	return err
 }
 
 func (s *MySQLStore) SaveSMSVerificationCode(code domain.SMSVerificationCode) error {
 	_, err := s.db.Exec(`
-		INSERT INTO sms_verification_codes (id, phone, purpose, code, expires_at, consumed, created_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO verification_codes (id, channel, target, country, purpose, code, expires_at, consumed, created_at)
+		VALUES (?, 'sms', ?, '', ?, ?, ?, ?, ?)
 	`, code.ID, code.Phone, code.Purpose, code.Code, code.ExpiresAt, code.Consumed, code.CreatedAt)
 	return err
 }
 
 func (s *MySQLStore) GetSMSVerificationCode(phone, purpose, code string) (domain.SMSVerificationCode, error) {
 	row := s.db.QueryRow(`
-		SELECT id, phone, purpose, code, expires_at, consumed, created_at
-		FROM sms_verification_codes
-		WHERE phone = ? AND purpose = ? AND code = ? AND consumed = 0 AND expires_at >= UTC_TIMESTAMP()
+		SELECT id, target, purpose, code, expires_at, consumed, created_at
+		FROM verification_codes
+		WHERE channel = 'sms' AND target = ? AND purpose = ? AND code = ? AND consumed = 0 AND expires_at >= UTC_TIMESTAMP()
 		ORDER BY created_at DESC
 		LIMIT 1
 	`, phone, purpose, code)
@@ -84,9 +84,9 @@ func (s *MySQLStore) GetSMSVerificationCode(phone, purpose, code string) (domain
 
 func (s *MySQLStore) GetLatestSMSVerificationCode(phone, purpose string) (domain.SMSVerificationCode, error) {
 	row := s.db.QueryRow(`
-		SELECT id, phone, purpose, code, expires_at, consumed, created_at
-		FROM sms_verification_codes
-		WHERE phone = ? AND purpose = ?
+		SELECT id, target, purpose, code, expires_at, consumed, created_at
+		FROM verification_codes
+		WHERE channel = 'sms' AND target = ? AND purpose = ?
 		ORDER BY created_at DESC
 		LIMIT 1
 	`, phone, purpose)
@@ -101,7 +101,7 @@ func (s *MySQLStore) GetLatestSMSVerificationCode(phone, purpose string) (domain
 }
 
 func (s *MySQLStore) ConsumeSMSVerificationCode(id string) error {
-	_, err := s.db.Exec(`UPDATE sms_verification_codes SET consumed = 1 WHERE id = ?`, id)
+	_, err := s.db.Exec(`UPDATE verification_codes SET consumed = 1 WHERE id = ? AND channel = 'sms'`, id)
 	return err
 }
 

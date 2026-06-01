@@ -416,10 +416,10 @@ func seedInitialData(db *sql.DB, req CompleteRequest, cfg config.Config) error {
 	`, appID, appdefaults.FirstPartyClientOwnerID, appdefaults.FirstPartyWebPortalName, cfg.OIDC.FirstPartyClientID, hashedFirstPartySecret, appdefaults.FirstPartyWebPortalDescription, now, now); err != nil {
 		return fmt.Errorf("create first-party app: %w", err)
 	}
-	if _, err := db.Exec(`INSERT INTO client_redirect_uris (app_id, redirect_uri) VALUES (?, ?)`, appID, strings.TrimRight(cfg.HTTP.FrontendBase, "/")+"/callback"); err != nil {
+	if _, err := db.Exec(`INSERT INTO client_redirect_uris (app_id, uri_type, uri) VALUES (?, 'login', ?)`, appID, strings.TrimRight(cfg.HTTP.FrontendBase, "/")+"/callback"); err != nil {
 		return fmt.Errorf("create first-party redirect uri: %w", err)
 	}
-	if _, err := db.Exec(`INSERT INTO client_post_logout_redirect_uris (app_id, post_logout_redirect_uri) VALUES (?, ?)`, appID, strings.TrimRight(cfg.HTTP.FrontendBase, "/")+"/login"); err != nil {
+	if _, err := db.Exec(`INSERT INTO client_redirect_uris (app_id, uri_type, uri) VALUES (?, 'post_logout', ?)`, appID, strings.TrimRight(cfg.HTTP.FrontendBase, "/")+"/login"); err != nil {
 		return fmt.Errorf("create first-party post logout redirect uri: %w", err)
 	}
 	for _, scope := range strings.Fields(strings.TrimSpace(cfg.OIDC.FirstPartyScope)) {
@@ -470,7 +470,10 @@ func ApplyRuntimeSettings(db *sql.DB, cfg *config.Config) error {
 	if err := ensureStabilityIndexes(db); err != nil {
 		return err
 	}
-	if err := ensureSMSVerificationCodesTable(db); err != nil {
+	if err := ensureVerificationCodesTable(db); err != nil {
+		return err
+	}
+	if err := migrateLegacyVerificationCodes(db); err != nil {
 		return err
 	}
 	if err := ensureAuthChallengesTable(db); err != nil {
@@ -494,13 +497,22 @@ func ApplyRuntimeSettings(db *sql.DB, cfg *config.Config) error {
 	if err := ensureClientAppAllowGetSessionLogoutColumn(db); err != nil {
 		return err
 	}
-	if err := ensureClientPostLogoutRedirectURIsTable(db); err != nil {
+	if err := ensureClientRedirectURIsShape(db); err != nil {
 		return err
 	}
-	if err := ensureEmailSendLogsTable(db); err != nil {
+	if err := migrateLegacyClientPostLogoutRedirectURIs(db); err != nil {
 		return err
 	}
-	if err := ensurePhoneSendLogsTable(db); err != nil {
+	if err := ensureSendLogsTable(db); err != nil {
+		return err
+	}
+	if err := migrateLegacySendLogs(db); err != nil {
+		return err
+	}
+	if err := ensureAppUserAccessStatesTable(db); err != nil {
+		return err
+	}
+	if err := migrateLegacyAppUserAccessStates(db); err != nil {
 		return err
 	}
 	if err := ensureScopeDefinitionsTable(db); err != nil {
@@ -931,18 +943,25 @@ func ensureEmailLookupIndexes(db *sql.DB) error {
 		query string
 	}{
 		{
-			table: "email_verification_codes",
-			index: "idx_email_verification_latest",
-			query: `ALTER TABLE email_verification_codes ADD INDEX idx_email_verification_latest (email, purpose, created_at)`,
+			table: "verification_codes",
+			index: "idx_verification_latest",
+			query: `ALTER TABLE verification_codes ADD INDEX idx_verification_latest (channel, target, purpose, created_at)`,
 		},
 		{
-			table: "sms_verification_codes",
-			index: "idx_sms_verification_latest",
-			query: `ALTER TABLE sms_verification_codes ADD INDEX idx_sms_verification_latest (phone, purpose, created_at)`,
+			table: "verification_codes",
+			index: "idx_verification_lookup",
+			query: `ALTER TABLE verification_codes ADD INDEX idx_verification_lookup (channel, target, purpose, code, consumed, expires_at)`,
 		},
 	}
 
 	for _, item := range indexes {
+		exists, err := tableExists(db, item.table)
+		if err != nil {
+			return err
+		}
+		if !exists {
+			continue
+		}
 		if err := ensureIndex(db, item.table, item.index, item.query); err != nil {
 			return err
 		}
@@ -1002,30 +1021,71 @@ func ensureIndex(db *sql.DB, tableName, indexName, createQuery string) error {
 	return err
 }
 
-func ensureSMSVerificationCodesTable(db *sql.DB) error {
-	var count int
-	if err := db.QueryRow(`
-		SELECT COUNT(*) FROM information_schema.tables
-		WHERE table_schema = DATABASE() AND table_name = 'sms_verification_codes'
-	`).Scan(&count); err != nil {
+func ensureVerificationCodesTable(db *sql.DB) error {
+	exists, err := tableExists(db, "verification_codes")
+	if err != nil {
 		return err
 	}
-	if count > 0 {
-		return nil
+	if !exists {
+		if _, err := db.Exec(`
+			CREATE TABLE verification_codes (
+				id VARCHAR(64) PRIMARY KEY,
+				channel VARCHAR(32) NOT NULL,
+				target VARCHAR(255) NOT NULL,
+				country VARCHAR(64) NOT NULL DEFAULT '',
+				purpose VARCHAR(32) NOT NULL,
+				code VARCHAR(16) NOT NULL,
+				expires_at DATETIME NOT NULL,
+				consumed TINYINT(1) NOT NULL DEFAULT 0,
+				created_at DATETIME NOT NULL,
+				INDEX idx_verification_lookup (channel, target, purpose, code, consumed, expires_at),
+				INDEX idx_verification_latest (channel, target, purpose, created_at),
+				INDEX idx_verification_expires_at (expires_at)
+			)
+		`); err != nil {
+			return err
+		}
 	}
-	_, err := db.Exec(`
-		CREATE TABLE sms_verification_codes (
-			id VARCHAR(64) PRIMARY KEY,
-			phone VARCHAR(32) NOT NULL,
-			purpose VARCHAR(32) NOT NULL,
-			code VARCHAR(16) NOT NULL,
-			expires_at DATETIME NOT NULL,
-			consumed TINYINT(1) NOT NULL DEFAULT 0,
-			created_at DATETIME NOT NULL,
-			INDEX idx_sms_verification_lookup (phone, purpose, code, consumed, expires_at)
-		)
-	`)
-	return err
+	indexes := []struct {
+		name  string
+		query string
+	}{
+		{name: "idx_verification_lookup", query: `ALTER TABLE verification_codes ADD INDEX idx_verification_lookup (channel, target, purpose, code, consumed, expires_at)`},
+		{name: "idx_verification_latest", query: `ALTER TABLE verification_codes ADD INDEX idx_verification_latest (channel, target, purpose, created_at)`},
+		{name: "idx_verification_expires_at", query: `ALTER TABLE verification_codes ADD INDEX idx_verification_expires_at (expires_at)`},
+	}
+	for _, index := range indexes {
+		if err := ensureIndex(db, "verification_codes", index.name, index.query); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func migrateLegacyVerificationCodes(db *sql.DB) error {
+	if exists, err := tableExists(db, "email_verification_codes"); err != nil {
+		return err
+	} else if exists {
+		if _, err := db.Exec(`
+			INSERT IGNORE INTO verification_codes (id, channel, target, country, purpose, code, expires_at, consumed, created_at)
+			SELECT id, 'email', email, country, purpose, code, expires_at, consumed, created_at
+			FROM email_verification_codes
+		`); err != nil {
+			return err
+		}
+	}
+	if exists, err := tableExists(db, "sms_verification_codes"); err != nil {
+		return err
+	} else if exists {
+		if _, err := db.Exec(`
+			INSERT IGNORE INTO verification_codes (id, channel, target, country, purpose, code, expires_at, consumed, created_at)
+			SELECT id, 'sms', phone, '', purpose, code, expires_at, consumed, created_at
+			FROM sms_verification_codes
+		`); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func ensureAuthChallengesTable(db *sql.DB) error {
@@ -1352,74 +1412,216 @@ func ensureClientAppAllowGetSessionLogoutColumn(db *sql.DB) error {
 	return err
 }
 
-func ensureClientPostLogoutRedirectURIsTable(db *sql.DB) error {
-	var count int
-	if err := db.QueryRow(`
-		SELECT COUNT(*) FROM information_schema.tables
-		WHERE table_schema = DATABASE() AND table_name = 'client_post_logout_redirect_uris'
-	`).Scan(&count); err != nil {
+func ensureClientRedirectURIsShape(db *sql.DB) error {
+	exists, err := tableExists(db, "client_redirect_uris")
+	if err != nil {
 		return err
 	}
-	if count > 0 {
+	if !exists {
+		if _, err := db.Exec(`
+			CREATE TABLE client_redirect_uris (
+				id BIGINT PRIMARY KEY AUTO_INCREMENT,
+				app_id VARCHAR(64) NOT NULL,
+				uri_type VARCHAR(32) NOT NULL DEFAULT 'login',
+				uri VARCHAR(512) NOT NULL,
+				UNIQUE KEY uniq_app_redirect_uri (app_id, uri_type, uri),
+				INDEX idx_client_redirect_uris_app_type (app_id, uri_type)
+			)
+		`); err != nil {
+			return err
+		}
+	}
+	hasURI, err := columnExists(db, "client_redirect_uris", "uri")
+	if err != nil {
+		return err
+	}
+	if !hasURI {
+		if err := ensureColumn(db, "client_redirect_uris", "uri_type", `ALTER TABLE client_redirect_uris ADD COLUMN uri_type VARCHAR(32) NOT NULL DEFAULT 'login' AFTER app_id`); err != nil {
+			return err
+		}
+		if err := ensureColumn(db, "client_redirect_uris", "uri", `ALTER TABLE client_redirect_uris ADD COLUMN uri VARCHAR(512) NOT NULL DEFAULT '' AFTER uri_type`); err != nil {
+			return err
+		}
+		if legacyRedirectURI, err := columnExists(db, "client_redirect_uris", "redirect_uri"); err != nil {
+			return err
+		} else if legacyRedirectURI {
+			if _, err := db.Exec(`UPDATE client_redirect_uris SET uri = redirect_uri, uri_type = 'login' WHERE uri = ''`); err != nil {
+				return err
+			}
+			if _, err := db.Exec(`ALTER TABLE client_redirect_uris MODIFY redirect_uri VARCHAR(512) NULL`); err != nil {
+				return err
+			}
+		}
+	}
+	indexes := []struct {
+		name  string
+		query string
+	}{
+		{name: "uniq_app_redirect_uri", query: `ALTER TABLE client_redirect_uris ADD UNIQUE KEY uniq_app_redirect_uri (app_id, uri_type, uri)`},
+		{name: "idx_client_redirect_uris_app_type", query: `ALTER TABLE client_redirect_uris ADD INDEX idx_client_redirect_uris_app_type (app_id, uri_type)`},
+	}
+	for _, index := range indexes {
+		if err := ensureIndex(db, "client_redirect_uris", index.name, index.query); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func migrateLegacyClientPostLogoutRedirectURIs(db *sql.DB) error {
+	exists, err := tableExists(db, "client_post_logout_redirect_uris")
+	if err != nil {
+		return err
+	}
+	if !exists {
 		return nil
 	}
-	_, err := db.Exec(`
-		CREATE TABLE client_post_logout_redirect_uris (
-			id BIGINT PRIMARY KEY AUTO_INCREMENT,
-			app_id VARCHAR(64) NOT NULL,
-			post_logout_redirect_uri VARCHAR(255) NOT NULL,
-			INDEX idx_client_post_logout_redirect_uris_app_id (app_id)
-		)
+	_, err = db.Exec(`
+		INSERT IGNORE INTO client_redirect_uris (app_id, uri_type, uri)
+		SELECT app_id, 'post_logout', post_logout_redirect_uri
+		FROM client_post_logout_redirect_uris
 	`)
 	return err
 }
 
-func ensureEmailSendLogsTable(db *sql.DB) error {
-	var count int
-	if err := db.QueryRow(`
-		SELECT COUNT(*) FROM information_schema.tables
-		WHERE table_schema = DATABASE() AND table_name = 'email_send_logs'
-	`).Scan(&count); err != nil {
+func ensureSendLogsTable(db *sql.DB) error {
+	exists, err := tableExists(db, "send_logs")
+	if err != nil {
 		return err
 	}
-	if count > 0 {
-		return nil
+	if !exists {
+		if _, err := db.Exec(`
+			CREATE TABLE send_logs (
+				id VARCHAR(64) PRIMARY KEY,
+				channel VARCHAR(32) NOT NULL,
+				target VARCHAR(255) NOT NULL,
+				content TEXT NOT NULL,
+				account_email VARCHAR(255) NOT NULL DEFAULT '',
+				created_at DATETIME NOT NULL,
+				INDEX idx_send_logs_channel_created_at (channel, created_at),
+				INDEX idx_send_logs_created_at (created_at)
+			)
+		`); err != nil {
+			return err
+		}
 	}
-	_, err := db.Exec(`
-		CREATE TABLE email_send_logs (
-			id VARCHAR(64) PRIMARY KEY,
-			target_email VARCHAR(255) NOT NULL,
-			content TEXT NOT NULL,
-			account_email VARCHAR(255) NOT NULL DEFAULT '',
-			created_at DATETIME NOT NULL,
-			INDEX idx_email_send_logs_created_at (created_at)
-		)
-	`)
-	return err
+	indexes := []struct {
+		name  string
+		query string
+	}{
+		{name: "idx_send_logs_channel_created_at", query: `ALTER TABLE send_logs ADD INDEX idx_send_logs_channel_created_at (channel, created_at)`},
+		{name: "idx_send_logs_created_at", query: `ALTER TABLE send_logs ADD INDEX idx_send_logs_created_at (created_at)`},
+	}
+	for _, index := range indexes {
+		if err := ensureIndex(db, "send_logs", index.name, index.query); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
-func ensurePhoneSendLogsTable(db *sql.DB) error {
-	var count int
-	if err := db.QueryRow(`
-		SELECT COUNT(*) FROM information_schema.tables
-		WHERE table_schema = DATABASE() AND table_name = 'phone_send_logs'
-	`).Scan(&count); err != nil {
+func migrateLegacySendLogs(db *sql.DB) error {
+	if exists, err := tableExists(db, "email_send_logs"); err != nil {
+		return err
+	} else if exists {
+		if _, err := db.Exec(`
+			INSERT IGNORE INTO send_logs (id, channel, target, content, account_email, created_at)
+			SELECT id, 'email', target_email, content, account_email, created_at
+			FROM email_send_logs
+		`); err != nil {
+			return err
+		}
+	}
+	if exists, err := tableExists(db, "phone_send_logs"); err != nil {
+		return err
+	} else if exists {
+		if _, err := db.Exec(`
+			INSERT IGNORE INTO send_logs (id, channel, target, content, account_email, created_at)
+			SELECT id, 'sms', target_phone, content, account_email, created_at
+			FROM phone_send_logs
+		`); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func ensureAppUserAccessStatesTable(db *sql.DB) error {
+	exists, err := tableExists(db, "app_user_access_states")
+	if err != nil {
 		return err
 	}
-	if count > 0 {
-		return nil
+	if !exists {
+		if _, err := db.Exec(`
+			CREATE TABLE app_user_access_states (
+				app_id VARCHAR(64) NOT NULL,
+				user_id VARCHAR(64) NOT NULL,
+				access_version INT NOT NULL DEFAULT 1,
+				ban_id VARCHAR(64) NOT NULL DEFAULT '',
+				ban_reason VARCHAR(500) NOT NULL DEFAULT '',
+				ban_expires_at DATETIME NULL,
+				ban_created_at DATETIME NULL,
+				ban_updated_at DATETIME NULL,
+				updated_at DATETIME NOT NULL,
+				PRIMARY KEY (app_id, user_id),
+				INDEX idx_app_user_access_states_user_id (user_id),
+				INDEX idx_app_user_access_states_app_ban_updated_at (app_id, ban_updated_at),
+				INDEX idx_app_user_access_states_ban_expires_at (ban_expires_at)
+			)
+		`); err != nil {
+			return err
+		}
 	}
-	_, err := db.Exec(`
-		CREATE TABLE phone_send_logs (
-			id VARCHAR(64) PRIMARY KEY,
-			target_phone VARCHAR(32) NOT NULL,
-			content TEXT NOT NULL,
-			account_email VARCHAR(255) NOT NULL DEFAULT '',
-			created_at DATETIME NOT NULL,
-			INDEX idx_phone_send_logs_created_at (created_at)
-		)
-	`)
-	return err
+	indexes := []struct {
+		name  string
+		query string
+	}{
+		{name: "idx_app_user_access_states_user_id", query: `ALTER TABLE app_user_access_states ADD INDEX idx_app_user_access_states_user_id (user_id)`},
+		{name: "idx_app_user_access_states_app_ban_updated_at", query: `ALTER TABLE app_user_access_states ADD INDEX idx_app_user_access_states_app_ban_updated_at (app_id, ban_updated_at)`},
+		{name: "idx_app_user_access_states_ban_expires_at", query: `ALTER TABLE app_user_access_states ADD INDEX idx_app_user_access_states_ban_expires_at (ban_expires_at)`},
+	}
+	for _, index := range indexes {
+		if err := ensureIndex(db, "app_user_access_states", index.name, index.query); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func migrateLegacyAppUserAccessStates(db *sql.DB) error {
+	if exists, err := tableExists(db, "app_user_access_versions"); err != nil {
+		return err
+	} else if exists {
+		if _, err := db.Exec(`
+			INSERT INTO app_user_access_states (app_id, user_id, access_version, updated_at)
+			SELECT app_id, user_id, version, updated_at
+			FROM app_user_access_versions
+			ON DUPLICATE KEY UPDATE
+				app_user_access_states.access_version = GREATEST(app_user_access_states.access_version, VALUES(access_version)),
+				app_user_access_states.updated_at = GREATEST(app_user_access_states.updated_at, VALUES(updated_at))
+		`); err != nil {
+			return err
+		}
+	}
+	if exists, err := tableExists(db, "app_user_bans"); err != nil {
+		return err
+	} else if exists {
+		if _, err := db.Exec(`
+			INSERT INTO app_user_access_states (app_id, user_id, access_version, ban_id, ban_reason, ban_expires_at, ban_created_at, ban_updated_at, updated_at)
+			SELECT app_id, user_id, 1, id, reason, expires_at, created_at, updated_at, updated_at
+			FROM app_user_bans
+			ON DUPLICATE KEY UPDATE
+				ban_id = VALUES(ban_id),
+				ban_reason = VALUES(ban_reason),
+				ban_expires_at = VALUES(ban_expires_at),
+				ban_created_at = VALUES(ban_created_at),
+				ban_updated_at = VALUES(ban_updated_at),
+				app_user_access_states.updated_at = GREATEST(app_user_access_states.updated_at, VALUES(updated_at))
+		`); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func ensureScopeDefinitionsTable(db *sql.DB) error {

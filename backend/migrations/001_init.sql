@@ -49,20 +49,14 @@ CREATE TABLE `client_apps` (
   KEY `idx_client_apps_created_at` (`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `client_post_logout_redirect_uris` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `app_id` varchar(64) NOT NULL,
-  `post_logout_redirect_uri` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idx_client_post_logout_redirect_uris_app_id` (`app_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE `client_redirect_uris` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `app_id` varchar(64) NOT NULL,
-  `redirect_uri` varchar(512) NOT NULL,
+  `uri_type` varchar(32) NOT NULL DEFAULT 'login',
+  `uri` varchar(512) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uniq_app_redirect` (`app_id`,`redirect_uri`)
+  UNIQUE KEY `uniq_app_redirect_uri` (`app_id`,`uri_type`,`uri`),
+  KEY `idx_client_redirect_uris_app_type` (`app_id`,`uri_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `client_scopes` (
@@ -138,27 +132,20 @@ CREATE TABLE `app_group_bindings` (
   KEY `idx_app_group_bindings_group_id` (`group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `app_user_bans` (
-  `id` varchar(64) NOT NULL,
+CREATE TABLE `app_user_access_states` (
   `app_id` varchar(64) NOT NULL,
   `user_id` varchar(64) NOT NULL,
-  `reason` varchar(500) NOT NULL DEFAULT '',
-  `expires_at` datetime DEFAULT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uniq_app_user_ban` (`app_id`,`user_id`),
-  KEY `idx_app_user_bans_app_updated_at` (`app_id`,`updated_at`),
-  KEY `idx_app_user_bans_expires_at` (`expires_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `app_user_access_versions` (
-  `app_id` varchar(64) NOT NULL,
-  `user_id` varchar(64) NOT NULL,
-  `version` int(11) NOT NULL DEFAULT '1',
+  `access_version` int(11) NOT NULL DEFAULT '1',
+  `ban_id` varchar(64) NOT NULL DEFAULT '',
+  `ban_reason` varchar(500) NOT NULL DEFAULT '',
+  `ban_expires_at` datetime DEFAULT NULL,
+  `ban_created_at` datetime DEFAULT NULL,
+  `ban_updated_at` datetime DEFAULT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`app_id`,`user_id`),
-  KEY `idx_app_user_access_versions_user_id` (`user_id`)
+  KEY `idx_app_user_access_states_user_id` (`user_id`),
+  KEY `idx_app_user_access_states_app_ban_updated_at` (`app_id`,`ban_updated_at`),
+  KEY `idx_app_user_access_states_ban_expires_at` (`ban_expires_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `developer_access_logs` (
@@ -179,19 +166,22 @@ CREATE TABLE `developer_access_logs` (
   KEY `idx_developer_access_logs_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `email_send_logs` (
+CREATE TABLE `send_logs` (
   `id` varchar(64) NOT NULL,
-  `target_email` varchar(255) NOT NULL,
+  `channel` varchar(32) NOT NULL,
+  `target` varchar(255) NOT NULL,
   `content` text NOT NULL,
   `account_email` varchar(255) NOT NULL DEFAULT '',
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_email_send_logs_created_at` (`created_at`)
+  KEY `idx_send_logs_channel_created_at` (`channel`,`created_at`),
+  KEY `idx_send_logs_created_at` (`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `email_verification_codes` (
+CREATE TABLE `verification_codes` (
   `id` varchar(64) NOT NULL,
-  `email` varchar(255) NOT NULL,
+  `channel` varchar(32) NOT NULL,
+  `target` varchar(255) NOT NULL,
   `country` varchar(64) NOT NULL DEFAULT '',
   `purpose` varchar(32) NOT NULL,
   `code` varchar(16) NOT NULL,
@@ -199,8 +189,9 @@ CREATE TABLE `email_verification_codes` (
   `consumed` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_email_verification_lookup` (`email`,`purpose`,`code`,`consumed`,`expires_at`),
-  KEY `idx_email_verification_latest` (`email`,`purpose`,`created_at`)
+  KEY `idx_verification_lookup` (`channel`,`target`,`purpose`,`code`,`consumed`,`expires_at`),
+  KEY `idx_verification_latest` (`channel`,`target`,`purpose`,`created_at`),
+  KEY `idx_verification_expires_at` (`expires_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `gateway_policies` (
@@ -250,16 +241,6 @@ CREATE TABLE `passkeys` (
   KEY `idx_passkeys_user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `phone_send_logs` (
-  `id` varchar(64) NOT NULL,
-  `target_phone` varchar(32) NOT NULL,
-  `content` text NOT NULL,
-  `account_email` varchar(255) NOT NULL DEFAULT '',
-  `created_at` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idx_phone_send_logs_created_at` (`created_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE `refresh_tokens` (
   `token` varchar(255) NOT NULL,
   `user_id` varchar(64) NOT NULL,
@@ -296,19 +277,6 @@ CREATE TABLE `sessions` (
   PRIMARY KEY (`token`),
   KEY `idx_sessions_user_id` (`user_id`),
   KEY `idx_sessions_expires_at` (`expires_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `sms_verification_codes` (
-  `id` varchar(64) NOT NULL,
-  `phone` varchar(32) NOT NULL,
-  `purpose` varchar(32) NOT NULL,
-  `code` varchar(16) NOT NULL,
-  `expires_at` datetime NOT NULL,
-  `consumed` tinyint(1) NOT NULL DEFAULT '0',
-  `created_at` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idx_sms_verification_lookup` (`phone`,`purpose`,`code`,`consumed`,`expires_at`),
-  KEY `idx_sms_verification_latest` (`phone`,`purpose`,`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `system_settings` (

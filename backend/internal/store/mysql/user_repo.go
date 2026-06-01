@@ -225,7 +225,7 @@ func (s *MySQLStore) UpdateUserAndInvalidateAuth(user domain.User) error {
 			continue
 		}
 		emailTargets[normalized] = struct{}{}
-		if _, err := tx.Exec(`DELETE FROM email_verification_codes WHERE email = ?`, normalized); err != nil {
+		if _, err := tx.Exec(`DELETE FROM verification_codes WHERE channel = 'email' AND target = ?`, normalized); err != nil {
 			return err
 		}
 	}
@@ -239,7 +239,7 @@ func (s *MySQLStore) UpdateUserAndInvalidateAuth(user domain.User) error {
 			continue
 		}
 		phoneTargets[normalized] = struct{}{}
-		if _, err := tx.Exec(`DELETE FROM sms_verification_codes WHERE phone = ?`, normalized); err != nil {
+		if _, err := tx.Exec(`DELETE FROM verification_codes WHERE channel = 'sms' AND target = ?`, normalized); err != nil {
 			return err
 		}
 	}
@@ -283,10 +283,10 @@ func (s *MySQLStore) DeleteUser(id string) error {
 		if _, err := tx.Exec(`DELETE FROM client_redirect_uris WHERE app_id = ?`, appID); err != nil {
 			return err
 		}
-		if _, err := tx.Exec(`DELETE FROM client_post_logout_redirect_uris WHERE app_id = ?`, appID); err != nil {
+		if _, err := tx.Exec(`DELETE FROM client_scopes WHERE app_id = ?`, appID); err != nil {
 			return err
 		}
-		if _, err := tx.Exec(`DELETE FROM client_scopes WHERE app_id = ?`, appID); err != nil {
+		if _, err := tx.Exec(`DELETE FROM app_user_access_states WHERE app_id = ?`, appID); err != nil {
 			return err
 		}
 		if _, err := tx.Exec(`DELETE FROM client_apps WHERE id = ?`, appID); err != nil {
@@ -319,10 +319,11 @@ func (s *MySQLStore) DeleteUser(id string) error {
 		{query: `DELETE FROM auth_challenges WHERE user_id = ?`, args: []any{id}},
 		{query: `DELETE FROM passkey_usage_logs WHERE user_id = ?`, args: []any{id}},
 		{query: `DELETE FROM passkeys WHERE user_id = ?`, args: []any{id}},
+		{query: `DELETE FROM app_user_access_states WHERE user_id = ?`, args: []any{id}},
 		{query: `DELETE FROM authorization_codes WHERE user_id = ?`, args: []any{id}},
 		{query: `DELETE FROM consents WHERE user_id = ?`, args: []any{id}},
-		{query: `DELETE FROM email_verification_codes WHERE email = ?`, args: []any{email}},
-		{query: `DELETE FROM sms_verification_codes WHERE phone = (SELECT phone FROM users WHERE id = ? LIMIT 1)`, args: []any{id}},
+		{query: `DELETE FROM verification_codes WHERE channel = 'email' AND target = ?`, args: []any{email}},
+		{query: `DELETE FROM verification_codes WHERE channel = 'sms' AND target = (SELECT phone FROM users WHERE id = ? LIMIT 1)`, args: []any{id}},
 		{query: `DELETE FROM user_operation_logs WHERE user_id = ?`, args: []any{id}},
 		{query: `DELETE FROM audit_logs WHERE actor_id = ? OR target_id = ?`, args: []any{id, id}},
 		{query: `DELETE FROM system_settings WHERE setting_key = ?`, args: []any{"user_avatar_" + strings.TrimSpace(id)}},

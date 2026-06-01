@@ -210,15 +210,17 @@ func (s *MySQLStore) DeleteUserOperationLogs(userID string, startAt, endAt *time
 
 func (s *MySQLStore) AppendEmailSendLog(log domain.EmailSendLog) {
 	_, _ = s.db.Exec(`
-		INSERT INTO email_send_logs (id, target_email, content, account_email, created_at)
-		VALUES (?, ?, ?, ?, ?)
+		INSERT INTO send_logs (id, channel, target, content, account_email, created_at)
+		VALUES (?, 'email', ?, ?, ?, ?)
 	`, log.ID, log.TargetEmail, log.Content, log.AccountEmail, log.CreatedAt)
 }
 
 func (s *MySQLStore) ListEmailSendLogs() []domain.EmailSendLog {
 	rows, err := s.db.Query(`
-		SELECT id, target_email, content, account_email, created_at
-		FROM email_send_logs ORDER BY created_at DESC
+		SELECT id, target, content, account_email, created_at
+		FROM send_logs
+		WHERE channel = 'email'
+		ORDER BY created_at DESC
 	`)
 	if err != nil {
 		return []domain.EmailSendLog{}
@@ -246,7 +248,7 @@ func (s *MySQLStore) DeleteEmailSendLogs(ids []string) error {
 		args = append(args, id)
 	}
 	_, err := s.db.Exec(
-		fmt.Sprintf("DELETE FROM email_send_logs WHERE id IN (%s)", strings.Join(placeholders, ",")),
+		fmt.Sprintf("DELETE FROM send_logs WHERE channel = 'email' AND id IN (%s)", strings.Join(placeholders, ",")),
 		args...,
 	)
 	return err
@@ -254,15 +256,17 @@ func (s *MySQLStore) DeleteEmailSendLogs(ids []string) error {
 
 func (s *MySQLStore) AppendPhoneSendLog(log domain.PhoneSendLog) {
 	_, _ = s.db.Exec(`
-		INSERT INTO phone_send_logs (id, target_phone, content, account_email, created_at)
-		VALUES (?, ?, ?, ?, ?)
+		INSERT INTO send_logs (id, channel, target, content, account_email, created_at)
+		VALUES (?, 'sms', ?, ?, ?, ?)
 	`, log.ID, log.TargetPhone, log.Content, log.AccountEmail, log.CreatedAt)
 }
 
 func (s *MySQLStore) ListPhoneSendLogs() []domain.PhoneSendLog {
 	rows, err := s.db.Query(`
-		SELECT id, target_phone, content, account_email, created_at
-		FROM phone_send_logs ORDER BY created_at DESC
+		SELECT id, target, content, account_email, created_at
+		FROM send_logs
+		WHERE channel = 'sms'
+		ORDER BY created_at DESC
 	`)
 	if err != nil {
 		return []domain.PhoneSendLog{}
@@ -290,7 +294,7 @@ func (s *MySQLStore) DeletePhoneSendLogs(ids []string) error {
 		args = append(args, id)
 	}
 	_, err := s.db.Exec(
-		fmt.Sprintf("DELETE FROM phone_send_logs WHERE id IN (%s)", strings.Join(placeholders, ",")),
+		fmt.Sprintf("DELETE FROM send_logs WHERE channel = 'sms' AND id IN (%s)", strings.Join(placeholders, ",")),
 		args...,
 	)
 	return err

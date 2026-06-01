@@ -1,7 +1,7 @@
-import { Card, Space, Typography } from "antd";
+import { Space } from "antd";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
-import { getAdminPageMeta, getSettingsTabs } from "./constants";
+import { getSettingsTabs } from "./constants";
 import { AppReview } from "./components/AppReview";
 import { AuditLogsPanel } from "./components/AuditLogs";
 import { Dashboard } from "./components/Dashboard";
@@ -63,7 +63,6 @@ export function AdminPage() {
   const [appNameKeyword, setAppNameKeyword] = useState("");
   useAdminDocumentLocalization(true);
   const settingsTabs = useMemo(() => getSettingsTabs(t), [t]);
-  const adminPageMeta = useMemo(() => getAdminPageMeta(t), [t]);
 
   const pageType = useMemo<AdminPageType>(() => {
     if (location.pathname === "/admin/users") {
@@ -389,15 +388,6 @@ export function AdminPage() {
   return (
     <Space direction="vertical" size={20} style={{ width: "100%" }}>
       {systemSettings.contextHolder}
-
-      <Card>
-        <Typography.Title level={4}>
-          {adminPageMeta[pageType].title}
-        </Typography.Title>
-        <Typography.Paragraph type="secondary">
-          {adminPageMeta[pageType].description}
-        </Typography.Paragraph>
-      </Card>
 
       {pageType === "dashboard" ? (
         <Dashboard

@@ -3,9 +3,7 @@ import { useMemo, useState } from "react";
 import type { TableRowSelection } from "antd/es/table/interface";
 import type {
   AdminPasskeyLog,
-  AdminPasskeyLoginChallenge,
   AdminPasskeyLogs,
-  AdminPasskeyRegistrationChallenge,
   AdminPasskeyUsageLog
 } from "../../types";
 import { useAdminI18n } from "../../i18n";
@@ -32,12 +30,6 @@ export function RiskLogsPanel({
 
   const passkeyUserCount = useMemo(() => new Set(passkeyLogs.passkeys.map((item) => item.user_id)).size, [passkeyLogs.passkeys]);
   const activePasskeyRows = useMemo<any[]>(() => {
-    if (activePasskeyTable === "passkey_registration_challenges") {
-      return passkeyLogs.registration_challenges;
-    }
-    if (activePasskeyTable === "passkey_login_challenges") {
-      return passkeyLogs.login_challenges;
-    }
     if (activePasskeyTable === "passkey_usage_logs") {
       return passkeyLogs.usage_logs;
     }
@@ -53,81 +45,6 @@ export function RiskLogsPanel({
   );
 
   const passkeyColumns = useMemo<any[]>(() => {
-    if (activePasskeyTable === "passkey_registration_challenges") {
-      return [
-        {
-          title: t("挑战 Token"),
-          dataIndex: "token",
-          width: 240,
-          render: (value: string) => <Typography.Text copyable={{ text: value }}>{value}</Typography.Text>
-        },
-        {
-          title: t("用户"),
-          dataIndex: "user_email",
-          width: 220,
-          render: (_: string, record: AdminPasskeyRegistrationChallenge) => (
-            <Space direction="vertical" size={0}>
-              <Typography.Text>{record.user_email || "-"}</Typography.Text>
-              <Typography.Text type="secondary" code>{record.user_id}</Typography.Text>
-            </Space>
-          )
-        },
-        {
-          title: "Session Data",
-          dataIndex: "session_data_json",
-          width: 420,
-          render: (value: string) => (
-            <Typography.Paragraph copyable={{ text: value }} ellipsis={{ rows: 2, expandable: true, symbol: t("展开") }} style={{ marginBottom: 0 }}>
-              {value || "-"}
-            </Typography.Paragraph>
-          )
-        },
-        {
-          title: t("过期时间"),
-          dataIndex: "expires_at",
-          width: 180,
-          render: (value: string) => formatAdminDateTime(value)
-        },
-        {
-          title: t("创建时间"),
-          dataIndex: "created_at",
-          width: 180,
-          render: (value: string) => formatAdminDateTime(value)
-        }
-      ];
-    }
-    if (activePasskeyTable === "passkey_login_challenges") {
-      return [
-        {
-          title: t("挑战 Token"),
-          dataIndex: "token",
-          width: 240,
-          render: (value: string) => <Typography.Text copyable={{ text: value }}>{value}</Typography.Text>
-        },
-        {
-          title: "Session Data",
-          dataIndex: "session_data_json",
-          width: 520,
-          render: (value: string) => (
-            <Typography.Paragraph copyable={{ text: value }} ellipsis={{ rows: 2, expandable: true, symbol: t("展开") }} style={{ marginBottom: 0 }}>
-              {value || "-"}
-            </Typography.Paragraph>
-          )
-        },
-        {
-          title: t("过期时间"),
-          dataIndex: "expires_at",
-          width: 180,
-          render: (value: string) => formatAdminDateTime(value)
-        },
-        {
-          title: t("创建时间"),
-          dataIndex: "created_at",
-          width: 180,
-          render: (value: string) => formatAdminDateTime(value)
-        }
-      ];
-    }
     if (activePasskeyTable === "passkey_usage_logs") {
       return [
         {
@@ -269,27 +186,17 @@ export function RiskLogsPanel({
   return (
     <Space direction="vertical" size={20} style={{ width: "100%" }}>
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} xl={6}>
+        <Col xs={24} md={8}>
           <Card>
             <Statistic title={t("Passkey 总数")} value={passkeyLogs.passkeys.length} />
           </Card>
         </Col>
-        <Col xs={24} sm={12} xl={6}>
+        <Col xs={24} md={8}>
           <Card>
             <Statistic title={t("绑定用户数")} value={passkeyUserCount} />
           </Card>
         </Col>
-        <Col xs={24} sm={12} xl={6}>
-          <Card>
-            <Statistic title={t("注册挑战")} value={passkeyLogs.registration_challenges.length} />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} xl={6}>
-          <Card>
-            <Statistic title={t("登录挑战")} value={passkeyLogs.login_challenges.length} />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} xl={6}>
+        <Col xs={24} md={8}>
           <Card>
             <Statistic title={t("使用日志")} value={passkeyLogs.usage_logs.length} />
           </Card>
@@ -300,20 +207,19 @@ export function RiskLogsPanel({
         title={t("Passkey 数据表信息")}
         extra={
           <Space>
-            <Tag color="gold">{t("展示 passkeys / registration / login challenge 原始表数据")}</Tag>
             <Button size="small" onClick={onRefresh} loading={refreshing}>
               {t("刷新")}
             </Button>
           </Space>
         }
       >
-        <Row gutter={[12, 12]} align="middle" justify="space-between" style={{ marginBottom: 16 }}>
-          <Col flex="auto">
-            <Typography.Text type="secondary">
-              {t("当前表：")}<Typography.Text code>{activePasskeyTable}</Typography.Text>
-            </Typography.Text>
-          </Col>
-          <Col>
+        <Tabs
+          activeKey={activePasskeyTable}
+          onChange={(key) => {
+            setActivePasskeyTable(key);
+            setSelectedPasskeyIds([]);
+          }}
+          tabBarExtraContent={
             <Space wrap style={{ justifyContent: "flex-end" }}>
               <Typography.Text type="secondary">{t("已选择 {{count}} 条记录", { count: selectedPasskeyIds.length })}</Typography.Text>
               <Button
@@ -325,29 +231,11 @@ export function RiskLogsPanel({
                 {t("批量删除")}
               </Button>
             </Space>
-          </Col>
-        </Row>
-
-        <Tabs
-          activeKey={activePasskeyTable}
-          onChange={(key) => {
-            setActivePasskeyTable(key);
-            setSelectedPasskeyIds([]);
-          }}
+          }
           items={[
             {
               key: "passkeys",
               label: `${t("已绑定通行密钥")} (${passkeyLogs.passkeys.length})`,
-              children: null
-            },
-            {
-              key: "passkey_registration_challenges",
-              label: `${t("通行密钥注册挑战")} (${passkeyLogs.registration_challenges.length})`,
-              children: null
-            },
-            {
-              key: "passkey_login_challenges",
-              label: `${t("通行密钥登录挑战")} (${passkeyLogs.login_challenges.length})`,
               children: null
             },
             {

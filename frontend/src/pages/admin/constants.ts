@@ -152,8 +152,8 @@ export function getAdminPageMeta(t: (key: string) => string) {
       description: t("查看开发者侧用户组、访问限制和封禁操作记录，支持管理员硬删除。")
     },
     riskLogs: {
-      title: t("Passkey 日志"),
-      description: t("查看 Passkey 相关数据表信息，支持批量删除。")
+      title: t("Passkey 数据"),
+      description: ""
     },
     settings: {
       title: t("参数设置"),

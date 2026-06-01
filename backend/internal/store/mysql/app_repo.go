@@ -133,8 +133,8 @@ func (s *MySQLStore) DeleteApp(id string) error {
 		args  []any
 	}{
 		{query: `DELETE FROM client_redirect_uris WHERE app_id = ?`, args: []any{id}},
-		{query: `DELETE FROM client_post_logout_redirect_uris WHERE app_id = ?`, args: []any{id}},
 		{query: `DELETE FROM client_scopes WHERE app_id = ?`, args: []any{id}},
+		{query: `DELETE FROM app_user_access_states WHERE app_id = ?`, args: []any{id}},
 		{query: `DELETE FROM authorization_codes WHERE client_id = ?`, args: []any{clientID}},
 		{query: `DELETE FROM refresh_tokens WHERE client_id = ?`, args: []any{clientID}},
 		{query: `DELETE FROM consents WHERE client_id = ?`, args: []any{clientID}},
@@ -242,25 +242,29 @@ func (s *MySQLStore) hydrateAppCollections(items []domain.ClientApp) {
 		indexByID[item.ID] = index
 		ids = append(ids, item.ID)
 	}
-	s.hydrateAppStringCollection(items, indexByID, ids, "client_redirect_uris", "redirect_uri", func(app *domain.ClientApp, value string) {
+	s.hydrateAppStringCollection(items, indexByID, ids, "client_redirect_uris", "uri", "uri_type = 'login'", func(app *domain.ClientApp, value string) {
 		app.RedirectURIs = append(app.RedirectURIs, value)
 	})
-	s.hydrateAppStringCollection(items, indexByID, ids, "client_post_logout_redirect_uris", "post_logout_redirect_uri", func(app *domain.ClientApp, value string) {
+	s.hydrateAppStringCollection(items, indexByID, ids, "client_redirect_uris", "uri", "uri_type = 'post_logout'", func(app *domain.ClientApp, value string) {
 		app.PostLogoutRedirectURIs = append(app.PostLogoutRedirectURIs, value)
 	})
-	s.hydrateAppStringCollection(items, indexByID, ids, "client_scopes", "scope", func(app *domain.ClientApp, value string) {
+	s.hydrateAppStringCollection(items, indexByID, ids, "client_scopes", "scope", "", func(app *domain.ClientApp, value string) {
 		app.Scopes = append(app.Scopes, value)
 	})
 }
 
-func (s *MySQLStore) hydrateAppStringCollection(items []domain.ClientApp, indexByID map[string]int, appIDs []string, table, column string, appendValue func(*domain.ClientApp, string)) {
+func (s *MySQLStore) hydrateAppStringCollection(items []domain.ClientApp, indexByID map[string]int, appIDs []string, table, column, extraWhere string, appendValue func(*domain.ClientApp, string)) {
 	placeholders := make([]string, len(appIDs))
 	args := make([]any, 0, len(appIDs))
 	for i, id := range appIDs {
 		placeholders[i] = "?"
 		args = append(args, id)
 	}
-	rows, err := s.db.Query(fmt.Sprintf(`SELECT app_id, %s FROM %s WHERE app_id IN (%s) ORDER BY id ASC`, column, table, strings.Join(placeholders, ",")), args...)
+	where := fmt.Sprintf("app_id IN (%s)", strings.Join(placeholders, ","))
+	if strings.TrimSpace(extraWhere) != "" {
+		where += " AND " + extraWhere
+	}
+	rows, err := s.db.Query(fmt.Sprintf(`SELECT app_id, %s FROM %s WHERE %s ORDER BY id ASC`, column, table, where), args...)
 	if err != nil {
 		return
 	}
@@ -279,13 +283,12 @@ func (s *MySQLStore) hydrateAppStringCollection(items []domain.ClientApp, indexB
 
 func (s *MySQLStore) replaceAppCollections(app domain.ClientApp) {
 	_, _ = s.db.Exec(`DELETE FROM client_redirect_uris WHERE app_id = ?`, app.ID)
-	_, _ = s.db.Exec(`DELETE FROM client_post_logout_redirect_uris WHERE app_id = ?`, app.ID)
 	_, _ = s.db.Exec(`DELETE FROM client_scopes WHERE app_id = ?`, app.ID)
 	for _, uri := range app.RedirectURIs {
-		_, _ = s.db.Exec(`INSERT INTO client_redirect_uris (app_id, redirect_uri) VALUES (?, ?)`, app.ID, uri)
+		_, _ = s.db.Exec(`INSERT INTO client_redirect_uris (app_id, uri_type, uri) VALUES (?, 'login', ?)`, app.ID, uri)
 	}
 	for _, uri := range app.PostLogoutRedirectURIs {
-		_, _ = s.db.Exec(`INSERT INTO client_post_logout_redirect_uris (app_id, post_logout_redirect_uri) VALUES (?, ?)`, app.ID, uri)
+		_, _ = s.db.Exec(`INSERT INTO client_redirect_uris (app_id, uri_type, uri) VALUES (?, 'post_logout', ?)`, app.ID, uri)
 	}
 	for _, scope := range app.Scopes {
 		_, _ = s.db.Exec(`INSERT INTO client_scopes (app_id, scope) VALUES (?, ?)`, app.ID, scope)
