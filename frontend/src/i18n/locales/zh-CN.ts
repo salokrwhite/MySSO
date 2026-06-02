@@ -10,6 +10,12 @@ const locale = {
       logout: "退出",
       accountCenter: "账号中心",
     },
+    captcha: {
+      securityVerification: "安全验证",
+      refresh: "刷新",
+      imageCaptcha: "图形验证码",
+      imageCaptchaRequired: "请输入图形验证码",
+    },
     legal: {
       back: "返回首页",
       updatedAt: "最近更新时间：{{date}}",

@@ -288,6 +288,15 @@ func seedInitialData(db *sql.DB, req CompleteRequest, cfg config.Config) error {
 	if err := upsertSetting(db, "developer_managed_users_search_limit", strconv.Itoa(appdefaults.DefaultDeveloperManagedUsersSearchLimit), now); err != nil {
 		return err
 	}
+	if err := upsertSetting(db, "captcha_image_rate_limit_per_minute", strconv.Itoa(appdefaults.DefaultCaptchaImageRateLimitPerMinute), now); err != nil {
+		return err
+	}
+	if err := upsertSetting(db, "captcha_precheck_rate_limit_per_minute", strconv.Itoa(appdefaults.DefaultCaptchaPrecheckRateLimitPerMinute), now); err != nil {
+		return err
+	}
+	if err := upsertSetting(db, "captcha_target_rate_limit_per_minute", strconv.Itoa(appdefaults.DefaultCaptchaTargetRateLimitPerMinute), now); err != nil {
+		return err
+	}
 	if err := upsertSetting(db, "login_code_subject_template", appdefaults.DefaultLoginCodeSubjectTemplate, now); err != nil {
 		return err
 	}

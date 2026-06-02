@@ -22,9 +22,52 @@ export function RateLimitSettings({
   return (
     <SettingsCard
       title={t("限流管理")}
-      description={t("当前仅限制开发者后台“用户分组与访问”的邮箱搜索接口。")}
+      description={t("管理公开安全验证与高成本查询接口的短时间重复调用。")}
     >
       <Form form={form} layout="vertical" initialValues={initialValues}>
+        <Typography.Title level={5} style={{ marginTop: 0 }}>
+          {t("图形验证码限流")}
+        </Typography.Title>
+        <Row gutter={16}>
+          <Col xs={24} md={8}>
+            <Form.Item
+              label={t("图片生成每分钟次数/IP")}
+              name="captcha_image_rate_limit_per_minute"
+              rules={[{ required: true, message: t("请输入图片生成限流次数") }]}
+              extra={t("设置为 0 表示关闭该接口限流。")}
+            >
+              <InputNumber min={0} max={10000} precision={0} style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={8}>
+            <Form.Item
+              label={t("业务预检每分钟次数/IP")}
+              name="captcha_precheck_rate_limit_per_minute"
+              rules={[{ required: true, message: t("请输入业务预检限流次数") }]}
+              extra={t("设置为 0 表示关闭该接口限流。")}
+            >
+              <InputNumber min={0} max={10000} precision={0} style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={8}>
+            <Form.Item
+              label={t("同一业务目标预检每分钟次数/IP")}
+              name="captcha_target_rate_limit_per_minute"
+              rules={[{ required: true, message: t("请输入同一业务目标限流次数") }]}
+              extra={t("设置为 0 表示关闭该接口限流。")}
+            >
+              <InputNumber min={0} max={10000} precision={0} style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
+          {t("图形验证码限流按客户端 IP 计算；同一业务目标会额外按 flow、用途和目标计算。触发限制时接口返回 429。")}
+        </Typography.Paragraph>
+
+        <Typography.Title level={5}>
+          {t("开发者搜索限流")}
+        </Typography.Title>
         <Row gutter={16}>
           <Col xs={24} md={12}>
             <Form.Item

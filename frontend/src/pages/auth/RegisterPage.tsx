@@ -15,6 +15,7 @@ import { buildFirstPartyRegisterPath } from "./oidc";
 import { getCountries } from "../../utils/countries";
 import { AccountLanguageModal } from "../../components/AccountLanguageModal";
 import { AuthPageFooter } from "../../components/AuthPageFooter";
+import { useCaptchaGate } from "../../hooks/useCaptchaGate";
 
 export function RegisterPage() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -35,6 +36,7 @@ export function RegisterPage() {
   const accountLocale = normalizeAccountLocale(i18n.language);
   const hasAuthorizationContext = Boolean(searchParams.get("client_id"));
   const countryOptions = getCountries(i18n.language);
+  const { requestCaptcha, captchaModal } = useCaptchaGate();
 
   function translateSecurityError(rawMessage: string) {
     switch (rawMessage) {
@@ -117,12 +119,18 @@ export function RegisterPage() {
     try {
       setSendingCode(true);
       const values = await form.validateFields(["country", "email"]);
+      const captchaPayload = await requestCaptcha({
+        flow: "email_code",
+        purpose: "register",
+        target: values.email,
+      });
       const result = await api<{ cooldown_seconds?: number }>("/auth/email-code", {
         method: "POST",
         body: JSON.stringify({
           country: values.country,
           email: values.email,
-          purpose: "register"
+          purpose: "register",
+          ...captchaPayload
         })
       });
       startCooldown(Number(result.cooldown_seconds || 0), values.email);
@@ -192,6 +200,7 @@ export function RegisterPage() {
   return (
     <div className="center-page auth-entry-page auth-entry-page--glass">
       {contextHolder}
+      {captchaModal}
       <div className="auth-entry-page__backdrop" aria-hidden="true" />
       <div className="auth-page-toolbar">
         <Button type="link" className="auth-language-button" onClick={() => setLanguageModalOpen(true)}>

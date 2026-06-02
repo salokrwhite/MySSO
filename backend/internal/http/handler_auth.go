@@ -74,8 +74,29 @@ func (s *Server) handleLogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	result, err := s.services.Auth.StartPasswordLogin(req.Email, req.Password, c.ClientIP(), deviceID)
+	result, err := s.services.Auth.StartPasswordLoginWithMFACaptcha(req.Email, req.Password, c.ClientIP(), deviceID, func() error {
+		settings := s.services.Settings.GetCaptchaSettings()
+		if !settings.Enabled {
+			return nil
+		}
+		challengeReq, ok := s.buildCaptchaChallengeRequest(c, captchaContext{
+			Flow:    "password_login_mfa",
+			Purpose: "mfa_login",
+			Target:  req.Email,
+		})
+		if !ok || !s.captchaService.Verify(req.CaptchaTicket, req.Captcha, req.CaptchaChallenge, req.CaptchaSign, challengeReq) {
+			return service.ErrCaptchaRequired
+		}
+		return nil
+	})
 	if err != nil {
+		if errors.Is(err, service.ErrCaptchaRequired) {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error":            "captcha is invalid or expired",
+				"captcha_required": true,
+			})
+			return
+		}
 		if writeSecurityFlowError(c, err) {
 			return
 		}
@@ -169,6 +190,18 @@ func (s *Server) handleSendEmailCode(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	if !s.requireCaptchaForCodeSend(c, captchaContext{
+		Flow:    "email_code",
+		Purpose: req.Purpose,
+		Target:  req.Email,
+	}, captchaProof{
+		Ticket:    req.CaptchaTicket,
+		Answer:    req.Captcha,
+		Challenge: req.CaptchaChallenge,
+		Sign:      req.CaptchaSign,
+	}) {
+		return
+	}
 	cooldownSeconds, err := s.services.Auth.SendPublicEmailVerificationCode(req.Email, req.Country, req.Purpose)
 	if err != nil {
 		var cooldownErr *service.VerificationCooldownError
@@ -197,6 +230,18 @@ func (s *Server) handleSendMFAChallenge(c *gin.Context) {
 	var req mfaChallengeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if !s.requireCaptchaForCodeSend(c, captchaContext{
+		Flow:    "password_login_mfa",
+		Purpose: "mfa_login",
+		Target:  req.Email,
+	}, captchaProof{
+		Ticket:    req.CaptchaTicket,
+		Answer:    req.Captcha,
+		Challenge: req.CaptchaChallenge,
+		Sign:      req.CaptchaSign,
+	}) {
 		return
 	}
 	cooldownSeconds, method, err := s.services.Auth.SendPasswordLoginMFAChallenge(req.Email, req.Password, c.ClientIP(), deviceID)
@@ -269,6 +314,18 @@ func (s *Server) handleResendMFALogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	if !s.requireCaptchaForCodeSend(c, captchaContext{
+		Flow:    "mfa_login",
+		Purpose: "mfa_login",
+		Target:  req.ChallengeToken,
+	}, captchaProof{
+		Ticket:    req.CaptchaTicket,
+		Answer:    req.Captcha,
+		Challenge: req.CaptchaChallenge,
+		Sign:      req.CaptchaSign,
+	}) {
+		return
+	}
 	cooldownSeconds, method, maskedTarget, err := s.services.Auth.ResendPasswordLoginMFAChallenge(req.ChallengeToken, c.ClientIP(), deviceID)
 	if err != nil {
 		var cooldownErr *service.VerificationCooldownError
@@ -298,6 +355,18 @@ func (s *Server) handleSendSMSCode(c *gin.Context) {
 	var req smsCodeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if !s.requireCaptchaForCodeSend(c, captchaContext{
+		Flow:    "sms_code",
+		Purpose: req.Purpose,
+		Target:  req.Phone,
+	}, captchaProof{
+		Ticket:    req.CaptchaTicket,
+		Answer:    req.Captcha,
+		Challenge: req.CaptchaChallenge,
+		Sign:      req.CaptchaSign,
+	}) {
 		return
 	}
 	cooldownSeconds, err := s.services.Auth.SendPublicSMSVerificationCode(req.Phone, req.Purpose)
@@ -369,6 +438,18 @@ func (s *Server) handleSendPhoneBindingCode(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	if !s.requireCaptchaForCodeSend(c, captchaContext{
+		Flow:    "phone_binding",
+		Purpose: "risk_phone_binding",
+		Target:  req.ChallengeToken + ":" + req.Phone,
+	}, captchaProof{
+		Ticket:    req.CaptchaTicket,
+		Answer:    req.Captcha,
+		Challenge: req.CaptchaChallenge,
+		Sign:      req.CaptchaSign,
+	}) {
+		return
+	}
 	cooldownSeconds, err := s.services.Auth.SendPhoneBindingVerificationCode(req.ChallengeToken, req.Phone)
 	if err != nil {
 		var cooldownErr *service.VerificationCooldownError
@@ -414,6 +495,18 @@ func (s *Server) handleSendLoginStepUpCode(c *gin.Context) {
 	var req sendLoginStepUpCodeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if !s.requireCaptchaForCodeSend(c, captchaContext{
+		Flow:    "login_step_up",
+		Purpose: "login_step_up",
+		Target:  req.ChallengeToken + ":" + req.Channel,
+	}, captchaProof{
+		Ticket:    req.CaptchaTicket,
+		Answer:    req.Captcha,
+		Challenge: req.CaptchaChallenge,
+		Sign:      req.CaptchaSign,
+	}) {
 		return
 	}
 	cooldownSeconds, maskedTarget, err := s.services.Auth.SendLoginStepUpCode(req.ChallengeToken, req.Channel)

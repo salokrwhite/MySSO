@@ -23,6 +23,7 @@ export function UserPage() {
   return (
     <div className="account-page">
       {controller.contextHolder}
+      {controller.captchaModal}
 
       <div className="account-layout">
         {!controller.isMobile ? (

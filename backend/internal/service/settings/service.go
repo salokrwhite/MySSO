@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 
 	"mysso/backend/internal/appdefaults"
+	"mysso/backend/internal/captcha"
 	"mysso/backend/internal/domain"
 	"mysso/backend/internal/notify"
 	"mysso/backend/internal/security"
@@ -52,6 +53,20 @@ type SystemSettings struct {
 	SMTPForceSSL                         bool   `json:"smtp_force_ssl"`
 	SMTPVerificationCodeTTLMinute        int    `json:"smtp_verification_code_ttl_minutes"`
 	SMTPVerificationCodeCooldownSecond   int    `json:"smtp_verification_code_cooldown_seconds"`
+	CaptchaEnabled                       bool   `json:"captcha_enabled"`
+	CaptchaMode                          int    `json:"captcha_mode"`
+	CaptchaComplexOfNoiseText            int    `json:"captcha_ComplexOfNoiseText"`
+	CaptchaComplexOfNoiseDot             int    `json:"captcha_ComplexOfNoiseDot"`
+	CaptchaIsShowHollowLine              bool   `json:"captcha_IsShowHollowLine"`
+	CaptchaIsShowNoiseDot                bool   `json:"captcha_IsShowNoiseDot"`
+	CaptchaIsShowNoiseText               bool   `json:"captcha_IsShowNoiseText"`
+	CaptchaIsShowSlimeLine               bool   `json:"captcha_IsShowSlimeLine"`
+	CaptchaIsShowSineLine                bool   `json:"captcha_IsShowSineLine"`
+	CaptchaLength                        int    `json:"captcha_CaptchaLen"`
+	CaptchaTTLSeconds                    int    `json:"captcha_ttl_seconds"`
+	CaptchaImageRateLimitPerMinute       int    `json:"captcha_image_rate_limit_per_minute"`
+	CaptchaPrecheckRateLimitPerMinute    int    `json:"captcha_precheck_rate_limit_per_minute"`
+	CaptchaTargetRateLimitPerMinute      int    `json:"captcha_target_rate_limit_per_minute"`
 	LoginCodeSubjectTemplate             string `json:"login_code_subject_template"`
 	LoginCodeBodyTemplate                string `json:"login_code_body_template"`
 	LoginCodeSubjectTemplateEN           string `json:"login_code_subject_template_en"`
@@ -110,6 +125,12 @@ type VerificationCooldownError struct {
 type DeveloperManagedUsersSearchRateLimit struct {
 	WindowSeconds int
 	Limit         int
+}
+
+type CaptchaRateLimit struct {
+	ImagePerMinute    int
+	PrecheckPerMinute int
+	TargetPerMinute   int
 }
 
 func (e *VerificationCooldownError) Error() string {
@@ -184,6 +205,20 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 		"smtp_force_ssl",
 		"smtp_verification_code_ttl_minutes",
 		"smtp_verification_code_cooldown_seconds",
+		"captcha_enabled",
+		"captcha_mode",
+		"captcha_ComplexOfNoiseText",
+		"captcha_ComplexOfNoiseDot",
+		"captcha_IsShowHollowLine",
+		"captcha_IsShowNoiseDot",
+		"captcha_IsShowNoiseText",
+		"captcha_IsShowSlimeLine",
+		"captcha_IsShowSineLine",
+		"captcha_CaptchaLen",
+		"captcha_ttl_seconds",
+		"captcha_image_rate_limit_per_minute",
+		"captcha_precheck_rate_limit_per_minute",
+		"captcha_target_rate_limit_per_minute",
 		"login_code_subject_template",
 		"login_code_body_template",
 		"login_code_subject_template_en",
@@ -252,6 +287,21 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 			cooldownSeconds = parsed
 		}
 	}
+	captchaSettings := captcha.NormalizeSettings(captcha.Settings{
+		Enabled:            authutil.FallbackBoolSetting(values["captcha_enabled"], appdefaults.DefaultCaptchaEnabled),
+		Height:             appdefaults.DefaultCaptchaHeight,
+		Width:              appdefaults.DefaultCaptchaWidth,
+		Mode:               parseIntSetting(values["captcha_mode"], appdefaults.DefaultCaptchaMode),
+		ComplexOfNoiseText: parseIntSetting(values["captcha_ComplexOfNoiseText"], appdefaults.DefaultCaptchaComplexOfNoiseText),
+		ComplexOfNoiseDot:  parseIntSetting(values["captcha_ComplexOfNoiseDot"], appdefaults.DefaultCaptchaComplexOfNoiseDot),
+		IsShowHollowLine:   authutil.FallbackBoolSetting(values["captcha_IsShowHollowLine"], appdefaults.DefaultCaptchaIsShowHollowLine),
+		IsShowNoiseDot:     authutil.FallbackBoolSetting(values["captcha_IsShowNoiseDot"], appdefaults.DefaultCaptchaIsShowNoiseDot),
+		IsShowNoiseText:    authutil.FallbackBoolSetting(values["captcha_IsShowNoiseText"], appdefaults.DefaultCaptchaIsShowNoiseText),
+		IsShowSlimeLine:    authutil.FallbackBoolSetting(values["captcha_IsShowSlimeLine"], appdefaults.DefaultCaptchaIsShowSlimeLine),
+		IsShowSineLine:     authutil.FallbackBoolSetting(values["captcha_IsShowSineLine"], appdefaults.DefaultCaptchaIsShowSineLine),
+		Length:             parseIntSetting(values["captcha_CaptchaLen"], appdefaults.DefaultCaptchaLength),
+		TTL:                time.Duration(parseIntSetting(values["captcha_ttl_seconds"], appdefaults.DefaultCaptchaTTLSeconds)) * time.Second,
+	})
 
 	riskImmediateProbability := appdefaults.DefaultRiskImmediateBindProbability
 	if raw := strings.TrimSpace(values["risk_immediate_bind_probability"]); raw != "" {
@@ -287,6 +337,9 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 			developerManagedUsersSearchLimit = parsed
 		}
 	}
+	captchaImageRateLimit := normalizeRateLimitSetting(values["captcha_image_rate_limit_per_minute"], appdefaults.DefaultCaptchaImageRateLimitPerMinute, appdefaults.MaxCaptchaRateLimitPerMinute)
+	captchaPrecheckRateLimit := normalizeRateLimitSetting(values["captcha_precheck_rate_limit_per_minute"], appdefaults.DefaultCaptchaPrecheckRateLimitPerMinute, appdefaults.MaxCaptchaRateLimitPerMinute)
+	captchaTargetRateLimit := normalizeRateLimitSetting(values["captcha_target_rate_limit_per_minute"], appdefaults.DefaultCaptchaTargetRateLimitPerMinute, appdefaults.MaxCaptchaRateLimitPerMinute)
 
 	oidcFirstPartyClientSecret := strings.TrimSpace(authutil.FallbackSetting(values["oidc_first_party_client_secret"], s.deps.Cfg.OIDC.FirstPartyClientSecret))
 	smtpPassword := strings.TrimSpace(authutil.FallbackSetting(values["smtp_password"], s.deps.Cfg.SMTP.Password))
@@ -327,6 +380,20 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 		SMTPForceSSL:                         authutil.FallbackBoolSetting(values["smtp_force_ssl"], s.deps.Cfg.SMTP.ForceSSL),
 		SMTPVerificationCodeTTLMinute:        ttlMinutes,
 		SMTPVerificationCodeCooldownSecond:   cooldownSeconds,
+		CaptchaEnabled:                       captchaSettings.Enabled,
+		CaptchaMode:                          captchaSettings.Mode,
+		CaptchaComplexOfNoiseText:            captchaSettings.ComplexOfNoiseText,
+		CaptchaComplexOfNoiseDot:             captchaSettings.ComplexOfNoiseDot,
+		CaptchaIsShowHollowLine:              captchaSettings.IsShowHollowLine,
+		CaptchaIsShowNoiseDot:                captchaSettings.IsShowNoiseDot,
+		CaptchaIsShowNoiseText:               captchaSettings.IsShowNoiseText,
+		CaptchaIsShowSlimeLine:               captchaSettings.IsShowSlimeLine,
+		CaptchaIsShowSineLine:                captchaSettings.IsShowSineLine,
+		CaptchaLength:                        captchaSettings.Length,
+		CaptchaTTLSeconds:                    int(captchaSettings.TTL.Seconds()),
+		CaptchaImageRateLimitPerMinute:       captchaImageRateLimit,
+		CaptchaPrecheckRateLimitPerMinute:    captchaPrecheckRateLimit,
+		CaptchaTargetRateLimitPerMinute:      captchaTargetRateLimit,
 		LoginCodeSubjectTemplate:             authutil.FallbackSetting(values["login_code_subject_template"], appdefaults.DefaultLoginCodeSubjectTemplate),
 		LoginCodeBodyTemplate:                authutil.FallbackSetting(values["login_code_body_template"], appdefaults.DefaultLoginCodeBodyTemplate),
 		LoginCodeSubjectTemplateEN:           authutil.FallbackSetting(values["login_code_subject_template_en"], appdefaults.DefaultLoginCodeSubjectTemplateEN),
@@ -437,6 +504,31 @@ func (s *SettingsService) UpdateSystemSettings(input SystemSettings) error {
 	if input.SMTPVerificationCodeCooldownSecond < 0 {
 		input.SMTPVerificationCodeCooldownSecond = 0
 	}
+	captchaSettings := captcha.NormalizeSettings(captcha.Settings{
+		Enabled:            input.CaptchaEnabled,
+		Height:             appdefaults.DefaultCaptchaHeight,
+		Width:              appdefaults.DefaultCaptchaWidth,
+		Mode:               input.CaptchaMode,
+		ComplexOfNoiseText: input.CaptchaComplexOfNoiseText,
+		ComplexOfNoiseDot:  input.CaptchaComplexOfNoiseDot,
+		IsShowHollowLine:   input.CaptchaIsShowHollowLine,
+		IsShowNoiseDot:     input.CaptchaIsShowNoiseDot,
+		IsShowNoiseText:    input.CaptchaIsShowNoiseText,
+		IsShowSlimeLine:    input.CaptchaIsShowSlimeLine,
+		IsShowSineLine:     input.CaptchaIsShowSineLine,
+		Length:             input.CaptchaLength,
+		TTL:                time.Duration(input.CaptchaTTLSeconds) * time.Second,
+	})
+	input.CaptchaMode = captchaSettings.Mode
+	input.CaptchaComplexOfNoiseText = captchaSettings.ComplexOfNoiseText
+	input.CaptchaComplexOfNoiseDot = captchaSettings.ComplexOfNoiseDot
+	input.CaptchaIsShowHollowLine = captchaSettings.IsShowHollowLine
+	input.CaptchaIsShowNoiseDot = captchaSettings.IsShowNoiseDot
+	input.CaptchaIsShowNoiseText = captchaSettings.IsShowNoiseText
+	input.CaptchaIsShowSlimeLine = captchaSettings.IsShowSlimeLine
+	input.CaptchaIsShowSineLine = captchaSettings.IsShowSineLine
+	input.CaptchaLength = captchaSettings.Length
+	input.CaptchaTTLSeconds = int(captchaSettings.TTL.Seconds())
 	if strings.TrimSpace(input.LoginCodeSubjectTemplate) == "" {
 		input.LoginCodeSubjectTemplate = appdefaults.DefaultLoginCodeSubjectTemplate
 	}
@@ -562,6 +654,9 @@ func (s *SettingsService) UpdateSystemSettings(input SystemSettings) error {
 	if input.DeveloperManagedUsersSearchLimit > appdefaults.MaxDeveloperManagedUsersSearchLimit {
 		input.DeveloperManagedUsersSearchLimit = appdefaults.MaxDeveloperManagedUsersSearchLimit
 	}
+	input.CaptchaImageRateLimitPerMinute = clampRateLimit(input.CaptchaImageRateLimitPerMinute, appdefaults.MaxCaptchaRateLimitPerMinute)
+	input.CaptchaPrecheckRateLimitPerMinute = clampRateLimit(input.CaptchaPrecheckRateLimitPerMinute, appdefaults.MaxCaptchaRateLimitPerMinute)
+	input.CaptchaTargetRateLimitPerMinute = clampRateLimit(input.CaptchaTargetRateLimitPerMinute, appdefaults.MaxCaptchaRateLimitPerMinute)
 
 	if err := s.deps.Store.UpsertSettings(map[string]string{
 		"allow_user_registration":                       strconv.FormatBool(input.AllowUserRegistration),
@@ -595,6 +690,20 @@ func (s *SettingsService) UpdateSystemSettings(input SystemSettings) error {
 		"smtp_force_ssl":                                strconv.FormatBool(input.SMTPForceSSL),
 		"smtp_verification_code_ttl_minutes":            strconv.Itoa(input.SMTPVerificationCodeTTLMinute),
 		"smtp_verification_code_cooldown_seconds":       strconv.Itoa(input.SMTPVerificationCodeCooldownSecond),
+		"captcha_enabled":                               strconv.FormatBool(input.CaptchaEnabled),
+		"captcha_mode":                                  strconv.Itoa(input.CaptchaMode),
+		"captcha_ComplexOfNoiseText":                    strconv.Itoa(input.CaptchaComplexOfNoiseText),
+		"captcha_ComplexOfNoiseDot":                     strconv.Itoa(input.CaptchaComplexOfNoiseDot),
+		"captcha_IsShowHollowLine":                      strconv.FormatBool(input.CaptchaIsShowHollowLine),
+		"captcha_IsShowNoiseDot":                        strconv.FormatBool(input.CaptchaIsShowNoiseDot),
+		"captcha_IsShowNoiseText":                       strconv.FormatBool(input.CaptchaIsShowNoiseText),
+		"captcha_IsShowSlimeLine":                       strconv.FormatBool(input.CaptchaIsShowSlimeLine),
+		"captcha_IsShowSineLine":                        strconv.FormatBool(input.CaptchaIsShowSineLine),
+		"captcha_CaptchaLen":                            strconv.Itoa(input.CaptchaLength),
+		"captcha_ttl_seconds":                           strconv.Itoa(input.CaptchaTTLSeconds),
+		"captcha_image_rate_limit_per_minute":           strconv.Itoa(input.CaptchaImageRateLimitPerMinute),
+		"captcha_precheck_rate_limit_per_minute":        strconv.Itoa(input.CaptchaPrecheckRateLimitPerMinute),
+		"captcha_target_rate_limit_per_minute":          strconv.Itoa(input.CaptchaTargetRateLimitPerMinute),
 		"login_code_subject_template":                   strings.TrimSpace(input.LoginCodeSubjectTemplate),
 		"login_code_body_template":                      input.LoginCodeBodyTemplate,
 		"login_code_subject_template_en":                strings.TrimSpace(input.LoginCodeSubjectTemplateEN),
@@ -975,6 +1084,82 @@ func (s *SettingsService) GetVerificationCodeCooldownSeconds() int {
 		}
 	}
 	return appdefaults.DefaultVerificationCodeCooldownSeconds
+}
+
+func (s *SettingsService) GetCaptchaSettings() captcha.Settings {
+	values, err := s.deps.Store.GetSettings(
+		"captcha_enabled",
+		"captcha_mode",
+		"captcha_ComplexOfNoiseText",
+		"captcha_ComplexOfNoiseDot",
+		"captcha_IsShowHollowLine",
+		"captcha_IsShowNoiseDot",
+		"captcha_IsShowNoiseText",
+		"captcha_IsShowSlimeLine",
+		"captcha_IsShowSineLine",
+		"captcha_CaptchaLen",
+		"captcha_ttl_seconds",
+	)
+	if err != nil {
+		values = map[string]string{}
+	}
+	return captcha.NormalizeSettings(captcha.Settings{
+		Enabled:            authutil.FallbackBoolSetting(values["captcha_enabled"], appdefaults.DefaultCaptchaEnabled),
+		Height:             appdefaults.DefaultCaptchaHeight,
+		Width:              appdefaults.DefaultCaptchaWidth,
+		Mode:               parseIntSetting(values["captcha_mode"], appdefaults.DefaultCaptchaMode),
+		ComplexOfNoiseText: parseIntSetting(values["captcha_ComplexOfNoiseText"], appdefaults.DefaultCaptchaComplexOfNoiseText),
+		ComplexOfNoiseDot:  parseIntSetting(values["captcha_ComplexOfNoiseDot"], appdefaults.DefaultCaptchaComplexOfNoiseDot),
+		IsShowHollowLine:   authutil.FallbackBoolSetting(values["captcha_IsShowHollowLine"], appdefaults.DefaultCaptchaIsShowHollowLine),
+		IsShowNoiseDot:     authutil.FallbackBoolSetting(values["captcha_IsShowNoiseDot"], appdefaults.DefaultCaptchaIsShowNoiseDot),
+		IsShowNoiseText:    authutil.FallbackBoolSetting(values["captcha_IsShowNoiseText"], appdefaults.DefaultCaptchaIsShowNoiseText),
+		IsShowSlimeLine:    authutil.FallbackBoolSetting(values["captcha_IsShowSlimeLine"], appdefaults.DefaultCaptchaIsShowSlimeLine),
+		IsShowSineLine:     authutil.FallbackBoolSetting(values["captcha_IsShowSineLine"], appdefaults.DefaultCaptchaIsShowSineLine),
+		Length:             parseIntSetting(values["captcha_CaptchaLen"], appdefaults.DefaultCaptchaLength),
+		TTL:                time.Duration(parseIntSetting(values["captcha_ttl_seconds"], appdefaults.DefaultCaptchaTTLSeconds)) * time.Second,
+	})
+}
+
+func parseIntSetting(raw string, fallback int) int {
+	if parsed, err := strconv.Atoi(strings.TrimSpace(raw)); err == nil {
+		return parsed
+	}
+	return fallback
+}
+
+func normalizeRateLimitSetting(raw string, fallback, max int) int {
+	value := parseIntSetting(raw, fallback)
+	return clampRateLimit(value, max)
+}
+
+func clampRateLimit(value, max int) int {
+	if value < 0 {
+		return 0
+	}
+	if value > max {
+		return max
+	}
+	return value
+}
+
+func (s *SettingsService) GetCaptchaRateLimit() CaptchaRateLimit {
+	values, err := s.deps.Store.GetSettings(
+		"captcha_image_rate_limit_per_minute",
+		"captcha_precheck_rate_limit_per_minute",
+		"captcha_target_rate_limit_per_minute",
+	)
+	if err != nil {
+		return CaptchaRateLimit{
+			ImagePerMinute:    appdefaults.DefaultCaptchaImageRateLimitPerMinute,
+			PrecheckPerMinute: appdefaults.DefaultCaptchaPrecheckRateLimitPerMinute,
+			TargetPerMinute:   appdefaults.DefaultCaptchaTargetRateLimitPerMinute,
+		}
+	}
+	return CaptchaRateLimit{
+		ImagePerMinute:    normalizeRateLimitSetting(values["captcha_image_rate_limit_per_minute"], appdefaults.DefaultCaptchaImageRateLimitPerMinute, appdefaults.MaxCaptchaRateLimitPerMinute),
+		PrecheckPerMinute: normalizeRateLimitSetting(values["captcha_precheck_rate_limit_per_minute"], appdefaults.DefaultCaptchaPrecheckRateLimitPerMinute, appdefaults.MaxCaptchaRateLimitPerMinute),
+		TargetPerMinute:   normalizeRateLimitSetting(values["captcha_target_rate_limit_per_minute"], appdefaults.DefaultCaptchaTargetRateLimitPerMinute, appdefaults.MaxCaptchaRateLimitPerMinute),
+	}
 }
 
 func (s *SettingsService) GetDeveloperManagedUsersSearchRateLimit() DeveloperManagedUsersSearchRateLimit {

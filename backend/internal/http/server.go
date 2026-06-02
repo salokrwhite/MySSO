@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"mysso/backend/internal/captcha"
 	"mysso/backend/internal/config"
 	"mysso/backend/internal/domain"
 	installsvc "mysso/backend/internal/install"
@@ -24,6 +25,7 @@ type Server struct {
 	installer         *installsvc.Service
 	cleanupWorkerOnce sync.Once
 	rateLimiter       *inMemoryRateLimiter
+	captchaService    *captcha.Service
 }
 
 const sessionCookieName = "mysso_session"
@@ -54,11 +56,12 @@ func NewServer(cfg config.Config) (*Server, error) {
 	engine := gin.Default()
 	engine.MaxMultipartMemory = maxUploadImageBytes + maxUploadMultipartOverhead
 	server := &Server{
-		engine:      engine,
-		cfg:         cfg,
-		services:    services,
-		installer:   installer,
-		rateLimiter: newInMemoryRateLimiter(),
+		engine:         engine,
+		cfg:            cfg,
+		services:       services,
+		installer:      installer,
+		rateLimiter:    newInMemoryRateLimiter(),
+		captchaService: captcha.NewService(cfg.HTTP.DeviceCookieSecret),
 	}
 	_ = os.MkdirAll("uploads", 0755)
 	engine.Use(func(c *gin.Context) {
@@ -117,6 +120,8 @@ func (s *Server) registerRoutes() {
 
 	api := s.engine.Group("/api")
 	api.GET("/public/settings", s.handlePublicSettings)
+	api.POST("/public/captcha/precheck", s.handleCaptchaPrecheck)
+	api.POST("/public/captcha", s.handleCaptcha)
 	api.GET("/public/scopes", s.handlePublicScopes)
 	api.GET("/public/apps/:client_id", s.handlePublicAppByClientID)
 	api.GET("/install/status", s.handleInstallStatus)

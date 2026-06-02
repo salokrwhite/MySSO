@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+
 	"mysso/backend/internal/service/admin"
 	"mysso/backend/internal/service/auth"
 	"mysso/backend/internal/service/common/appurl"
@@ -22,6 +24,7 @@ type UpdateUserSecurityPolicyInput = admin.UpdateUserSecurityPolicyInput
 var ErrForbidden = appurl.ErrForbidden
 var ErrAppSecretRequiresApproval = appurl.ErrAppSecretRequiresApproval
 var ErrInvalidClientCredentials = appurl.ErrInvalidClientCredentials
+var ErrCaptchaRequired = errors.New("captcha is invalid or expired")
 
 func BuildAuthorizeRedirect(baseRedirect, code, state string) string {
 	return appurl.BuildAuthorizeRedirect(baseRedirect, code, state)

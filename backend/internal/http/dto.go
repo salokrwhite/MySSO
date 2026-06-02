@@ -12,8 +12,12 @@ type deleteAppAuditLogsRequest struct {
 }
 
 type loginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email            string `json:"email"`
+	Password         string `json:"password"`
+	Captcha          string `json:"captcha"`
+	CaptchaTicket    string `json:"captcha_ticket"`
+	CaptchaChallenge string `json:"captcha_challenge"`
+	CaptchaSign      string `json:"captcha_sign"`
 }
 
 type otpRequest struct {
@@ -27,14 +31,22 @@ type smsLoginRequest struct {
 }
 
 type emailCodeRequest struct {
-	Email   string `json:"email"`
-	Country string `json:"country"`
-	Purpose string `json:"purpose"`
+	Email            string `json:"email"`
+	Country          string `json:"country"`
+	Purpose          string `json:"purpose"`
+	Captcha          string `json:"captcha"`
+	CaptchaTicket    string `json:"captcha_ticket"`
+	CaptchaChallenge string `json:"captcha_challenge"`
+	CaptchaSign      string `json:"captcha_sign"`
 }
 
 type mfaChallengeRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email            string `json:"email"`
+	Password         string `json:"password"`
+	Captcha          string `json:"captcha"`
+	CaptchaTicket    string `json:"captcha_ticket"`
+	CaptchaChallenge string `json:"captcha_challenge"`
+	CaptchaSign      string `json:"captcha_sign"`
 }
 
 type completeMFALoginRequest struct {
@@ -66,7 +78,11 @@ type deletePasskeyRequest struct {
 }
 
 type resendMFALoginRequest struct {
-	ChallengeToken string `json:"challenge_token"`
+	ChallengeToken   string `json:"challenge_token"`
+	Captcha          string `json:"captcha"`
+	CaptchaTicket    string `json:"captcha_ticket"`
+	CaptchaChallenge string `json:"captcha_challenge"`
+	CaptchaSign      string `json:"captcha_sign"`
 }
 
 type confirmDeletionLoginRequest struct {
@@ -81,8 +97,12 @@ type registerRequest struct {
 }
 
 type phoneBindingCodeRequest struct {
-	ChallengeToken string `json:"challenge_token"`
-	Phone          string `json:"phone"`
+	ChallengeToken   string `json:"challenge_token"`
+	Phone            string `json:"phone"`
+	Captcha          string `json:"captcha"`
+	CaptchaTicket    string `json:"captcha_ticket"`
+	CaptchaChallenge string `json:"captcha_challenge"`
+	CaptchaSign      string `json:"captcha_sign"`
 }
 
 type completePhoneBindingRequest struct {
@@ -92,8 +112,12 @@ type completePhoneBindingRequest struct {
 }
 
 type sendLoginStepUpCodeRequest struct {
-	ChallengeToken string `json:"challenge_token"`
-	Channel        string `json:"channel"`
+	ChallengeToken   string `json:"challenge_token"`
+	Channel          string `json:"channel"`
+	Captcha          string `json:"captcha"`
+	CaptchaTicket    string `json:"captcha_ticket"`
+	CaptchaChallenge string `json:"captcha_challenge"`
+	CaptchaSign      string `json:"captcha_sign"`
 }
 
 type completeLoginStepUpRequest struct {
@@ -131,7 +155,11 @@ type updateMFARequest struct {
 }
 
 type currentMFACodeRequest struct {
-	CurrentPassword string `json:"current_password"`
+	CurrentPassword  string `json:"current_password"`
+	Captcha          string `json:"captcha"`
+	CaptchaTicket    string `json:"captcha_ticket"`
+	CaptchaChallenge string `json:"captcha_challenge"`
+	CaptchaSign      string `json:"captcha_sign"`
 }
 
 type resetPasswordRequest struct {
@@ -182,6 +210,20 @@ type updateSystemSettingsRequest struct {
 	SMTPForceSSL                         bool   `json:"smtp_force_ssl"`
 	SMTPVerificationCodeTTLMinute        int    `json:"smtp_verification_code_ttl_minutes"`
 	SMTPVerificationCodeCooldownSecond   int    `json:"smtp_verification_code_cooldown_seconds"`
+	CaptchaEnabled                       bool   `json:"captcha_enabled"`
+	CaptchaMode                          int    `json:"captcha_mode"`
+	CaptchaComplexOfNoiseText            int    `json:"captcha_ComplexOfNoiseText"`
+	CaptchaComplexOfNoiseDot             int    `json:"captcha_ComplexOfNoiseDot"`
+	CaptchaIsShowHollowLine              bool   `json:"captcha_IsShowHollowLine"`
+	CaptchaIsShowNoiseDot                bool   `json:"captcha_IsShowNoiseDot"`
+	CaptchaIsShowNoiseText               bool   `json:"captcha_IsShowNoiseText"`
+	CaptchaIsShowSlimeLine               bool   `json:"captcha_IsShowSlimeLine"`
+	CaptchaIsShowSineLine                bool   `json:"captcha_IsShowSineLine"`
+	CaptchaLength                        int    `json:"captcha_CaptchaLen"`
+	CaptchaTTLSeconds                    int    `json:"captcha_ttl_seconds"`
+	CaptchaImageRateLimitPerMinute       int    `json:"captcha_image_rate_limit_per_minute"`
+	CaptchaPrecheckRateLimitPerMinute    int    `json:"captcha_precheck_rate_limit_per_minute"`
+	CaptchaTargetRateLimitPerMinute      int    `json:"captcha_target_rate_limit_per_minute"`
 	LoginCodeSubjectTemplate             string `json:"login_code_subject_template"`
 	LoginCodeBodyTemplate                string `json:"login_code_body_template"`
 	LoginCodeSubjectTemplateEN           string `json:"login_code_subject_template_en"`
@@ -242,8 +284,26 @@ type testSMSRequest struct {
 }
 
 type smsCodeRequest struct {
-	Phone   string `json:"phone"`
+	Phone            string `json:"phone"`
+	Purpose          string `json:"purpose"`
+	Captcha          string `json:"captcha"`
+	CaptchaTicket    string `json:"captcha_ticket"`
+	CaptchaChallenge string `json:"captcha_challenge"`
+	CaptchaSign      string `json:"captcha_sign"`
+}
+
+type captchaPrecheckRequest struct {
+	Flow    string `json:"flow"`
 	Purpose string `json:"purpose"`
+	Target  string `json:"target"`
+}
+
+type captchaImageRequest struct {
+	Flow      string `json:"flow"`
+	Purpose   string `json:"purpose"`
+	Target    string `json:"target"`
+	Challenge string `json:"challenge"`
+	Sign      string `json:"sign"`
 }
 
 type firstPartyTokenExchangeRequest struct {

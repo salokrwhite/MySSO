@@ -374,7 +374,10 @@ VALUES
     ('change_email_code_subject_template_en', 'MySSO Email Change Verification Code', NOW()),
     ('change_email_code_body_template_en', 'Hello,\n\nYou are changing the email address bound to your MySSO account. Your verification code is {{code}} and it is valid for {{minutes}} minutes.\n\nNew email: {{email}}\n\nIf this was not you, please ignore this email.', NOW()),
     ('developer_managed_users_search_window_seconds', '10', NOW()),
-    ('developer_managed_users_search_limit', '5', NOW())
+    ('developer_managed_users_search_limit', '5', NOW()),
+    ('captcha_image_rate_limit_per_minute', '60', NOW()),
+    ('captcha_precheck_rate_limit_per_minute', '120', NOW()),
+    ('captcha_target_rate_limit_per_minute', '20', NOW())
 ON DUPLICATE KEY UPDATE
     setting_value = VALUES(setting_value),
     updated_at = VALUES(updated_at);

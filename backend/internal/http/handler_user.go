@@ -20,6 +20,18 @@ func (s *Server) handleSendProfileSMSCode(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	if !s.requireCaptchaForCodeSend(c, captchaContext{
+		Flow:    "sms_code",
+		Purpose: req.Purpose,
+		Target:  req.Phone,
+	}, captchaProof{
+		Ticket:    req.CaptchaTicket,
+		Answer:    req.Captcha,
+		Challenge: req.CaptchaChallenge,
+		Sign:      req.CaptchaSign,
+	}) {
+		return
+	}
 	cooldownSeconds, err := s.services.User.SendPhoneVerificationCode(user.ID, req.Phone, req.Purpose)
 	if err != nil {
 		var cooldownErr *service.VerificationCooldownError
@@ -233,6 +245,18 @@ func (s *Server) handleSendCurrentMFACode(c *gin.Context) {
 	var req currentMFACodeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if !s.requireCaptchaForCodeSend(c, captchaContext{
+		Flow:    "current_mfa",
+		Purpose: "mfa_login",
+		Target:  user.ID,
+	}, captchaProof{
+		Ticket:    req.CaptchaTicket,
+		Answer:    req.Captcha,
+		Challenge: req.CaptchaChallenge,
+		Sign:      req.CaptchaSign,
+	}) {
 		return
 	}
 	cooldownSeconds, method, err := s.services.User.SendCurrentMFACode(user.ID, req.CurrentPassword, c.ClientIP(), deviceID)

@@ -10,6 +10,12 @@ const locale = {
       logout: "Logout",
       accountCenter: "Account Center",
     },
+    captcha: {
+      securityVerification: "Security Verification",
+      refresh: "Refresh",
+      imageCaptcha: "Image CAPTCHA",
+      imageCaptchaRequired: "Enter the image CAPTCHA",
+    },
     legal: {
       back: "Back to Home",
       updatedAt: "Last updated: {{date}}",

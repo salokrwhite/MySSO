@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ApiError, api } from "../../api/client";
 import { handleLoginFlowResult, type LoginFlowResponse } from "./authLoginFlow";
+import { useCaptchaGate } from "../../hooks/useCaptchaGate";
 
 type StepUpMode = "none" | "email" | "sms" | "email_and_sms";
 
@@ -25,6 +26,7 @@ export function LoginStepUpPage() {
   const [emailRemainingSeconds, setEmailRemainingSeconds] = useState(0);
   const [smsRemainingSeconds, setSMSRemainingSeconds] = useState(0);
   const [form] = Form.useForm<{ email_otp?: string; sms_otp?: string }>();
+  const { requestCaptcha, captchaModal } = useCaptchaGate();
 
   useEffect(() => {
     if (emailRemainingSeconds <= 0 && smsRemainingSeconds <= 0) {
@@ -74,6 +76,11 @@ export function LoginStepUpPage() {
       setSendingSMS(true);
     }
     try {
+      const captchaPayload = await requestCaptcha({
+        flow: "login_step_up",
+        purpose: "login_step_up",
+        target: `${challengeToken}:${channel}`,
+      });
       const result = await api<{ cooldown_seconds?: number }>(
         "/auth/login-step-up/code",
         {
@@ -81,6 +88,7 @@ export function LoginStepUpPage() {
           body: JSON.stringify({
             challenge_token: challengeToken,
             channel,
+            ...captchaPayload,
           }),
         },
       );
@@ -140,6 +148,7 @@ export function LoginStepUpPage() {
   return (
     <div className="center-page">
       {contextHolder}
+      {captchaModal}
       <Card className="auth-card">
         <Space direction="vertical" size={20} style={{ width: "100%" }}>
           <div>

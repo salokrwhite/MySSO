@@ -71,42 +71,11 @@ func preferredLocaleForRegistrationCountry(country string) string {
 	}
 }
 
-func (s *AuthService) Login(email, password, mfaCode, ip string) (domain.Session, domain.User, error) {
-	result, err := s.StartPasswordLogin(email, password, ip, "")
-	if err != nil {
-		return domain.Session{}, domain.User{}, err
-	}
-	if result.RequiresMFA {
-		if strings.TrimSpace(mfaCode) == "" {
-			return domain.Session{}, domain.User{}, fmt.Errorf("invalid mfa code")
-		}
-		result, err = s.CompletePasswordLoginMFA(result.ChallengeToken, mfaCode, ip, "")
-		if err != nil {
-			return domain.Session{}, domain.User{}, err
-		}
-	}
-	if result.RequiresDeletionConfirmation {
-		result, err = s.ConfirmDeletionLogin(result.DeletionChallengeToken, ip)
-		if err != nil {
-			return domain.Session{}, domain.User{}, err
-		}
-	}
-	if result.RequiresPhoneBinding {
-		return domain.Session{}, result.User, fmt.Errorf("phone binding is required")
-	}
-	if result.RequiresStepUpVerification {
-		return domain.Session{}, result.User, fmt.Errorf("login step-up verification is required")
-	}
-	if result.RequiresMFAEnrollmentSetup {
-		return domain.Session{}, result.User, fmt.Errorf("mfa enrollment is required")
-	}
-	if strings.TrimSpace(result.Session.Token) == "" {
-		return domain.Session{}, domain.User{}, fmt.Errorf("invalid credentials")
-	}
-	return result.Session, result.User, nil
+func (s *AuthService) StartPasswordLogin(email, password, ip, deviceID string) (PasswordLoginResult, error) {
+	return s.StartPasswordLoginWithMFACaptcha(email, password, ip, deviceID, nil)
 }
 
-func (s *AuthService) StartPasswordLogin(email, password, ip, deviceID string) (PasswordLoginResult, error) {
+func (s *AuthService) StartPasswordLoginWithMFACaptcha(email, password, ip, deviceID string, verifyMFACaptcha func() error) (PasswordLoginResult, error) {
 	if err := s.user.CleanupExpiredDeletionRequests(); err != nil {
 		return PasswordLoginResult{}, err
 	}
@@ -143,7 +112,7 @@ func (s *AuthService) StartPasswordLogin(email, password, ip, deviceID string) (
 	}
 	s.resetAuthAttempt(attempt)
 	if authutil.EffectiveUserMFAEnabled(user) {
-		challenge, err := s.createMFALoginChallenge(user)
+		challenge, err := s.createMFALoginChallengeWithCaptcha(user, verifyMFACaptcha)
 		if err != nil {
 			return PasswordLoginResult{}, err
 		}
@@ -410,9 +379,18 @@ func (s *AuthService) SendPasswordLoginMFAChallenge(email, password, ip, deviceI
 }
 
 func (s *AuthService) createMFALoginChallenge(user domain.User) (domain.MFALoginChallenge, error) {
+	return s.createMFALoginChallengeWithCaptcha(user, nil)
+}
+
+func (s *AuthService) createMFALoginChallengeWithCaptcha(user domain.User, verifyMFACaptcha func() error) (domain.MFALoginChallenge, error) {
 	method, target, err := resolveMFAMethodAndTarget(user)
 	if err != nil {
 		return domain.MFALoginChallenge{}, err
+	}
+	if verifyMFACaptcha != nil {
+		if err := verifyMFACaptcha(); err != nil {
+			return domain.MFALoginChallenge{}, err
+		}
 	}
 	if _, err := s.sendMFALoginCode(method, target); err != nil {
 		return domain.MFALoginChallenge{}, err

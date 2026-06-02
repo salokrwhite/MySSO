@@ -19,6 +19,7 @@ import {
 import { buildFirstPartyForgotPasswordPath } from "./oidc";
 import { AccountLanguageModal } from "../../components/AccountLanguageModal";
 import { AuthPageFooter } from "../../components/AuthPageFooter";
+import { useCaptchaGate } from "../../hooks/useCaptchaGate";
 
 export function ForgotPasswordPage() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -41,6 +42,7 @@ export function ForgotPasswordPage() {
   );
   const accountLocale = normalizeAccountLocale(i18n.language);
   const hasAuthorizationContext = Boolean(searchParams.get("client_id"));
+  const { requestCaptcha, captchaModal } = useCaptchaGate();
 
   function translateSecurityError(rawMessage: string) {
     switch (rawMessage) {
@@ -138,6 +140,11 @@ export function ForgotPasswordPage() {
     try {
       setSendingCode(true);
       const values = await form.validateFields(["email"]);
+      const captchaPayload = await requestCaptcha({
+        flow: "email_code",
+        purpose: "reset_password",
+        target: values.email,
+      });
       const result = await api<{ cooldown_seconds?: number }>(
         "/auth/email-code",
         {
@@ -145,6 +152,7 @@ export function ForgotPasswordPage() {
           body: JSON.stringify({
             email: values.email,
             purpose: "reset_password",
+            ...captchaPayload,
           }),
         },
       );
@@ -187,6 +195,7 @@ export function ForgotPasswordPage() {
   return (
     <div className="center-page auth-entry-page auth-entry-page--glass">
       {contextHolder}
+      {captchaModal}
       <div className="auth-entry-page__backdrop" aria-hidden="true" />
       <div className="auth-page-toolbar">
         <Button

@@ -23,6 +23,7 @@ import {
   browserSupportsPasskey,
   createPasskeyCredential,
 } from "../../../utils/webauthn";
+import { useCaptchaGate } from "../../../hooks/useCaptchaGate";
 import { getSectionItems } from "../constants";
 import type {
   Consent,
@@ -150,6 +151,7 @@ async function convertImageToWebp(file: File, t: (key: string) => string) {
 export function useUserPageController() {
   const sessionToken = readSessionToken();
   const [messageApi, contextHolder] = message.useMessage();
+  const { requestCaptcha, captchaModal } = useCaptchaGate();
   const { t } = useTranslation();
   const screens = Grid.useBreakpoint();
   const navigate = useNavigate();
@@ -652,9 +654,15 @@ export function useUserPageController() {
       setError(undefined);
       setEmailCodeTarget(email);
       setLastEmailCodeTarget(email, "change_email");
+      const captchaPayload = await requestCaptcha({
+        flow: "email_code",
+        purpose: "change_email",
+        target: email,
+      });
       const result = await sendEmailCode({
         email,
         purpose: "change_email",
+        ...captchaPayload,
       });
       startEmailCodeCooldown(Number(result.cooldown_seconds || 0), email);
       messageApi.success(t("common.sendCodeSuccess"));
@@ -677,9 +685,15 @@ export function useUserPageController() {
       setSendingNewPhoneCode(true);
       setPhoneCodeTarget(phone);
       setLastEmailCodeTarget(phone, "change_phone");
+      const captchaPayload = await requestCaptcha({
+        flow: "sms_code",
+        purpose: "change_phone",
+        target: phone,
+      });
       const result = await sendPhoneCode(sessionToken, {
         phone,
         purpose: "change_phone",
+        ...captchaPayload,
       });
       startPhoneCodeCooldown(Number(result.cooldown_seconds || 0), phone);
       messageApi.success(t("common.sendCodeSuccess"));
@@ -709,9 +723,15 @@ export function useUserPageController() {
       setSendingCurrentPhoneCode(true);
       setCurrentPhoneCodeTarget(user.phone);
       setLastEmailCodeTarget(user.phone, "verify_current_phone");
+      const captchaPayload = await requestCaptcha({
+        flow: "sms_code",
+        purpose: "verify_current_phone",
+        target: user.phone,
+      });
       const result = await sendPhoneCode(sessionToken, {
         phone: user.phone,
         purpose: "verify_current_phone",
+        ...captchaPayload,
       });
       startCurrentPhoneCodeCooldown(
         Number(result.cooldown_seconds || 0),
@@ -820,8 +840,14 @@ export function useUserPageController() {
     try {
       setSendingCurrentMFACode(true);
       setLastEmailCodeTarget(currentMFAChallengeTarget, "mfa_login");
+      const captchaPayload = await requestCaptcha({
+        flow: "current_mfa",
+        purpose: "mfa_login",
+        target: user.id,
+      });
       const result = await sendCurrentMFACodeRequest(sessionToken, {
         current_password: currentPassword.trim(),
+        ...captchaPayload,
       });
       startCurrentMFACodeCooldown(
         Number(result.cooldown_seconds || 0),
@@ -965,9 +991,15 @@ export function useUserPageController() {
     }
     try {
       setSendingDeleteEmailCode(true);
+      const captchaPayload = await requestCaptcha({
+        flow: "email_code",
+        purpose: "delete_account",
+        target: deleteAccountEmailTarget,
+      });
       const result = await sendEmailCode({
         email: deleteAccountEmailTarget,
         purpose: "delete_account",
+        ...captchaPayload,
       });
       startDeleteEmailCooldown(
         Number(result.cooldown_seconds || 0),
@@ -1002,9 +1034,15 @@ export function useUserPageController() {
     }
     try {
       setSendingDeletePhoneCode(true);
+      const captchaPayload = await requestCaptcha({
+        flow: "sms_code",
+        purpose: "delete_account",
+        target: deleteAccountPhoneTarget,
+      });
       const result = await sendPhoneCode(sessionToken, {
         phone: deleteAccountPhoneTarget,
         purpose: "delete_account",
+        ...captchaPayload,
       });
       startDeletePhoneCooldown(
         Number(result.cooldown_seconds || 0),
@@ -1114,6 +1152,7 @@ export function useUserPageController() {
   return {
     sessionToken,
     contextHolder,
+    captchaModal,
     t,
     navigate,
     sharedSearch,

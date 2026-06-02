@@ -4,10 +4,12 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
 	"mysso/backend/internal/appdefaults"
+	"mysso/backend/internal/captcha"
 	"mysso/backend/internal/domain"
 	"mysso/backend/internal/service"
 )
@@ -33,6 +35,7 @@ func (s *Server) handlePublicSettings(c *gin.Context) {
 	autoApproveClientIDs := append([]string{}, s.cfg.OIDC.AutoApproveClientIDs...)
 	autoApproveHosts := append([]string{}, s.cfg.OIDC.AutoApproveHosts...)
 	verificationCodeCooldownSeconds := appdefaults.DefaultVerificationCodeCooldownSeconds
+	captchaEnabled := appdefaults.DefaultCaptchaEnabled
 	if s.services != nil {
 		settings, err := s.services.Settings.GetSystemSettings()
 		if err == nil && strings.TrimSpace(settings.SiteName) != "" {
@@ -56,6 +59,7 @@ func (s *Server) handlePublicSettings(c *gin.Context) {
 			firstPartyClientID = strings.TrimSpace(settings.OIDCFirstPartyClientID)
 			firstPartyScope = strings.TrimSpace(settings.OIDCFirstPartyScope)
 			verificationCodeCooldownSeconds = settings.SMTPVerificationCodeCooldownSecond
+			captchaEnabled = settings.CaptchaEnabled
 			for _, clientID := range service.SplitListSetting(settings.OIDCAutoApproveClientIDs) {
 				if !containsString(autoApproveClientIDs, clientID) {
 					autoApproveClientIDs = append(autoApproveClientIDs, clientID)
@@ -89,6 +93,7 @@ func (s *Server) handlePublicSettings(c *gin.Context) {
 			"oidc_auto_approve_client_ids":            autoApproveClientIDs,
 			"oidc_auto_approve_redirect_hosts":        autoApproveHosts,
 			"smtp_verification_code_cooldown_seconds": verificationCodeCooldownSeconds,
+			"captcha_enabled":                         captchaEnabled,
 			"home_page_announcement_enabled":          homePageAnnouncementEnabled,
 			"home_page_announcement_content":          homePageAnnouncementContent,
 			"user_center_announcement_enabled":        userCenterAnnouncementEnabled,
@@ -97,6 +102,81 @@ func (s *Server) handlePublicSettings(c *gin.Context) {
 			"developer_announcement_content":          developerAnnouncementContent,
 		},
 	})
+}
+
+func (s *Server) handleCaptcha(c *gin.Context) {
+	if !s.requireInstalled(c) {
+		return
+	}
+	rateLimit := s.services.Settings.GetCaptchaRateLimit()
+	if !s.allowCaptchaRate(c, "image", rateLimit.ImagePerMinute) {
+		return
+	}
+	var req captchaImageRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ctx := captchaContext{Flow: req.Flow, Purpose: req.Purpose, Target: req.Target}
+	challengeReq, ok := s.buildCaptchaChallengeRequest(c, ctx)
+	if !ok {
+		writeCaptchaChallengeError(c)
+		return
+	}
+	settings := s.services.Settings.GetCaptchaSettings()
+	result, err := s.captchaService.Generate(settings, req.Challenge, req.Sign, challengeReq)
+	if err != nil {
+		status := http.StatusInternalServerError
+		if errors.Is(err, captcha.ErrDisabled) {
+			status = http.StatusBadRequest
+		}
+		if errors.Is(err, captcha.ErrInvalidChallenge) || errors.Is(err, captcha.ErrChallengeUsed) {
+			status = http.StatusBadRequest
+		}
+		c.JSON(status, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": result})
+}
+
+func (s *Server) handleCaptchaPrecheck(c *gin.Context) {
+	if !s.requireInstalled(c) {
+		return
+	}
+	rateLimit := s.services.Settings.GetCaptchaRateLimit()
+	if !s.allowCaptchaRate(c, "precheck", rateLimit.PrecheckPerMinute) {
+		return
+	}
+	var req captchaPrecheckRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	settings := s.services.Settings.GetCaptchaSettings()
+	if !settings.Enabled {
+		c.JSON(http.StatusOK, gin.H{"data": gin.H{"required": false}})
+		return
+	}
+	ctx := captchaContext{Flow: req.Flow, Purpose: req.Purpose, Target: req.Target}
+	challengeReq, ok := s.buildCaptchaChallengeRequest(c, ctx)
+	if !ok {
+		writeCaptchaChallengeError(c)
+		return
+	}
+	if !s.allowCaptchaRate(c, "precheck-target:"+challengeReq.Flow+":"+challengeReq.Purpose+":"+challengeReq.Target, rateLimit.TargetPerMinute) {
+		return
+	}
+	result, err := s.captchaService.CreateChallenge(challengeReq, 2*time.Minute)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": gin.H{
+		"required":   true,
+		"challenge":  result.Challenge,
+		"sign":       result.Sign,
+		"expires_at": result.ExpiresAt,
+	}})
 }
 
 func (s *Server) handlePublicScopes(c *gin.Context) {
@@ -165,6 +245,20 @@ func (s *Server) handleUpdateSystemSettings(c *gin.Context) {
 		SMTPForceSSL:                         req.SMTPForceSSL,
 		SMTPVerificationCodeTTLMinute:        req.SMTPVerificationCodeTTLMinute,
 		SMTPVerificationCodeCooldownSecond:   req.SMTPVerificationCodeCooldownSecond,
+		CaptchaEnabled:                       req.CaptchaEnabled,
+		CaptchaMode:                          req.CaptchaMode,
+		CaptchaComplexOfNoiseText:            req.CaptchaComplexOfNoiseText,
+		CaptchaComplexOfNoiseDot:             req.CaptchaComplexOfNoiseDot,
+		CaptchaIsShowHollowLine:              req.CaptchaIsShowHollowLine,
+		CaptchaIsShowNoiseDot:                req.CaptchaIsShowNoiseDot,
+		CaptchaIsShowNoiseText:               req.CaptchaIsShowNoiseText,
+		CaptchaIsShowSlimeLine:               req.CaptchaIsShowSlimeLine,
+		CaptchaIsShowSineLine:                req.CaptchaIsShowSineLine,
+		CaptchaLength:                        req.CaptchaLength,
+		CaptchaTTLSeconds:                    req.CaptchaTTLSeconds,
+		CaptchaImageRateLimitPerMinute:       req.CaptchaImageRateLimitPerMinute,
+		CaptchaPrecheckRateLimitPerMinute:    req.CaptchaPrecheckRateLimitPerMinute,
+		CaptchaTargetRateLimitPerMinute:      req.CaptchaTargetRateLimitPerMinute,
 		LoginCodeSubjectTemplate:             req.LoginCodeSubjectTemplate,
 		LoginCodeBodyTemplate:                req.LoginCodeBodyTemplate,
 		LoginCodeSubjectTemplateEN:           req.LoginCodeSubjectTemplateEN,

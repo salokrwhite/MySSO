@@ -15,6 +15,7 @@ import { withUpdatedSearch } from "../../utils/urlState";
 import { AccountLanguageModal } from "../../components/AccountLanguageModal";
 import { getStoredSiteName, persistSiteBranding, resolveSiteNameForLocale } from "../../siteBranding";
 import { handleLoginFlowResult, type LoginFlowResponse } from "./authLoginFlow";
+import { useCaptchaGate } from "../../hooks/useCaptchaGate";
 
 type PublicSettings = {
   data?: {
@@ -49,6 +50,7 @@ export function LoginMFAPage() {
   const authSearch = buildSearchString(location.search);
   const hasAuthorizationContext = Boolean(searchParams.get("client_id"));
   const usesAuthorizationFlowSession = searchParams.get("auth_flow") === "authorization";
+  const { requestCaptcha, captchaModal } = useCaptchaGate();
 
   function buildMFASearch(overrides?: Record<string, string | null>) {
     const nextSearch = new URLSearchParams(location.search);
@@ -151,10 +153,16 @@ export function LoginMFAPage() {
   async function resendCode() {
     setSending(true);
     try {
+      const captchaPayload = await requestCaptcha({
+        flow: "mfa_login",
+        purpose: "mfa_login",
+        target: challengeToken,
+      });
       const result = await api<{ cooldown_seconds?: number; method?: "email" | "sms"; masked_target?: string }>("/auth/login-mfa/resend", {
         method: "POST",
         body: JSON.stringify({
-          challenge_token: challengeToken
+          challenge_token: challengeToken,
+          ...captchaPayload
         })
       });
       startCooldown(Number(result.cooldown_seconds || 0), cooldownTarget);
@@ -190,6 +198,7 @@ export function LoginMFAPage() {
   return (
     <div className="center-page">
       {contextHolder}
+      {captchaModal}
       <div className="auth-page-toolbar">
         <Button type="link" className="auth-language-button" onClick={() => setLanguageModalOpen(true)}>
           {accountLocaleLabel[accountLocale]}

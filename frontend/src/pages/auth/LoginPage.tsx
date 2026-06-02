@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, Card, Form, Input, Space, Tabs, Typography, message } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { API_BASE, api } from "../../api/client";
+import { API_BASE, ApiError, api } from "../../api/client";
 import { useEmailCodeCooldown } from "../../utils/emailCodeCooldown";
 import { buildSearchString, getSafeRedirect, pickAllowedSearchParams, withUpdatedSearch } from "../../utils/urlState";
 import {
@@ -17,6 +17,7 @@ import { AuthPageFooter } from "../../components/AuthPageFooter";
 import { getStoredSiteName, persistSiteBranding, resolveSiteNameForLocale } from "../../siteBranding";
 import { browserSupportsPasskey, getPasskeyAssertion } from "../../utils/webauthn";
 import { handleLoginFlowResult, type LoginFlowResponse } from "./authLoginFlow";
+import { useCaptchaGate } from "../../hooks/useCaptchaGate";
 
 type PublicSettings = {
   data?: {
@@ -63,6 +64,7 @@ export function LoginPage() {
   const supportsSMSLogin = accountLocale === "zh-CN" && phoneVerificationEnabled;
   const supportsPasskey = browserSupportsPasskey();
   const activeLoginTab: LoginTabKey = !supportsSMSLogin && loginTab === "sms" ? "password" : loginTab;
+  const { requestCaptcha, captchaModal } = useCaptchaGate();
 
   function translateLoginError(rawMessage: string) {
     const normalizedMessage = rawMessage.trim();
@@ -242,7 +244,7 @@ export function LoginPage() {
 
   const siteLogoUrl = siteLogoDataUrl ? (siteLogoDataUrl.startsWith("http") ? siteLogoDataUrl : `${backendOrigin}${siteLogoDataUrl}`) : "";
 
-  async function submit(values: Record<string, string>, useOtp = false) {
+  async function submit(values: Record<string, string>, useOtp = false, captchaPayload: Record<string, unknown> = {}) {
     setLoading(true);
     try {
       const result = await api<LoginFlowResponse>(
@@ -252,12 +254,28 @@ export function LoginPage() {
           body: JSON.stringify(
             useOtp
               ? { email: values.email, otp: values.otp }
-              : { email: values.email, password: values.password }
+              : { email: values.email, password: values.password, ...captchaPayload }
           )
         }
       );
       await handleLoginFlowResult(result, { locationSearch: location.search, navigate });
     } catch (err) {
+      if (!useOtp && err instanceof ApiError && err.payload.captcha_required) {
+        try {
+          const nextCaptchaPayload = await requestCaptcha({
+            flow: "password_login_mfa",
+            purpose: "mfa_login",
+            target: String(values.email || ""),
+          });
+          await submit(values, useOtp, nextCaptchaPayload);
+        } catch (captchaErr) {
+          if (captchaErr instanceof Error && captchaErr.message === "captcha cancelled") {
+            return;
+          }
+          messageApi.error(translateLoginError(captchaErr instanceof Error ? captchaErr.message : t("auth.loginFailed")));
+        }
+        return;
+      }
       const nextMessage = err instanceof Error ? err.message : t("auth.loginFailed");
       if (nextMessage.includes("system not installed")) {
         navigate("/install", { replace: true });
@@ -307,11 +325,17 @@ export function LoginPage() {
     }
     setOtpSending(true);
     try {
+      const captchaPayload = await requestCaptcha({
+        flow: "email_code",
+        purpose: "login",
+        target: email,
+      });
       const result = await api<{ cooldown_seconds?: number }>("/auth/email-code", {
         method: "POST",
         body: JSON.stringify({
           email,
-          purpose: "login"
+          purpose: "login",
+          ...captchaPayload
         })
       });
       startCooldown(Number(result.cooldown_seconds || 0), email);
@@ -330,11 +354,17 @@ export function LoginPage() {
     }
     setSMSSending(true);
     try {
+      const captchaPayload = await requestCaptcha({
+        flow: "sms_code",
+        purpose: "login",
+        target: phone,
+      });
       const result = await api<{ cooldown_seconds?: number }>("/auth/sms-code", {
         method: "POST",
         body: JSON.stringify({
           phone,
-          purpose: "login"
+          purpose: "login",
+          ...captchaPayload
         })
       });
       startSMSCooldown(Number(result.cooldown_seconds || 0), phone);
@@ -393,6 +423,7 @@ export function LoginPage() {
   return (
     <div className="center-page login-page login-page--glass">
       {contextHolder}
+      {captchaModal}
       <div className="login-page__backdrop" aria-hidden="true" />
       <div className="auth-page-toolbar">
         <Button type="link" className="auth-language-button" onClick={() => setLanguageModalOpen(true)}>

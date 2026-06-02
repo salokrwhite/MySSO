@@ -6,6 +6,7 @@ import { useEmailCodeCooldown } from "../../utils/emailCodeCooldown";
 import { withUpdatedSearch } from "../../utils/urlState";
 import { useTranslation } from "react-i18next";
 import { handleLoginFlowResult, type LoginFlowResponse } from "./authLoginFlow";
+import { useCaptchaGate } from "../../hooks/useCaptchaGate";
 
 export function PhoneBindingRequiredPage() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -22,6 +23,7 @@ export function PhoneBindingRequiredPage() {
   const { remainingSeconds, startCooldown } = useEmailCodeCooldown(phone, "risk_phone_binding");
   const hasAuthorizationContext = Boolean(searchParams.get("client_id"));
   const usesAuthorizationFlowSession = searchParams.get("auth_flow") === "authorization";
+  const { requestCaptcha, captchaModal } = useCaptchaGate();
 
   async function sendCode() {
     if (!challengeToken) {
@@ -31,11 +33,17 @@ export function PhoneBindingRequiredPage() {
     try {
       setSendingCode(true);
       const values = await form.validateFields(["phone"]);
+      const captchaPayload = await requestCaptcha({
+        flow: "phone_binding",
+        purpose: "risk_phone_binding",
+        target: `${challengeToken}:${values.phone}`,
+      });
       const result = await api<{ cooldown_seconds?: number }>("/auth/phone-binding/code", {
         method: "POST",
         body: JSON.stringify({
           challenge_token: challengeToken,
-          phone: values.phone
+          phone: values.phone,
+          ...captchaPayload
         })
       });
       startCooldown(Number(result.cooldown_seconds || 0), values.phone);
@@ -81,6 +89,7 @@ export function PhoneBindingRequiredPage() {
   return (
     <div className="center-page">
       {contextHolder}
+      {captchaModal}
       <Card className="auth-card">
         <Space direction="vertical" size={20} style={{ width: "100%" }}>
           <div>

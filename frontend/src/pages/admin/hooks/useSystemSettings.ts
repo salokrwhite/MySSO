@@ -197,7 +197,18 @@ export function useSystemSettings(
   const saveVerificationSettings = useCallback(async () => {
     const values = await verificationForm.validateFields([
       "smtp_verification_code_ttl_minutes",
-      "smtp_verification_code_cooldown_seconds"
+      "smtp_verification_code_cooldown_seconds",
+      "captcha_enabled",
+      "captcha_mode",
+      "captcha_ComplexOfNoiseText",
+      "captcha_ComplexOfNoiseDot",
+      "captcha_IsShowHollowLine",
+      "captcha_IsShowNoiseDot",
+      "captcha_IsShowNoiseText",
+      "captcha_IsShowSlimeLine",
+      "captcha_IsShowSineLine",
+      "captcha_CaptchaLen",
+      "captcha_ttl_seconds"
     ]);
     await saveSystemSettings(values, "验证码策略已保存");
   }, [saveSystemSettings, verificationForm]);
@@ -261,7 +272,10 @@ export function useSystemSettings(
   const saveRateLimitSettings = useCallback(async () => {
     const values = await rateLimitForm.validateFields([
       "developer_managed_users_search_window_seconds",
-      "developer_managed_users_search_limit"
+      "developer_managed_users_search_limit",
+      "captcha_image_rate_limit_per_minute",
+      "captcha_precheck_rate_limit_per_minute",
+      "captcha_target_rate_limit_per_minute"
     ]);
     await saveSystemSettings(values, "限流管理已保存");
   }, [rateLimitForm, saveSystemSettings]);
