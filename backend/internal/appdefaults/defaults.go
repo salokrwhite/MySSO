@@ -68,6 +68,10 @@ const (
 	DefaultRiskImmediateBindProbability       = 50
 	DefaultRiskDelayedBindProbability         = 50
 	DefaultRiskDelayedBindLoginCount          = 3
+	DefaultDeveloperManagedUsersSearchWindow  = 10
+	DefaultDeveloperManagedUsersSearchLimit   = 5
+	MaxDeveloperManagedUsersSearchWindow      = 3600
+	MaxDeveloperManagedUsersSearchLimit       = 10000
 	DefaultTestSMSContentMaxLength            = 500
 )
 

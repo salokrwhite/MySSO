@@ -18,6 +18,7 @@ type SystemSettingsPanelProps = {
   smsForm: FormInstance<SystemSettings>;
   announcementForm: FormInstance<SystemSettings>;
   riskForm: FormInstance<SystemSettings>;
+  rateLimitForm: FormInstance<SystemSettings>;
   scopes: ScopeDefinition[];
   savingSettings: boolean;
   savingScopeKey?: string;
@@ -44,6 +45,7 @@ type SystemSettingsPanelProps = {
   onSaveSMS: () => void;
   onSaveAnnouncement: () => void;
   onSaveRisk: () => void;
+  onSaveRateLimit: () => void;
   onSaveScope: (scope: ScopeDefinition) => void;
   onDeleteScope: (key: string) => void;
   onUploadSiteLogo: (file: File) => void;
@@ -85,6 +87,7 @@ export function SystemSettingsPanel(props: SystemSettingsPanelProps) {
         smsForm={props.smsForm}
         announcementForm={props.announcementForm}
         riskForm={props.riskForm}
+        rateLimitForm={props.rateLimitForm}
         scopes={props.scopes}
         savingSettings={props.savingSettings}
         savingScopeKey={props.savingScopeKey}
@@ -111,6 +114,7 @@ export function SystemSettingsPanel(props: SystemSettingsPanelProps) {
         onSaveSMS={props.onSaveSMS}
         onSaveAnnouncement={props.onSaveAnnouncement}
         onSaveRisk={props.onSaveRisk}
+        onSaveRateLimit={props.onSaveRateLimit}
         onSaveScope={props.onSaveScope}
         onDeleteScope={props.onDeleteScope}
         onUploadSiteLogo={props.onUploadSiteLogo}

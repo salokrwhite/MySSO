@@ -77,6 +77,7 @@ CREATE TABLE `consents` (
   PRIMARY KEY (`id`),
   KEY `idx_consents_user_revoked_created_at` (`user_id`,`revoked_at`,`created_at`),
   KEY `idx_consents_client_id` (`client_id`),
+  KEY `idx_consents_client_created_at` (`client_id`,`created_at`),
   KEY `idx_consents_revoked_at` (`revoked_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -119,7 +120,8 @@ CREATE TABLE `developer_group_members` (
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_developer_group_member` (`group_id`,`user_id`),
-  KEY `idx_developer_group_members_user_id` (`user_id`)
+  KEY `idx_developer_group_members_user_id` (`user_id`),
+  KEY `idx_developer_group_members_user_group` (`user_id`,`group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `app_group_bindings` (
@@ -144,6 +146,7 @@ CREATE TABLE `app_user_access_states` (
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`app_id`,`user_id`),
   KEY `idx_app_user_access_states_user_id` (`user_id`),
+  KEY `idx_app_user_access_states_user_app_ban` (`user_id`,`app_id`,`ban_id`,`ban_expires_at`),
   KEY `idx_app_user_access_states_app_ban_updated_at` (`app_id`,`ban_updated_at`),
   KEY `idx_app_user_access_states_ban_expires_at` (`ban_expires_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -369,7 +372,9 @@ VALUES
     ('change_email_code_subject_template', 'MySSO 邮箱变更验证码', NOW()),
     ('change_email_code_body_template', '你好，\n\n你正在修改 MySSO 账号绑定邮箱，验证码是 {{code}} ，{{minutes}} 分钟内有效。\n\n新邮箱：{{email}}\n\n如果这不是你的操作，请忽略此邮件。', NOW()),
     ('change_email_code_subject_template_en', 'MySSO Email Change Verification Code', NOW()),
-    ('change_email_code_body_template_en', 'Hello,\n\nYou are changing the email address bound to your MySSO account. Your verification code is {{code}} and it is valid for {{minutes}} minutes.\n\nNew email: {{email}}\n\nIf this was not you, please ignore this email.', NOW())
+    ('change_email_code_body_template_en', 'Hello,\n\nYou are changing the email address bound to your MySSO account. Your verification code is {{code}} and it is valid for {{minutes}} minutes.\n\nNew email: {{email}}\n\nIf this was not you, please ignore this email.', NOW()),
+    ('developer_managed_users_search_window_seconds', '10', NOW()),
+    ('developer_managed_users_search_limit', '5', NOW())
 ON DUPLICATE KEY UPDATE
     setting_value = VALUES(setting_value),
     updated_at = VALUES(updated_at);

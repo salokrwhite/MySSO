@@ -452,18 +452,15 @@ export function AppReview({
             />
           </Space>
           <div style={{ width: isMobile ? "100%" : "auto" }}>
-            <Space wrap style={{ width: isMobile ? "100%" : undefined, justifyContent: isMobile ? "stretch" : "flex-end" }}>
-              <Button type="primary" onClick={openCreateDrawer} block={isMobile}>
-                {t("创建应用")}
-              </Button>
-              <BatchActions
-                selectedCount={selectedAppIds.length}
-                loading={deletingApps}
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                onDelete={onBatchDelete}
-              />
-            </Space>
+            <BatchActions
+              selectedCount={selectedAppIds.length}
+              loading={deletingApps}
+              refreshing={refreshing}
+              isMobile={isMobile}
+              onCreate={openCreateDrawer}
+              onRefresh={onRefresh}
+              onDelete={onBatchDelete}
+            />
           </div>
         </div>
         <AppTable

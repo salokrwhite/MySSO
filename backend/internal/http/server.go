@@ -23,6 +23,7 @@ type Server struct {
 	services          *service.Services
 	installer         *installsvc.Service
 	cleanupWorkerOnce sync.Once
+	rateLimiter       *inMemoryRateLimiter
 }
 
 const sessionCookieName = "mysso_session"
@@ -53,10 +54,11 @@ func NewServer(cfg config.Config) (*Server, error) {
 	engine := gin.Default()
 	engine.MaxMultipartMemory = maxUploadImageBytes + maxUploadMultipartOverhead
 	server := &Server{
-		engine:    engine,
-		cfg:       cfg,
-		services:  services,
-		installer: installer,
+		engine:      engine,
+		cfg:         cfg,
+		services:    services,
+		installer:   installer,
+		rateLimiter: newInMemoryRateLimiter(),
 	}
 	_ = os.MkdirAll("uploads", 0755)
 	engine.Use(func(c *gin.Context) {

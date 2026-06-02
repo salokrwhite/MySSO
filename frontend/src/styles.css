@@ -528,6 +528,37 @@ body {
   min-width: 100%;
 }
 
+.developer-user-access-tabs {
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+}
+
+.developer-user-access-tabs > .ant-tabs-nav {
+  margin: 0;
+  padding: 0 24px;
+}
+
+.developer-user-access-tabs > .ant-tabs-content-holder {
+  border-top: 1px solid #f0f0f0;
+}
+
+.developer-user-access-tabs .ant-tabs-tabpane {
+  padding: 24px;
+}
+
+.developer-user-access-tabs .ant-tabs-tabpane > .ant-card,
+.developer-user-access-tabs .ant-tabs-tabpane > .ant-space > .ant-card {
+  border: 0;
+  box-shadow: none;
+}
+
+.developer-user-access-tabs .ant-tabs-tabpane > .ant-card > .ant-card-body,
+.developer-user-access-tabs .ant-tabs-tabpane > .ant-space > .ant-card > .ant-card-body {
+  padding: 0;
+}
+
 .app-header-user:hover,
 .app-header-user:focus {
   color: #0b5cab !important;
@@ -1577,6 +1608,14 @@ body {
     min-width: 680px;
   }
 
+  .developer-user-access-tabs > .ant-tabs-nav {
+    padding: 0 16px;
+  }
+
+  .developer-user-access-tabs .ant-tabs-tabpane {
+    padding: 16px;
+  }
+
   .account-language-modal .ant-modal-content {
     border-radius: 20px;
   }
@@ -1643,6 +1682,14 @@ body {
 
   .developer-docs-descriptions {
     min-width: 620px;
+  }
+
+  .developer-user-access-tabs > .ant-tabs-nav {
+    padding: 0 12px;
+  }
+
+  .developer-user-access-tabs .ant-tabs-tabpane {
+    padding: 12px;
   }
 
   .account-language-modal .ant-modal-content {

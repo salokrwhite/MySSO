@@ -5,15 +5,20 @@ type BatchActionsProps = {
   selectedCount: number;
   loading: boolean;
   refreshing: boolean;
+  isMobile?: boolean;
+  onCreate: () => void;
   onRefresh: () => void;
   onDelete: () => void;
 };
 
-export function BatchActions({ selectedCount, loading, refreshing, onRefresh, onDelete }: BatchActionsProps) {
+export function BatchActions({ selectedCount, loading, refreshing, isMobile = false, onCreate, onRefresh, onDelete }: BatchActionsProps) {
   const { t } = useAdminI18n();
   return (
-    <Space wrap>
+    <Space wrap style={{ width: isMobile ? "100%" : undefined, justifyContent: isMobile ? "stretch" : undefined }}>
       <Typography.Text type="secondary">{t("已选择 {{count}} 个应用", { count: selectedCount })}</Typography.Text>
+      <Button type="primary" onClick={onCreate} block={isMobile}>
+        {t("创建应用")}
+      </Button>
       <Button loading={refreshing} onClick={onRefresh}>
         {t("刷新")}
       </Button>

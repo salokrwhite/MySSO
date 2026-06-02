@@ -157,6 +157,7 @@ type DeveloperAccessStore interface {
 	ListAppGroupBindings(appID string) ([]domain.AppGroupBinding, error)
 	ReplaceAppGroupBindings(appID string, groupIDs []string, createdAt time.Time) error
 	ListAppIDsByGroup(groupID string) ([]string, error)
+	ListManagedUsersPaginated(ownerUserID string, page, pageSize int, appID, emailKeyword string, now time.Time) ([]domain.DeveloperManagedUser, int, error)
 	CreateOrUpdateAppUserBan(ban domain.AppUserBan) error
 	GetActiveAppUserBan(appID, userID string, now time.Time) (domain.AppUserBan, error)
 	ListAppUserBans(appID string, includeExpired bool, now time.Time) ([]domain.AppUserBan, error)

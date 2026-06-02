@@ -217,6 +217,219 @@ func (s *MySQLStore) ListAppIDsByGroup(groupID string) ([]string, error) {
 	return items, nil
 }
 
+func managedUsersEmailPredicate(emailKeyword string) (string, []any) {
+	keyword := strings.ToLower(strings.TrimSpace(emailKeyword))
+	if keyword == "" {
+		return "", nil
+	}
+	if strings.ContainsAny(keyword, "%_") {
+		keyword = strings.NewReplacer("%", `\%`, "_", `\_`).Replace(keyword)
+	}
+	return " AND u.email LIKE ?", []any{"%" + keyword + "%"}
+}
+
+func managedUsersAppPredicate(appID string) (string, []any) {
+	appID = strings.TrimSpace(appID)
+	if appID == "" {
+		return "", nil
+	}
+	return " AND a.id = ?", []any{appID}
+}
+
+func appendUserIDInClause(query string, args []any, userIDs []string) (string, []any) {
+	placeholders := make([]string, 0, len(userIDs))
+	for _, userID := range userIDs {
+		placeholders = append(placeholders, "?")
+		args = append(args, userID)
+	}
+	return query + strings.Join(placeholders, ",") + ")", args
+}
+
+func maskManagedUserPhone(phone string) string {
+	phone = strings.TrimSpace(phone)
+	if len(phone) < 7 {
+		return phone
+	}
+	return phone[:3] + "****" + phone[len(phone)-4:]
+}
+
+func (s *MySQLStore) ListManagedUsersPaginated(ownerUserID string, page, pageSize int, appID, emailKeyword string, now time.Time) ([]domain.DeveloperManagedUser, int, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+	appClause, appArgs := managedUsersAppPredicate(appID)
+	emailClause, emailArgs := managedUsersEmailPredicate(emailKeyword)
+	baseArgs := []any{ownerUserID}
+	baseArgs = append(baseArgs, appArgs...)
+	baseArgs = append(baseArgs, emailArgs...)
+
+	countQuery := `
+		SELECT COUNT(*) FROM (
+			SELECT c.user_id
+			FROM client_apps a
+			INNER JOIN consents c ON c.client_id = a.client_id
+			INNER JOIN users u ON u.id = c.user_id
+			WHERE a.owner_user_id = ?` + appClause + emailClause + `
+			GROUP BY c.user_id
+		) managed_users
+	`
+	var total int
+	if err := s.db.QueryRow(countQuery, baseArgs...).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+	if total == 0 {
+		return []domain.DeveloperManagedUser{}, 0, nil
+	}
+
+	offset := (page - 1) * pageSize
+	pageArgs := append([]any{}, baseArgs...)
+	pageArgs = append(pageArgs, pageSize, offset)
+	rows, err := s.db.Query(`
+		SELECT c.user_id, u.display_name, u.email, u.phone, MAX(c.created_at) AS last_authorized_at
+		FROM client_apps a
+		INNER JOIN consents c ON c.client_id = a.client_id
+		INNER JOIN users u ON u.id = c.user_id
+		WHERE a.owner_user_id = ?`+appClause+emailClause+`
+		GROUP BY c.user_id, u.display_name, u.email, u.phone
+		ORDER BY last_authorized_at DESC, c.user_id ASC
+		LIMIT ? OFFSET ?
+	`, pageArgs...)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	items := make([]domain.DeveloperManagedUser, 0, pageSize)
+	itemByUserID := map[string]*domain.DeveloperManagedUser{}
+	userIDs := make([]string, 0, pageSize)
+	for rows.Next() {
+		var item domain.DeveloperManagedUser
+		var email, phone string
+		if err := rows.Scan(&item.UserID, &item.DisplayName, &email, &phone, &item.LastAuthorizedAt); err != nil {
+			return nil, 0, err
+		}
+		item.DisplayName = strings.TrimSpace(item.DisplayName)
+		item.MaskedEmail = strings.TrimSpace(email)
+		item.MaskedPhone = maskManagedUserPhone(phone)
+		item.AuthorizedApps = []domain.DeveloperManagedUserAuthorizedApp{}
+		item.GroupIDs = []string{}
+		item.GroupNames = []string{}
+		item.AppBans = []domain.AppUserBan{}
+		items = append(items, item)
+		itemByUserID[item.UserID] = &items[len(items)-1]
+		userIDs = append(userIDs, item.UserID)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, 0, err
+	}
+	if len(userIDs) == 0 {
+		return items, total, nil
+	}
+
+	if err := s.loadManagedUserAuthorizedApps(ownerUserID, appID, userIDs, itemByUserID); err != nil {
+		return nil, 0, err
+	}
+	if err := s.loadManagedUserGroups(ownerUserID, userIDs, itemByUserID); err != nil {
+		return nil, 0, err
+	}
+	if err := s.loadManagedUserBans(ownerUserID, appID, userIDs, now, itemByUserID); err != nil {
+		return nil, 0, err
+	}
+	return items, total, nil
+}
+
+func (s *MySQLStore) loadManagedUserAuthorizedApps(ownerUserID, appID string, userIDs []string, itemByUserID map[string]*domain.DeveloperManagedUser) error {
+	appClause, appArgs := managedUsersAppPredicate(appID)
+	query := `
+		SELECT c.user_id, a.id, a.client_id, a.name, MAX(c.created_at) AS last_authorized_at
+		FROM client_apps a
+		INNER JOIN consents c ON c.client_id = a.client_id
+		WHERE a.owner_user_id = ?` + appClause + ` AND c.user_id IN (`
+	args := []any{ownerUserID}
+	args = append(args, appArgs...)
+	query, args = appendUserIDInClause(query, args, userIDs)
+	query += `
+		GROUP BY c.user_id, a.id, a.client_id, a.name
+		ORDER BY c.user_id ASC, last_authorized_at DESC
+	`
+	rows, err := s.db.Query(query, args...)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var userID string
+		var app domain.DeveloperManagedUserAuthorizedApp
+		if err := rows.Scan(&userID, &app.AppID, &app.ClientID, &app.AppName, &app.LastAuthorizedAt); err != nil {
+			return err
+		}
+		if item := itemByUserID[userID]; item != nil {
+			item.AuthorizedApps = append(item.AuthorizedApps, app)
+		}
+	}
+	return rows.Err()
+}
+
+func (s *MySQLStore) loadManagedUserGroups(ownerUserID string, userIDs []string, itemByUserID map[string]*domain.DeveloperManagedUser) error {
+	query := `
+		SELECT m.user_id, g.id, g.name
+		FROM developer_group_members m
+		INNER JOIN developer_groups g ON g.id = m.group_id
+		WHERE g.owner_user_id = ? AND m.user_id IN (`
+	args := []any{ownerUserID}
+	query, args = appendUserIDInClause(query, args, userIDs)
+	query += ` ORDER BY m.user_id ASC, g.name ASC, g.created_at ASC`
+	rows, err := s.db.Query(query, args...)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var userID, groupID, groupName string
+		if err := rows.Scan(&userID, &groupID, &groupName); err != nil {
+			return err
+		}
+		if item := itemByUserID[userID]; item != nil {
+			item.GroupIDs = append(item.GroupIDs, groupID)
+			item.GroupNames = append(item.GroupNames, groupName)
+		}
+	}
+	return rows.Err()
+}
+
+func (s *MySQLStore) loadManagedUserBans(ownerUserID, appID string, userIDs []string, now time.Time, itemByUserID map[string]*domain.DeveloperManagedUser) error {
+	appClause, appArgs := managedUsersAppPredicate(appID)
+	query := `
+		SELECT b.ban_id, b.app_id, b.user_id, b.ban_reason, b.ban_expires_at, b.ban_created_at, b.ban_updated_at
+		FROM app_user_access_states b
+		INNER JOIN client_apps a ON a.id = b.app_id
+		WHERE a.owner_user_id = ?` + appClause + ` AND b.user_id IN (`
+	args := []any{ownerUserID}
+	args = append(args, appArgs...)
+	query, args = appendUserIDInClause(query, args, userIDs)
+	query += ` AND b.ban_id <> '' AND (b.ban_expires_at IS NULL OR b.ban_expires_at > ?)
+		ORDER BY b.user_id ASC, b.ban_updated_at DESC`
+	args = append(args, now)
+	rows, err := s.db.Query(query, args...)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		ban, err := scanAppUserBan(rows)
+		if err != nil {
+			return err
+		}
+		if item := itemByUserID[ban.UserID]; item != nil {
+			item.AppBans = append(item.AppBans, ban)
+		}
+	}
+	return rows.Err()
+}
+
 func (s *MySQLStore) CreateOrUpdateAppUserBan(ban domain.AppUserBan) error {
 	_, err := s.db.Exec(`
 		INSERT INTO app_user_access_states (app_id, user_id, access_version, ban_id, ban_reason, ban_expires_at, ban_created_at, ban_updated_at, updated_at)

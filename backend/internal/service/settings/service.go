@@ -99,10 +99,17 @@ type SystemSettings struct {
 	RiskImmediateBindProbability         int    `json:"risk_immediate_bind_probability"`
 	RiskDelayedBindProbability           int    `json:"risk_delayed_bind_probability"`
 	RiskDelayedBindLoginCount            int    `json:"risk_delayed_bind_login_count"`
+	DeveloperManagedUsersSearchWindowSec int    `json:"developer_managed_users_search_window_seconds"`
+	DeveloperManagedUsersSearchLimit     int    `json:"developer_managed_users_search_limit"`
 }
 
 type VerificationCooldownError struct {
 	RetryAfterSeconds int
+}
+
+type DeveloperManagedUsersSearchRateLimit struct {
+	WindowSeconds int
+	Limit         int
 }
 
 func (e *VerificationCooldownError) Error() string {
@@ -222,6 +229,8 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 		"risk_immediate_bind_probability",
 		"risk_delayed_bind_probability",
 		"risk_delayed_bind_login_count",
+		"developer_managed_users_search_window_seconds",
+		"developer_managed_users_search_limit",
 	)
 	if err != nil {
 		return SystemSettings{}, err
@@ -262,6 +271,20 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 	if raw := strings.TrimSpace(values["risk_delayed_bind_login_count"]); raw != "" {
 		if parsed, parseErr := strconv.Atoi(raw); parseErr == nil && parsed > 0 {
 			riskDelayedLoginCount = parsed
+		}
+	}
+
+	developerManagedUsersSearchWindowSec := appdefaults.DefaultDeveloperManagedUsersSearchWindow
+	if raw := strings.TrimSpace(values["developer_managed_users_search_window_seconds"]); raw != "" {
+		if parsed, parseErr := strconv.Atoi(raw); parseErr == nil && parsed >= 0 {
+			developerManagedUsersSearchWindowSec = parsed
+		}
+	}
+
+	developerManagedUsersSearchLimit := appdefaults.DefaultDeveloperManagedUsersSearchLimit
+	if raw := strings.TrimSpace(values["developer_managed_users_search_limit"]); raw != "" {
+		if parsed, parseErr := strconv.Atoi(raw); parseErr == nil && parsed >= 0 {
+			developerManagedUsersSearchLimit = parsed
 		}
 	}
 
@@ -351,6 +374,8 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 		RiskImmediateBindProbability:         riskImmediateProbability,
 		RiskDelayedBindProbability:           riskDelayedProbability,
 		RiskDelayedBindLoginCount:            riskDelayedLoginCount,
+		DeveloperManagedUsersSearchWindowSec: developerManagedUsersSearchWindowSec,
+		DeveloperManagedUsersSearchLimit:     developerManagedUsersSearchLimit,
 	}, nil
 }
 
@@ -525,84 +550,98 @@ func (s *SettingsService) UpdateSystemSettings(input SystemSettings) error {
 			return err
 		}
 	}
+	if input.DeveloperManagedUsersSearchWindowSec < 0 {
+		input.DeveloperManagedUsersSearchWindowSec = 0
+	}
+	if input.DeveloperManagedUsersSearchWindowSec > appdefaults.MaxDeveloperManagedUsersSearchWindow {
+		input.DeveloperManagedUsersSearchWindowSec = appdefaults.MaxDeveloperManagedUsersSearchWindow
+	}
+	if input.DeveloperManagedUsersSearchLimit < 0 {
+		input.DeveloperManagedUsersSearchLimit = 0
+	}
+	if input.DeveloperManagedUsersSearchLimit > appdefaults.MaxDeveloperManagedUsersSearchLimit {
+		input.DeveloperManagedUsersSearchLimit = appdefaults.MaxDeveloperManagedUsersSearchLimit
+	}
 
 	if err := s.deps.Store.UpsertSettings(map[string]string{
-		"allow_user_registration":                 strconv.FormatBool(input.AllowUserRegistration),
-		"enable_phone_verification":               strconv.FormatBool(input.EnablePhoneVerification),
-		"site_name":                               strings.TrimSpace(input.SiteName),
-		"site_name_en":                            strings.TrimSpace(input.SiteNameEN),
-		"site_browser_title":                      strings.TrimSpace(input.SiteBrowserTitle),
-		"site_browser_title_en":                   strings.TrimSpace(input.SiteBrowserTitleEN),
-		"site_logo_data_url":                      strings.TrimSpace(input.SiteLogoDataURL),
-		"site_footer_text":                        input.SiteFooterText,
-		"site_icp_record_number":                  strings.TrimSpace(input.SiteICPRecordNumber),
-		"site_public_security_record_number":      strings.TrimSpace(input.SitePublicSecurityRecordNumber),
-		"home_page_announcement_enabled":          strconv.FormatBool(input.HomePageAnnouncementEnabled),
-		"home_page_announcement_content":          strings.TrimSpace(input.HomePageAnnouncementContent),
-		"user_center_announcement_enabled":        strconv.FormatBool(input.UserCenterAnnouncementEnabled),
-		"user_center_announcement_content":        strings.TrimSpace(input.UserCenterAnnouncementContent),
-		"developer_announcement_enabled":          strconv.FormatBool(input.DeveloperAnnouncementEnabled),
-		"developer_announcement_content":          strings.TrimSpace(input.DeveloperAnnouncementContent),
-		"public_base_url":                         strings.TrimSpace(input.PublicBaseURL),
-		"frontend_base_url":                       strings.TrimSpace(input.FrontendBaseURL),
-		"oidc_first_party_client_id":              strings.TrimSpace(input.OIDCFirstPartyClientID),
-		"oidc_first_party_client_secret":          strings.TrimSpace(input.OIDCFirstPartyClientSecret),
-		"oidc_first_party_scope":                  strings.TrimSpace(input.OIDCFirstPartyScope),
-		"oidc_auto_approve_client_ids":            templateutil.NormalizeListSetting(input.OIDCAutoApproveClientIDs),
-		"oidc_auto_approve_redirect_hosts":        templateutil.NormalizeListSetting(input.OIDCAutoApproveRedirectHosts),
-		"smtp_host":                               strings.TrimSpace(input.SMTPHost),
-		"smtp_port":                               strings.TrimSpace(input.SMTPPort),
-		"smtp_username":                           strings.TrimSpace(input.SMTPUsername),
-		"smtp_password":                           input.SMTPPassword,
-		"smtp_from":                               strings.TrimSpace(input.SMTPFrom),
-		"smtp_force_ssl":                          strconv.FormatBool(input.SMTPForceSSL),
-		"smtp_verification_code_ttl_minutes":      strconv.Itoa(input.SMTPVerificationCodeTTLMinute),
-		"smtp_verification_code_cooldown_seconds": strconv.Itoa(input.SMTPVerificationCodeCooldownSecond),
-		"login_code_subject_template":             strings.TrimSpace(input.LoginCodeSubjectTemplate),
-		"login_code_body_template":                input.LoginCodeBodyTemplate,
-		"login_code_subject_template_en":          strings.TrimSpace(input.LoginCodeSubjectTemplateEN),
-		"login_code_body_template_en":             input.LoginCodeBodyTemplateEN,
-		"register_code_subject_template":          strings.TrimSpace(input.RegisterCodeSubjectTemplate),
-		"register_code_body_template":             input.RegisterCodeBodyTemplate,
-		"register_code_subject_template_en":       strings.TrimSpace(input.RegisterCodeSubjectTemplateEN),
-		"register_code_body_template_en":          input.RegisterCodeBodyTemplateEN,
-		"reset_password_code_subject_template":    strings.TrimSpace(input.ResetPasswordCodeSubjectTemplate),
-		"reset_password_code_body_template":       input.ResetPasswordCodeBodyTemplate,
-		"reset_password_code_subject_template_en": strings.TrimSpace(input.ResetPasswordCodeSubjectTemplateEN),
-		"reset_password_code_body_template_en":    input.ResetPasswordCodeBodyTemplateEN,
-		"delete_account_code_subject_template":    strings.TrimSpace(input.DeleteAccountCodeSubjectTemplate),
-		"delete_account_code_body_template":       input.DeleteAccountCodeBodyTemplate,
-		"delete_account_code_subject_template_en": strings.TrimSpace(input.DeleteAccountCodeSubjectTemplateEN),
-		"delete_account_code_body_template_en":    input.DeleteAccountCodeBodyTemplateEN,
-		"change_email_code_subject_template":      strings.TrimSpace(input.ChangeEmailCodeSubjectTemplate),
-		"change_email_code_body_template":         input.ChangeEmailCodeBodyTemplate,
-		"change_email_code_subject_template_en":   strings.TrimSpace(input.ChangeEmailCodeSubjectTemplateEN),
-		"change_email_code_body_template_en":      input.ChangeEmailCodeBodyTemplateEN,
-		"sms_provider":                            strings.TrimSpace(input.SMSProvider),
-		"sms_template_provider":                   strings.TrimSpace(input.SMSTemplateProvider),
-		"sms_api_base":                            strings.TrimSpace(input.SMSAPIBase),
-		"sms_username":                            strings.TrimSpace(input.SMSUsername),
-		"sms_password":                            input.SMSPassword,
-		"sms_signature":                           strings.TrimSpace(input.SMSSignature),
-		"sms_login_template":                      input.SMSLoginTemplate,
-		"sms_register_template":                   input.SMSRegisterTemplate,
-		"sms_reset_password_template":             input.SMSResetPasswordTemplate,
-		"sms_bind_phone_template":                 input.SMSBindPhoneTemplate,
-		"sms_delete_account_template":             input.SMSDeleteAccountTemplate,
-		"aliyun_sms_access_key_id":                strings.TrimSpace(input.AliyunSMSAccessKeyID),
-		"aliyun_sms_access_key_secret":            input.AliyunSMSAccessKeySecret,
-		"aliyun_sms_endpoint":                     strings.TrimSpace(input.AliyunSMSEndpoint),
-		"aliyun_sms_region_id":                    strings.TrimSpace(input.AliyunSMSRegionID),
-		"aliyun_sms_sign_name":                    strings.TrimSpace(input.AliyunSMSSignName),
-		"aliyun_sms_login_template_code":          strings.TrimSpace(input.AliyunSMSLoginTemplateCode),
-		"aliyun_sms_register_template_code":       strings.TrimSpace(input.AliyunSMSRegisterTemplateCode),
-		"aliyun_sms_reset_template_code":          strings.TrimSpace(input.AliyunSMSResetTemplateCode),
-		"aliyun_sms_bind_phone_template_code":     strings.TrimSpace(input.AliyunSMSBindPhoneTemplateCode),
-		"aliyun_sms_delete_template_code":         strings.TrimSpace(input.AliyunSMSDeleteTemplateCode),
-		"risk_control_enabled":                    strconv.FormatBool(input.RiskControlEnabled),
-		"risk_immediate_bind_probability":         strconv.Itoa(input.RiskImmediateBindProbability),
-		"risk_delayed_bind_probability":           strconv.Itoa(input.RiskDelayedBindProbability),
-		"risk_delayed_bind_login_count":           strconv.Itoa(input.RiskDelayedBindLoginCount),
+		"allow_user_registration":                       strconv.FormatBool(input.AllowUserRegistration),
+		"enable_phone_verification":                     strconv.FormatBool(input.EnablePhoneVerification),
+		"site_name":                                     strings.TrimSpace(input.SiteName),
+		"site_name_en":                                  strings.TrimSpace(input.SiteNameEN),
+		"site_browser_title":                            strings.TrimSpace(input.SiteBrowserTitle),
+		"site_browser_title_en":                         strings.TrimSpace(input.SiteBrowserTitleEN),
+		"site_logo_data_url":                            strings.TrimSpace(input.SiteLogoDataURL),
+		"site_footer_text":                              input.SiteFooterText,
+		"site_icp_record_number":                        strings.TrimSpace(input.SiteICPRecordNumber),
+		"site_public_security_record_number":            strings.TrimSpace(input.SitePublicSecurityRecordNumber),
+		"home_page_announcement_enabled":                strconv.FormatBool(input.HomePageAnnouncementEnabled),
+		"home_page_announcement_content":                strings.TrimSpace(input.HomePageAnnouncementContent),
+		"user_center_announcement_enabled":              strconv.FormatBool(input.UserCenterAnnouncementEnabled),
+		"user_center_announcement_content":              strings.TrimSpace(input.UserCenterAnnouncementContent),
+		"developer_announcement_enabled":                strconv.FormatBool(input.DeveloperAnnouncementEnabled),
+		"developer_announcement_content":                strings.TrimSpace(input.DeveloperAnnouncementContent),
+		"public_base_url":                               strings.TrimSpace(input.PublicBaseURL),
+		"frontend_base_url":                             strings.TrimSpace(input.FrontendBaseURL),
+		"oidc_first_party_client_id":                    strings.TrimSpace(input.OIDCFirstPartyClientID),
+		"oidc_first_party_client_secret":                strings.TrimSpace(input.OIDCFirstPartyClientSecret),
+		"oidc_first_party_scope":                        strings.TrimSpace(input.OIDCFirstPartyScope),
+		"oidc_auto_approve_client_ids":                  templateutil.NormalizeListSetting(input.OIDCAutoApproveClientIDs),
+		"oidc_auto_approve_redirect_hosts":              templateutil.NormalizeListSetting(input.OIDCAutoApproveRedirectHosts),
+		"smtp_host":                                     strings.TrimSpace(input.SMTPHost),
+		"smtp_port":                                     strings.TrimSpace(input.SMTPPort),
+		"smtp_username":                                 strings.TrimSpace(input.SMTPUsername),
+		"smtp_password":                                 input.SMTPPassword,
+		"smtp_from":                                     strings.TrimSpace(input.SMTPFrom),
+		"smtp_force_ssl":                                strconv.FormatBool(input.SMTPForceSSL),
+		"smtp_verification_code_ttl_minutes":            strconv.Itoa(input.SMTPVerificationCodeTTLMinute),
+		"smtp_verification_code_cooldown_seconds":       strconv.Itoa(input.SMTPVerificationCodeCooldownSecond),
+		"login_code_subject_template":                   strings.TrimSpace(input.LoginCodeSubjectTemplate),
+		"login_code_body_template":                      input.LoginCodeBodyTemplate,
+		"login_code_subject_template_en":                strings.TrimSpace(input.LoginCodeSubjectTemplateEN),
+		"login_code_body_template_en":                   input.LoginCodeBodyTemplateEN,
+		"register_code_subject_template":                strings.TrimSpace(input.RegisterCodeSubjectTemplate),
+		"register_code_body_template":                   input.RegisterCodeBodyTemplate,
+		"register_code_subject_template_en":             strings.TrimSpace(input.RegisterCodeSubjectTemplateEN),
+		"register_code_body_template_en":                input.RegisterCodeBodyTemplateEN,
+		"reset_password_code_subject_template":          strings.TrimSpace(input.ResetPasswordCodeSubjectTemplate),
+		"reset_password_code_body_template":             input.ResetPasswordCodeBodyTemplate,
+		"reset_password_code_subject_template_en":       strings.TrimSpace(input.ResetPasswordCodeSubjectTemplateEN),
+		"reset_password_code_body_template_en":          input.ResetPasswordCodeBodyTemplateEN,
+		"delete_account_code_subject_template":          strings.TrimSpace(input.DeleteAccountCodeSubjectTemplate),
+		"delete_account_code_body_template":             input.DeleteAccountCodeBodyTemplate,
+		"delete_account_code_subject_template_en":       strings.TrimSpace(input.DeleteAccountCodeSubjectTemplateEN),
+		"delete_account_code_body_template_en":          input.DeleteAccountCodeBodyTemplateEN,
+		"change_email_code_subject_template":            strings.TrimSpace(input.ChangeEmailCodeSubjectTemplate),
+		"change_email_code_body_template":               input.ChangeEmailCodeBodyTemplate,
+		"change_email_code_subject_template_en":         strings.TrimSpace(input.ChangeEmailCodeSubjectTemplateEN),
+		"change_email_code_body_template_en":            input.ChangeEmailCodeBodyTemplateEN,
+		"sms_provider":                                  strings.TrimSpace(input.SMSProvider),
+		"sms_template_provider":                         strings.TrimSpace(input.SMSTemplateProvider),
+		"sms_api_base":                                  strings.TrimSpace(input.SMSAPIBase),
+		"sms_username":                                  strings.TrimSpace(input.SMSUsername),
+		"sms_password":                                  input.SMSPassword,
+		"sms_signature":                                 strings.TrimSpace(input.SMSSignature),
+		"sms_login_template":                            input.SMSLoginTemplate,
+		"sms_register_template":                         input.SMSRegisterTemplate,
+		"sms_reset_password_template":                   input.SMSResetPasswordTemplate,
+		"sms_bind_phone_template":                       input.SMSBindPhoneTemplate,
+		"sms_delete_account_template":                   input.SMSDeleteAccountTemplate,
+		"aliyun_sms_access_key_id":                      strings.TrimSpace(input.AliyunSMSAccessKeyID),
+		"aliyun_sms_access_key_secret":                  input.AliyunSMSAccessKeySecret,
+		"aliyun_sms_endpoint":                           strings.TrimSpace(input.AliyunSMSEndpoint),
+		"aliyun_sms_region_id":                          strings.TrimSpace(input.AliyunSMSRegionID),
+		"aliyun_sms_sign_name":                          strings.TrimSpace(input.AliyunSMSSignName),
+		"aliyun_sms_login_template_code":                strings.TrimSpace(input.AliyunSMSLoginTemplateCode),
+		"aliyun_sms_register_template_code":             strings.TrimSpace(input.AliyunSMSRegisterTemplateCode),
+		"aliyun_sms_reset_template_code":                strings.TrimSpace(input.AliyunSMSResetTemplateCode),
+		"aliyun_sms_bind_phone_template_code":           strings.TrimSpace(input.AliyunSMSBindPhoneTemplateCode),
+		"aliyun_sms_delete_template_code":               strings.TrimSpace(input.AliyunSMSDeleteTemplateCode),
+		"risk_control_enabled":                          strconv.FormatBool(input.RiskControlEnabled),
+		"risk_immediate_bind_probability":               strconv.Itoa(input.RiskImmediateBindProbability),
+		"risk_delayed_bind_probability":                 strconv.Itoa(input.RiskDelayedBindProbability),
+		"risk_delayed_bind_login_count":                 strconv.Itoa(input.RiskDelayedBindLoginCount),
+		"developer_managed_users_search_window_seconds": strconv.Itoa(input.DeveloperManagedUsersSearchWindowSec),
+		"developer_managed_users_search_limit":          strconv.Itoa(input.DeveloperManagedUsersSearchLimit),
 	}); err != nil {
 		return err
 	}
@@ -936,6 +975,35 @@ func (s *SettingsService) GetVerificationCodeCooldownSeconds() int {
 		}
 	}
 	return appdefaults.DefaultVerificationCodeCooldownSeconds
+}
+
+func (s *SettingsService) GetDeveloperManagedUsersSearchRateLimit() DeveloperManagedUsersSearchRateLimit {
+	values, err := s.deps.Store.GetSettings(
+		"developer_managed_users_search_window_seconds",
+		"developer_managed_users_search_limit",
+	)
+	if err != nil {
+		return DeveloperManagedUsersSearchRateLimit{
+			WindowSeconds: appdefaults.DefaultDeveloperManagedUsersSearchWindow,
+			Limit:         appdefaults.DefaultDeveloperManagedUsersSearchLimit,
+		}
+	}
+	windowSeconds := appdefaults.DefaultDeveloperManagedUsersSearchWindow
+	if raw := strings.TrimSpace(values["developer_managed_users_search_window_seconds"]); raw != "" {
+		if parsed, parseErr := strconv.Atoi(raw); parseErr == nil && parsed >= 0 {
+			windowSeconds = parsed
+		}
+	}
+	limit := appdefaults.DefaultDeveloperManagedUsersSearchLimit
+	if raw := strings.TrimSpace(values["developer_managed_users_search_limit"]); raw != "" {
+		if parsed, parseErr := strconv.Atoi(raw); parseErr == nil && parsed >= 0 {
+			limit = parsed
+		}
+	}
+	return DeveloperManagedUsersSearchRateLimit{
+		WindowSeconds: windowSeconds,
+		Limit:         limit,
+	}
 }
 
 func validateRiskControlPrerequisites(input SystemSettings) error {

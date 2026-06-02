@@ -582,6 +582,7 @@ export function AdminPage() {
           smsForm={systemSettings.smsForm}
           announcementForm={systemSettings.announcementForm}
           riskForm={systemSettings.riskForm}
+          rateLimitForm={systemSettings.rateLimitForm}
           scopes={scopes}
           savingSettings={systemSettings.savingSettings}
           savingScopeKey={savingScopeKey}
@@ -617,6 +618,7 @@ export function AdminPage() {
             void systemSettings.saveAnnouncementSettings()
           }
           onSaveRisk={() => void systemSettings.saveRiskSettings()}
+          onSaveRateLimit={() => void systemSettings.saveRateLimitSettings()}
           onSaveScope={(scope) => void saveScope(scope)}
           onDeleteScope={(key) => void deleteScope(key)}
           onUploadSiteLogo={(file) =>

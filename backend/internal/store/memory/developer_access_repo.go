@@ -173,6 +173,146 @@ func (s *MemoryStore) ListAppIDsByGroup(groupID string) ([]string, error) {
 	return items, nil
 }
 
+func memoryMaskManagedUserPhone(phone string) string {
+	phone = strings.TrimSpace(phone)
+	if len(phone) < 7 {
+		return phone
+	}
+	return phone[:3] + "****" + phone[len(phone)-4:]
+}
+
+func (s *MemoryStore) ListManagedUsersPaginated(ownerUserID string, page, pageSize int, appID, emailKeyword string, now time.Time) ([]domain.DeveloperManagedUser, int, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	ownerApps := make([]domain.ClientApp, 0)
+	for _, app := range s.apps {
+		if app.OwnerUserID != ownerUserID {
+			continue
+		}
+		if strings.TrimSpace(appID) != "" && app.ID != appID {
+			continue
+		}
+		ownerApps = append(ownerApps, app)
+	}
+	appByClientID := map[string]domain.ClientApp{}
+	for _, app := range ownerApps {
+		appByClientID[app.ClientID] = app
+	}
+	userByID := map[string]*domain.DeveloperManagedUser{}
+	for _, consent := range s.consents {
+		app, ok := appByClientID[consent.ClientID]
+		if !ok {
+			continue
+		}
+		account, ok := s.users[consent.UserID]
+		if !ok {
+			continue
+		}
+		keyword := strings.ToLower(strings.TrimSpace(emailKeyword))
+		if keyword != "" && !strings.Contains(strings.ToLower(strings.TrimSpace(account.Email)), keyword) {
+			continue
+		}
+		item, ok := userByID[account.ID]
+		if !ok {
+			item = &domain.DeveloperManagedUser{
+				UserID:           account.ID,
+				DisplayName:      strings.TrimSpace(account.DisplayName),
+				MaskedEmail:      strings.TrimSpace(account.Email),
+				MaskedPhone:      memoryMaskManagedUserPhone(account.Phone),
+				AuthorizedApps:   []domain.DeveloperManagedUserAuthorizedApp{},
+				GroupIDs:         []string{},
+				GroupNames:       []string{},
+				AppBans:          []domain.AppUserBan{},
+				LastAuthorizedAt: consent.CreatedAt,
+			}
+			userByID[account.ID] = item
+		}
+		if consent.CreatedAt.After(item.LastAuthorizedAt) {
+			item.LastAuthorizedAt = consent.CreatedAt
+		}
+		foundApp := false
+		for index := range item.AuthorizedApps {
+			if item.AuthorizedApps[index].AppID == app.ID {
+				foundApp = true
+				if consent.CreatedAt.After(item.AuthorizedApps[index].LastAuthorizedAt) {
+					item.AuthorizedApps[index].LastAuthorizedAt = consent.CreatedAt
+				}
+				break
+			}
+		}
+		if !foundApp {
+			item.AuthorizedApps = append(item.AuthorizedApps, domain.DeveloperManagedUserAuthorizedApp{
+				AppID:            app.ID,
+				ClientID:         app.ClientID,
+				AppName:          app.Name,
+				LastAuthorizedAt: consent.CreatedAt,
+			})
+		}
+	}
+
+	items := make([]domain.DeveloperManagedUser, 0, len(userByID))
+	for _, item := range userByID {
+		for groupID, group := range s.developerGroups {
+			if group.OwnerUserID != ownerUserID {
+				continue
+			}
+			if members, ok := s.developerGroupMembers[groupID]; ok {
+				if _, ok := members[item.UserID]; ok {
+					item.GroupIDs = append(item.GroupIDs, group.ID)
+					item.GroupNames = append(item.GroupNames, group.Name)
+				}
+			}
+		}
+		slices.Sort(item.GroupNames)
+		for _, app := range ownerApps {
+			ban, ok := s.appUserBans[appUserKey(app.ID, item.UserID)]
+			if !ok {
+				continue
+			}
+			if ban.ExpiresAt != nil && !ban.ExpiresAt.After(now) {
+				continue
+			}
+			item.AppBans = append(item.AppBans, ban)
+		}
+		slices.SortFunc(item.AuthorizedApps, func(a, b domain.DeveloperManagedUserAuthorizedApp) int {
+			if a.LastAuthorizedAt.Equal(b.LastAuthorizedAt) {
+				return strings.Compare(a.AppID, b.AppID)
+			}
+			if a.LastAuthorizedAt.After(b.LastAuthorizedAt) {
+				return -1
+			}
+			return 1
+		})
+		items = append(items, *item)
+	}
+	slices.SortFunc(items, func(a, b domain.DeveloperManagedUser) int {
+		if a.LastAuthorizedAt.Equal(b.LastAuthorizedAt) {
+			return strings.Compare(a.UserID, b.UserID)
+		}
+		if a.LastAuthorizedAt.After(b.LastAuthorizedAt) {
+			return -1
+		}
+		return 1
+	})
+	total := len(items)
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+	start := (page - 1) * pageSize
+	if start >= total {
+		return []domain.DeveloperManagedUser{}, total, nil
+	}
+	end := start + pageSize
+	if end > total {
+		end = total
+	}
+	return items[start:end], total, nil
+}
+
 func (s *MemoryStore) CreateOrUpdateAppUserBan(ban domain.AppUserBan) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

@@ -90,7 +90,9 @@ export const defaultSettings: SystemSettings = {
   risk_control_enabled: false,
   risk_immediate_bind_probability: 50,
   risk_delayed_bind_probability: 50,
-  risk_delayed_bind_login_count: 3
+  risk_delayed_bind_login_count: 3,
+  developer_managed_users_search_window_seconds: 10,
+  developer_managed_users_search_limit: 5
 };
 
 export function getSettingsTabs(t: (key: string) => string): SettingsTab[] {
@@ -102,6 +104,7 @@ export function getSettingsTabs(t: (key: string) => string): SettingsTab[] {
     { key: "sms", label: t("发信配置") },
     { key: "media", label: t("公告配置") },
     { key: "addons", label: t("风控管理") },
+    { key: "rateLimit", label: t("限流管理") },
     { key: "email", label: t("邮件") },
     { key: "scope", label: t("Scope 设置") }
   ];
@@ -116,6 +119,7 @@ export function getSettingsTabMeta(t: (key: string) => string): Record<SettingsT
     sms: { title: t("发信配置"), description: t("管理短信发信接口与模板配置，并预留阿里云等扩展能力。") },
     media: { title: t("公告配置"), description: t("分别配置用户中心和开发者后台的顶部公告，互不影响，可独立开启和编辑。") },
     addons: { title: t("风控管理"), description: t("管理中国大陆注册用户的手机号绑定风控策略与触发概率。") },
+    rateLimit: { title: t("限流管理"), description: t("限制开发者后台高成本查询接口的短时间重复调用。") },
     email: { title: t("邮件"), description: t("管理 SMTP 连接、发件人和测试邮件。") },
     scope: { title: t("Scope 设置"), description: t("集中管理系统可用 scope、是否启用，以及开发者是否可在创建应用时直接申请。") }
   };

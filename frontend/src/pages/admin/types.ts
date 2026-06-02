@@ -337,6 +337,8 @@ export type SystemSettings = {
   risk_immediate_bind_probability: number;
   risk_delayed_bind_probability: number;
   risk_delayed_bind_login_count: number;
+  developer_managed_users_search_window_seconds: number;
+  developer_managed_users_search_limit: number;
 };
 
 export type SettingsTabKey =
@@ -347,6 +349,7 @@ export type SettingsTabKey =
   | "sms"
   | "media"
   | "addons"
+  | "rateLimit"
   | "email"
   | "scope";
 

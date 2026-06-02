@@ -115,6 +115,9 @@ export function DeveloperUserAccess({
   const [banModalOpen, setBanModalOpen] = useState(false);
   const [batchGroupModalOpen, setBatchGroupModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("groups");
+  const [emailSearchInput, setEmailSearchInput] = useState(
+    managedUsersEmailKeyword,
+  );
   const [selectedAppId, setSelectedAppId] = useState<string>(
     managedUsersAppID || accessApps[0]?.app_id || "",
   );
@@ -143,6 +146,10 @@ export function DeveloperUserAccess({
       setSelectedAppId(managedUsersAppID);
     }
   }, [managedUsersAppID, selectedAppId]);
+
+  useEffect(() => {
+    setEmailSearchInput(managedUsersEmailKeyword);
+  }, [managedUsersEmailKeyword]);
 
   const selectedApp = useMemo(
     () => accessApps.find((item) => item.app_id === selectedAppId) || accessApps[0],
@@ -221,6 +228,7 @@ export function DeveloperUserAccess({
   return (
     <>
       <Tabs
+        className="developer-user-access-tabs"
         activeKey={activeTab}
         onChange={(key) => {
           setActiveTab(key);
@@ -339,9 +347,16 @@ export function DeveloperUserAccess({
                       allowClear
                       placeholder={t("userAccess.searchUserByEmail")}
                       style={{ width: isMobile ? "100%" : 260, maxWidth: "100%" }}
-                      value={managedUsersEmailKeyword}
-                      onChange={(event) =>
-                        onManagedUsersEmailKeywordChange(event.target.value)
+                      value={emailSearchInput}
+                      onChange={(event) => {
+                        const value = event.target.value;
+                        setEmailSearchInput(value);
+                        if (value === "" && managedUsersEmailKeyword !== "") {
+                          onManagedUsersEmailKeywordChange("");
+                        }
+                      }}
+                      onSearch={(value) =>
+                        onManagedUsersEmailKeywordChange(value.trim())
                       }
                     />
                   </Space>

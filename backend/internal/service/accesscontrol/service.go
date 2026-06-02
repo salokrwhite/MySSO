@@ -402,70 +402,16 @@ func (s *Service) buildManagedUserSummaries(ownerUserID, appID string) ([]manage
 
 func (s *Service) ListManagedUsersPaginated(ownerUserID string, page, pageSize int, appID, emailKeyword string) (ManagedUserListResult, error) {
 	page, pageSize = normalizeManagedUserPagination(page, pageSize)
-	summaries, allApps, err := s.buildManagedUserSummaries(ownerUserID, appID)
+	items, total, err := s.deps.Store.ListManagedUsersPaginated(
+		ownerUserID,
+		page,
+		pageSize,
+		strings.TrimSpace(appID),
+		strings.TrimSpace(emailKeyword),
+		time.Now().UTC(),
+	)
 	if err != nil {
 		return ManagedUserListResult{}, err
-	}
-	emailKeyword = strings.ToLower(strings.TrimSpace(emailKeyword))
-	if emailKeyword != "" {
-		filtered := make([]managedUserSummary, 0, len(summaries))
-		for _, summary := range summaries {
-			account, err := s.deps.Store.GetUser(summary.UserID)
-			if err != nil {
-				continue
-			}
-			if strings.Contains(strings.ToLower(strings.TrimSpace(account.Email)), emailKeyword) {
-				filtered = append(filtered, summary)
-			}
-		}
-		summaries = filtered
-	}
-	total := len(summaries)
-	start := (page - 1) * pageSize
-	if start > total {
-		start = total
-	}
-	end := start + pageSize
-	if end > total {
-		end = total
-	}
-	pageSummaries := summaries[start:end]
-	now := time.Now().UTC()
-	items := make([]domain.DeveloperManagedUser, 0, len(pageSummaries))
-	for _, summary := range pageSummaries {
-		account, err := s.deps.Store.GetUser(summary.UserID)
-		if err != nil {
-			continue
-		}
-		item := domain.DeveloperManagedUser{
-			UserID:           account.ID,
-			DisplayName:      strings.TrimSpace(account.DisplayName),
-			MaskedEmail:      strings.TrimSpace(account.Email),
-			MaskedPhone:      maskPhone(account.Phone),
-			LastAuthorizedAt: summary.LastAuthorizedAt,
-			AuthorizedApps:   summary.AuthorizedApps,
-			GroupIDs:         []string{},
-			GroupNames:       []string{},
-			AppBans:          []domain.AppUserBan{},
-		}
-		groups, err := s.deps.Store.ListUserGroupsByOwner(ownerUserID, summary.UserID)
-		if err != nil {
-			return ManagedUserListResult{}, err
-		}
-		for _, group := range groups {
-			item.GroupIDs = append(item.GroupIDs, group.ID)
-			item.GroupNames = append(item.GroupNames, group.Name)
-		}
-		sort.Strings(item.GroupNames)
-		for _, app := range allApps {
-			if strings.TrimSpace(appID) != "" && app.ID != appID {
-				continue
-			}
-			if ban, err := s.deps.Store.GetActiveAppUserBan(app.ID, summary.UserID, now); err == nil {
-				item.AppBans = append(item.AppBans, ban)
-			}
-		}
-		items = append(items, item)
 	}
 	return ManagedUserListResult{
 		Items:    items,

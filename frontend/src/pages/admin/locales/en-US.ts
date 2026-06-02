@@ -238,6 +238,7 @@ const enUS: Record<string, string> = {
   "用户中心和开发者后台公告互相独立，只有在对应开关开启且内容非空时才会显示。": "User center and developer console announcements are independent. They are shown only when the corresponding switch is enabled and the content is not empty.",
   "保存公告配置": "Save Announcement Settings",
   "风控管理": "Risk Control",
+  "限流管理": "Rate Limiting",
   "邮件": "Email",
   "Scope 设置": "Scope Settings",
   "预留站点名称、域名和品牌信息配置。": "Configure site name, domains, and branding information.",
@@ -247,6 +248,7 @@ const enUS: Record<string, string> = {
   "管理短信发信接口与模板配置，并预留阿里云等扩展能力。": "Manage SMS provider and template settings with room for Aliyun and other integrations.",
   "分别配置用户中心和开发者后台的顶部公告，互不影响，可独立开启和编辑。": "Configure top announcements for the user center and developer portal independently.",
   "管理中国大陆注册用户的手机号绑定风控策略与触发概率。": "Manage phone-binding risk policies and trigger probability for Mainland China users.",
+  "限制开发者后台高成本查询接口的短时间重复调用。": "Limit short-term repeated calls to expensive developer console queries.",
   "管理 SMTP 连接、发件人和测试邮件。": "Manage SMTP connectivity, sender identity, and test emails.",
   "邮件服务": "Email Service",
   "保存邮件设置": "Save Email Settings",
@@ -549,6 +551,15 @@ const enUS: Record<string, string> = {
   "两个概率之和必须等于 100。未绑定手机号时，用户账号会保持或切换为“待激活”，绑定完成后恢复正常。": "The two probabilities must add up to 100. If the phone number is not bound, the account remains or switches to pending activation, and returns to normal after binding is completed.",
   "保存风控管理": "Save Risk Control Settings",
   "风控管理已保存": "Risk control settings saved",
+  "当前仅限制开发者后台“用户分组与访问”的邮箱搜索接口。": "Currently only limits the email search API in Developer Console user groups and access.",
+  "时间窗口（秒）": "Time Window (Seconds)",
+  "请输入时间窗口": "Please enter the time window",
+  "设置为 0 表示关闭该接口限流。": "Set to 0 to disable rate limiting for this API.",
+  "窗口内最大搜索次数": "Maximum Searches Per Window",
+  "请输入最大搜索次数": "Please enter the maximum search count",
+  "限流按开发者账号分别计算。触发限制时接口返回 429，并带有 Retry-After。": "Rate limits are counted separately per developer account. When triggered, the API returns 429 with Retry-After.",
+  "保存限流管理": "Save Rate Limiting",
+  "限流管理已保存": "Rate limiting settings saved",
 };
 
 export default enUS;

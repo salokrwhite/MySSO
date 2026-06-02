@@ -74,6 +74,9 @@ func (s *Server) handleDeveloperManagedUsers(c *gin.Context) {
 	pageSize, _ := strconv.Atoi(strings.TrimSpace(c.Query("page_size")))
 	appID := strings.TrimSpace(c.Query("app_id"))
 	emailKeyword := strings.TrimSpace(c.Query("email_keyword"))
+	if emailKeyword != "" && !s.allowDeveloperManagedUsersSearch(c, user.ID) {
+		return
+	}
 	result, err := s.services.AccessControl.ListManagedUsersPaginated(user.ID, page, pageSize, appID, emailKeyword)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -85,6 +88,33 @@ func (s *Server) handleDeveloperManagedUsers(c *gin.Context) {
 		"page":      result.Page,
 		"page_size": result.PageSize,
 	})
+}
+
+func (s *Server) allowDeveloperManagedUsersSearch(c *gin.Context, developerUserID string) bool {
+	if s == nil || s.services == nil || s.services.Settings == nil || s.rateLimiter == nil {
+		return true
+	}
+	settings := s.services.Settings.GetDeveloperManagedUsersSearchRateLimit()
+	windowSeconds := settings.WindowSeconds
+	limit := settings.Limit
+	if windowSeconds <= 0 || limit <= 0 {
+		return true
+	}
+	key := "developer-managed-users-search:" + strings.TrimSpace(developerUserID)
+	allowed, retryAfter := s.rateLimiter.allow(key, limit, time.Duration(windowSeconds)*time.Second, time.Now().UTC())
+	if allowed {
+		return true
+	}
+	retryAfterSeconds := int(retryAfter.Seconds())
+	if retryAfterSeconds < 1 {
+		retryAfterSeconds = 1
+	}
+	c.Header("Retry-After", strconv.Itoa(retryAfterSeconds))
+	c.JSON(http.StatusTooManyRequests, gin.H{
+		"error":               "too many search requests",
+		"retry_after_seconds": retryAfterSeconds,
+	})
+	return false
 }
 
 func (s *Server) handleUpdateDeveloperManagedUserGroups(c *gin.Context) {

@@ -282,6 +282,12 @@ func seedInitialData(db *sql.DB, req CompleteRequest, cfg config.Config) error {
 	if err := upsertSetting(db, "smtp_verification_code_cooldown_seconds", strconv.Itoa(appdefaults.DefaultVerificationCodeCooldownSeconds), now); err != nil {
 		return err
 	}
+	if err := upsertSetting(db, "developer_managed_users_search_window_seconds", strconv.Itoa(appdefaults.DefaultDeveloperManagedUsersSearchWindow), now); err != nil {
+		return err
+	}
+	if err := upsertSetting(db, "developer_managed_users_search_limit", strconv.Itoa(appdefaults.DefaultDeveloperManagedUsersSearchLimit), now); err != nil {
+		return err
+	}
 	if err := upsertSetting(db, "login_code_subject_template", appdefaults.DefaultLoginCodeSubjectTemplate, now); err != nil {
 		return err
 	}
@@ -462,6 +468,9 @@ func ApplyRuntimeSettings(db *sql.DB, cfg *config.Config) error {
 		return err
 	}
 	if err := ensureConsentIndexes(db); err != nil {
+		return err
+	}
+	if err := ensureDeveloperAccessIndexes(db); err != nil {
 		return err
 	}
 	if err := ensureEmailLookupIndexes(db); err != nil {
@@ -923,8 +932,34 @@ func ensureConsentIndexes(db *sql.DB) error {
 		},
 		{
 			table: "consents",
+			index: "idx_consents_client_created_at",
+			query: `ALTER TABLE consents ADD INDEX idx_consents_client_created_at (client_id, created_at)`,
+		},
+		{
+			table: "consents",
 			index: "idx_consents_revoked_at",
 			query: `ALTER TABLE consents ADD INDEX idx_consents_revoked_at (revoked_at)`,
+		},
+	}
+
+	for _, item := range indexes {
+		if err := ensureIndex(db, item.table, item.index, item.query); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func ensureDeveloperAccessIndexes(db *sql.DB) error {
+	indexes := []struct {
+		table string
+		index string
+		query string
+	}{
+		{
+			table: "developer_group_members",
+			index: "idx_developer_group_members_user_group",
+			query: `ALTER TABLE developer_group_members ADD INDEX idx_developer_group_members_user_group (user_id, group_id)`,
 		},
 	}
 
@@ -1565,6 +1600,7 @@ func ensureAppUserAccessStatesTable(db *sql.DB) error {
 				updated_at DATETIME NOT NULL,
 				PRIMARY KEY (app_id, user_id),
 				INDEX idx_app_user_access_states_user_id (user_id),
+				INDEX idx_app_user_access_states_user_app_ban (user_id, app_id, ban_id, ban_expires_at),
 				INDEX idx_app_user_access_states_app_ban_updated_at (app_id, ban_updated_at),
 				INDEX idx_app_user_access_states_ban_expires_at (ban_expires_at)
 			)
@@ -1577,6 +1613,7 @@ func ensureAppUserAccessStatesTable(db *sql.DB) error {
 		query string
 	}{
 		{name: "idx_app_user_access_states_user_id", query: `ALTER TABLE app_user_access_states ADD INDEX idx_app_user_access_states_user_id (user_id)`},
+		{name: "idx_app_user_access_states_user_app_ban", query: `ALTER TABLE app_user_access_states ADD INDEX idx_app_user_access_states_user_app_ban (user_id, app_id, ban_id, ban_expires_at)`},
 		{name: "idx_app_user_access_states_app_ban_updated_at", query: `ALTER TABLE app_user_access_states ADD INDEX idx_app_user_access_states_app_ban_updated_at (app_id, ban_updated_at)`},
 		{name: "idx_app_user_access_states_ban_expires_at", query: `ALTER TABLE app_user_access_states ADD INDEX idx_app_user_access_states_ban_expires_at (ban_expires_at)`},
 	}
