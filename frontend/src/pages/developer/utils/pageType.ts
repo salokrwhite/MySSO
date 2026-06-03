@@ -1,6 +1,9 @@
 import type { DeveloperPageType } from "../types";
 
 export function resolveDeveloperPageType(pathname: string): DeveloperPageType {
+  if (pathname === "/developer/profile") {
+    return "profile";
+  }
   if (pathname === "/developer/console") {
     return "console";
   }

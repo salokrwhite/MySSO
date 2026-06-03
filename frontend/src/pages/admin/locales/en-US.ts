@@ -1,6 +1,13 @@
 const enUS: Record<string, string> = {
   "首页仪表盘": "Dashboard",
   "集中查看平台运行概览、关键审计和策略配置。": "View platform overview, recent audits, and policy configuration in one place.",
+  "个人信息": "Profile",
+  "管理员个人信息": "Administrator Profile",
+  "独立维护当前管理员账号资料，并查看自己授权登录过的应用。": "Manage the current administrator account profile and review applications you have authorized.",
+  "账号状态": "Account Status",
+  "加载个人信息失败": "Failed to load profile",
+  "管理员个人信息已更新": "Administrator profile updated",
+  "管理员个人信息更新失败": "Failed to update administrator profile",
   "用户管理": "User Management",
   "查看账号状态、角色和 MFA 开启情况，并执行冻结或解冻。": "Review account status, roles, and MFA status, then freeze or unfreeze users.",
   "应用管理": "Application Management",

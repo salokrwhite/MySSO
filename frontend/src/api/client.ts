@@ -87,7 +87,11 @@ export class ApiError extends Error {
 async function fetchWithTimeout(input: string, init: ApiRequestInit) {
   const controller = new AbortController();
   const timeoutMs = typeof init.timeout_ms === "number" && init.timeout_ms > 0 ? init.timeout_ms : REQUEST_TIMEOUT_MS;
-  const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+  let timedOut = false;
+  const timeout = window.setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, timeoutMs);
   try {
     const { timeout_ms: _timeoutMs, ...rest } = init;
     return await fetch(input, {
@@ -95,6 +99,11 @@ async function fetchWithTimeout(input: string, init: ApiRequestInit) {
       credentials: rest.credentials ?? "include",
       signal: controller.signal
     });
+  } catch (error) {
+    if (timedOut) {
+      throw new ApiError("request timed out", 0, { timeout_ms: timeoutMs });
+    }
+    throw error;
   } finally {
     window.clearTimeout(timeout);
   }

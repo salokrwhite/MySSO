@@ -20,6 +20,7 @@ import {
   DeveloperDocsManual,
 } from "./components/DocsManual";
 import { DeveloperDashboard } from "./components/Dashboard";
+import { DeveloperProfile } from "./components/Profile";
 import { DeveloperUserAccess } from "./components/UserAccess";
 import { useDeveloperPageController } from "./hooks/useDeveloperPageController";
 import { useDeveloperTranslation } from "./i18n";
@@ -120,6 +121,9 @@ export function DeveloperPage() {
           auditLogs={controller.auditLogs}
         />
       ) : null}
+      {controller.pageType === "profile" ? (
+        <DeveloperProfile sessionToken={controller.sessionToken} />
+      ) : null}
       {controller.pageType === "console" ? (
         <DeveloperConsole
           apps={controller.items}
@@ -139,6 +143,7 @@ export function DeveloperPage() {
         <DeveloperUserAccess
           groups={controller.groups}
           managedUsers={controller.managedUsers}
+          memberCandidateUsers={controller.memberCandidateUsers}
           selectedManagedUserIDs={controller.selectedManagedUserIDs}
           setSelectedManagedUserIDs={controller.setSelectedManagedUserIDs}
           managedUsersTotal={controller.managedUsersTotal}
@@ -146,6 +151,7 @@ export function DeveloperPage() {
           managedUsersPageSize={controller.managedUsersPageSize}
           managedUsersAppID={controller.managedUsersAppID}
           managedUsersEmailKeyword={controller.managedUsersEmailKeyword}
+          memberCandidateEmailKeyword={controller.memberCandidateEmailKeyword}
           accessApps={controller.accessApps}
           accessLogs={controller.accessLogs}
           accessLogsTotal={controller.accessLogsTotal}
@@ -159,13 +165,18 @@ export function DeveloperPage() {
           onDeleteGroup={controller.deleteGroup}
           onManagedUsersPageChange={controller.changeManagedUsersPage}
           onManagedUsersAppFilterChange={controller.changeManagedUsersAppFilter}
+          onManagedUsersGroupFilterChange={
+            controller.changeManagedUsersGroupFilter
+          }
           onManagedUsersEmailKeywordChange={
             controller.changeManagedUsersEmailKeyword
+          }
+          onMemberCandidateEmailKeywordChange={
+            controller.changeMemberCandidateEmailKeyword
           }
           onBatchUpdateManagedUserGroups={
             controller.batchUpdateManagedUserGroups
           }
-          onUpdateManagedUserGroups={controller.updateManagedUserGroups}
           onUpdateAppBindings={controller.updateAppBindings}
           onBanUser={controller.banAppUser}
           onUnbanUser={controller.unbanAppUser}

@@ -238,6 +238,7 @@ export function App() {
             <Route element={<AppLayout />}>
               <Route path="/me/:section?" element={<UserPage />} />
               <Route path="/developer" element={<DeveloperPage />} />
+              <Route path="/developer/profile" element={<DeveloperPage />} />
               <Route path="/developer/console" element={<DeveloperPage />} />
               <Route path="/developer/user-access" element={<DeveloperPage />} />
               <Route path="/developer/audit-logs" element={<DeveloperPage />} />
@@ -287,6 +288,7 @@ export function App() {
                 element={<DeveloperPage />}
               />
               <Route path="/admin" element={<AdminPage />} />
+              <Route path="/admin/profile" element={<AdminPage />} />
               <Route path="/admin/users" element={<AdminPage />} />
               <Route path="/admin/apps" element={<AdminPage />} />
               <Route path="/admin/send-logs/emails" element={<AdminPage />} />

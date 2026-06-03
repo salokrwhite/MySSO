@@ -427,6 +427,7 @@ type developerManagedUserGroupsRequest struct {
 type batchDeveloperManagedUserGroupsRequest struct {
 	UserIDs  []string `json:"user_ids"`
 	GroupIDs []string `json:"group_ids"`
+	Mode     string   `json:"mode"`
 }
 
 type developerAppBindingsRequest struct {

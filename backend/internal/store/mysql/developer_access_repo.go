@@ -236,6 +236,32 @@ func managedUsersAppPredicate(appID string) (string, []any) {
 	return " AND a.id = ?", []any{appID}
 }
 
+func managedUsersGroupPredicate(groupIDs []string) (string, []any) {
+	normalized := make([]string, 0, len(groupIDs))
+	seen := map[string]struct{}{}
+	for _, groupID := range groupIDs {
+		groupID = strings.TrimSpace(groupID)
+		if groupID == "" {
+			continue
+		}
+		if _, ok := seen[groupID]; ok {
+			continue
+		}
+		seen[groupID] = struct{}{}
+		normalized = append(normalized, groupID)
+	}
+	if len(normalized) == 0 {
+		return "", nil
+	}
+	placeholders := make([]string, 0, len(normalized))
+	args := make([]any, 0, len(normalized))
+	for _, groupID := range normalized {
+		placeholders = append(placeholders, "?")
+		args = append(args, groupID)
+	}
+	return " AND EXISTS (SELECT 1 FROM developer_group_members gm WHERE gm.user_id = c.user_id AND gm.group_id IN (" + strings.Join(placeholders, ",") + "))", args
+}
+
 func appendUserIDInClause(query string, args []any, userIDs []string) (string, []any) {
 	placeholders := make([]string, 0, len(userIDs))
 	for _, userID := range userIDs {
@@ -253,7 +279,24 @@ func maskManagedUserPhone(phone string) string {
 	return phone[:3] + "****" + phone[len(phone)-4:]
 }
 
-func (s *MySQLStore) ListManagedUsersPaginated(ownerUserID string, page, pageSize int, appID, emailKeyword string, now time.Time) ([]domain.DeveloperManagedUser, int, error) {
+func (s *MySQLStore) HasManagedUser(ownerUserID, userID string) (bool, error) {
+	var exists int
+	err := s.db.QueryRow(`
+		SELECT EXISTS (
+			SELECT 1
+			FROM client_apps a
+			INNER JOIN consents c ON c.client_id = a.client_id
+			WHERE a.owner_user_id = ? AND c.user_id = ?
+			LIMIT 1
+		)
+	`, ownerUserID, strings.TrimSpace(userID)).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+	return exists == 1, nil
+}
+
+func (s *MySQLStore) ListManagedUsersPaginated(ownerUserID string, page, pageSize int, appID, emailKeyword string, groupIDs []string, now time.Time) ([]domain.DeveloperManagedUser, int, error) {
 	if page <= 0 {
 		page = 1
 	}
@@ -262,9 +305,11 @@ func (s *MySQLStore) ListManagedUsersPaginated(ownerUserID string, page, pageSiz
 	}
 	appClause, appArgs := managedUsersAppPredicate(appID)
 	emailClause, emailArgs := managedUsersEmailPredicate(emailKeyword)
+	groupClause, groupArgs := managedUsersGroupPredicate(groupIDs)
 	baseArgs := []any{ownerUserID}
 	baseArgs = append(baseArgs, appArgs...)
 	baseArgs = append(baseArgs, emailArgs...)
+	baseArgs = append(baseArgs, groupArgs...)
 
 	countQuery := `
 		SELECT COUNT(*) FROM (
@@ -272,7 +317,7 @@ func (s *MySQLStore) ListManagedUsersPaginated(ownerUserID string, page, pageSiz
 			FROM client_apps a
 			INNER JOIN consents c ON c.client_id = a.client_id
 			INNER JOIN users u ON u.id = c.user_id
-			WHERE a.owner_user_id = ?` + appClause + emailClause + `
+			WHERE a.owner_user_id = ?` + appClause + emailClause + groupClause + `
 			GROUP BY c.user_id
 		) managed_users
 	`
@@ -292,7 +337,7 @@ func (s *MySQLStore) ListManagedUsersPaginated(ownerUserID string, page, pageSiz
 		FROM client_apps a
 		INNER JOIN consents c ON c.client_id = a.client_id
 		INNER JOIN users u ON u.id = c.user_id
-		WHERE a.owner_user_id = ?`+appClause+emailClause+`
+		WHERE a.owner_user_id = ?`+appClause+emailClause+groupClause+`
 		GROUP BY c.user_id, u.display_name, u.email, u.phone
 		ORDER BY last_authorized_at DESC, c.user_id ASC
 		LIMIT ? OFFSET ?

@@ -74,10 +74,11 @@ func (s *Server) handleDeveloperManagedUsers(c *gin.Context) {
 	pageSize, _ := strconv.Atoi(strings.TrimSpace(c.Query("page_size")))
 	appID := strings.TrimSpace(c.Query("app_id"))
 	emailKeyword := strings.TrimSpace(c.Query("email_keyword"))
+	groupIDs := splitCommaSeparated(c.Query("group_ids"))
 	if emailKeyword != "" && !s.allowDeveloperManagedUsersSearch(c, user.ID) {
 		return
 	}
-	result, err := s.services.AccessControl.ListManagedUsersPaginated(user.ID, page, pageSize, appID, emailKeyword)
+	result, err := s.services.AccessControl.ListManagedUsersPaginated(user.ID, page, pageSize, appID, emailKeyword, groupIDs)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -142,7 +143,7 @@ func (s *Server) handleBatchUpdateDeveloperManagedUserGroups(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := s.services.AccessControl.BatchUpdateManagedUserGroups(user.ID, user.ID, req.UserIDs, req.GroupIDs); err != nil {
+	if err := s.services.AccessControl.BatchUpdateManagedUserGroups(user.ID, user.ID, req.UserIDs, req.GroupIDs, req.Mode); err != nil {
 		status := http.StatusBadRequest
 		if strings.Contains(err.Error(), "forbidden") {
 			status = http.StatusForbidden

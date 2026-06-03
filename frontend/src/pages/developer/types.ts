@@ -28,6 +28,7 @@ export type ScopeDefinition = {
 
 export type DeveloperPageType =
   | "dashboard"
+  | "profile"
   | "console"
   | "userAccess"
   | "auditLogs"

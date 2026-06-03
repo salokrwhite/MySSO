@@ -18,6 +18,24 @@ func containsString(items []string, target string) bool {
 	return false
 }
 
+func splitCommaSeparated(value string) []string {
+	parts := strings.Split(value, ",")
+	items := make([]string, 0, len(parts))
+	seen := map[string]struct{}{}
+	for _, part := range parts {
+		item := strings.TrimSpace(part)
+		if item == "" {
+			continue
+		}
+		if _, ok := seen[item]; ok {
+			continue
+		}
+		seen[item] = struct{}{}
+		items = append(items, item)
+	}
+	return items
+}
+
 func toInstallDBConfig(driver, host, port, name, user, password, charset string) config.DBConfig {
 	return config.DBConfig{
 		Driver:   driver,

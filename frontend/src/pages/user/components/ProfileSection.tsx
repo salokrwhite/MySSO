@@ -1,4 +1,4 @@
-import { CalendarOutlined, CameraOutlined, EditOutlined, EnvironmentOutlined, GlobalOutlined, IdcardOutlined, SmileOutlined } from "@ant-design/icons";
+import { CalendarOutlined, CameraOutlined, EditOutlined, EnvironmentOutlined, GlobalOutlined, IdcardOutlined, MailOutlined, SmileOutlined } from "@ant-design/icons";
 import { Avatar, Button, Select, Space, Typography, Upload } from "antd";
 import { useTranslation } from "react-i18next";
 import type { CurrentUser } from "../types";
@@ -13,6 +13,8 @@ type ProfileSectionProps = {
   preferredLocale: AccountLocale;
   uploadingAvatar: boolean;
   savingPreferredLocale: boolean;
+  showEmail?: boolean;
+  hideLanguagePreference?: boolean;
   onUploadAvatar: (file: File) => boolean;
   onEditDisplayName: () => void;
   onEditGender: () => void;
@@ -28,6 +30,8 @@ export function ProfileSection({
   preferredLocale,
   uploadingAvatar,
   savingPreferredLocale,
+  showEmail = false,
+  hideLanguagePreference = false,
   onUploadAvatar,
   onEditDisplayName,
   onEditGender,
@@ -92,38 +96,53 @@ export function ProfileSection({
               </Button>
             </Space>
           </div>
-          <div className="account-info-row">
-            <div className="account-info-main">
-              <span className="account-info-icon icon-blue">
-                <GlobalOutlined />
-              </span>
-              <div>
-                <Typography.Text strong>{t("profile.languagePreference")}</Typography.Text>
-                <Typography.Paragraph type="secondary">{t("profile.languagePreferenceDesc")}</Typography.Paragraph>
+          {!hideLanguagePreference ? (
+            <div className="account-info-row">
+              <div className="account-info-main">
+                <span className="account-info-icon icon-blue">
+                  <GlobalOutlined />
+                </span>
+                <div>
+                  <Typography.Text strong>{t("profile.languagePreference")}</Typography.Text>
+                  <Typography.Paragraph type="secondary">{t("profile.languagePreferenceDesc")}</Typography.Paragraph>
+                </div>
               </div>
+              <Space size={12} wrap>
+                <Select
+                  value={preferredLocale}
+                  style={{ width: 260 }}
+                  showSearch
+                  optionFilterProp="label"
+                  options={accountLocaleOptions.map((item) => ({
+                    value: item.value,
+                    label: `${item.label} / ${item.englishLabel}`
+                  }))}
+                  filterOption={(input, option) =>
+                    String(option?.label || "")
+                      .toLowerCase()
+                      .includes(input.trim().toLowerCase())
+                  }
+                  onChange={(value) => onPreferredLocaleChange(normalizeAccountLocale(value))}
+                />
+                <Button type="primary" loading={savingPreferredLocale} onClick={onSavePreferredLocale}>
+                  {t("common.save")}
+                </Button>
+              </Space>
             </div>
-            <Space size={12} wrap>
-              <Select
-                value={preferredLocale}
-                style={{ width: 260 }}
-                showSearch
-                optionFilterProp="label"
-                options={accountLocaleOptions.map((item) => ({
-                  value: item.value,
-                  label: `${item.label} / ${item.englishLabel}`
-                }))}
-                filterOption={(input, option) =>
-                  String(option?.label || "")
-                    .toLowerCase()
-                    .includes(input.trim().toLowerCase())
-                }
-                onChange={(value) => onPreferredLocaleChange(normalizeAccountLocale(value))}
-              />
-              <Button type="primary" loading={savingPreferredLocale} onClick={onSavePreferredLocale}>
-                {t("common.save")}
-              </Button>
-            </Space>
-          </div>
+          ) : null}
+          {showEmail ? (
+            <div className="account-info-row">
+              <div className="account-info-main">
+                <span className="account-info-icon icon-blue">
+                  <MailOutlined />
+                </span>
+                <div>
+                  <Typography.Text strong>{t("profile.email")}</Typography.Text>
+                </div>
+              </div>
+              <Typography.Text copyable={Boolean(user?.email)}>{user?.email || "-"}</Typography.Text>
+            </div>
+          ) : null}
           <div className="account-info-row">
             <div className="account-info-main">
               <span className="account-info-icon icon-mint">

@@ -369,6 +369,7 @@ export type SettingsTabKey =
 
 export type AdminPageType =
   | "dashboard"
+  | "profile"
   | "users"
   | "apps"
   | "emailSendLogs"

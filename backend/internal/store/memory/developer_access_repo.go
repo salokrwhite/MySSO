@@ -181,7 +181,25 @@ func memoryMaskManagedUserPhone(phone string) string {
 	return phone[:3] + "****" + phone[len(phone)-4:]
 }
 
-func (s *MemoryStore) ListManagedUsersPaginated(ownerUserID string, page, pageSize int, appID, emailKeyword string, now time.Time) ([]domain.DeveloperManagedUser, int, error) {
+func (s *MemoryStore) HasManagedUser(ownerUserID, userID string) (bool, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	userID = strings.TrimSpace(userID)
+	for _, app := range s.apps {
+		if app.OwnerUserID != ownerUserID {
+			continue
+		}
+		for _, consent := range s.consents {
+			if consent.ClientID == app.ClientID && consent.UserID == userID {
+				return true, nil
+			}
+		}
+	}
+	return false, nil
+}
+
+func (s *MemoryStore) ListManagedUsersPaginated(ownerUserID string, page, pageSize int, appID, emailKeyword string, groupIDs []string, now time.Time) ([]domain.DeveloperManagedUser, int, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -251,8 +269,16 @@ func (s *MemoryStore) ListManagedUsersPaginated(ownerUserID string, page, pageSi
 		}
 	}
 
+	groupFilter := map[string]struct{}{}
+	for _, groupID := range groupIDs {
+		groupID = strings.TrimSpace(groupID)
+		if groupID != "" {
+			groupFilter[groupID] = struct{}{}
+		}
+	}
 	items := make([]domain.DeveloperManagedUser, 0, len(userByID))
 	for _, item := range userByID {
+		matchesGroupFilter := len(groupFilter) == 0
 		for groupID, group := range s.developerGroups {
 			if group.OwnerUserID != ownerUserID {
 				continue
@@ -261,8 +287,14 @@ func (s *MemoryStore) ListManagedUsersPaginated(ownerUserID string, page, pageSi
 				if _, ok := members[item.UserID]; ok {
 					item.GroupIDs = append(item.GroupIDs, group.ID)
 					item.GroupNames = append(item.GroupNames, group.Name)
+					if _, ok := groupFilter[group.ID]; ok {
+						matchesGroupFilter = true
+					}
 				}
 			}
+		}
+		if !matchesGroupFilter {
+			continue
 		}
 		slices.Sort(item.GroupNames)
 		for _, app := range ownerApps {

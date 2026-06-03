@@ -335,6 +335,11 @@ export function AppLayout() {
             label: adminT("首页仪表盘"),
           },
           {
+            key: "/admin/profile",
+            icon: <UserOutlined />,
+            label: adminT("个人信息"),
+          },
+          {
             key: "/admin/users",
             icon: <UsergroupAddOutlined />,
             label: adminT("用户管理"),
@@ -390,6 +395,13 @@ export function AppLayout() {
               label: developerTranslationsReady
                 ? t("menu.dashboard", { ns: "developer" })
                 : developerFallback.menu.dashboard,
+            },
+            {
+              key: "/developer/profile",
+              icon: <UserOutlined />,
+              label: developerTranslationsReady
+                ? t("menu.profile", { ns: "developer" })
+                : developerFallback.menu.profile,
             },
             {
               key: "/developer/console",

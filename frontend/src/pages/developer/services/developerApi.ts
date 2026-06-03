@@ -188,6 +188,7 @@ export async function fetchDeveloperManagedUsers(
     pageSize?: number;
     appId?: string;
     emailKeyword?: string;
+    groupIds?: string[];
   },
   options?: { force?: boolean },
 ) {
@@ -203,6 +204,12 @@ export async function fetchDeveloperManagedUsers(
   }
   if (query?.emailKeyword?.trim()) {
     params.set("email_keyword", query.emailKeyword.trim());
+  }
+  const groupIds = (query?.groupIds ?? [])
+    .map((item) => item.trim())
+    .filter(Boolean);
+  if (groupIds.length > 0) {
+    params.set("group_ids", groupIds.join(","));
   }
   const path = `/developer/managed-users${params.size > 0 ? `?${params.toString()}` : ""}`;
   return api<DeveloperManagedUserListResponse>(path, undefined, sessionToken);
@@ -355,7 +362,11 @@ export async function updateDeveloperManagedUserGroups(
 ) {
   return api(
     `/developer/managed-users/${userId}/groups`,
-    { method: "PUT", body: JSON.stringify({ group_ids: groupIds }) },
+    {
+      method: "PUT",
+      body: JSON.stringify({ group_ids: groupIds }),
+      timeout_ms: 30000,
+    },
     sessionToken,
   );
 }
@@ -364,12 +375,14 @@ export async function batchUpdateDeveloperManagedUserGroups(
   sessionToken: string | undefined,
   userIds: string[],
   groupIds: string[],
+  mode: "append" | "replace" | "remove" = "replace",
 ) {
   return api(
     "/developer/managed-users/groups/batch-update",
     {
       method: "PUT",
-      body: JSON.stringify({ user_ids: userIds, group_ids: groupIds }),
+      body: JSON.stringify({ user_ids: userIds, group_ids: groupIds, mode }),
+      timeout_ms: 30000,
     },
     sessionToken,
   );

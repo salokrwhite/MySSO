@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { getSettingsTabs } from "./constants";
 import { AppReview } from "./components/AppReview";
+import { AdminProfile } from "./components/AdminProfile";
 import { AuditLogsPanel } from "./components/AuditLogs";
 import { Dashboard } from "./components/Dashboard";
 import { DeveloperAccessLogsPanel } from "./components/DeveloperAccessLogs";
@@ -65,6 +66,9 @@ export function AdminPage() {
   const settingsTabs = useMemo(() => getSettingsTabs(t), [t]);
 
   const pageType = useMemo<AdminPageType>(() => {
+    if (location.pathname === "/admin/profile") {
+      return "profile";
+    }
     if (location.pathname === "/admin/users") {
       return "users";
     }
@@ -399,6 +403,10 @@ export function AdminPage() {
           policies={policies}
           policyCount={dashboardSummary.policies}
         />
+      ) : null}
+
+      {pageType === "profile" ? (
+        <AdminProfile sessionToken={sessionToken} />
       ) : null}
 
       {pageType === "users" ? (

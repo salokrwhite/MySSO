@@ -9,6 +9,10 @@ export function buildDeveloperPageMeta(
       title: t("pageMeta.dashboard.title"),
       description: t("pageMeta.dashboard.description"),
     },
+    profile: {
+      title: t("pageMeta.profile.title"),
+      description: t("pageMeta.profile.description"),
+    },
     console: {
       title: t("pageMeta.console.title"),
       description: t("pageMeta.console.description"),

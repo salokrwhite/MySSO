@@ -1,12 +1,14 @@
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import {
-  App,
   Button,
   Card,
+  Drawer,
   Form,
   Grid,
   Input,
   Modal,
+  Radio,
+  Segmented,
   Select,
   Space,
   Table,
@@ -15,6 +17,7 @@ import {
   Typography,
 } from "antd";
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import type {
   DeveloperAccessApp,
   DeveloperAccessLog,
@@ -26,6 +29,7 @@ import { useDeveloperTranslation } from "../../i18n";
 type Props = {
   groups: DeveloperGroup[];
   managedUsers: DeveloperManagedUser[];
+  memberCandidateUsers: DeveloperManagedUser[];
   selectedManagedUserIDs: string[];
   setSelectedManagedUserIDs: (ids: string[]) => void;
   managedUsersTotal: number;
@@ -33,6 +37,7 @@ type Props = {
   managedUsersPageSize: number;
   managedUsersAppID: string;
   managedUsersEmailKeyword: string;
+  memberCandidateEmailKeyword: string;
   accessApps: DeveloperAccessApp[];
   accessLogs: DeveloperAccessLog[];
   accessLogsTotal: number;
@@ -41,14 +46,19 @@ type Props = {
   deletingAccessLogs: boolean;
   selectedAccessLogIds: string[];
   setSelectedAccessLogIds: (ids: string[]) => void;
-  onCreateGroup: (values: { name: string; description?: string }) => Promise<void>;
+  onCreateGroup: (values: { name: string; description?: string }) => Promise<DeveloperGroup | void>;
   onUpdateGroup: (id: string, values: { name: string; description?: string }) => Promise<void>;
   onDeleteGroup: (id: string) => Promise<void>;
   onManagedUsersPageChange: (page: number, pageSize: number) => void;
   onManagedUsersAppFilterChange: (appId: string) => void;
+  onManagedUsersGroupFilterChange: (groupIds: string[]) => void;
   onManagedUsersEmailKeywordChange: (keyword: string) => void;
-  onBatchUpdateManagedUserGroups: (groupIds: string[]) => Promise<void>;
-  onUpdateManagedUserGroups: (userId: string, groupIds: string[]) => Promise<void>;
+  onMemberCandidateEmailKeywordChange: (keyword: string) => void;
+  onBatchUpdateManagedUserGroups: (
+    groupIds: string[],
+    mode?: BatchGroupMode,
+    userIds?: string[],
+  ) => Promise<void>;
   onUpdateAppBindings: (appId: string, groupIds: string[]) => Promise<void>;
   onBanUser: (appId: string, payload: { user_id: string; reason: string; expires_at?: string }) => Promise<void>;
   onUnbanUser: (appId: string, userId: string) => Promise<void>;
@@ -62,18 +72,133 @@ type GroupFormValues = {
 };
 
 type BanFormValues = {
-  user_id: string;
+  app_ids: string[];
+  user_id?: string;
   reason: string;
-  expires_at?: string;
 };
 
 type BatchGroupFormValues = {
   group_ids: string[];
+  mode?: BatchGroupMode;
 };
+
+type BatchGroupMode = "append" | "replace" | "remove";
+
+type UserQuickFilter = "all" | "ungrouped" | "recent";
+
+type UserAccessTabKey = "groups" | "users" | "apps" | "groupMembers" | "logs";
+
+const userAccessTabKeys = new Set<UserAccessTabKey>([
+  "groups",
+  "users",
+  "apps",
+  "groupMembers",
+  "logs",
+]);
+
+function resolveUserAccessTab(value: string | null): UserAccessTabKey {
+  return value && userAccessTabKeys.has(value as UserAccessTabKey)
+    ? (value as UserAccessTabKey)
+    : "groups";
+}
+
+function formatAccessLogTime(value: string) {
+  return String(value || "").replace("T", " ").replace(/Z$/, "");
+}
+
+function accessLogDetailCount(
+  detail: Record<string, unknown> | undefined,
+  key: string,
+) {
+  const value = detail?.[key];
+  if (Array.isArray(value)) {
+    return value.length;
+  }
+  if (typeof value === "number") {
+    return value;
+  }
+  return 0;
+}
+
+function buildAccessLogDisplay(
+  log: DeveloperAccessLog,
+  t: ReturnType<typeof useDeveloperTranslation>["t"],
+) {
+  const groupCount = accessLogDetailCount(log.detail, "group_ids");
+  const userCount = accessLogDetailCount(log.detail, "user_ids");
+  const fallbackTarget = log.user_id || log.app_id || log.group_id || log.target_id || "";
+
+  switch (log.action) {
+    case "developer.group.create":
+      return {
+        action: t("userAccess.accessLogActions.groupCreate"),
+        summary: t("userAccess.accessLogSummaries.groupCreate", {
+          name: String(log.detail?.name || fallbackTarget || t("common.unnamedTarget")),
+        }),
+      };
+    case "developer.group.update":
+      return {
+        action: t("userAccess.accessLogActions.groupUpdate"),
+        summary: t("userAccess.accessLogSummaries.groupUpdate", {
+          name: String(log.detail?.name || fallbackTarget || t("common.unnamedTarget")),
+        }),
+      };
+    case "developer.group.delete":
+      return {
+        action: t("userAccess.accessLogActions.groupDelete"),
+        summary: t("userAccess.accessLogSummaries.groupDelete", {
+          name: String(log.detail?.name || fallbackTarget || t("common.unnamedTarget")),
+        }),
+      };
+    case "developer.user.groups.update":
+      return {
+        action: t("userAccess.accessLogActions.userGroupsUpdate"),
+        summary: t("userAccess.accessLogSummaries.userGroupsUpdate", {
+          groupCount,
+        }),
+      };
+    case "developer.user.groups.batch_update":
+      return {
+        action: t("userAccess.accessLogActions.userGroupsBatchUpdate"),
+        summary: t("userAccess.accessLogSummaries.userGroupsBatchUpdate", {
+          userCount,
+          groupCount,
+          mode: t(`userAccess.batchGroupMode${String(log.detail?.mode || "append")
+            .slice(0, 1)
+            .toUpperCase()}${String(log.detail?.mode || "append").slice(1)}`),
+        }),
+      };
+    case "developer.app.group_bindings.update":
+      return {
+        action: t("userAccess.accessLogActions.appBindingsUpdate"),
+        summary: t("userAccess.accessLogSummaries.appBindingsUpdate", {
+          groupCount,
+        }),
+      };
+    case "developer.app.user_ban.create":
+      return {
+        action: t("userAccess.accessLogActions.userBanCreate"),
+        summary: t("userAccess.accessLogSummaries.userBanCreate", {
+          reason: String(log.detail?.reason || t("userAccess.bannedStatus")),
+        }),
+      };
+    case "developer.app.user_ban.delete":
+      return {
+        action: t("userAccess.accessLogActions.userBanDelete"),
+        summary: t("userAccess.accessLogSummaries.userBanDelete"),
+      };
+    default:
+      return {
+        action: t("userAccess.accessLogActions.generic"),
+        summary: t("userAccess.accessLogSummaries.generic"),
+      };
+  }
+}
 
 export function DeveloperUserAccess({
   groups,
   managedUsers,
+  memberCandidateUsers,
   selectedManagedUserIDs,
   setSelectedManagedUserIDs,
   managedUsersTotal,
@@ -81,6 +206,7 @@ export function DeveloperUserAccess({
   managedUsersPageSize,
   managedUsersAppID,
   managedUsersEmailKeyword,
+  memberCandidateEmailKeyword,
   accessApps,
   accessLogs,
   accessLogsTotal,
@@ -94,17 +220,18 @@ export function DeveloperUserAccess({
   onDeleteGroup,
   onManagedUsersPageChange,
   onManagedUsersAppFilterChange,
+  onManagedUsersGroupFilterChange,
   onManagedUsersEmailKeywordChange,
+  onMemberCandidateEmailKeywordChange,
   onBatchUpdateManagedUserGroups,
-  onUpdateManagedUserGroups,
   onUpdateAppBindings,
   onBanUser,
   onUnbanUser,
   onAccessLogsPageChange,
   onDeleteSelectedLogs,
 }: Props) {
-  const { modal } = App.useApp();
   const { t } = useDeveloperTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const screens = Grid.useBreakpoint();
   const isMobile = !screens.md;
   const [groupForm] = Form.useForm<GroupFormValues>();
@@ -113,15 +240,36 @@ export function DeveloperUserAccess({
   const [editingGroup, setEditingGroup] = useState<DeveloperGroup | null>(null);
   const [groupModalOpen, setGroupModalOpen] = useState(false);
   const [banModalOpen, setBanModalOpen] = useState(false);
+  const [authorizedAppsDrawerUser, setAuthorizedAppsDrawerUser] =
+    useState<DeveloperManagedUser | null>(null);
+  const [banSubmitting, setBanSubmitting] = useState(false);
+  const [banTargetUserIDs, setBanTargetUserIDs] = useState<string[]>([]);
   const [batchGroupModalOpen, setBatchGroupModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("groups");
+  const [batchGroupSubmitting, setBatchGroupSubmitting] = useState(false);
+  const [batchTargetUserIDs, setBatchTargetUserIDs] = useState<string[]>([]);
+  const [selectedGroupMemberIDs, setSelectedGroupMemberIDs] = useState<string[]>([]);
+  const [selectedGroupId, setSelectedGroupId] = useState<string>("");
+  const [addGroupMemberModalOpen, setAddGroupMemberModalOpen] = useState(false);
+  const [groupMemberForm] = Form.useForm<{ user_ids: string[] }>();
+  const [activeTab, setActiveTab] = useState<UserAccessTabKey>(() =>
+    resolveUserAccessTab(searchParams.get("tab")),
+  );
+  const [userQuickFilter, setUserQuickFilter] = useState<UserQuickFilter>("all");
+  const [selectedUserGroupFilter, setSelectedUserGroupFilter] = useState<string[]>([]);
   const [emailSearchInput, setEmailSearchInput] = useState(
     managedUsersEmailKeyword,
+  );
+  const [memberCandidateSearchInput, setMemberCandidateSearchInput] = useState(
+    memberCandidateEmailKeyword,
   );
   const [selectedAppId, setSelectedAppId] = useState<string>(
     managedUsersAppID || accessApps[0]?.app_id || "",
   );
 
+  const selectedApp = useMemo(
+    () => accessApps.find((item) => item.app_id === selectedAppId) || accessApps[0],
+    [accessApps, selectedAppId],
+  );
   useEffect(() => {
     if (accessApps.length === 0) {
       if (selectedAppId !== "") {
@@ -135,11 +283,39 @@ export function DeveloperUserAccess({
   }, [accessApps, selectedAppId]);
 
   useEffect(() => {
-    if (activeTab !== "apps") {
+    const urlTab = resolveUserAccessTab(searchParams.get("tab"));
+    if (urlTab !== activeTab) {
+      setActiveTab(urlTab);
+    }
+  }, [activeTab, searchParams]);
+
+  useEffect(() => {
+    if (activeTab !== "groupMembers") {
       return;
     }
-    onManagedUsersAppFilterChange(selectedAppId);
-  }, [activeTab, onManagedUsersAppFilterChange, selectedAppId]);
+    setSelectedManagedUserIDs([]);
+    onManagedUsersAppFilterChange("");
+    onManagedUsersGroupFilterChange(selectedGroupId ? [selectedGroupId] : []);
+  }, [
+    activeTab,
+    onManagedUsersAppFilterChange,
+    onManagedUsersGroupFilterChange,
+    selectedGroupId,
+    setSelectedManagedUserIDs,
+  ]);
+
+  useEffect(() => {
+    if (activeTab !== "users") {
+      return;
+    }
+    onManagedUsersAppFilterChange("");
+    onManagedUsersGroupFilterChange(selectedUserGroupFilter);
+  }, [
+    activeTab,
+    onManagedUsersAppFilterChange,
+    onManagedUsersGroupFilterChange,
+    selectedUserGroupFilter,
+  ]);
 
   useEffect(() => {
     if (managedUsersAppID && managedUsersAppID !== selectedAppId) {
@@ -151,10 +327,28 @@ export function DeveloperUserAccess({
     setEmailSearchInput(managedUsersEmailKeyword);
   }, [managedUsersEmailKeyword]);
 
-  const selectedApp = useMemo(
-    () => accessApps.find((item) => item.app_id === selectedAppId) || accessApps[0],
-    [accessApps, selectedAppId],
-  );
+  useEffect(() => {
+    setMemberCandidateSearchInput(memberCandidateEmailKeyword);
+  }, [memberCandidateEmailKeyword]);
+
+  useEffect(() => {
+    const currentUserIds = new Set(managedUsers.map((item) => item.user_id));
+    setSelectedGroupMemberIDs((ids) => ids.filter((id) => currentUserIds.has(id)));
+  }, [managedUsers]);
+
+  const visibleManagedUsers = useMemo(() => {
+    if (userQuickFilter === "ungrouped") {
+      return managedUsers.filter((item) => (item.group_ids ?? []).length === 0);
+    }
+    if (userQuickFilter === "recent") {
+      return [...managedUsers].sort((a, b) => {
+        const left = Date.parse(a.last_authorized_at || "");
+        const right = Date.parse(b.last_authorized_at || "");
+        return (Number.isNaN(right) ? 0 : right) - (Number.isNaN(left) ? 0 : left);
+      });
+    }
+    return managedUsers;
+  }, [managedUsers, userQuickFilter]);
 
   function openCreateGroup() {
     setEditingGroup(null);
@@ -183,62 +377,121 @@ export function DeveloperUserAccess({
 
   async function submitBan() {
     const values = await banForm.validateFields();
-    if (!selectedApp) {
+    const appIDs = (values.app_ids ?? []).filter(Boolean);
+    const targetUserIDs = banTargetUserIDs.length > 0
+      ? banTargetUserIDs
+      : values.user_id
+        ? [values.user_id]
+        : [];
+    if (targetUserIDs.length === 0 || appIDs.length === 0) {
       return;
     }
-    await onBanUser(selectedApp.app_id, values);
-    setBanModalOpen(false);
-    banForm.resetFields();
+    setBanSubmitting(true);
+    try {
+      for (const appId of appIDs) {
+        for (const userId of targetUserIDs) {
+          await onBanUser(appId, {
+            user_id: userId,
+            reason: values.reason,
+          });
+        }
+      }
+      setBanModalOpen(false);
+      setBanTargetUserIDs([]);
+      banForm.resetFields();
+    } finally {
+      setBanSubmitting(false);
+    }
   }
 
   async function submitBatchGroupUpdate() {
-    const values = await batchGroupForm.validateFields();
-    await onBatchUpdateManagedUserGroups(values.group_ids ?? []);
-    setBatchGroupModalOpen(false);
-    batchGroupForm.resetFields();
+    if (batchTargetUserIDs.length === 0) {
+      return;
+    }
+    setBatchGroupSubmitting(true);
+    try {
+      const values = await batchGroupForm.validateFields();
+      await onBatchUpdateManagedUserGroups(
+        values.group_ids ?? [],
+        values.mode ?? "append",
+        batchTargetUserIDs,
+      );
+      setBatchGroupModalOpen(false);
+      batchGroupForm.resetFields();
+      setBatchTargetUserIDs([]);
+    } finally {
+      setBatchGroupSubmitting(false);
+    }
   }
 
-  function openAuthorizedAppsDetail(record: DeveloperManagedUser) {
-    const authorizedApps = record.authorized_apps ?? [];
-    Modal.info({
-      title: t("userAccess.authorizedAppsDetailTitle", {
-        name: record.display_name || record.user_id,
-      }),
-      okText: t("common.confirm"),
-      width: isMobile ? "calc(100vw - 24px)" : 560,
-      content: (
-        <Space direction="vertical" size={12} style={{ width: "100%" }}>
-          <Typography.Text type="secondary">
-            {t("userAccess.authorizedAppsCount", { count: authorizedApps.length })}
-          </Typography.Text>
-          {authorizedApps.length > 0 ? (
-            <Space wrap>
-              {authorizedApps.map((app) => (
-                <Tag key={app.app_id}>{app.app_name}</Tag>
-              ))}
-            </Space>
-          ) : (
-            <Typography.Text type="secondary">{t("common.noData")}</Typography.Text>
-          )}
-        </Space>
-      ),
-    });
+  function openBatchGroupModal(userIds: string[]) {
+    setBatchTargetUserIDs(userIds);
+    batchGroupForm.setFieldsValue({ group_ids: [], mode: "append" });
+    setBatchGroupModalOpen(true);
   }
+
+  function openBanModal(userIds: string[] = []) {
+    setBanTargetUserIDs(userIds);
+    banForm.resetFields();
+    setBanModalOpen(true);
+  }
+
+  function openAddGroupMemberModal() {
+    setMemberCandidateSearchInput(memberCandidateEmailKeyword);
+    groupMemberForm.resetFields();
+    setAddGroupMemberModalOpen(true);
+  }
+
+  async function submitAddGroupMembers() {
+    if (!selectedGroupId) {
+      return;
+    }
+    const values = await groupMemberForm.validateFields();
+    await onBatchUpdateManagedUserGroups(
+      [selectedGroupId],
+      "append",
+      values.user_ids ?? [],
+    );
+    setAddGroupMemberModalOpen(false);
+    groupMemberForm.resetFields();
+  }
+
+  async function removeSelectedGroupMembers() {
+    if (!selectedGroupId || selectedGroupMemberIDs.length === 0) {
+      return;
+    }
+    const selectedUserSet = new Set(selectedGroupMemberIDs);
+    const targets = managedUsers.filter((item) => selectedUserSet.has(item.user_id));
+    await onBatchUpdateManagedUserGroups(
+      [selectedGroupId],
+      "remove",
+      targets.map((item) => item.user_id),
+    );
+    setSelectedGroupMemberIDs([]);
+  }
+
+  function changeActiveTab(key: string) {
+    const nextTab = resolveUserAccessTab(key);
+    setActiveTab(nextTab);
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        next.set("tab", nextTab);
+        return next;
+      },
+      { replace: true },
+    );
+  }
+
+  const drawerAuthorizedApps = authorizedAppsDrawerUser?.authorized_apps ?? [];
+  const drawerBannedApps = authorizedAppsDrawerUser?.app_bans ?? [];
 
   return (
     <>
       <Tabs
         className="developer-user-access-tabs"
         activeKey={activeTab}
-        onChange={(key) => {
-          setActiveTab(key);
-          if (key === "users") {
-            onManagedUsersAppFilterChange("");
-          }
-          if (key === "apps") {
-            onManagedUsersAppFilterChange(selectedAppId);
-          }
-        }}
+        onChange={changeActiveTab}
         items={[
           {
             key: "groups",
@@ -325,6 +578,15 @@ export function DeveloperUserAccess({
                   }}
                 >
                   <Space wrap>
+                    <Segmented<UserQuickFilter>
+                      value={userQuickFilter}
+                      options={[
+                        { label: t("userAccess.quickFilterAll"), value: "all" },
+                        { label: t("userAccess.quickFilterUngrouped"), value: "ungrouped" },
+                        { label: t("userAccess.quickFilterRecent"), value: "recent" },
+                      ]}
+                      onChange={setUserQuickFilter}
+                    />
                     <Select
                       allowClear
                       showSearch
@@ -342,6 +604,25 @@ export function DeveloperUserAccess({
                           .includes(input.toLowerCase())
                       }
                       onChange={(value) => onManagedUsersAppFilterChange(value || "")}
+                    />
+                    <Select
+                      allowClear
+                      mode="multiple"
+                      showSearch
+                      placeholder={t("userAccess.filterUserGroup")}
+                      style={{ width: isMobile ? "100%" : 260, maxWidth: "100%" }}
+                      value={selectedUserGroupFilter}
+                      options={groups.map((group) => ({
+                        value: group.id,
+                        label: group.name,
+                      }))}
+                      optionFilterProp="label"
+                      filterOption={(input, option) =>
+                        String(option?.label || "")
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
+                      onChange={setSelectedUserGroupFilter}
                     />
                     <Input.Search
                       allowClear
@@ -366,11 +647,18 @@ export function DeveloperUserAccess({
                       disabled={selectedManagedUserIDs.length === 0}
                       style={isMobile ? { width: "100%" } : undefined}
                       onClick={() => {
-                        batchGroupForm.setFieldsValue({ group_ids: [] });
-                        setBatchGroupModalOpen(true);
+                        openBatchGroupModal(selectedManagedUserIDs);
                       }}
                     >
                       {t("userAccess.batchSetGroups")}
+                    </Button>
+                    <Button
+                      danger
+                      disabled={selectedManagedUserIDs.length === 0}
+                      style={isMobile ? { width: "100%" } : undefined}
+                      onClick={() => openBanModal(selectedManagedUserIDs)}
+                    >
+                      {t("userAccess.banSelectedUsers")}
                     </Button>
                   </Space>
                 </div>
@@ -393,38 +681,33 @@ export function DeveloperUserAccess({
                     onShowSizeChange: (_, pageSize) =>
                       onManagedUsersPageChange(1, pageSize),
                   }}
-                  dataSource={managedUsers}
+                  dataSource={visibleManagedUsers}
                   columns={[
                     { title: t("common.displayName"), dataIndex: "display_name", width: 160, ellipsis: true },
                     { title: t("userAccess.maskedEmail"), dataIndex: "masked_email", width: 220, ellipsis: true },
                     { title: t("userAccess.maskedPhone"), dataIndex: "masked_phone", width: 160, ellipsis: true },
-                    {
-                      title: t("userAccess.groups"),
-                      width: 300,
-                      render: (_, record: DeveloperManagedUser) => (
-                        <Select
-                          mode="multiple"
-                          style={{ minWidth: isMobile ? 220 : 260 }}
-                          value={record.group_ids ?? []}
-                          options={groups.map((group) => ({ label: group.name, value: group.id }))}
-                          onChange={(values) => void onUpdateManagedUserGroups(record.user_id, values)}
-                        />
-                      ),
-                    },
                     {
                       title: t("userAccess.authorizedApps"),
                       width: 160,
                       render: (_, record: DeveloperManagedUser) => {
                         const authorizedApps = record.authorized_apps ?? [];
                         return (
-                          <Space>
+                          <div
+                            style={{
+                              alignItems: "center",
+                              display: "flex",
+                              gap: 8,
+                              justifyContent: "space-between",
+                              width: "100%",
+                            }}
+                          >
                             <Typography.Text type="secondary">
                               {t("userAccess.authorizedAppsShortCount", { count: authorizedApps.length })}
                             </Typography.Text>
-                            <Button size={isMobile ? "small" : "middle"} onClick={() => openAuthorizedAppsDetail(record)}>
-                              {t("common.details")}
+                            <Button size={isMobile ? "small" : "middle"} onClick={() => setAuthorizedAppsDrawerUser(record)}>
+                              {t("common.detail")}
                             </Button>
-                          </Space>
+                          </div>
                         );
                       },
                     },
@@ -437,13 +720,56 @@ export function DeveloperUserAccess({
             key: "apps",
             label: t("userAccess.appsTab"),
             children: (
+              <Card>
+                <Space direction="vertical" size={12} style={{ width: "100%" }}>
+                  <Typography.Text strong>{t("userAccess.selectApp")}</Typography.Text>
+                  <Select
+                    style={{ width: "100%" }}
+                    value={selectedApp?.app_id}
+                    showSearch
+                    optionFilterProp="label"
+                    filterOption={(input, option) =>
+                      String(option?.label || "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    onChange={(value) => {
+                      setSelectedAppId(value);
+                    }}
+                    options={accessApps.map((item) => ({
+                      value: item.app_id,
+                      label: `${item.name} (${item.client_id})`,
+                    }))}
+                  />
+                  {selectedApp ? (
+                    <>
+                      <Typography.Text type="secondary">
+                        {t("userAccess.noGroupsBound")}
+                      </Typography.Text>
+                      <Select
+                        mode="multiple"
+                        style={{ width: "100%" }}
+                        value={selectedApp.bound_group_ids}
+                        options={groups.map((group) => ({ label: group.name, value: group.id }))}
+                        onChange={(values) => void onUpdateAppBindings(selectedApp.app_id, values)}
+                      />
+                    </>
+                  ) : null}
+                </Space>
+              </Card>
+            ),
+          },
+          {
+            key: "groupMembers",
+            label: t("userAccess.groupMembersTab"),
+            children: (
               <Space direction="vertical" size={16} style={{ width: "100%" }}>
                 <Card>
                   <Space direction="vertical" size={12} style={{ width: "100%" }}>
-                    <Typography.Text strong>{t("userAccess.selectApp")}</Typography.Text>
+                    <Typography.Text strong>{t("userAccess.selectGroup")}</Typography.Text>
                     <Select
                       style={{ width: "100%" }}
-                      value={selectedApp?.app_id}
+                      value={selectedGroupId || undefined}
                       showSearch
                       optionFilterProp="label"
                       filterOption={(input, option) =>
@@ -452,43 +778,84 @@ export function DeveloperUserAccess({
                           .includes(input.toLowerCase())
                       }
                       onChange={(value) => {
-                        setSelectedAppId(value);
-                        onManagedUsersAppFilterChange(value);
+                        setSelectedGroupId(value);
+                        setSelectedGroupMemberIDs([]);
+                        onManagedUsersAppFilterChange("");
+                        onManagedUsersGroupFilterChange(value ? [value] : []);
                       }}
-                      options={accessApps.map((item) => ({
-                        value: item.app_id,
-                        label: `${item.name} (${item.client_id})`,
+                      options={groups.map((group) => ({
+                        value: group.id,
+                        label: group.name,
                       }))}
                     />
-                    {selectedApp ? (
-                      <>
-                        <Typography.Text type="secondary">
-                          {t("userAccess.noGroupsBound")}
-                        </Typography.Text>
-                        <Select
-                          mode="multiple"
-                          style={{ width: "100%" }}
-                          value={selectedApp.bound_group_ids}
-                          options={groups.map((group) => ({ label: group.name, value: group.id }))}
-                          onChange={(values) => void onUpdateAppBindings(selectedApp.app_id, values)}
-                        />
-                        <div style={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
-                          <Button type="dashed" onClick={() => setBanModalOpen(true)}>
-                            {t("userAccess.banUser")}
-                          </Button>
-                        </div>
-                      </>
-                    ) : null}
+                    <Typography.Text type="secondary">
+                      {t("userAccess.groupMembersHint")}
+                    </Typography.Text>
                   </Space>
                 </Card>
-                <Card title={t("userAccess.currentAppUsers")}>
+                <Card
+                  title={t("userAccess.groupMembers")}
+                  extra={
+                    <Space wrap>
+                      <Input.Search
+                        allowClear
+                        placeholder={t("userAccess.searchUserByEmail")}
+                        style={{ width: isMobile ? "100%" : 260, maxWidth: "100%" }}
+                        value={emailSearchInput}
+                        disabled={!selectedGroupId}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          setEmailSearchInput(value);
+                          if (value === "" && managedUsersEmailKeyword !== "") {
+                            onManagedUsersEmailKeywordChange("");
+                          }
+                        }}
+                        onSearch={(value) =>
+                          onManagedUsersEmailKeywordChange(value.trim())
+                        }
+                      />
+                      <Typography.Text type="secondary">
+                        {t("userAccess.selectedCurrentAppUsers", { count: selectedGroupMemberIDs.length })}
+                      </Typography.Text>
+                      <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        disabled={!selectedGroupId}
+                        onClick={openAddGroupMemberModal}
+                      >
+                        {t("userAccess.addGroupMembers")}
+                      </Button>
+                      <Button
+                        danger
+                        disabled={!selectedGroupId || selectedGroupMemberIDs.length === 0}
+                        onClick={() => void removeSelectedGroupMembers()}
+                      >
+                        {t("userAccess.removeFromGroup")}
+                      </Button>
+                      <Button
+                        type="dashed"
+                        disabled={!selectedGroupId}
+                        onClick={() => openBanModal(selectedGroupMemberIDs)}
+                      >
+                        {selectedGroupMemberIDs.length > 0
+                          ? t("userAccess.banSelectedUsers")
+                          : t("userAccess.banUser")}
+                      </Button>
+                    </Space>
+                  }
+                >
                   <Table
                     rowKey="user_id"
                     scroll={{ x: "max-content" }}
+                    rowSelection={{
+                      selectedRowKeys: selectedGroupMemberIDs,
+                      onChange: (selectedRowKeys) =>
+                        setSelectedGroupMemberIDs(selectedRowKeys as string[]),
+                    }}
                     pagination={{
                       current: managedUsersPage,
                       pageSize: managedUsersPageSize,
-                      total: managedUsersTotal,
+                      total: selectedGroupId ? managedUsersTotal : 0,
                       showSizeChanger: true,
                       pageSizeOptions: [10, 20, 50, 100],
                       onChange: (page, pageSize) =>
@@ -496,7 +863,12 @@ export function DeveloperUserAccess({
                       onShowSizeChange: (_, pageSize) =>
                         onManagedUsersPageChange(1, pageSize),
                     }}
-                    dataSource={managedUsers}
+                    dataSource={selectedGroupId ? managedUsers : []}
+                    locale={{
+                      emptyText: selectedGroupId
+                        ? t("common.noData")
+                        : t("userAccess.selectGroupFirst"),
+                    }}
                     columns={[
                       { title: t("common.displayName"), dataIndex: "display_name", width: 160, ellipsis: true },
                       { title: t("userAccess.maskedEmail"), dataIndex: "masked_email", width: 220, ellipsis: true },
@@ -515,23 +887,27 @@ export function DeveloperUserAccess({
                         title: t("userAccess.banStatus"),
                         width: 220,
                         render: (_, record: DeveloperManagedUser) => {
-                          const ban = (record.app_bans ?? []).find(
-                            (item) => item.app_id === selectedApp?.app_id,
+                          const activeBans = (record.app_bans ?? []).filter((item) =>
+                            accessApps.some((app) => app.app_id === item.app_id),
                           );
-                          if (!ban) {
+                          if (activeBans.length === 0) {
                             return <Tag color="green">{t("userAccess.normalStatus")}</Tag>;
                           }
                           return (
                             <Space wrap>
-                              <Tag color="red">{ban.reason || t("userAccess.bannedStatus")}</Tag>
-                              <Button
-                                type="link"
-                                danger
-                                size={isMobile ? "small" : "middle"}
-                                onClick={() => void onUnbanUser(ban.app_id, record.user_id)}
-                              >
-                                {t("userAccess.unbanUser")}
-                              </Button>
+                              {activeBans.map((ban) => (
+                                <Space key={ban.app_id} wrap>
+                                  <Tag color="red">{ban.reason || t("userAccess.bannedStatus")}</Tag>
+                                  <Button
+                                    type="link"
+                                    danger
+                                    size={isMobile ? "small" : "middle"}
+                                    onClick={() => void onUnbanUser(ban.app_id, record.user_id)}
+                                  >
+                                    {t("userAccess.unbanUser")}
+                                  </Button>
+                                </Space>
+                              ))}
                             </Space>
                           );
                         },
@@ -591,11 +967,26 @@ export function DeveloperUserAccess({
                   }}
                   dataSource={accessLogs}
                   columns={[
-                    { title: t("userAccess.logAction"), dataIndex: "action", width: 180, ellipsis: true },
-                    { title: t("userAccess.logTarget"), dataIndex: "target_id", width: 180, ellipsis: true },
-                    { title: t("userAccess.logApp"), dataIndex: "app_id", width: 180, ellipsis: true },
-                    { title: t("userAccess.logUser"), dataIndex: "user_id", width: 180, ellipsis: true },
-                    { title: t("userAccess.logTime"), dataIndex: "created_at", width: 180, ellipsis: true },
+                    {
+                      title: t("userAccess.logAction"),
+                      width: 200,
+                      render: (_, record: DeveloperAccessLog) =>
+                        buildAccessLogDisplay(record, t).action,
+                    },
+                    {
+                      title: t("userAccess.logSummary"),
+                      width: 420,
+                      ellipsis: true,
+                      render: (_, record: DeveloperAccessLog) =>
+                        buildAccessLogDisplay(record, t).summary,
+                    },
+                    {
+                      title: t("userAccess.logTime"),
+                      dataIndex: "created_at",
+                      width: 180,
+                      ellipsis: true,
+                      render: (value: string) => formatAccessLogTime(value),
+                    },
                   ]}
                 />
               </Card>
@@ -603,14 +994,86 @@ export function DeveloperUserAccess({
           },
         ]}
       />
+      <Drawer
+        title={
+          authorizedAppsDrawerUser
+            ? t("userAccess.userAccessDetailTitle", {
+                name:
+                  authorizedAppsDrawerUser.display_name ||
+                  authorizedAppsDrawerUser.masked_email ||
+                  authorizedAppsDrawerUser.user_id,
+              })
+            : t("common.detail")
+        }
+        placement="right"
+        width={isMobile ? "100%" : 420}
+        open={Boolean(authorizedAppsDrawerUser)}
+        onClose={() => setAuthorizedAppsDrawerUser(null)}
+      >
+        <Space direction="vertical" size={20} style={{ width: "100%" }}>
+          <Space direction="vertical" size={8} style={{ width: "100%" }}>
+            <Typography.Text strong>
+              {t("userAccess.authorizedApps")}
+            </Typography.Text>
+            <Typography.Text>
+              {t("userAccess.authorizedAppsCount", {
+                count: drawerAuthorizedApps.length,
+              })}
+            </Typography.Text>
+            {drawerAuthorizedApps.length > 0 ? (
+              <Space direction="vertical" size={6} style={{ width: "100%" }}>
+                {drawerAuthorizedApps.map((app) => (
+                  <Typography.Text key={app.app_id}>
+                    {app.app_name}
+                  </Typography.Text>
+                ))}
+              </Space>
+            ) : (
+              <Typography.Text>{t("common.noData")}</Typography.Text>
+            )}
+          </Space>
+          <Space direction="vertical" size={8} style={{ width: "100%" }}>
+            <Typography.Text strong>
+              {t("userAccess.bannedApps")}
+            </Typography.Text>
+            {drawerBannedApps.length > 0 ? (
+              <Space direction="vertical" size={8} style={{ width: "100%" }}>
+                {drawerBannedApps.map((ban) => {
+                  const appName =
+                    accessApps.find((app) => app.app_id === ban.app_id)?.name ||
+                    ban.app_id;
+                  return (
+                    <Space key={ban.app_id} direction="vertical" size={2}>
+                      <Typography.Text>{appName}</Typography.Text>
+                      <Typography.Text>
+                        {t("userAccess.banReasonWithValue", {
+                          reason: ban.reason || t("userAccess.bannedStatus"),
+                        })}
+                      </Typography.Text>
+                    </Space>
+                  );
+                })}
+              </Space>
+            ) : (
+              <Typography.Text>{t("userAccess.noBannedApps")}</Typography.Text>
+            )}
+          </Space>
+        </Space>
+      </Drawer>
       <Modal
-        title={editingGroup ? t("userAccess.editGroup") : t("userAccess.createGroup")}
+        title={
+          editingGroup
+            ? t("userAccess.editGroup")
+            : t("userAccess.createGroup")
+        }
         open={groupModalOpen}
         width={isMobile ? "calc(100vw - 24px)" : 520}
         okText={t("common.confirm")}
         cancelText={t("common.cancel")}
         onOk={() => void submitGroup()}
-        onCancel={() => setGroupModalOpen(false)}
+        onCancel={() => {
+          setGroupModalOpen(false);
+        }}
       >
         <Form layout="vertical" form={groupForm}>
           <Form.Item name="name" label={t("userAccess.groupName")} rules={[{ required: true }]}>
@@ -622,17 +1085,41 @@ export function DeveloperUserAccess({
         </Form>
       </Modal>
       <Modal
-        title={t("userAccess.banUser")}
+        title={
+          banTargetUserIDs.length > 0
+            ? t("userAccess.banSelectedUsers")
+            : t("userAccess.banUser")
+        }
         open={banModalOpen}
         width={isMobile ? "calc(100vw - 24px)" : 520}
         okText={t("common.confirm")}
         cancelText={t("common.cancel")}
+        okButtonProps={{ loading: banSubmitting }}
         onOk={() => void submitBan()}
-        onCancel={() => setBanModalOpen(false)}
+        onCancel={() => {
+          if (!banSubmitting) {
+            setBanModalOpen(false);
+            setBanTargetUserIDs([]);
+          }
+        }}
       >
         <Form layout="vertical" form={banForm}>
-          <Form.Item name="user_id" label={t("userAccess.logUser")} rules={[{ required: true }]}>
+          {banTargetUserIDs.length > 0 ? (
+            <Form.Item>
+              <Typography.Text type="secondary">
+                {t("userAccess.banSelectedUsersDescription", {
+                  count: banTargetUserIDs.length,
+                })}
+              </Typography.Text>
+            </Form.Item>
+          ) : null}
+          <Form.Item
+            name="app_ids"
+            label={t("userAccess.logApp")}
+            rules={[{ required: true, message: t("userAccess.selectAtLeastOneApp") }]}
+          >
             <Select
+              mode="multiple"
               showSearch
               optionFilterProp="label"
               filterOption={(input, option) =>
@@ -640,17 +1127,82 @@ export function DeveloperUserAccess({
                   .toLowerCase()
                   .includes(input.toLowerCase())
               }
-              options={managedUsers.map((item) => ({
-                value: item.user_id,
-                label: `${item.display_name} (${item.masked_email || item.masked_phone || item.user_id})`,
+              options={accessApps.map((item) => ({
+                value: item.app_id,
+                label: `${item.name} (${item.client_id})`,
               }))}
             />
           </Form.Item>
+          {banTargetUserIDs.length === 0 ? (
+            <Form.Item name="user_id" label={t("userAccess.logUser")} rules={[{ required: true }]}>
+              <Select
+                showSearch
+                optionFilterProp="label"
+                filterOption={(input, option) =>
+                  String(option?.label || "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                options={managedUsers.map((item) => ({
+                  value: item.user_id,
+                  label: `${item.display_name} (${item.masked_email || item.masked_phone || item.user_id})`,
+                }))}
+              />
+            </Form.Item>
+          ) : null}
           <Form.Item name="reason" label={t("userAccess.banReason")} rules={[{ required: true }]}>
             <Input.TextArea rows={3} />
           </Form.Item>
-          <Form.Item name="expires_at" label={t("userAccess.banExpiresAt")}>
-            <Input placeholder={t("userAccess.banExpiresAtPlaceholder")} />
+        </Form>
+      </Modal>
+      <Modal
+        title={t("userAccess.addGroupMembers")}
+        open={addGroupMemberModalOpen}
+        width={isMobile ? "calc(100vw - 24px)" : 520}
+        okText={t("common.confirm")}
+        cancelText={t("common.cancel")}
+        onOk={() => void submitAddGroupMembers()}
+        onCancel={() => setAddGroupMemberModalOpen(false)}
+      >
+        <Form layout="vertical" form={groupMemberForm}>
+          <Form.Item label={t("userAccess.searchCandidateUser")}>
+            <Input.Search
+              allowClear
+              placeholder={t("userAccess.searchCandidateUserPlaceholder")}
+              value={memberCandidateSearchInput}
+              onChange={(event) => {
+                const value = event.target.value;
+                setMemberCandidateSearchInput(value);
+                if (value === "" && memberCandidateEmailKeyword !== "") {
+                  onMemberCandidateEmailKeywordChange("");
+                }
+              }}
+              onSearch={(value) =>
+                onMemberCandidateEmailKeywordChange(value.trim())
+              }
+            />
+          </Form.Item>
+          <Form.Item
+            name="user_ids"
+            label={t("userAccess.logUser")}
+            rules={[{ required: true, message: t("userAccess.selectAtLeastOneUser") }]}
+          >
+            <Select
+              mode="multiple"
+              showSearch
+              optionFilterProp="label"
+              filterOption={(input, option) =>
+                String(option?.label || "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              options={memberCandidateUsers
+                .filter((item) => !(item.group_ids ?? []).includes(selectedGroupId))
+                .map((item) => ({
+                  value: item.user_id,
+                  label: `${item.display_name || item.user_id} (${item.masked_email || item.masked_phone || item.user_id})`,
+                }))}
+            />
           </Form.Item>
         </Form>
       </Modal>
@@ -660,14 +1212,30 @@ export function DeveloperUserAccess({
         width={isMobile ? "calc(100vw - 24px)" : 520}
         okText={t("common.confirm")}
         cancelText={t("common.cancel")}
+        okButtonProps={{ loading: batchGroupSubmitting }}
         onOk={() => void submitBatchGroupUpdate()}
-        onCancel={() => setBatchGroupModalOpen(false)}
+        onCancel={() => {
+          if (!batchGroupSubmitting) {
+            setBatchGroupModalOpen(false);
+          }
+        }}
       >
         <Form layout="vertical" form={batchGroupForm}>
           <Form.Item>
             <Typography.Text type="secondary">
-              {t("userAccess.batchSetGroupsDescription", { count: selectedManagedUserIDs.length })}
+              {t("userAccess.batchSetGroupsDescription", { count: batchTargetUserIDs.length })}
             </Typography.Text>
+          </Form.Item>
+          <Form.Item name="mode" label={t("userAccess.batchGroupMode")} initialValue="append">
+            <Radio.Group
+              optionType="button"
+              buttonStyle="solid"
+              options={[
+                { label: t("userAccess.batchGroupModeAppend"), value: "append" },
+                { label: t("userAccess.batchGroupModeReplace"), value: "replace" },
+                { label: t("userAccess.batchGroupModeRemove"), value: "remove" },
+              ]}
+            />
           </Form.Item>
           <Form.Item
             name="group_ids"

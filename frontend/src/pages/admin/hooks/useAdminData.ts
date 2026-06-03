@@ -99,6 +99,10 @@ export function useAdminData(
         return;
       }
 
+      if (pageType === "profile") {
+        return;
+      }
+
       if (pageType === "users") {
         const nextUsers = await fetchAdminUsers(sessionToken, usersQuery, options);
         setUsers(nextUsers.items);

@@ -400,14 +400,18 @@ func (s *Service) buildManagedUserSummaries(ownerUserID, appID string) ([]manage
 	return items, apps, nil
 }
 
-func (s *Service) ListManagedUsersPaginated(ownerUserID string, page, pageSize int, appID, emailKeyword string) (ManagedUserListResult, error) {
+func (s *Service) ListManagedUsersPaginated(ownerUserID string, page, pageSize int, appID, emailKeyword string, groupIDs []string) (ManagedUserListResult, error) {
 	page, pageSize = normalizeManagedUserPagination(page, pageSize)
+	if err := s.assertDeveloperOwnsGroups(ownerUserID, groupIDs); err != nil {
+		return ManagedUserListResult{}, err
+	}
 	items, total, err := s.deps.Store.ListManagedUsersPaginated(
 		ownerUserID,
 		page,
 		pageSize,
 		strings.TrimSpace(appID),
 		strings.TrimSpace(emailKeyword),
+		groupIDs,
 		time.Now().UTC(),
 	)
 	if err != nil {
@@ -422,14 +426,12 @@ func (s *Service) ListManagedUsersPaginated(ownerUserID string, page, pageSize i
 }
 
 func (s *Service) ensureManagedUserVisible(ownerUserID, userID string) error {
-	users, err := s.ListManagedUsers(ownerUserID)
+	visible, err := s.deps.Store.HasManagedUser(ownerUserID, strings.TrimSpace(userID))
 	if err != nil {
 		return err
 	}
-	for _, item := range users {
-		if item.UserID == userID {
-			return nil
-		}
+	if visible {
+		return nil
 	}
 	return fmt.Errorf("managed user not found")
 }
@@ -500,9 +502,16 @@ func (s *Service) UpdateManagedUserGroups(ownerUserID, actorID, userID string, g
 	return nil
 }
 
-func (s *Service) BatchUpdateManagedUserGroups(ownerUserID, actorID string, userIDs, groupIDs []string) error {
+func (s *Service) BatchUpdateManagedUserGroups(ownerUserID, actorID string, userIDs, groupIDs []string, mode string) error {
 	if len(userIDs) == 0 {
 		return fmt.Errorf("no managed users selected")
+	}
+	mode = strings.TrimSpace(strings.ToLower(mode))
+	if mode == "" {
+		mode = "replace"
+	}
+	if mode != "append" && mode != "replace" && mode != "remove" {
+		return fmt.Errorf("invalid batch update mode")
 	}
 	normalizedUserIDs := make([]string, 0, len(userIDs))
 	userSet := make(map[string]struct{}, len(userIDs))
@@ -521,14 +530,100 @@ func (s *Service) BatchUpdateManagedUserGroups(ownerUserID, actorID string, user
 		return fmt.Errorf("no managed users selected")
 	}
 	for _, userID := range normalizedUserIDs {
-		if err := s.UpdateManagedUserGroups(ownerUserID, actorID, userID, groupIDs); err != nil {
+		if err := s.ensureManagedUserVisible(ownerUserID, userID); err != nil {
 			return err
+		}
+	}
+	if err := s.assertDeveloperOwnsGroups(ownerUserID, groupIDs); err != nil {
+		return err
+	}
+	groups, err := s.deps.Store.ListDeveloperGroups(ownerUserID)
+	if err != nil {
+		return err
+	}
+	groupByID := make(map[string]domain.DeveloperGroup, len(groups))
+	for _, group := range groups {
+		groupByID[group.ID] = group
+	}
+	selectedGroupIDs := make([]string, 0, len(groupIDs))
+	selectedGroupSet := map[string]struct{}{}
+	for _, groupID := range groupIDs {
+		groupID = strings.TrimSpace(groupID)
+		if groupID == "" {
+			continue
+		}
+		if _, exists := selectedGroupSet[groupID]; exists {
+			continue
+		}
+		selectedGroupSet[groupID] = struct{}{}
+		selectedGroupIDs = append(selectedGroupIDs, groupID)
+	}
+
+	affectedAppIDs := map[string]struct{}{}
+	groupsToUpdate := groups
+	if mode == "append" || mode == "remove" {
+		groupsToUpdate = make([]domain.DeveloperGroup, 0, len(selectedGroupIDs))
+		for _, groupID := range selectedGroupIDs {
+			if group, ok := groupByID[groupID]; ok {
+				groupsToUpdate = append(groupsToUpdate, group)
+			}
+		}
+	}
+	for _, group := range groupsToUpdate {
+		appIDs, err := s.deps.Store.ListAppIDsByGroup(group.ID)
+		if err != nil {
+			return err
+		}
+		for _, appID := range appIDs {
+			affectedAppIDs[appID] = struct{}{}
+		}
+		members, err := s.deps.Store.ListDeveloperGroupMembers(group.ID)
+		if err != nil {
+			return err
+		}
+		memberSet := make(map[string]struct{}, len(members))
+		for _, memberID := range members {
+			memberSet[memberID] = struct{}{}
+		}
+		_, selected := selectedGroupSet[group.ID]
+		for _, userID := range normalizedUserIDs {
+			_, inGroup := memberSet[userID]
+			if mode != "remove" && selected && !inGroup {
+				if err := s.deps.Store.AddDeveloperGroupMember(group.ID, userID); err != nil {
+					return err
+				}
+				continue
+			}
+			if mode == "remove" && selected && inGroup {
+				if err := s.deps.Store.RemoveDeveloperGroupMember(group.ID, userID); err != nil {
+					return err
+				}
+				continue
+			}
+			if mode == "replace" && !selected && inGroup {
+				if err := s.deps.Store.RemoveDeveloperGroupMember(group.ID, userID); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	now := time.Now().UTC()
+	for appID := range affectedAppIDs {
+		app, err := s.deps.Store.GetApp(appID)
+		for _, userID := range normalizedUserIDs {
+			if _, bumpErr := s.deps.Store.BumpAppUserAccessVersion(appID, userID, now); bumpErr != nil {
+				return bumpErr
+			}
+			if err == nil {
+				_ = s.deps.Store.RevokeRefreshTokensByUserClient(userID, app.ClientID)
+			}
 		}
 	}
 	s.recordDeveloperAccessLog(ownerUserID, actorID, "developer.user.groups.batch_update", "user_batch", "", "", "", "", map[string]any{
 		"user_ids":   normalizedUserIDs,
-		"group_ids":  groupIDs,
+		"group_ids":  selectedGroupIDs,
 		"user_count": len(normalizedUserIDs),
+		"mode":       mode,
 	})
 	return nil
 }

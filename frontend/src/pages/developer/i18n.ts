@@ -13,6 +13,7 @@ type DeveloperLocale = "zh-CN" | "en-US";
 type DeveloperMessages = {
   menu: {
     dashboard: string;
+    profile: string;
     console: string;
     userAccess: string;
     auditLogs: string;
@@ -62,6 +63,7 @@ const fallbackMessages: Record<DeveloperLocale, DeveloperMessages> = {
   "zh-CN": {
     menu: {
       dashboard: "首页仪表盘",
+      profile: "个人信息",
       console: "开发者控制台",
       userAccess: "用户分组与访问",
       auditLogs: "审计日志",
@@ -78,6 +80,7 @@ const fallbackMessages: Record<DeveloperLocale, DeveloperMessages> = {
   "en-US": {
     menu: {
       dashboard: "Dashboard",
+      profile: "Profile",
       console: "Developer Console",
       userAccess: "User Access",
       auditLogs: "Audit Logs",

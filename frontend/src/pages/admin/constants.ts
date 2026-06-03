@@ -145,6 +145,10 @@ export function getAdminPageMeta(t: (key: string) => string) {
       title: t("首页仪表盘"),
       description: t("集中查看平台运行概览、关键审计和策略配置。")
     },
+    profile: {
+      title: t("管理员个人信息"),
+      description: t("独立维护当前管理员账号资料，并查看自己授权登录过的应用。")
+    },
     users: {
       title: t("用户管理"),
       description: t("查看账号状态、角色和 MFA 开启情况，并执行冻结或解冻。")
@@ -177,5 +181,5 @@ export function getAdminPageMeta(t: (key: string) => string) {
       title: t("参数设置"),
       description: t("使用顶部同级标签管理不同系统子页面，邮件与验证码配置已可直接生效。")
     }
-  } satisfies Record<"dashboard" | "users" | "apps" | "emailSendLogs" | "phoneSendLogs" | "auditLogs" | "developerAccessLogs" | "riskLogs" | "settings", AdminPageMeta>;
+  } satisfies Record<"dashboard" | "profile" | "users" | "apps" | "emailSendLogs" | "phoneSendLogs" | "auditLogs" | "developerAccessLogs" | "riskLogs" | "settings", AdminPageMeta>;
 }
