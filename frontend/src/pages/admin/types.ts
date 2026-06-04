@@ -259,6 +259,7 @@ export type ScopeDefinition = {
 export type SystemSettings = {
   allow_user_registration: boolean;
   enable_phone_verification: boolean;
+  enable_qr_login: boolean;
   site_name: string;
   site_name_en: string;
   site_browser_title: string;

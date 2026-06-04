@@ -36,6 +36,7 @@ func (s *Server) handlePublicSettings(c *gin.Context) {
 	autoApproveHosts := append([]string{}, s.cfg.OIDC.AutoApproveHosts...)
 	verificationCodeCooldownSeconds := appdefaults.DefaultVerificationCodeCooldownSeconds
 	captchaEnabled := appdefaults.DefaultCaptchaEnabled
+	qrLoginEnabled := false
 	if s.services != nil {
 		settings, err := s.services.Settings.GetSystemSettings()
 		if err == nil && strings.TrimSpace(settings.SiteName) != "" {
@@ -60,6 +61,7 @@ func (s *Server) handlePublicSettings(c *gin.Context) {
 			firstPartyScope = strings.TrimSpace(settings.OIDCFirstPartyScope)
 			verificationCodeCooldownSeconds = settings.SMTPVerificationCodeCooldownSecond
 			captchaEnabled = settings.CaptchaEnabled
+			qrLoginEnabled = settings.EnableQRLogin
 			for _, clientID := range service.SplitListSetting(settings.OIDCAutoApproveClientIDs) {
 				if !containsString(autoApproveClientIDs, clientID) {
 					autoApproveClientIDs = append(autoApproveClientIDs, clientID)
@@ -83,6 +85,7 @@ func (s *Server) handlePublicSettings(c *gin.Context) {
 			"site_browser_title_en":                   siteBrowserTitleEN,
 			"allow_user_registration":                 s.services == nil || s.services.Settings.IsUserRegistrationAllowed(),
 			"enable_phone_verification":               s.services == nil || s.services.Settings.IsPhoneVerificationEnabled(),
+			"enable_qr_login":                         qrLoginEnabled,
 			"site_logo_data_url":                      siteLogoDataURL,
 			"site_footer_text":                        siteFooterText,
 			"site_icp_record_number":                  siteICPRecordNumber,
@@ -216,6 +219,7 @@ func (s *Server) handleUpdateSystemSettings(c *gin.Context) {
 	if err := s.services.Settings.UpdateSystemSettings(service.SystemSettings{
 		AllowUserRegistration:                req.AllowUserRegistration,
 		EnablePhoneVerification:              req.EnablePhoneVerification,
+		EnableQRLogin:                        req.EnableQRLogin,
 		SiteName:                             req.SiteName,
 		SiteNameEN:                           req.SiteNameEN,
 		SiteBrowserTitle:                     req.SiteBrowserTitle,

@@ -181,6 +181,7 @@ type exportUserDataRequest struct {
 type updateSystemSettingsRequest struct {
 	AllowUserRegistration                bool   `json:"allow_user_registration"`
 	EnablePhoneVerification              bool   `json:"enable_phone_verification"`
+	EnableQRLogin                        bool   `json:"enable_qr_login"`
 	SiteName                             string `json:"site_name"`
 	SiteNameEN                           string `json:"site_name_en"`
 	SiteBrowserTitle                     string `json:"site_browser_title"`
@@ -329,6 +330,15 @@ type authorizeRequest struct {
 	MaxAge              string `json:"max_age"`
 	ACRValues           string `json:"acr_values"`
 	ConsentAccepted     bool   `json:"consent_accepted"`
+}
+
+type qrLoginScanRequest struct {
+	ScanToken string `json:"scan_token"`
+}
+
+type qrLoginConfirmRequest struct {
+	ScanToken string `json:"scan_token"`
+	Confirm   bool   `json:"confirm"`
 }
 
 type uploadSiteLogoResponse struct {

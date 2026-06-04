@@ -245,7 +245,7 @@ export function useSystemSettings(
   }, [saveSystemSettings, smsForm]);
 
   const saveSessionSettings = useCallback(async () => {
-    const values = await sessionForm.validateFields(["allow_user_registration", "enable_phone_verification"]);
+    const values = await sessionForm.validateFields(["allow_user_registration", "enable_phone_verification", "enable_qr_login"]);
     await saveSystemSettings(values, "用户会话设置已保存");
   }, [saveSystemSettings, sessionForm]);
 

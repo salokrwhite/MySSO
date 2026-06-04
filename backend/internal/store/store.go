@@ -117,6 +117,14 @@ type SessionStore interface {
 	DeleteSessionsByUser(userID string) error
 }
 
+type QRLoginStore interface {
+	SaveQRLoginChallenge(challenge domain.QRLoginChallenge) error
+	GetQRLoginChallengeByChallengeToken(token string) (domain.QRLoginChallenge, error)
+	GetQRLoginChallengeByScanToken(token string) (domain.QRLoginChallenge, error)
+	UpdateQRLoginChallenge(challenge domain.QRLoginChallenge) error
+	DeleteQRLoginChallenge(challengeToken string) error
+}
+
 type AppStore interface {
 	ListAppsByOwner(ownerID string) []domain.ClientApp
 	ListApps() []domain.ClientApp
@@ -216,6 +224,7 @@ type Store interface {
 	PhoneBindingChallengeStore
 	SecurityPolicyStore
 	SessionStore
+	QRLoginStore
 	AppStore
 	OAuthStore
 	DeveloperAccessStore

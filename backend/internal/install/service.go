@@ -1147,6 +1147,8 @@ func ensureAuthChallengesTable(db *sql.DB) error {
 		CREATE TABLE auth_challenges (
 			token VARCHAR(64) PRIMARY KEY,
 			challenge_type VARCHAR(64) NOT NULL,
+			lookup_token VARCHAR(128) NULL,
+			status VARCHAR(32) NOT NULL DEFAULT 'pending',
 			user_id VARCHAR(64) NOT NULL DEFAULT '',
 			channel VARCHAR(32) NOT NULL DEFAULT '',
 			target VARCHAR(255) NOT NULL DEFAULT '',
@@ -1155,7 +1157,10 @@ func ensureAuthChallengesTable(db *sql.DB) error {
 			expires_at DATETIME NOT NULL,
 			consumed_at DATETIME NULL,
 			created_at DATETIME NOT NULL,
+			updated_at DATETIME NULL,
+			UNIQUE KEY uniq_auth_challenges_type_lookup_token (challenge_type, lookup_token),
 			INDEX idx_auth_challenges_type_expires (challenge_type, expires_at),
+			INDEX idx_auth_challenges_type_status_expires (challenge_type, status, expires_at),
 			INDEX idx_auth_challenges_type_user (challenge_type, user_id),
 			INDEX idx_auth_challenges_user_id (user_id),
 			INDEX idx_auth_challenges_type_created (challenge_type, created_at),
@@ -1175,7 +1180,9 @@ func ensureAuthChallengeColumnsAndIndexes(db *sql.DB) error {
 		query string
 	}{
 		{name: "challenge_type", query: `ALTER TABLE auth_challenges ADD COLUMN challenge_type VARCHAR(64) NOT NULL DEFAULT '' AFTER token`},
-		{name: "user_id", query: `ALTER TABLE auth_challenges ADD COLUMN user_id VARCHAR(64) NOT NULL DEFAULT '' AFTER challenge_type`},
+		{name: "lookup_token", query: `ALTER TABLE auth_challenges ADD COLUMN lookup_token VARCHAR(128) NULL AFTER token`},
+		{name: "status", query: `ALTER TABLE auth_challenges ADD COLUMN status VARCHAR(32) NOT NULL DEFAULT 'pending' AFTER challenge_type`},
+		{name: "user_id", query: `ALTER TABLE auth_challenges ADD COLUMN user_id VARCHAR(64) NOT NULL DEFAULT '' AFTER status`},
 		{name: "channel", query: `ALTER TABLE auth_challenges ADD COLUMN channel VARCHAR(32) NOT NULL DEFAULT '' AFTER user_id`},
 		{name: "target", query: `ALTER TABLE auth_challenges ADD COLUMN target VARCHAR(255) NOT NULL DEFAULT '' AFTER channel`},
 		{name: "acr", query: `ALTER TABLE auth_challenges ADD COLUMN acr VARCHAR(255) NOT NULL DEFAULT '' AFTER target`},
@@ -1183,17 +1190,23 @@ func ensureAuthChallengeColumnsAndIndexes(db *sql.DB) error {
 		{name: "expires_at", query: `ALTER TABLE auth_challenges ADD COLUMN expires_at DATETIME NOT NULL AFTER payload_json`},
 		{name: "consumed_at", query: `ALTER TABLE auth_challenges ADD COLUMN consumed_at DATETIME NULL AFTER expires_at`},
 		{name: "created_at", query: `ALTER TABLE auth_challenges ADD COLUMN created_at DATETIME NOT NULL AFTER consumed_at`},
+		{name: "updated_at", query: `ALTER TABLE auth_challenges ADD COLUMN updated_at DATETIME NULL AFTER created_at`},
 	}
 	for _, column := range columns {
 		if err := ensureColumn(db, "auth_challenges", column.name, column.query); err != nil {
 			return err
 		}
 	}
+	if _, err := db.Exec(`UPDATE auth_challenges SET lookup_token = NULL WHERE lookup_token = ''`); err != nil {
+		return err
+	}
 	indexes := []struct {
 		name  string
 		query string
 	}{
+		{name: "uniq_auth_challenges_type_lookup_token", query: `ALTER TABLE auth_challenges ADD UNIQUE KEY uniq_auth_challenges_type_lookup_token (challenge_type, lookup_token)`},
 		{name: "idx_auth_challenges_type_expires", query: `ALTER TABLE auth_challenges ADD INDEX idx_auth_challenges_type_expires (challenge_type, expires_at)`},
+		{name: "idx_auth_challenges_type_status_expires", query: `ALTER TABLE auth_challenges ADD INDEX idx_auth_challenges_type_status_expires (challenge_type, status, expires_at)`},
 		{name: "idx_auth_challenges_type_user", query: `ALTER TABLE auth_challenges ADD INDEX idx_auth_challenges_type_user (challenge_type, user_id)`},
 		{name: "idx_auth_challenges_user_id", query: `ALTER TABLE auth_challenges ADD INDEX idx_auth_challenges_user_id (user_id)`},
 		{name: "idx_auth_challenges_type_created", query: `ALTER TABLE auth_challenges ADD INDEX idx_auth_challenges_type_created (challenge_type, created_at)`},
@@ -1308,7 +1321,39 @@ func migrateLegacyAuthChallenges(db *sql.DB) error {
 	if err := migrateLegacyDeletionLoginChallenges(db); err != nil {
 		return err
 	}
+	if err := migrateLegacyQRLoginChallenges(db); err != nil {
+		return err
+	}
 	return nil
+}
+
+func migrateLegacyQRLoginChallenges(db *sql.DB) error {
+	exists, err := tableExists(db, "qr_login_challenges")
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return nil
+	}
+	_, err = db.Exec(`
+		INSERT IGNORE INTO auth_challenges (
+			token, challenge_type, lookup_token, status, user_id, channel, target, acr,
+			payload_json, expires_at, consumed_at, created_at, updated_at
+		)
+		SELECT challenge_token, 'qr_login', scan_token, status, user_id, 'qr', '', 'urn:mysso:acr:qr-login',
+			JSON_OBJECT(
+				'user_email', user_email,
+				'user_display_name', user_display_name,
+				'user_role', user_role,
+				'session_token', session_token,
+				'ip', ip,
+				'user_agent', user_agent
+			),
+			expires_at, NULL, created_at, updated_at
+		FROM qr_login_challenges
+		WHERE expires_at >= UTC_TIMESTAMP()
+	`)
+	return err
 }
 
 func migrateLegacyDeletionLoginChallenges(db *sql.DB) error {

@@ -22,6 +22,7 @@ import (
 type SystemSettings struct {
 	AllowUserRegistration                bool   `json:"allow_user_registration"`
 	EnablePhoneVerification              bool   `json:"enable_phone_verification"`
+	EnableQRLogin                        bool   `json:"enable_qr_login"`
 	SiteName                             string `json:"site_name"`
 	SiteNameEN                           string `json:"site_name_en"`
 	SiteBrowserTitle                     string `json:"site_browser_title"`
@@ -176,6 +177,7 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 	values, err := s.deps.Store.GetSettings(
 		"allow_user_registration",
 		"enable_phone_verification",
+		"enable_qr_login",
 		"site_name",
 		"site_name_en",
 		"site_browser_title",
@@ -349,6 +351,7 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 	return SystemSettings{
 		AllowUserRegistration:                authutil.FallbackBoolSetting(values["allow_user_registration"], appdefaults.DefaultAllowUserRegistration),
 		EnablePhoneVerification:              authutil.FallbackBoolSetting(values["enable_phone_verification"], true),
+		EnableQRLogin:                        authutil.FallbackBoolSetting(values["enable_qr_login"], false),
 		SiteName:                             authutil.FallbackSetting(values["site_name"], appdefaults.DefaultSiteName),
 		SiteNameEN:                           strings.TrimSpace(values["site_name_en"]),
 		SiteBrowserTitle:                     strings.TrimSpace(values["site_browser_title"]),
@@ -661,6 +664,7 @@ func (s *SettingsService) UpdateSystemSettings(input SystemSettings) error {
 	if err := s.deps.Store.UpsertSettings(map[string]string{
 		"allow_user_registration":                       strconv.FormatBool(input.AllowUserRegistration),
 		"enable_phone_verification":                     strconv.FormatBool(input.EnablePhoneVerification),
+		"enable_qr_login":                               strconv.FormatBool(input.EnableQRLogin),
 		"site_name":                                     strings.TrimSpace(input.SiteName),
 		"site_name_en":                                  strings.TrimSpace(input.SiteNameEN),
 		"site_browser_title":                            strings.TrimSpace(input.SiteBrowserTitle),
@@ -808,6 +812,14 @@ func (s *SettingsService) IsPhoneVerificationEnabled() bool {
 		return true
 	}
 	return authutil.FallbackBoolSetting(settings["enable_phone_verification"], true)
+}
+
+func (s *SettingsService) IsQRLoginEnabled() bool {
+	settings, err := s.deps.Store.GetSettings("enable_qr_login")
+	if err != nil {
+		return false
+	}
+	return authutil.FallbackBoolSetting(settings["enable_qr_login"], false)
 }
 
 func (s *SettingsService) SendTestEmail(senderUserID, to string) error {

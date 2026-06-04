@@ -31,6 +31,13 @@ export function SessionSettings({ form, initialValues, saving, onSave }: Session
         >
           <Checkbox>{t("开启手机号验证")}</Checkbox>
         </Form.Item>
+        <Form.Item
+          name="enable_qr_login"
+          valuePropName="checked"
+          extra={t("开启后，登录页会显示扫码登录入口，已登录的 Android App 用户可以扫码确认并为网页端建立登录会话。")}
+        >
+          <Checkbox>{t("开启扫码登录")}</Checkbox>
+        </Form.Item>
         <Button type="primary" onClick={onSave} loading={saving}>
           {t("保存用户会话设置")}
         </Button>

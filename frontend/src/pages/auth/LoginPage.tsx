@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Card, Form, Input, Space, Tabs, Typography, message } from "antd";
+import QRCode from "qrcode";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { API_BASE, ApiError, api } from "../../api/client";
 import { useEmailCodeCooldown } from "../../utils/emailCodeCooldown";
@@ -16,13 +17,14 @@ import { AccountLanguageModal } from "../../components/AccountLanguageModal";
 import { AuthPageFooter } from "../../components/AuthPageFooter";
 import { getStoredSiteName, persistSiteBranding, resolveSiteNameForLocale } from "../../siteBranding";
 import { browserSupportsPasskey, getPasskeyAssertion } from "../../utils/webauthn";
-import { handleLoginFlowResult, type LoginFlowResponse } from "./authLoginFlow";
+import { handleLoginFlowResult, handleLoginSuccessResult, type LoginFlowResponse } from "./authLoginFlow";
 import { useCaptchaGate } from "../../hooks/useCaptchaGate";
 
 type PublicSettings = {
   data?: {
     allow_user_registration?: boolean;
     enable_phone_verification?: boolean;
+    enable_qr_login?: boolean;
     site_name?: string;
     site_name_en?: string;
     site_logo_data_url?: string;
@@ -30,7 +32,19 @@ type PublicSettings = {
   };
 };
 
-type LoginTabKey = "password" | "otp" | "sms" | "passkey";
+type LoginTabKey = "password" | "otp" | "sms" | "passkey" | "qr";
+
+type QRLoginChallenge = {
+  challenge_token: string;
+  scan_token: string;
+  expires_at: string;
+};
+
+type QRLoginStatus = {
+  status: "pending" | "scanned" | "confirmed" | "cancelled";
+  expires_at: string;
+  user?: LoginFlowResponse["user"];
+};
 
 export function LoginPage() {
   const backendOrigin = API_BASE.replace(/\/api$/, "");
@@ -39,6 +53,10 @@ export function LoginPage() {
   const [otpSending, setOtpSending] = useState(false);
   const [smsSending, setSMSSending] = useState(false);
   const [passkeyLoading, setPasskeyLoading] = useState(false);
+  const [qrLoading, setQRLoading] = useState(false);
+  const [qrChallenge, setQRChallenge] = useState<QRLoginChallenge | null>(null);
+  const [qrDataUrl, setQRDataUrl] = useState("");
+  const [qrStatus, setQRStatus] = useState<QRLoginStatus["status"]>("pending");
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = pickAllowedSearchParams(location.search);
@@ -53,9 +71,11 @@ export function LoginPage() {
   const hasAuthorizationContext = Boolean(searchParams.get("client_id"));
   const usesAuthorizationFlowSession = searchParams.get("auth_flow") === "authorization";
   const requestedTab = searchParams.get("tab");
-  const loginTab: LoginTabKey = requestedTab === "otp" || requestedTab === "sms" || requestedTab === "passkey" ? requestedTab : "password";
+  const loginTab: LoginTabKey =
+    requestedTab === "otp" || requestedTab === "sms" || requestedTab === "passkey" || requestedTab === "qr" ? requestedTab : "password";
   const [registrationAllowed, setRegistrationAllowed] = useState(true);
   const [phoneVerificationEnabled, setPhoneVerificationEnabled] = useState(true);
+  const [qrLoginEnabled, setQRLoginEnabled] = useState(false);
   const [siteName, setSiteName] = useState(getStoredSiteName(i18n.language));
   const [siteLogoDataUrl, setSiteLogoDataUrl] = useState(localStorage.getItem("site_logo_data_url") || "");
   const [siteFooterText, setSiteFooterText] = useState(localStorage.getItem("site_footer_text") || "");
@@ -63,7 +83,8 @@ export function LoginPage() {
   const accountLocale = normalizeAccountLocale(i18n.language);
   const supportsSMSLogin = accountLocale === "zh-CN" && phoneVerificationEnabled;
   const supportsPasskey = browserSupportsPasskey();
-  const activeLoginTab: LoginTabKey = !supportsSMSLogin && loginTab === "sms" ? "password" : loginTab;
+  const activeLoginTab: LoginTabKey =
+    (!supportsSMSLogin && loginTab === "sms") || (!qrLoginEnabled && loginTab === "qr") ? "password" : loginTab;
   const { requestCaptcha, captchaModal } = useCaptchaGate();
 
   function translateLoginError(rawMessage: string) {
@@ -191,6 +212,7 @@ export function LoginPage() {
         if (active) {
           setRegistrationAllowed(result.data?.allow_user_registration !== false);
           setPhoneVerificationEnabled(result.data?.enable_phone_verification !== false);
+          setQRLoginEnabled(result.data?.enable_qr_login === true);
           const nextSiteName = resolveSiteNameForLocale(i18n.language, result.data?.site_name, result.data?.site_name_en);
           const nextSiteLogo = result.data?.site_logo_data_url?.trim() || "";
           const nextSiteFooterText = result.data?.site_footer_text || "";
@@ -243,6 +265,72 @@ export function LoginPage() {
   }, [hasAuthorizationContext, location.pathname, location.search, messageApi, t]);
 
   const siteLogoUrl = siteLogoDataUrl ? (siteLogoDataUrl.startsWith("http") ? siteLogoDataUrl : `${backendOrigin}${siteLogoDataUrl}`) : "";
+
+  async function createQRLoginChallenge() {
+    if (!qrLoginEnabled) {
+      return;
+    }
+    setQRLoading(true);
+    try {
+      const result = await api<QRLoginChallenge>("/auth/qr-login/challenges", {
+        method: "POST",
+        body: JSON.stringify({})
+      });
+      setQRChallenge(result);
+      setQRStatus("pending");
+      const payload = JSON.stringify({
+        type: "mysso_qr_login",
+        api_base: API_BASE,
+        scan_token: result.scan_token,
+        expires_at: result.expires_at
+      });
+      setQRDataUrl(await QRCode.toDataURL(payload, { margin: 1, width: 220, errorCorrectionLevel: "M" }));
+    } catch (err) {
+      messageApi.error(translateLoginError(err instanceof Error ? err.message : t("auth.loginFailed")));
+    } finally {
+      setQRLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!qrLoginEnabled || activeLoginTab !== "qr" || qrChallenge) {
+      return;
+    }
+    void createQRLoginChallenge();
+  }, [activeLoginTab, qrChallenge, qrLoginEnabled]);
+
+  useEffect(() => {
+    if (!qrChallenge || activeLoginTab !== "qr") {
+      return;
+    }
+    let active = true;
+    const timer = window.setInterval(() => {
+      void api<QRLoginStatus>(`/auth/qr-login/challenges/${encodeURIComponent(qrChallenge.challenge_token)}`)
+        .then(async (result) => {
+          if (!active) {
+            return;
+          }
+          setQRStatus(result.status);
+          if (result.status === "confirmed" && result.user) {
+            window.clearInterval(timer);
+            await handleLoginSuccessResult({ user: result.user }, { locationSearch: location.search, navigate });
+          }
+        })
+        .catch((err) => {
+          if (!active) {
+            return;
+          }
+          window.clearInterval(timer);
+          setQRChallenge(null);
+          setQRDataUrl("");
+          messageApi.error(translateLoginError(err instanceof Error ? err.message : t("auth.loginFailed")));
+        });
+    }, 1800);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
+  }, [activeLoginTab, location.search, messageApi, navigate, qrChallenge, t]);
 
   async function submit(values: Record<string, string>, useOtp = false, captchaPayload: Record<string, unknown> = {}) {
     setLoading(true);
@@ -578,7 +666,30 @@ export function LoginPage() {
                     </Button>
                   </Space>
                 )
-              }
+              },
+              ...(qrLoginEnabled
+                ? [
+                    {
+                      key: "qr",
+                      label: t("扫码登录"),
+                      children: (
+                        <Space direction="vertical" size={16} align="center" style={{ width: "100%" }}>
+                          {qrDataUrl ? <img src={qrDataUrl} alt={t("扫码登录")} className="qr-login-image" /> : null}
+                          <Typography.Text type="secondary">
+                            {qrStatus === "scanned"
+                              ? t("已扫码，请在手机 App 上确认登录")
+                              : qrStatus === "cancelled"
+                                ? t("本次扫码登录已取消")
+                                : t("使用 MySSO Android App 扫描二维码登录")}
+                          </Typography.Text>
+                          <Button onClick={() => void createQRLoginChallenge()} loading={qrLoading}>
+                            {t("刷新二维码")}
+                          </Button>
+                        </Space>
+                      )
+                    }
+                  ]
+                : [])
             ]}
           />
         </Space>

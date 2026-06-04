@@ -3,6 +3,7 @@ import type { AdminPageMeta, SettingsTab, SettingsTabKey, SystemSettings } from 
 export const defaultSettings: SystemSettings = {
   allow_user_registration: true,
   enable_phone_verification: true,
+  enable_qr_login: false,
   site_name: "MySSO",
   site_name_en: "MySSO",
   site_browser_title: "",

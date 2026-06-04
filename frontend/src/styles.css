@@ -410,6 +410,15 @@ body {
   flex: 0 0 auto;
 }
 
+.qr-login-image {
+  width: 220px;
+  height: 220px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
 .auth-inline-link-button {
   padding-inline: 0 !important;
   height: auto !important;

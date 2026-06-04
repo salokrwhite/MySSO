@@ -14,6 +14,7 @@ export type PublicSettings = {
   developer_announcement_enabled?: boolean;
   developer_announcement_content?: string;
   enable_phone_verification?: boolean;
+  enable_qr_login?: boolean;
   captcha_enabled?: boolean;
   oidc_first_party_client_id?: string;
 };

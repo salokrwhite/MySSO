@@ -20,6 +20,9 @@ const (
 )
 
 func (s *MemoryStore) saveAuthChallengeLocked(challenge domain.AuthChallenge) {
+	if strings.TrimSpace(challenge.Status) == "" {
+		challenge.Status = "pending"
+	}
 	s.authChallenges[challenge.Token] = challenge
 }
 

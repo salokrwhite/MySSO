@@ -231,6 +231,8 @@ type PhoneSendLog struct {
 type AuthChallenge struct {
 	Token         string
 	ChallengeType string
+	LookupToken   string
+	Status        string
 	UserID        string
 	Channel       string
 	Target        string
@@ -239,6 +241,32 @@ type AuthChallenge struct {
 	ExpiresAt     time.Time
 	ConsumedAt    *time.Time
 	CreatedAt     time.Time
+	UpdatedAt     *time.Time
+}
+
+type QRLoginStatus string
+
+const (
+	QRLoginStatusPending   QRLoginStatus = "pending"
+	QRLoginStatusScanned   QRLoginStatus = "scanned"
+	QRLoginStatusConfirmed QRLoginStatus = "confirmed"
+	QRLoginStatusCancelled QRLoginStatus = "cancelled"
+)
+
+type QRLoginChallenge struct {
+	ChallengeToken  string
+	ScanToken       string
+	Status          QRLoginStatus
+	UserID          string
+	UserEmail       string
+	UserDisplayName string
+	UserRole        Role
+	SessionToken    string
+	IP              string
+	UserAgent       string
+	ExpiresAt       time.Time
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
 }
 
 type MFALoginChallenge struct {

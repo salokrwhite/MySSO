@@ -8,6 +8,7 @@ release/
 *.log
 frontend/node_modules/
 frontend/dist/
+frontend/*.tsbuildinfo
 backend/bin/
 backend/.cache/
 backend/.env
