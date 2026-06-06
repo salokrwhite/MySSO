@@ -10,6 +10,12 @@ const locale = {
       logout: "გამოსვლა",
       accountCenter: "ანგარიშის ცენტრი",
     },
+    captcha: {
+      securityVerification: "უსაფრთხოების შემოწმება",
+      refresh: "განახლება",
+      imageCaptcha: "სურათის captcha",
+      imageCaptchaRequired: "გთხოვთ, შეავსოთ სურათის captcha",
+    },
     legal: {
       back: "საწყის გვერდზე დაბრუნება",
       updatedAt: "ბოლო განახლება: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "პასკი წარმატებით დაკავშირებულია",
       passkeyNotAvailable:
         "ამ მოწყობილობაზე ამ საიტისთვის პასკი არ არის ხელმისაწვდომი, გთხოვთ გამოიყენოთ სხვა შესვლის მეთოდი.",
+      qrLogin: "QR კოდით შესვლა",
+      qrLoginDesc: "შედით QR კოდის MySSO აპის საშუალებით სკანირებით.",
+      qrLoginScanned: "QR კოდი სკანირებულია. დაადასტურეთ შესვლა აპში.",
+      qrLoginScannedMask: "ეს QR კოდი სკანირებულია",
+      qrLoginCancelled: "QR შესვლა გაუქმდა",
+      qrLoginExpired: "QR კოდის ვადა გავიდა. განაახლეთ.",
+      qrLoginRefresh: "QR კოდის განახლება",
       passwordLogin: "პაროლით შესვლა",
       otpLogin: "ელ. ფოსტის კოდით შესვლა",
       phoneOtpLogin: "ტელეფონის კოდით შესვლა",
@@ -227,6 +240,7 @@ const locale = {
         confirm: "დადასტურება და გაგრძელება",
         cancel: "გაუქმება და შესვლის გვერდზე დაბრუნება",
         errors: {
+          applicationDisabled: "აპლიკაცია გათიშულია",
           applicationRejected: "აპლიკაცია უარყოფილია",
           applicationRejectedWithReason: "აპლიკაცია უარყოფილია: {{reason}}",
           applicationAccessRestricted: "აპლიკაციაზე წვდომა შეზღუდულია",

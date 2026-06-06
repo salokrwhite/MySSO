@@ -66,6 +66,36 @@ export function RateLimitSettings({
         </Typography.Paragraph>
 
         <Typography.Title level={5}>
+          {t("验证码每日发送上限")}
+        </Typography.Title>
+        <Row gutter={16}>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label={t("同一邮箱每日最多发送验证码")}
+              name="email_verification_code_daily_limit"
+              rules={[{ required: true, message: t("请输入邮箱验证码每日上限") }]}
+              extra={t("按中国大陆时间自然日统计，设置为 0 表示不限制。")}
+            >
+              <InputNumber min={0} max={100000} precision={0} style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label={t("同一手机号每日最多发送验证码")}
+              name="sms_verification_code_daily_limit"
+              rules={[{ required: true, message: t("请输入手机号验证码每日上限") }]}
+              extra={t("按中国大陆时间自然日统计，设置为 0 表示不限制。")}
+            >
+              <InputNumber min={0} max={100000} precision={0} style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
+          {t("验证码发送上限跨登录、注册、找回密码、MFA、换绑和注销等全部业务场景累计。触发限制时接口返回 429，并在次日 0 点后恢复。")}
+        </Typography.Paragraph>
+
+        <Typography.Title level={5}>
           {t("开发者搜索限流")}
         </Typography.Title>
         <Row gutter={16}>

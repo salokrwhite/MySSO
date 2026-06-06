@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, Card, Form, Input, Space, Tabs, Typography, message } from "antd";
 import QRCode from "qrcode";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -41,7 +41,7 @@ type QRLoginChallenge = {
 };
 
 type QRLoginStatus = {
-  status: "pending" | "scanned" | "confirmed" | "cancelled";
+  status: "pending" | "scanned" | "confirmed" | "cancelled" | "expired";
   expires_at: string;
   user?: LoginFlowResponse["user"];
 };
@@ -266,7 +266,7 @@ export function LoginPage() {
 
   const siteLogoUrl = siteLogoDataUrl ? (siteLogoDataUrl.startsWith("http") ? siteLogoDataUrl : `${backendOrigin}${siteLogoDataUrl}`) : "";
 
-  async function createQRLoginChallenge() {
+  const createQRLoginChallenge = useCallback(async () => {
     if (!qrLoginEnabled) {
       return;
     }
@@ -290,7 +290,7 @@ export function LoginPage() {
     } finally {
       setQRLoading(false);
     }
-  }
+  }, [messageApi, qrLoginEnabled, t]);
 
   useEffect(() => {
     if (!qrLoginEnabled || activeLoginTab !== "qr" || qrChallenge) {
@@ -314,6 +314,12 @@ export function LoginPage() {
           if (result.status === "confirmed" && result.user) {
             window.clearInterval(timer);
             await handleLoginSuccessResult({ user: result.user }, { locationSearch: location.search, navigate });
+          } else if (result.status === "cancelled") {
+            window.clearInterval(timer);
+            setQRChallenge(null);
+            setQRDataUrl("");
+            setQRStatus("pending");
+            void createQRLoginChallenge();
           }
         })
         .catch((err) => {
@@ -321,16 +327,22 @@ export function LoginPage() {
             return;
           }
           window.clearInterval(timer);
-          setQRChallenge(null);
+          const message = err instanceof Error ? err.message : "";
+          if (message.toLowerCase().includes("qr login challenge expired or invalid")) {
+            setQRStatus("expired");
+          } else {
+            setQRChallenge(null);
+            setQRStatus("pending");
+            messageApi.error(translateLoginError(message || t("auth.loginFailed")));
+          }
           setQRDataUrl("");
-          messageApi.error(translateLoginError(err instanceof Error ? err.message : t("auth.loginFailed")));
         });
     }, 1800);
     return () => {
       active = false;
       window.clearInterval(timer);
     };
-  }, [activeLoginTab, location.search, messageApi, navigate, qrChallenge, t]);
+  }, [activeLoginTab, createQRLoginChallenge, location.search, messageApi, navigate, qrChallenge, t]);
 
   async function submit(values: Record<string, string>, useOtp = false, captchaPayload: Record<string, unknown> = {}) {
     setLoading(true);
@@ -671,19 +683,30 @@ export function LoginPage() {
                 ? [
                     {
                       key: "qr",
-                      label: t("扫码登录"),
+                      label: t("auth.qrLogin"),
                       children: (
                         <Space direction="vertical" size={16} align="center" style={{ width: "100%" }}>
-                          {qrDataUrl ? <img src={qrDataUrl} alt={t("扫码登录")} className="qr-login-image" /> : null}
+                          {qrDataUrl ? (
+                            <div className="qr-login-frame">
+                              <img
+                                src={qrDataUrl}
+                                alt={t("auth.qrLogin")}
+                                className={`qr-login-image${qrStatus === "scanned" ? " qr-login-image-scanned" : ""}`}
+                              />
+                              {qrStatus === "scanned" ? <div className="qr-login-scanned-mask">{t("auth.qrLoginScannedMask")}</div> : null}
+                            </div>
+                          ) : null}
                           <Typography.Text type="secondary">
                             {qrStatus === "scanned"
-                              ? t("已扫码，请在手机 App 上确认登录")
+                              ? t("auth.qrLoginScanned")
                               : qrStatus === "cancelled"
-                                ? t("本次扫码登录已取消")
-                                : t("使用 MySSO Android App 扫描二维码登录")}
+                                ? t("auth.qrLoginCancelled")
+                                : qrStatus === "expired"
+                                  ? t("auth.qrLoginExpired")
+                                  : t("auth.qrLoginDesc")}
                           </Typography.Text>
                           <Button onClick={() => void createQRLoginChallenge()} loading={qrLoading}>
-                            {t("刷新二维码")}
+                            {t("auth.qrLoginRefresh")}
                           </Button>
                         </Space>
                       )

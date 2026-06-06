@@ -10,6 +10,12 @@ const locale = {
       logout: "లాగ్ అవుట్",
       accountCenter: "ఖాతా కేంద్రం",
     },
+    captcha: {
+      securityVerification: "భద్రతా ధృవీకరణ",
+      refresh: "రిఫ్రెష్ చేయండి",
+      imageCaptcha: "చిత్ CAPTCHA",
+      imageCaptchaRequired: "దయచేసి చిత్ CAPTCHA అందించండి",
+    },
     legal: {
       back: "హోమ్‌కు తిరిగి వెళ్ళండి",
       updatedAt: "చివరి నవీకరణ: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "పాస్‌కీ విజయవంతంగా జోడించబడింది",
       passkeyNotAvailable:
         "ఈ పరికరంలో ఈ సైట్‌కు పాస్‌కీ అందుబాటులో లేదు. మరొక సైన్ ఇన్ పద్ధతి ఉపయోగించండి.",
+      qrLogin: "QR లాగిన్",
+      qrLoginDesc: "QR కోడ్ స్కాన్ చేసి లాగిన్ చేయండి",
+      qrLoginScanned: "QR కోడ్ స్కాన్ చేయబడింది! ధృవీకరణ కోసం వేచి ఉన్నారు...",
+      qrLoginScannedMask: "స్కాన్ చేయబడింది, దయచేసి ధృవీకరించండి",
+      qrLoginCancelled: "QR లాగిన్ రద్దు చేయబడింది",
+      qrLoginExpired: "QR కోడ్ ముగిసింది, కొత్త QR కోడ్ స్కాన్ చేయండి",
+      qrLoginRefresh: "QR కోడ్ రిఫ్రెష్ చేయండి",
       passwordLogin: "పాస్‌వర్డ్",
       otpLogin: "ఇమెయిల్ కోడ్",
       phoneOtpLogin: "ఫోన్ కోడ్",
@@ -340,6 +353,7 @@ const locale = {
       noAuthorizedApps: "అధికారిత యాప్‌లు లేవు",
     },
     errors: {
+      applicationDisabled: "ఈ అప్లికేషన్ నిలిపివేయబడింది",
       emailRequiredByServer: "దయచేసి మీ ఇమెయిల్‌ను నమోదు చేయండి",
       passwordRequiredByServer: "దయచేసి మీ పాస్‌వర్డ్‌ను నమోదు చేయండి",
       invalidCredentials: "చెల్లని ఖాతా లేదా ఆధారాలు",

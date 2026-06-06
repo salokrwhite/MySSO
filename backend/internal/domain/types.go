@@ -172,6 +172,8 @@ type Session struct {
 	Role            Role      `json:"role"`
 	AuthenticatedAt time.Time `json:"authenticated_at"`
 	ACR             string    `json:"acr,omitempty"`
+	DeviceKeyID     string    `json:"device_key_id,omitempty"`
+	DevicePublicKey string    `json:"-"`
 	ExpiresAt       time.Time `json:"expires_at"`
 }
 

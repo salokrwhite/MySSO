@@ -10,6 +10,12 @@ const locale = {
       logout: "Logg ut",
       accountCenter: "Konto senter",
     },
+    captcha: {
+      securityVerification: "Sikkerhetsverifisering",
+      refresh: "Oppdater",
+      imageCaptcha: "Bildecaptcha",
+      imageCaptchaRequired: "Vennligst oppgi bilde captcha",
+    },
     legal: {
       back: "Tilbake til hjemmeside",
       updatedAt: "Sist oppdatert: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Passordnøkkel lagt til vellykket",
       passkeyNotAvailable:
         "Ingen passordnøkkel for denne siden er tilgjengelig på denne enheten. Bruk en annen påloggingsmetode.",
+      qrLogin: "QR-kode pålogging",
+      qrLoginDesc: "Logg inn ved å skanne QR-koden",
+      qrLoginScanned: "QR-kode skannet! Venter på bekreftelse...",
+      qrLoginScannedMask: "Skannet, vennligst bekreft",
+      qrLoginCancelled: "QR-kode pålogging avbrutt",
+      qrLoginExpired: "QR-koden er utløpt, vennligst skann ny QR-kode",
+      qrLoginRefresh: "Oppdater QR-koden",
       passwordLogin: "Passord",
       otpLogin: "E-postkode",
       phoneOtpLogin: "Telefonkode",
@@ -342,6 +355,7 @@ const locale = {
       noAuthorizedApps: "Ingen autoriserte applikasjoner",
     },
     errors: {
+      applicationDisabled: "Denne applikasjonen er deaktivert",
       emailRequiredByServer: "Vennligst skriv inn e-posten din",
       passwordRequiredByServer: "Vennligst skriv inn passordet ditt",
       invalidCredentials: "Ugyldig konto eller legitimasjon",

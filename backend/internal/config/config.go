@@ -49,7 +49,6 @@ type OIDCConfig struct {
 	AuthorizationCodeTTL     time.Duration
 	AccessTokenTTL           time.Duration
 	RefreshTokenTTL          time.Duration
-	DefaultMFACode           string
 	DefaultSigningKeyID      string
 	SigningPrivateKeyPath    string
 	SigningPrivateKeyPEM     string
@@ -129,7 +128,6 @@ func Default() Config {
 			AuthorizationCodeTTL:     getEnvDurationMinutes("OIDC_AUTH_CODE_TTL_MINUTES", 5),
 			AccessTokenTTL:           getEnvDurationMinutes("OIDC_ACCESS_TOKEN_TTL_MINUTES", 15),
 			RefreshTokenTTL:          getEnvDurationHours("OIDC_REFRESH_TOKEN_TTL_HOURS", 24),
-			DefaultMFACode:           getEnv("DEFAULT_MFA_CODE", ""),
 			DefaultSigningKeyID:      getEnv("OIDC_SIGNING_KEY_ID", "default-rsa-key"),
 			SigningPrivateKeyPath:    getEnv("OIDC_SIGNING_PRIVATE_KEY_PATH", "data/oidc_signing_key.pem"),
 			SigningPrivateKeyPEM:     normalizePEMEnv(getEnv("OIDC_SIGNING_PRIVATE_KEY_PEM", "")),

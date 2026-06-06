@@ -10,6 +10,12 @@ const locale = {
       logout: "ចាក់ចេញ",
       accountCenter: "មជ្ឈមណ្ឌលគណនី",
     },
+    captcha: {
+      securityVerification: "ការផ្ទៀងផ្ទាត់សុវត្ថិភាព",
+      refresh: "បស់ស",
+      imageCaptcha: "កាត Captcha",
+      imageCaptchaRequired: "សូមបញ្ចូល captcha រូបភាព",
+    },
     legal: {
       back: "ត្រឡប់ទៅទំព័រដើម",
       updatedAt: "បានកែប្រែចុងក្រោយ៖ {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "កូដចូលត្រូវបានបន្ថែមដោយជោគជ័យ",
       passkeyNotAvailable:
         "គ្មានកូដចូលសម្រាប់គ្រប់ការងារនេះនៅលើឧបករណ៍នេះ។ ប្រើវិធីចូលផ្សេងទៀត។",
+      qrLogin: "ចូល QR",
+      qrLoginDesc: "ស្កេន QR ជាមួយ MySSO Android App",
+      qrLoginScanned: "បានស្កេន សូមបញ្ជាក់នៅក្នុងកម្មវិធី",
+      qrLoginScannedMask: "QR នេះត្រូវបានស្កេនរួចហើយ",
+      qrLoginCancelled: "ចូល QR ត្រូវបានលុប",
+      qrLoginExpired: "QR ផុតកំណត់ សូមបស់ស",
+      qrLoginRefresh: "បស់ស QR",
       passwordLogin: "ពាក្យសម្ងាត់",
       otpLogin: "កូដអ៊ីមែល",
       phoneOtpLogin: "កូដទូរស័ព្ទ",
@@ -340,6 +353,7 @@ const locale = {
       noAuthorizedApps: "គ្មានកម្មវិធីដែលបានអនុញ្ញាត",
     },
     errors: {
+      applicationDisabled: "កម្មវិធីនេះត្រូវបានបិទ",
       emailRequiredByServer: "សូមបញ្ចូលអ៊ីមែលរបស់អ្នក",
       passwordRequiredByServer: "សូមបញ្ចូលពាក្យសម្ងាត់របស់អ្នក",
       invalidCredentials: "គណនី ឬសំគាល់មិនត្រឹមត្រូវ",

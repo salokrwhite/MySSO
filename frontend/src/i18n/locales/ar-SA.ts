@@ -10,6 +10,12 @@ const locale = {
       logout: "تسجيل الخروج",
       accountCenter: "مركز الحساب",
     },
+    captcha: {
+      securityVerification: "التحقق الأمني",
+      refresh: "تحديث",
+      imageCaptcha: "رمز التحقق بالصورة",
+      imageCaptchaRequired: "يرجى إدخال رمز التحقق بالصورة",
+    },
     legal: {
       back: "العودة إلى الصفحة الرئيسية",
       updatedAt: "آخر تحديث: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "تم ربط مفتاح المرور",
       passkeyNotAvailable:
         "لا يوجد مفتاح مرور متاح لهذا الموقع على هذا الجهاز، يرجى استخدام طريقة تسجيل دخول أخرى.",
+      qrLogin: "تسجيل الدخول عبر رمز الاستجابة السريعة",
+      qrLoginDesc: "امسح رمز الاستجابة السريعة ضوئيًا باستخدام تطبيق MySSO Android لتسجيل الدخول.",
+      qrLoginScanned: "تم المسح، يرجى تأكيد تسجيل الدخول في تطبيق الهاتف المحمول.",
+      qrLoginScannedMask: "تم مسح رمز الاستجابة السريعة هذا",
+      qrLoginCancelled: "تم إلغاء تسجيل الدخول عبر رمز الاستجابة السريعة هذا",
+      qrLoginExpired: "انتهت صلاحية رمز الاستجابة السريعة، يرجى التحديث.",
+      qrLoginRefresh: "تحديث رمز الاستجابة السريعة",
       passwordLogin: "تسجيل الدخول بكلمة المرور",
       otpLogin: "تسجيل الدخول برمز التحقق للبريد الإلكتروني",
       phoneOtpLogin: "تسجيل الدخول برمز التحقق لرقم الهاتف",
@@ -314,6 +327,7 @@ const locale = {
       noAuthorizedApps: "لا توجد تطبيقات مفوضة",
     },
     errors: {
+      applicationDisabled: "تم تعطيل هذا التطبيق",
       emailRequiredByServer: "يرجى إدخال البريد الإلكتروني",
       passwordRequiredByServer: "يرجى إدخال كلمة المرور",
       invalidCredentials: "الحساب أو بيانات الاعتماد غير صحيحة",

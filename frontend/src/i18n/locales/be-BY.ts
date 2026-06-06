@@ -10,6 +10,12 @@ const locale = {
       logout: "Выйсці",
       accountCenter: "Цэнтр уліковага запісу",
     },
+    captcha: {
+      securityVerification: "Праверка бяспекі",
+      refresh: "Абнавіць",
+      imageCaptcha: "Малюнак CAPTCHA",
+      imageCaptchaRequired: "Увядзіце малюнак CAPTCHA",
+    },
     legal: {
       back: "Вярнуцца на галоўную",
       updatedAt: "Апошняе абнаўленне: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey паспяхова дададзены",
       passkeyNotAvailable:
         "На гэтай прыладзе няма дасяжнага passkey для гэтага сайта. Выкарыстайце іншы спосаб уваходу.",
+      qrLogin: "QR-код",
+      qrLoginDesc: "Скануйце QR-код з дапамогай праграмы MySSO Android для ўваходу.",
+      qrLoginScanned: "Сканіравана. Пацвердзіце ўваход у мабільнай праграме.",
+      qrLoginScannedMask: "Гэты QR-код ужо сканираваны",
+      qrLoginCancelled: "Гэты QR-уваход адменены",
+      qrLoginExpired: "QR-код страціў сілу. Абновіце.",
+      qrLoginRefresh: "Абновіць QR-код",
       passwordLogin: "Уваход па паролі",
       otpLogin: "Уваход па кодзе электроннай пошты",
       phoneOtpLogin: "Уваход па кодзе тэлефона",
@@ -314,6 +327,7 @@ const locale = {
       noAuthorizedApps: "Няма ўпаўнаважаных праграм",
     },
     errors: {
+      applicationDisabled: "Гэта праграма адключана",
       emailRequiredByServer: "Увядзіце адрас электроннай пошты",
       passwordRequiredByServer: "Увядзіце пароль",
       invalidCredentials: "Несапраўдны ўліковы запіс або ўдасканаленні",

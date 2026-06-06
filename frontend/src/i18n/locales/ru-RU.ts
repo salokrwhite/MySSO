@@ -10,6 +10,12 @@ const locale = {
       logout: "Выйти",
       accountCenter: "Аккаунт",
     },
+    captcha: {
+      securityVerification: "Проверка безопасности",
+      refresh: "Обновить",
+      imageCaptcha: "Captcha с изображением",
+      imageCaptchaRequired: "Пожалуйста, пройдите проверку с изображением",
+    },
     legal: {
       back: "На главную",
       updatedAt: "Последнее обновление: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Ключ доступа успешно добавлен",
       passkeyNotAvailable:
         "Нет доступного ключа доступа для этого сайта на данном устройстве. Используйте другой способ входа.",
+      qrLogin: "Вход по QR-коду",
+      qrLoginDesc: "Войдите, отсканировав QR-код с помощью приложения MySSO.",
+      qrLoginScanned: "QR-код отсканирован. Подтвердите вход в приложении.",
+      qrLoginScannedMask: "Этот QR-код был отсканирован",
+      qrLoginCancelled: "Вход по QR отменен",
+      qrLoginExpired: "Срок действия QR-кода истек. Обновите.",
+      qrLoginRefresh: "Обновить QR-код",
       passwordLogin: "Пароль",
       otpLogin: "Код из почты",
       phoneOtpLogin: "Код из SMS",
@@ -248,6 +261,7 @@ const locale = {
         confirm: "Подтвердить и продолжить",
         cancel: "Отменить и вернуться к входу",
         errors: {
+          applicationDisabled: "Приложение отключено",
           applicationRejected: "Приложение отклонено",
           applicationRejectedWithReason: "Приложение отклонено: {{reason}}",
           applicationAccessRestricted: "Доступ к приложению ограничен",

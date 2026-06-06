@@ -31,6 +31,8 @@ const (
 	DefaultChangeEmailCodeBodyTemplateEN      = "Hello,\n\nYou are changing the email address bound to your MySSO account. Your verification code is {{code}} and it is valid for {{minutes}} minutes.\n\nNew email: {{email}}\n\nIf this was not you, please ignore this email."
 	DefaultVerificationCodeCooldownSeconds    = 60
 	DefaultVerificationCodeTTLMinutes         = 10
+	DefaultEmailVerificationCodeDailyLimit    = 0
+	DefaultSMSVerificationCodeDailyLimit      = 0
 	DefaultCaptchaEnabled                     = false
 	DefaultCaptchaHeight                      = 60
 	DefaultCaptchaWidth                       = 240
@@ -89,6 +91,7 @@ const (
 	DefaultDeveloperManagedUsersSearchLimit   = 5
 	MaxDeveloperManagedUsersSearchWindow      = 3600
 	MaxDeveloperManagedUsersSearchLimit       = 10000
+	MaxVerificationCodeDailyLimit             = 100000
 	DefaultTestSMSContentMaxLength            = 500
 )
 

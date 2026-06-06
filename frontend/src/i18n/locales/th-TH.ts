@@ -10,6 +10,12 @@ const locale = {
       logout: "ออกจากระบบ",
       accountCenter: "ศูนย์บัญชี",
     },
+    captcha: {
+      securityVerification: "การยืนยันความปลอดภัย",
+      refresh: "รีเฟรช",
+      imageCaptcha: "แคปต์ชาแบบรูปภาพ",
+      imageCaptchaRequired: "กรุณาป้อนแคปต์ชาแบบรูปภาพ",
+    },
     legal: {
       back: "กลับหน้าหลัก",
       updatedAt: "อัปเดตล่าสุด: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey ถูกเพิ่มเรียบร้อยแล้ว",
       passkeyNotAvailable:
         "ไม่มี Passkey สำหรับไซต์นี้บนอุปกรณ์นี้ โปรดใช้วิธีการเข้าสู่ระบบอื่น",
+      qrLogin: "เข้าสู่ระบบด้วย QR",
+      qrLoginDesc: "สแกน QR เพื่อเข้าสู่ระบบ",
+      qrLoginScanned: "สแกน QR แล้ว! รอการยืนยัน...",
+      qrLoginScannedMask: "สแกนแล้ว กรุณายืนยัน",
+      qrLoginCancelled: "ยกเลิกการเข้าสู่ระบบด้วย QR",
+      qrLoginExpired: "QR หมดอายุ กรุณาสแกน QR ใหม่",
+      qrLoginRefresh: "รีเฟรช QR",
       passwordLogin: "รหัสผ่าน",
       otpLogin: "รหัสอีเมล",
       phoneOtpLogin: "รหัสโทรศัพท์",
@@ -321,6 +334,7 @@ const locale = {
       noAuthorizedApps: "ไม่มีแอปพลิเคชันที่ได้รับอนุญาต",
     },
     errors: {
+      applicationDisabled: "แอปพลิเคชันนี้ถูกปิดใช้งาน",
       emailRequiredByServer: "โปรดป้อนอีเมล",
       passwordRequiredByServer: "โปรดป้อนรหัสผ่าน",
       invalidCredentials: "บัญชีหรือข้อมูลประจำตัวไม่ถูกต้อง",

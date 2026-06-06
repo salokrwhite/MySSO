@@ -60,7 +60,7 @@ type MemoryStore struct {
 
 var _ store.Store = (*MemoryStore)(nil)
 
-func NewStore(defaultMFACode string) *MemoryStore {
+func NewStore() *MemoryStore {
 	now := time.Now().UTC()
 	adminID := uuid.NewString()
 	devID := uuid.NewString()
@@ -102,9 +102,9 @@ func NewStore(defaultMFACode string) *MemoryStore {
 			Password:        devPassword,
 			Role:            domain.RoleDeveloper,
 			Status:          domain.UserActive,
-			MFAEnabled:      true,
+			MFAEnabled:      false,
 			MFAMethod:       "",
-			MFASecret:       defaultMFACode,
+			MFASecret:       "",
 			CreatedAt:       now,
 		},
 		userID: {
@@ -117,9 +117,9 @@ func NewStore(defaultMFACode string) *MemoryStore {
 			Password:        userPassword,
 			Role:            domain.RoleUser,
 			Status:          domain.UserActive,
-			MFAEnabled:      true,
+			MFAEnabled:      false,
 			MFAMethod:       "",
-			MFASecret:       defaultMFACode,
+			MFASecret:       "",
 			CreatedAt:       now,
 		},
 	}

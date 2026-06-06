@@ -10,6 +10,12 @@ const locale = {
       logout: "התנתק",
       accountCenter: "מרכז החשבון",
     },
+    captcha: {
+      securityVerification: "אימות אבטחה",
+      refresh: "רענן",
+      imageCaptcha: "קאפצ'ה תמונה",
+      imageCaptchaRequired: "אנא הכנס את קאפצ'ה התמונה",
+    },
     legal: {
       back: "חזור לדף הבית",
       updatedAt: "עודכן לאחרונה: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "מפתח גישה נוסף בהצלחה",
       passkeyNotAvailable:
         "אין מפתח גישה לאתר זה זמין במכשיר זה. השתמש בשיטת התחברות אחרת.",
+      qrLogin: "כניסה עם QR",
+      qrLoginDesc: "סרוק את קוד ה-QR עם אפליקציית MySSO Android",
+      qrLoginScanned: "נסרק, אנא אשר באפליקציה",
+      qrLoginScannedMask: "קוד QR זה כבר נסרק",
+      qrLoginCancelled: "הכניסה עם QR בוטלה",
+      qrLoginExpired: "קוד ה-QR פג, אנא רענן",
+      qrLoginRefresh: "רענן קוד QR",
       passwordLogin: "סיסמה",
       otpLogin: "קוד אימייל",
       phoneOtpLogin: "קוד טלפון",
@@ -342,6 +355,7 @@ const locale = {
       noAuthorizedApps: "אין אפליקציות מאושרות",
     },
     errors: {
+      applicationDisabled: "אפליקציה זו הושבתה",
       emailRequiredByServer: "אנא הכנס את האימייל שלך",
       passwordRequiredByServer: "אנא הכנס את הסיסמה שלך",
       invalidCredentials: "חשבון או אישורים לא חוקיים",

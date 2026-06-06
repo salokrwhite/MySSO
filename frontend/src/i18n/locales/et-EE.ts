@@ -10,6 +10,12 @@ const locale = {
       logout: "Logi välja",
       accountCenter: "Kontokeskus",
     },
+    captcha: {
+      securityVerification: "Turvalisuse kontroll",
+      refresh: "Värskenda",
+      imageCaptcha: "Pildi CAPTCHA",
+      imageCaptchaRequired: "Sisestage pildi CAPTCHA",
+    },
     legal: {
       back: "Tagasi avalehele",
       updatedAt: "Viimati uuendatud: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Pääsuklahv edukalt lisatud",
       passkeyNotAvailable:
         "Selles seadmes pole selle saidi jaoks pääsuklahvi saadaval. Kasutage muud sisselogimismeetodit.",
+      qrLogin: "QR kood",
+      qrLoginDesc: "Sisselogimiseks skannige QR koodi MySSO Android rakendusega.",
+      qrLoginScanned: "Skannitud. Kinnitage sisselogimine mobiilirakenduses.",
+      qrLoginScannedMask: "See QR kood on juba skannitud",
+      qrLoginCancelled: "See QR sisselogimine on tühistatud",
+      qrLoginExpired: "QR kood on aegunud. Värskendage.",
+      qrLoginRefresh: "Värskenda QR koodi",
       passwordLogin: "Parool",
       otpLogin: "E-posti kood",
       phoneOtpLogin: "Telefonikood",
@@ -340,6 +353,7 @@ const locale = {
       noAuthorizedApps: "Autoriseeritud rakendusi pole",
     },
     errors: {
+      applicationDisabled: "See rakendus on keelatud",
       emailRequiredByServer: "Palun sisestage oma e-post",
       passwordRequiredByServer: "Palun sisestage oma parool",
       invalidCredentials: "Vale konto või volitused",

@@ -74,7 +74,7 @@ func (s *Server) handleConfirmQRLogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	result, err := s.services.Auth.ConfirmQRLogin(req.ScanToken, s.extractSessionToken(c), c.ClientIP(), c.GetHeader("User-Agent"), req.Confirm)
+	result, err := s.services.Auth.ConfirmQRLogin(req.ScanToken, s.extractSessionToken(c), c.ClientIP(), c.GetHeader("User-Agent"), req.Confirm, deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

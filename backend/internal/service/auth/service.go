@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -25,6 +26,23 @@ type AuthService struct {
 }
 
 type Service = AuthService
+
+type deviceBindingContextKey struct{}
+
+func WithDeviceBinding(ctx context.Context, binding settings.DeviceBindingInput) context.Context {
+	return context.WithValue(ctx, deviceBindingContextKey{}, binding)
+}
+
+func deviceBindingFromContext(ctx context.Context) settings.DeviceBindingInput {
+	if ctx == nil {
+		return settings.DeviceBindingInput{}
+	}
+	binding, _ := ctx.Value(deviceBindingContextKey{}).(settings.DeviceBindingInput)
+	return settings.DeviceBindingInput{
+		KeyID:     strings.TrimSpace(binding.KeyID),
+		PublicKey: strings.TrimSpace(binding.PublicKey),
+	}
+}
 
 func New(dependencies *deps.Deps, auditService *audit.Service, settingsService *settings.Service, userService interface{ CleanupExpiredDeletionRequests() error }) *Service {
 	return &AuthService{deps: dependencies, audit: auditService, settings: settingsService, user: userService}
@@ -71,11 +89,11 @@ func preferredLocaleForRegistrationCountry(country string) string {
 	}
 }
 
-func (s *AuthService) StartPasswordLogin(email, password, ip, deviceID string) (PasswordLoginResult, error) {
-	return s.StartPasswordLoginWithMFACaptcha(email, password, ip, deviceID, nil)
+func (s *AuthService) StartPasswordLogin(email, password, ip, deviceID string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
+	return s.StartPasswordLoginWithMFACaptcha(email, password, ip, deviceID, nil, binding...)
 }
 
-func (s *AuthService) StartPasswordLoginWithMFACaptcha(email, password, ip, deviceID string, verifyMFACaptcha func() error) (PasswordLoginResult, error) {
+func (s *AuthService) StartPasswordLoginWithMFACaptcha(email, password, ip, deviceID string, verifyMFACaptcha func() error, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
 	if err := s.user.CleanupExpiredDeletionRequests(); err != nil {
 		return PasswordLoginResult{}, err
 	}
@@ -124,10 +142,10 @@ func (s *AuthService) StartPasswordLoginWithMFACaptcha(email, password, ip, devi
 			User:           user,
 		}, nil
 	}
-	return s.ContinuePostAuthentication(user, ip, "password", "urn:mysso:acr:password")
+	return s.ContinuePostAuthentication(user, ip, "password", "urn:mysso:acr:password", binding...)
 }
 
-func (s *AuthService) CompletePasswordLoginMFA(challengeToken, otp, ip, deviceID string) (PasswordLoginResult, error) {
+func (s *AuthService) CompletePasswordLoginMFA(challengeToken, otp, ip, deviceID string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
 	challenge, user, err := s.loadMFALoginChallenge(challengeToken)
 	if err != nil {
 		return PasswordLoginResult{}, err
@@ -173,10 +191,10 @@ func (s *AuthService) CompletePasswordLoginMFA(challengeToken, otp, ip, deviceID
 	}
 	_ = s.deps.Store.DeleteMFALoginChallenge(challenge.Token)
 	s.resetAuthAttempt(attempt)
-	return s.ContinuePostAuthentication(user, ip, "password", "urn:mysso:acr:password+mfa")
+	return s.ContinuePostAuthentication(user, ip, "password", "urn:mysso:acr:password+mfa", binding...)
 }
 
-func (s *AuthService) LoginWithOTP(email, otp, ip, deviceID string) (PasswordLoginResult, error) {
+func (s *AuthService) LoginWithOTP(email, otp, ip, deviceID string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
 	if err := s.user.CleanupExpiredDeletionRequests(); err != nil {
 		return PasswordLoginResult{}, err
 	}
@@ -215,10 +233,10 @@ func (s *AuthService) LoginWithOTP(email, otp, ip, deviceID string) (PasswordLog
 		return PasswordLoginResult{}, loginBlockedByUserStatus(user, "invalid otp code")
 	}
 	s.resetAuthAttempt(attempt)
-	return s.ContinuePostAuthentication(user, ip, "email_otp", "urn:mysso:acr:email-otp")
+	return s.ContinuePostAuthentication(user, ip, "email_otp", "urn:mysso:acr:email-otp", binding...)
 }
 
-func (s *AuthService) LoginWithPhoneOTP(phone, otp, ip, deviceID string) (PasswordLoginResult, error) {
+func (s *AuthService) LoginWithPhoneOTP(phone, otp, ip, deviceID string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
 	if !s.settings.IsPhoneVerificationEnabled() {
 		return PasswordLoginResult{}, fmt.Errorf("phone verification is disabled")
 	}
@@ -260,10 +278,10 @@ func (s *AuthService) LoginWithPhoneOTP(phone, otp, ip, deviceID string) (Passwo
 		return PasswordLoginResult{}, loginBlockedByUserStatus(user, "invalid otp code")
 	}
 	s.resetAuthAttempt(attempt)
-	return s.ContinuePostAuthentication(user, ip, "sms_otp", "urn:mysso:acr:sms-otp")
+	return s.ContinuePostAuthentication(user, ip, "sms_otp", "urn:mysso:acr:sms-otp", binding...)
 }
 
-func (s *AuthService) ConfirmDeletionLogin(challengeToken, ip string) (PasswordLoginResult, error) {
+func (s *AuthService) ConfirmDeletionLogin(challengeToken, ip string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
 	challenge, err := s.deps.Store.GetDeletionLoginChallenge(strings.TrimSpace(challengeToken))
 	if err != nil {
 		return PasswordLoginResult{}, fmt.Errorf("deletion login challenge expired or invalid")
@@ -285,7 +303,7 @@ func (s *AuthService) ConfirmDeletionLogin(challengeToken, ip string) (PasswordL
 			return PasswordLoginResult{}, err
 		}
 	}
-	return s.ContinuePostAuthentication(user, ip, deriveLoginMethodFromACR(challenge.ACR), challenge.ACR)
+	return s.ContinuePostAuthentication(user, ip, deriveLoginMethodFromACR(challenge.ACR), challenge.ACR, binding...)
 }
 
 func (s *AuthService) createDeletionLoginChallenge(user domain.User, acr string) (domain.DeletionLoginChallenge, error) {
@@ -683,11 +701,23 @@ func (s *AuthService) sendEmailVerificationCode(email, country, purpose string, 
 	}
 
 	cooldownSeconds := s.settings.GetVerificationCodeCooldownSeconds()
+	dailyLimit := s.settings.GetVerificationCodeDailyLimit()
+	now := time.Now().UTC()
+	if dailyLimit.Email > 0 {
+		startAt, endAt := settings.ChinaDayRange(now)
+		count, err := s.deps.Store.CountEmailVerificationCodes(email, startAt, endAt)
+		if err != nil {
+			return 0, err
+		}
+		if count >= dailyLimit.Email {
+			return cooldownSeconds, settings.VerificationDailyLimitError(now)
+		}
+	}
 	if enforceCooldown && cooldownSeconds > 0 {
 		if latest, err := s.deps.Store.GetLatestEmailVerificationCode(email, purpose); err == nil {
 			nextAvailableAt := latest.CreatedAt.Add(time.Duration(cooldownSeconds) * time.Second)
-			if nextAvailableAt.After(time.Now().UTC()) {
-				remaining := int(time.Until(nextAvailableAt).Seconds())
+			if nextAvailableAt.After(now) {
+				remaining := int(nextAvailableAt.Sub(now).Seconds())
 				if remaining < 1 {
 					remaining = 1
 				}
@@ -706,9 +736,9 @@ func (s *AuthService) sendEmailVerificationCode(email, country, purpose string, 
 		Country:   country,
 		Purpose:   purpose,
 		Code:      code,
-		ExpiresAt: time.Now().UTC().Add(s.deps.Cfg.SMTP.VerificationCodeTTL),
+		ExpiresAt: now.Add(s.deps.Cfg.SMTP.VerificationCodeTTL),
 		Consumed:  false,
-		CreatedAt: time.Now().UTC(),
+		CreatedAt: now,
 	}
 	if err := s.deps.Store.SaveEmailVerificationCode(record); err != nil {
 		return 0, err
@@ -755,11 +785,23 @@ func (s *AuthService) sendSMSVerificationCode(phone, purpose string, enforceCool
 	}
 
 	cooldownSeconds := s.settings.GetVerificationCodeCooldownSeconds()
+	dailyLimit := s.settings.GetVerificationCodeDailyLimit()
+	now := time.Now().UTC()
+	if dailyLimit.SMS > 0 {
+		startAt, endAt := settings.ChinaDayRange(now)
+		count, err := s.deps.Store.CountSMSVerificationCodes(phone, startAt, endAt)
+		if err != nil {
+			return 0, err
+		}
+		if count >= dailyLimit.SMS {
+			return cooldownSeconds, settings.VerificationDailyLimitError(now)
+		}
+	}
 	if enforceCooldown && cooldownSeconds > 0 {
 		if latest, err := s.deps.Store.GetLatestSMSVerificationCode(phone, purpose); err == nil {
 			nextAvailableAt := latest.CreatedAt.Add(time.Duration(cooldownSeconds) * time.Second)
-			if nextAvailableAt.After(time.Now().UTC()) {
-				remaining := int(time.Until(nextAvailableAt).Seconds())
+			if nextAvailableAt.After(now) {
+				remaining := int(nextAvailableAt.Sub(now).Seconds())
 				if remaining < 1 {
 					remaining = 1
 				}
@@ -777,9 +819,9 @@ func (s *AuthService) sendSMSVerificationCode(phone, purpose string, enforceCool
 		Phone:     phone,
 		Purpose:   purpose,
 		Code:      code,
-		ExpiresAt: time.Now().UTC().Add(s.deps.Cfg.SMTP.VerificationCodeTTL),
+		ExpiresAt: now.Add(s.deps.Cfg.SMTP.VerificationCodeTTL),
 		Consumed:  false,
-		CreatedAt: time.Now().UTC(),
+		CreatedAt: now,
 	}
 	if err := s.deps.Store.SaveSMSVerificationCode(record); err != nil {
 		return 0, err

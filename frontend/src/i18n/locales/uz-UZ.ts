@@ -10,6 +10,12 @@ const locale = {
       logout: "Chiqish",
       accountCenter: "Hisob markazi",
     },
+    captcha: {
+      securityVerification: "Xavfsizlik tekshiruvi",
+      refresh: "Yangilash",
+      imageCaptcha: "Rasm captcha",
+      imageCaptchaRequired: "Iltimos, rasm captcha-ni to'ldiring",
+    },
     legal: {
       back: "Bosh sahifaga qaytish",
       updatedAt: "Oxirgi yangilanish: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey muvaffaqiyatli qo'shildi",
       passkeyNotAvailable:
         "Bu qurilmada ushbu sayt uchun passkey mavjud emas. Boshqa kirish usulidan foydalaning.",
+      qrLogin: "QR kod bilan kirish",
+      qrLoginDesc: "MySSO ilovasi yordamida QR kodni skanerlab kiring.",
+      qrLoginScanned: "QR kod skanerlandi. Ilovada kirishni tasdiqlang.",
+      qrLoginScannedMask: "Ushbu QR kod skanerlanagan",
+      qrLoginCancelled: "QR kirish bekor qilindi",
+      qrLoginExpired: "QR kodning muddati o'tgan. Yangilash.",
+      qrLoginRefresh: "QR kodni yangilash",
       passwordLogin: "Parol",
       otpLogin: "Elektron pochta kodi",
       phoneOtpLogin: "Telefon kodi",
@@ -248,6 +261,7 @@ const locale = {
         confirm: "Tasdiqlash va davom etish",
         cancel: "Bekor qilish va kirishga qaytish",
         errors: {
+          applicationDisabled: "Ilova o'chirilgan",
           applicationRejected: "Ilova rad etildi",
           applicationRejectedWithReason: "Ilova rad etildi: {{reason}}",
           applicationAccessRestricted: "Ilovaga kirish cheklangan",

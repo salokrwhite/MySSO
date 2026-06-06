@@ -10,6 +10,12 @@ const locale = {
       logout: "Wyloguj się",
       accountCenter: "Centrum konta",
     },
+    captcha: {
+      securityVerification: "Weryfikacja bezpieczeństwa",
+      refresh: "Odśwież",
+      imageCaptcha: "Captcha obrazkowa",
+      imageCaptchaRequired: "Proszę uzupełnić captcha obrazkową",
+    },
     legal: {
       back: "Wróć do strony głównej",
       updatedAt: "Ostatnia aktualizacja: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey dodany pomyślnie",
       passkeyNotAvailable:
         "Brak dostępnego passkey dla tej witryny na tym urządzeniu. Użyj innej metody logowania.",
+      qrLogin: "Logowanie przez QR",
+      qrLoginDesc: "Zaloguj się, skanując kod QR za pomocą aplikacji MySSO.",
+      qrLoginScanned: "Kod QR zeskanowany. Potwierdź logowanie w aplikacji.",
+      qrLoginScannedMask: "Ten kod QR został już zeskanowany",
+      qrLoginCancelled: "Logowanie QR anulowane",
+      qrLoginExpired: "Kod QR wygasł. Odśwież stronę.",
+      qrLoginRefresh: "Odśwież kod QR",
       passwordLogin: "Hasło",
       otpLogin: "Kod e-mail",
       phoneOtpLogin: "Kod telefonu",
@@ -247,6 +260,7 @@ const locale = {
         confirm: "Potwierdź i kontynuuj",
         cancel: "Anuluj i wróć do logowania",
         errors: {
+          applicationDisabled: "Aplikacja została wyłączona",
           applicationRejected: "Aplikacja została odrzucona",
           applicationRejectedWithReason: "Aplikacja została odrzucona: {{reason}}",
           applicationAccessRestricted: "Dostęp do aplikacji jest ograniczony",

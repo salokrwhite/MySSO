@@ -10,6 +10,12 @@ const locale = {
       logout: "લોગઆઉટ",
       accountCenter: "અકાઉન્ટ સેન્ટર",
     },
+    captcha: {
+      securityVerification: "સુરક્ષા ચકાસણી",
+      refresh: "તાજું કરો",
+      imageCaptcha: "છબી CAPTCHA",
+      imageCaptchaRequired: "છબી CAPTCHA દાખલ કરો",
+    },
     legal: {
       back: "હોમ પেজ પર પાછા જાઓ",
       updatedAt: "છેલ્લા અપડેટ કર્યું: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "પાસકી સફળતાપૂર્વક ઉમેરવામાં આવી",
       passkeyNotAvailable:
         "આ સાઇટ માટે આ ડિવાઇસ પર કોઈપણ પાસકી ઉપલબ્ધ નથી. અન્ય સાઇન-ઇન પદ્ધતિ વાપરો.",
+      qrLogin: "QR કોડ",
+      qrLoginDesc: "સાઇન ઇન કરવા માટે MySSO Android એપ્લિકેશન વડે QR કોડ સ્કેન કરો.",
+      qrLoginScanned: "સ્કેન થયું. મોબાઇલ એપ્લિકેશન પર સાઇન ઇન ખરરી કરો.",
+      qrLoginScannedMask: "આ QR કોડ પહેલાથી સ્કેન થયું છે",
+      qrLoginCancelled: "આ QR સાઇન ઇન રદ કરવામાં આવ્યું છે",
+      qrLoginExpired: "QR કોડની મુદત સમાપ્ત થઈ ગઈ છે. તાજું કરો.",
+      qrLoginRefresh: "QR કોડ તાજું કરો",
       passwordLogin: "પાસવર્ડ",
       otpLogin: "ઈમેઇલ કોડ",
       phoneOtpLogin: "ફોન કોડ",
@@ -340,6 +353,7 @@ const locale = {
       noAuthorizedApps: "કોઈ અધિકૃત એપ્લિકેશન્સ નથી",
     },
     errors: {
+      applicationDisabled: "આ એપ્લિકેશન અક્ષમ કરવામાં આવ્યું છે",
       emailRequiredByServer: "કૃપા કરીને તમારું ઈમેઇલ દાખલ કરો",
       passwordRequiredByServer: "કૃપા કરીને તમારું પાસવર્ડ દાખલ કરો",
       invalidCredentials: "અમાન્ય એકાઉન્ટ અથવા ક્રેડન્શિયલ્સ",

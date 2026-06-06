@@ -10,6 +10,12 @@ const locale = {
       logout: "Keluar",
       accountCenter: "Pusat Akun",
     },
+    captcha: {
+      securityVerification: "Verifikasi Keamanan",
+      refresh: "Segarkan",
+      imageCaptcha: "Captcha Gambar",
+      imageCaptchaRequired: "Silakan masukkan captcha gambar",
+    },
     legal: {
       back: "Kembali ke Beranda",
       updatedAt: "Terakhir diperbarui: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey telah diikat",
       passkeyNotAvailable:
         "Tidak ada passkey yang dapat digunakan untuk situs ini di perangkat saat ini, silakan gunakan metode login lain.",
+      qrLogin: "Login dengan QR",
+      qrLoginDesc: "Pindai kode QR dengan aplikasi MySSO Android",
+      qrLoginScanned: "Dipindai, harap konfirmasi di aplikasi",
+      qrLoginScannedMask: "Kode QR ini telah dipindai",
+      qrLoginCancelled: "Login QR dibatalkan",
+      qrLoginExpired: "Kode QR kedaluwarsa, segarkan",
+      qrLoginRefresh: "Segarkan kode QR",
       passwordLogin: "Login dengan Kata Sandi",
       otpLogin: "Login dengan Kode Email",
       phoneOtpLogin: "Login dengan Kode SMS",
@@ -312,6 +325,7 @@ const locale = {
       noAuthorizedApps: "Tidak ada aplikasi terotorisasi",
     },
     errors: {
+      applicationDisabled: "Aplikasi ini telah dinonaktifkan",
       emailRequiredByServer: "Silakan masukkan email",
       passwordRequiredByServer: "Silakan masukkan kata sandi",
       invalidCredentials: "Akun atau kredensial tidak benar",

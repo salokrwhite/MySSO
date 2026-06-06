@@ -102,6 +102,40 @@ func (s *MemoryStore) UpdateQRLoginChallenge(challenge domain.QRLoginChallenge) 
 	return nil
 }
 
+func (s *MemoryStore) ClaimPendingQRLoginChallenge(challenge domain.QRLoginChallenge) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	scanToken := strings.TrimSpace(challenge.ScanToken)
+	now := time.Now().UTC()
+	for token, existing := range s.authChallenges {
+		if existing.ChallengeType != authChallengeTypeQRLogin ||
+			existing.LookupToken != scanToken ||
+			existing.Status != string(domain.QRLoginStatusPending) ||
+			existing.ExpiresAt.Before(now) {
+			continue
+		}
+		if strings.TrimSpace(challenge.ChallengeToken) == "" {
+			challenge.ChallengeToken = existing.Token
+		}
+		if strings.TrimSpace(challenge.ScanToken) == "" {
+			challenge.ScanToken = existing.LookupToken
+		}
+		payload, err := qrLoginPayloadJSON(challenge)
+		if err != nil {
+			return err
+		}
+		updatedAt := challenge.UpdatedAt
+		existing.Status = string(challenge.Status)
+		existing.UserID = challenge.UserID
+		existing.PayloadJSON = payload
+		existing.UpdatedAt = &updatedAt
+		s.authChallenges[token] = existing
+		return nil
+	}
+	return ErrNotFound
+}
+
 func (s *MemoryStore) DeleteQRLoginChallenge(challengeToken string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

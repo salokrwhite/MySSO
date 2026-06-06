@@ -10,6 +10,12 @@ const locale = {
       logout: "लगआउट गर्नुहोस्",
       accountCenter: "खाता केन्द्र",
     },
+    captcha: {
+      securityVerification: "सुरक्षा प्रमाणीकरण",
+      refresh: "रीफ्रेस गर्नुहोस्",
+      imageCaptcha: "इमेज क्याप्चा",
+      imageCaptchaRequired: "कृपया इमेज क्याप्चा प्रदान गर्नुहोस्",
+    },
     legal: {
       back: "मुख्य पृष्ठमा फर्कनुहोस्",
       updatedAt: "अन्तिम अपडेट: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "पासकी सफलतापूर्वक थपियो",
       passkeyNotAvailable:
         "यस उपकरणमा यस साइटको लागि कुनै पासकी उपलब्ध छैन। अर्को लगइन विधि प्रयोग गर्नुहोस्।",
+      qrLogin: "QR कोड",
+      qrLoginDesc: "QR कोड स्क्यान गरेर लगइन गर्नुहोस्",
+      qrLoginScanned: "QR कोड स्क्यान गरियो! प्रमाणीकरणको पर्खाइमा...",
+      qrLoginScannedMask: "स्क्यान गरियो, कृपया पुष्टि गर्नुहोस्",
+      qrLoginCancelled: "QR कोड लगइन रद्द गरियो",
+      qrLoginExpired: "QR कोडको म्याद सकियो, कृपया नयाँ QR कोड स्क्यान गर्नुहोस्",
+      qrLoginRefresh: "QR कोड रीफ्रेस गर्नुहोस्",
       passwordLogin: "पासवर्ड",
       otpLogin: "इमेल कोड",
       phoneOtpLogin: "फोन कोड",
@@ -342,6 +355,7 @@ const locale = {
       noAuthorizedApps: "अधिकृत अनुप्रयोगहरू छैन",
     },
     errors: {
+      applicationDisabled: "यो अनुप्रयोग निष्क्रिय गरिएको छ",
       emailRequiredByServer: "कृपया आफ्नो इमेल प्रविष्ट गर्नुहोस्",
       passwordRequiredByServer: "कृपया आफ्नो पासवर्ड प्रविष्ट गर्नुहोस्",
       invalidCredentials: "अवैध खाता वा क्रेडेन्शियलहरू",

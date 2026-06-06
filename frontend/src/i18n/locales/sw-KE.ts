@@ -10,6 +10,12 @@ const locale = {
       logout: "Ondoka",
       accountCenter: "Kituo cha Akaunti",
     },
+    captcha: {
+      securityVerification: "Ukaguzi wa usalama",
+      refresh: "Sasisha",
+      imageCaptcha: "Captcha ya picha",
+      imageCaptchaRequired: "Tafadhali kamilisha captcha ya picha",
+    },
     legal: {
       back: "Rudi Mwanzo",
       updatedAt: "Mwisho kusasishwa: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Ufunguo wa kuingia umeongezwa",
       passkeyNotAvailable:
         "Hakuna ufunguo wa kuingia wa tovuti hii kwenye kifaa hiki. Tumia njia nyingine ya kuingia.",
+      qrLogin: "Kuingia kwa QR",
+      qrLoginDesc: "Ingia kwa kusanibisha msimbo wa QR na programu ya MySSO.",
+      qrLoginScanned: "Msimbo wa QR umesomeka. Thibitisha kuingia kwenye programu.",
+      qrLoginScannedMask: "Msimbo huu wa QR umesomeka",
+      qrLoginCancelled: "Kuingia kwa QR kumeughuliwa",
+      qrLoginExpired: "Msimbo wa QR umeisha. Sasisha.",
+      qrLoginRefresh: "Sasisha msimbo wa QR",
       passwordLogin: "Nenosiri",
       otpLogin: "Nambari ya Barua Pepe",
       phoneOtpLogin: "Nambari ya Simu",
@@ -248,6 +261,7 @@ const locale = {
         confirm: "Thibitisha na Uendelee",
         cancel: "Ghairi na Rudi Kuingia",
         errors: {
+          applicationDisabled: "Programu imezimwa",
           applicationRejected: "Programu Imekataliwa",
           applicationRejectedWithReason: "Programu Imekataliwa: {{reason}}",
           applicationAccessRestricted: "Ufikiaji wa Programu Umezuiliwa",

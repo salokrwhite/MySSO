@@ -72,7 +72,7 @@ func NewServer(cfg config.Config) (*Server, error) {
 			c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 			c.Writer.Header().Set("Vary", "Origin")
 		}
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept, X-Device-Key-ID, X-Device-Timestamp, X-Device-Nonce, X-Device-Body-SHA256, X-Device-Signature")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 		if c.Request.Method == http.MethodOptions {
 			c.AbortWithStatus(http.StatusNoContent)
@@ -357,29 +357,43 @@ func (s *Server) rejectCrossSiteUnsafeRequest(c *gin.Context) bool {
 		return false
 	}
 
-	if strings.EqualFold(strings.TrimSpace(c.GetHeader("Sec-Fetch-Site")), "cross-site") {
+	fetchSite := strings.ToLower(strings.TrimSpace(c.GetHeader("Sec-Fetch-Site")))
+	switch fetchSite {
+	case "same-origin", "same-site", "none":
+		return false
+	case "cross-site":
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "cross-site request forbidden"})
 		return true
 	}
 
 	origin := strings.TrimSpace(c.GetHeader("Origin"))
-	if origin != "" && !s.isAllowedRequestSource(origin) {
-		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "cross-site request forbidden"})
-		return true
+	if origin != "" {
+		if !s.isAllowedRequestSource(origin) {
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "cross-site request forbidden"})
+			return true
+		}
+		return false
 	}
 
 	referer := strings.TrimSpace(c.GetHeader("Referer"))
-	if referer != "" && !s.isAllowedRequestSource(referer) {
-		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "cross-site request forbidden"})
-		return true
+	if referer != "" {
+		if !s.isAllowedRequestSource(referer) {
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "cross-site request forbidden"})
+			return true
+		}
+		return false
 	}
 
-	return false
+	c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "cross-site request forbidden"})
+	return true
 }
 
 func (s *Server) requireSession() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !s.requireInstalled(c) {
+			return
+		}
+		if s.rejectCrossSiteUnsafeRequest(c) {
 			return
 		}
 		sessionToken := s.extractSessionToken(c)
@@ -390,6 +404,9 @@ func (s *Server) requireSession() gin.HandlerFunc {
 		user, session, err := s.services.Auth.CurrentUser(sessionToken)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			return
+		}
+		if !s.requireDeviceSessionSignature(c, session) {
 			return
 		}
 		c.Set("user", user)

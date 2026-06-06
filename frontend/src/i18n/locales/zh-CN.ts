@@ -150,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "通行密钥已绑定",
       passkeyNotAvailable:
         "当前设备上没有可用于此站点的通行密钥，请改用其他登录方式。",
+      qrLogin: "扫码登录",
+      qrLoginDesc: "使用 MySSO Android App 扫描二维码登录",
+      qrLoginScanned: "已扫码，请在手机 App 上确认登录",
+      qrLoginScannedMask: "该二维码已被扫描",
+      qrLoginCancelled: "本次扫码登录已取消",
+      qrLoginExpired: "二维码已过期，请刷新",
+      qrLoginRefresh: "刷新二维码",
       passwordLogin: "密码登录",
       otpLogin: "邮箱验证码登录",
       phoneOtpLogin: "手机号验证码登录",
@@ -321,6 +328,7 @@ const locale = {
       noAuthorizedApps: "暂无授权应用",
     },
     errors: {
+      applicationDisabled: "该应用已被禁用",
       emailRequiredByServer: "请输入邮箱",
       passwordRequiredByServer: "请输入密码",
       invalidCredentials: "账号或凭证不正确",

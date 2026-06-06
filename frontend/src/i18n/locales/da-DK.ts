@@ -10,6 +10,12 @@ const locale = {
       logout: "Log ud",
       accountCenter: "Kontocenter",
     },
+    captcha: {
+      securityVerification: "Sikkerhedsverifikation",
+      refresh: "Opdater",
+      imageCaptcha: "Billed CAPTCHA",
+      imageCaptchaRequired: "Indtast billed CAPTCHA",
+    },
     legal: {
       back: "Tilbage til startsiden",
       updatedAt: "Sidst opdateret: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Adgangsnøgle tilføjet med succes",
       passkeyNotAvailable:
         "Ingen adgangsnøgle til dette websted er tilgængelig på denne enhed. Brug en anden loginmetode.",
+      qrLogin: "QR kode",
+      qrLoginDesc: "Scan QR koden med MySSO Android appen for at logge ind.",
+      qrLoginScanned: "Scannet. Bekræft login på mobil appen.",
+      qrLoginScannedMask: "Denne QR kode er allerede scannet",
+      qrLoginCancelled: "Denne QR login er blevet annulleret",
+      qrLoginExpired: "QR koden er udløbet. Opdater venligst.",
+      qrLoginRefresh: "Opdater QR kode",
       passwordLogin: "Adgangskode",
       otpLogin: "E-mail-kode",
       phoneOtpLogin: "Telefonkode",
@@ -342,6 +355,7 @@ const locale = {
       noAuthorizedApps: "Ingen autoriserede apps",
     },
     errors: {
+      applicationDisabled: "Denne applikation er deaktiveret",
       emailRequiredByServer: "Indtast venligst din e-mail",
       passwordRequiredByServer: "Indtast venligst din adgangskode",
       invalidCredentials: "Ugyldig konto eller legitimationsoplysninger",

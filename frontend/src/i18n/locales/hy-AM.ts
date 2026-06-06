@@ -10,6 +10,12 @@ const locale = {
       logout: "Դուրս գալ",
       accountCenter: "Անձնական հաշիվի կենտրոն",
     },
+    captcha: {
+      securityVerification: "Անվտանգության ստուգում",
+      refresh: "Թարմացնել",
+      imageCaptcha: "Նկար captcha",
+      imageCaptchaRequired: "Խնդրում ենք մուտքագրել նկար captcha-ն",
+    },
     legal: {
       back: "Վերադառնալ գլխավոր էջ",
       updatedAt: "Վերջին թարմացումը: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey-ը հաջողությամբ ավելացվել է",
       passkeyNotAvailable:
         "Այս սարքում այս կայքի համար passkey հասանելի չէ: Օգտագործեք այլ մուտքի եղանակ:",
+      qrLogin: "QR մուտք",
+      qrLoginDesc: "Սկանավորեք QR կոդը MySSO Android հավելվածով",
+      qrLoginScanned: "Սկանավորվել է, խնդրում ենք հաստատել հավելվածում",
+      qrLoginScannedMask: "Այս QR կոդը արդեն սկանավորվել է",
+      qrLoginCancelled: "QR մուտքը չեղարկվեց",
+      qrLoginExpired: "QR կոդը ժամկետանց է, խնդրում ենք թարմացնել",
+      qrLoginRefresh: "Թարմացնել QR կոդը",
       passwordLogin: "Գաղտնաբառ",
       otpLogin: "Էլփոստի կոդ",
       phoneOtpLogin: "Հեռախոսի կոդ",
@@ -342,6 +355,7 @@ const locale = {
       noAuthorizedApps: "Կապված հավելվածներ չկան",
     },
     errors: {
+      applicationDisabled: "Այս հավելվածը ապառնիշ է անջատվել",
       emailRequiredByServer: "Խնդրում ենք մուտքագրել ձեր էլփոստը",
       passwordRequiredByServer: "Խնդրում ենք մուտքագրել ձեր գաղտնաբառը",
       invalidCredentials: "Հաշիվ կամ հավաստիակարգերը ճիշտ չեն",

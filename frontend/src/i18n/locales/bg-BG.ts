@@ -10,6 +10,12 @@ const locale = {
       logout: "Изход",
       accountCenter: "Център на акаунта",
     },
+    captcha: {
+      securityVerification: "Проверка за сигурност",
+      refresh: "Опресняване",
+      imageCaptcha: "Изображение CAPTCHA",
+      imageCaptchaRequired: "Въведете изображението CAPTCHA",
+    },
     legal: {
       back: "Обратно към началото",
       updatedAt: "Последно обновено: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Ключът за достъп е добавен успешно",
       passkeyNotAvailable:
         "Няма наличен ключ за достъп за този сайт на това устройство. Използвайте друг метод за влизане.",
+      qrLogin: "QR код",
+      qrLoginDesc: "Сканирайте QR кода с приложението MySSO Android, за да влезете.",
+      qrLoginScanned: "Сканирано. Потвърдете влизането в мобилното приложение.",
+      qrLoginScannedMask: "Този QR код вече е сканиран",
+      qrLoginCancelled: "Това QR влизане беше отменено",
+      qrLoginExpired: "QR кодът изтече. Моля, опреснете.",
+      qrLoginRefresh: "Опресняване на QR код",
       passwordLogin: "Парола",
       otpLogin: "Имейл код",
       phoneOtpLogin: "Телефонен код",
@@ -342,6 +355,7 @@ const locale = {
       noAuthorizedApps: "Няма оторизирани приложения",
     },
     errors: {
+      applicationDisabled: "Това приложение е деактивирано",
       emailRequiredByServer: "Моля, въведете имейла си",
       passwordRequiredByServer: "Моля, въведете паролата си",
       invalidCredentials: "Невалиден акаунт или идентификационни данни",

@@ -1,5 +1,7 @@
 const REQUEST_TIMEOUT_MS = 5000;
 const LAST_SUCCESSFUL_API_BASE_STORAGE_KEY = "last_successful_api_base";
+const viteEnv = ((import.meta as ImportMeta & { env?: Record<string, string | boolean | undefined> }).env || {});
+const isDevMode = viteEnv.DEV === true || viteEnv.MODE === "development";
 
 type ApiRequestInit = RequestInit & {
   timeout_ms?: number;
@@ -10,7 +12,7 @@ function normalizeApiBase(base: string) {
 }
 
 function getStoredSuccessfulApiBase() {
-  if (typeof window === "undefined") {
+  if (!isDevMode || typeof window === "undefined") {
     return "";
   }
   return normalizeApiBase(window.localStorage.getItem(LAST_SUCCESSFUL_API_BASE_STORAGE_KEY) || "");
@@ -24,25 +26,26 @@ function rememberSuccessfulApiBase(base: string) {
     return;
   }
   lastSuccessfulApiBase = normalizedBase;
-  if (typeof window !== "undefined") {
+  if (isDevMode && typeof window !== "undefined") {
     window.localStorage.setItem(LAST_SUCCESSFUL_API_BASE_STORAGE_KEY, normalizedBase);
   }
 }
 
 function buildApiBaseCandidates() {
-  const configuredOrigin = ((import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env?.VITE_API_ORIGIN || "").trim();
+  const configuredOrigin = String(viteEnv.VITE_API_ORIGIN || "").trim();
   if (configuredOrigin) {
     return [`${configuredOrigin.replace(/\/$/, "")}/api`];
   }
 
   if (typeof window === "undefined") {
-    return ["http://127.0.0.1:8080/api", "http://localhost:8080/api"];
+    return isDevMode ? ["http://127.0.0.1:8080/api", "http://localhost:8080/api"] : ["/api"];
   }
 
   const protocol = window.location.protocol || "http:";
   const localhostApi = `${protocol}//localhost:8080/api`;
   const loopbackApi = `${protocol}//127.0.0.1:8080/api`;
   const hostname = window.location.hostname;
+  const sameOriginApi = `${window.location.origin.replace(/\/$/, "")}/api`;
 
   if (hostname === "127.0.0.1") {
     return [loopbackApi, localhostApi];
@@ -50,14 +53,18 @@ function buildApiBaseCandidates() {
   if (hostname === "localhost") {
     return [localhostApi, loopbackApi];
   }
-  return [`${protocol}//${hostname}/api`, loopbackApi, localhostApi];
+  if (isDevMode) {
+    return [sameOriginApi, loopbackApi, localhostApi];
+  }
+  return [sameOriginApi];
 }
 
+const builtApiBaseCandidates = buildApiBaseCandidates();
 const API_BASE_CANDIDATES = Array.from(
   new Set(
     [
-      getStoredSuccessfulApiBase(),
-      ...buildApiBaseCandidates()
+      ...(isDevMode ? [getStoredSuccessfulApiBase()] : []),
+      ...builtApiBaseCandidates
     ].filter(Boolean)
   )
 );

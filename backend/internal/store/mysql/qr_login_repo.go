@@ -97,6 +97,26 @@ func (s *MySQLStore) UpdateQRLoginChallenge(challenge domain.QRLoginChallenge) e
 	return nil
 }
 
+func (s *MySQLStore) ClaimPendingQRLoginChallenge(challenge domain.QRLoginChallenge) error {
+	payload, err := qrLoginPayloadJSON(challenge)
+	if err != nil {
+		return err
+	}
+	result, err := s.db.Exec(`
+		UPDATE auth_challenges
+		SET status = ?, user_id = ?, payload_json = ?, updated_at = ?
+		WHERE lookup_token = ? AND challenge_type = ? AND status = ? AND expires_at >= UTC_TIMESTAMP()
+	`, challenge.Status, challenge.UserID, nullableJSON(payload), challenge.UpdatedAt, strings.TrimSpace(challenge.ScanToken), authChallengeTypeQRLogin, domain.QRLoginStatusPending)
+	if err != nil {
+		return err
+	}
+	affected, _ := result.RowsAffected()
+	if affected == 0 {
+		return ErrNotFound
+	}
+	return nil
+}
+
 func (s *MySQLStore) DeleteQRLoginChallenge(challengeToken string) error {
 	_, err := s.db.Exec(`DELETE FROM auth_challenges WHERE token = ? AND challenge_type = ?`, strings.TrimSpace(challengeToken), authChallengeTypeQRLogin)
 	return err

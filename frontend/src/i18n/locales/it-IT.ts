@@ -10,6 +10,12 @@ const locale = {
       logout: "Esci",
       accountCenter: "Centro account",
     },
+    captcha: {
+      securityVerification: "Verifica di sicurezza",
+      refresh: "Aggiorna",
+      imageCaptcha: "Captcha immagine",
+      imageCaptchaRequired: "Inserisci il captcha immagine",
+    },
     legal: {
       back: "Torna alla home",
       updatedAt: "Ultimo aggiornamento: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey aggiunta con successo",
       passkeyNotAvailable:
         "Nessuna passkey per questo sito è disponibile su questo dispositivo. Utilizza un altro metodo di accesso.",
+      qrLogin: "Login con QR",
+      qrLoginDesc: "Scansiona il QR code con l'app MySSO Android",
+      qrLoginScanned: "Scansionato, conferma nell'app",
+      qrLoginScannedMask: "Questo QR code è già stato scansionato",
+      qrLoginCancelled: "Login QR annullato",
+      qrLoginExpired: "QR code scaduto, aggiorna",
+      qrLoginRefresh: "Aggiorna QR code",
       passwordLogin: "Password",
       otpLogin: "Codice email",
       phoneOtpLogin: "Codice SMS",
@@ -312,6 +325,7 @@ const locale = {
       noAuthorizedApps: "Nessuna app autorizzata",
     },
     errors: {
+      applicationDisabled: "Questa applicazione è stata disabilitata",
       emailRequiredByServer: "Inserisci la tua email",
       passwordRequiredByServer: "Inserisci la tua password",
       invalidCredentials: "Account o credenziali non validi",

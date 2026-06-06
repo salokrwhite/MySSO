@@ -44,10 +44,12 @@ type UserStore interface {
 
 type VerificationStore interface {
 	SaveEmailVerificationCode(code domain.EmailVerificationCode) error
+	CountEmailVerificationCodes(email string, startAt, endAt time.Time) (int, error)
 	GetEmailVerificationCode(email, purpose, code string) (domain.EmailVerificationCode, error)
 	GetLatestEmailVerificationCode(email, purpose string) (domain.EmailVerificationCode, error)
 	ConsumeEmailVerificationCode(id string) error
 	SaveSMSVerificationCode(code domain.SMSVerificationCode) error
+	CountSMSVerificationCodes(phone string, startAt, endAt time.Time) (int, error)
 	GetSMSVerificationCode(phone, purpose, code string) (domain.SMSVerificationCode, error)
 	GetLatestSMSVerificationCode(phone, purpose string) (domain.SMSVerificationCode, error)
 	ConsumeSMSVerificationCode(id string) error
@@ -121,6 +123,7 @@ type QRLoginStore interface {
 	SaveQRLoginChallenge(challenge domain.QRLoginChallenge) error
 	GetQRLoginChallengeByChallengeToken(token string) (domain.QRLoginChallenge, error)
 	GetQRLoginChallengeByScanToken(token string) (domain.QRLoginChallenge, error)
+	ClaimPendingQRLoginChallenge(challenge domain.QRLoginChallenge) error
 	UpdateQRLoginChallenge(challenge domain.QRLoginChallenge) error
 	DeleteQRLoginChallenge(challengeToken string) error
 }

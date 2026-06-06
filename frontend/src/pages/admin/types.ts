@@ -291,6 +291,8 @@ export type SystemSettings = {
   smtp_force_ssl: boolean;
   smtp_verification_code_ttl_minutes: number;
   smtp_verification_code_cooldown_seconds: number;
+  email_verification_code_daily_limit: number;
+  sms_verification_code_daily_limit: number;
   captcha_enabled: boolean;
   captcha_mode: number;
   captcha_ComplexOfNoiseText: number;

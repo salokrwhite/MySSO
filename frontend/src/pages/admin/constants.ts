@@ -35,6 +35,8 @@ export const defaultSettings: SystemSettings = {
   smtp_force_ssl: false,
   smtp_verification_code_ttl_minutes: 10,
   smtp_verification_code_cooldown_seconds: 60,
+  email_verification_code_daily_limit: 0,
+  sms_verification_code_daily_limit: 0,
   captcha_enabled: false,
   captcha_mode: 3,
   captcha_ComplexOfNoiseText: 0,

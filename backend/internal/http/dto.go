@@ -18,16 +18,22 @@ type loginRequest struct {
 	CaptchaTicket    string `json:"captcha_ticket"`
 	CaptchaChallenge string `json:"captcha_challenge"`
 	CaptchaSign      string `json:"captcha_sign"`
+	DeviceKeyID      string `json:"device_key_id"`
+	DevicePublicKey  string `json:"device_public_key"`
 }
 
 type otpRequest struct {
-	Email string `json:"email"`
-	OTP   string `json:"otp"`
+	Email           string `json:"email"`
+	OTP             string `json:"otp"`
+	DeviceKeyID     string `json:"device_key_id"`
+	DevicePublicKey string `json:"device_public_key"`
 }
 
 type smsLoginRequest struct {
-	Phone string `json:"phone"`
-	OTP   string `json:"otp"`
+	Phone           string `json:"phone"`
+	OTP             string `json:"otp"`
+	DeviceKeyID     string `json:"device_key_id"`
+	DevicePublicKey string `json:"device_public_key"`
 }
 
 type emailCodeRequest struct {
@@ -50,13 +56,17 @@ type mfaChallengeRequest struct {
 }
 
 type completeMFALoginRequest struct {
-	ChallengeToken string `json:"challenge_token"`
-	OTP            string `json:"otp"`
+	ChallengeToken  string `json:"challenge_token"`
+	OTP             string `json:"otp"`
+	DeviceKeyID     string `json:"device_key_id"`
+	DevicePublicKey string `json:"device_public_key"`
 }
 
 type passkeyVerifyRequest struct {
-	ChallengeToken string `json:"challenge_token"`
-	Credential     string `json:"credential"`
+	ChallengeToken  string `json:"challenge_token"`
+	Credential      string `json:"credential"`
+	DeviceKeyID     string `json:"device_key_id"`
+	DevicePublicKey string `json:"device_public_key"`
 }
 
 type passkeyRegisterOptionsRequest struct {
@@ -86,14 +96,18 @@ type resendMFALoginRequest struct {
 }
 
 type confirmDeletionLoginRequest struct {
-	ChallengeToken string `json:"challenge_token"`
+	ChallengeToken  string `json:"challenge_token"`
+	DeviceKeyID     string `json:"device_key_id"`
+	DevicePublicKey string `json:"device_public_key"`
 }
 
 type registerRequest struct {
-	Country  string `json:"country"`
-	Email    string `json:"email"`
-	Code     string `json:"code"`
-	Password string `json:"password"`
+	Country         string `json:"country"`
+	Email           string `json:"email"`
+	Code            string `json:"code"`
+	Password        string `json:"password"`
+	DeviceKeyID     string `json:"device_key_id"`
+	DevicePublicKey string `json:"device_public_key"`
 }
 
 type phoneBindingCodeRequest struct {
@@ -106,9 +120,11 @@ type phoneBindingCodeRequest struct {
 }
 
 type completePhoneBindingRequest struct {
-	ChallengeToken string `json:"challenge_token"`
-	Phone          string `json:"phone"`
-	Code           string `json:"code"`
+	ChallengeToken  string `json:"challenge_token"`
+	Phone           string `json:"phone"`
+	Code            string `json:"code"`
+	DeviceKeyID     string `json:"device_key_id"`
+	DevicePublicKey string `json:"device_public_key"`
 }
 
 type sendLoginStepUpCodeRequest struct {
@@ -121,14 +137,18 @@ type sendLoginStepUpCodeRequest struct {
 }
 
 type completeLoginStepUpRequest struct {
-	ChallengeToken string `json:"challenge_token"`
-	EmailOTP       string `json:"email_otp"`
-	SMSOTP         string `json:"sms_otp"`
+	ChallengeToken  string `json:"challenge_token"`
+	EmailOTP        string `json:"email_otp"`
+	SMSOTP          string `json:"sms_otp"`
+	DeviceKeyID     string `json:"device_key_id"`
+	DevicePublicKey string `json:"device_public_key"`
 }
 
 type completeLoginMFAEnrollmentRequest struct {
-	ChallengeToken string `json:"challenge_token"`
-	Method         string `json:"method"`
+	ChallengeToken  string `json:"challenge_token"`
+	Method          string `json:"method"`
+	DeviceKeyID     string `json:"device_key_id"`
+	DevicePublicKey string `json:"device_public_key"`
 }
 
 type updateProfileRequest struct {
@@ -211,6 +231,8 @@ type updateSystemSettingsRequest struct {
 	SMTPForceSSL                         bool   `json:"smtp_force_ssl"`
 	SMTPVerificationCodeTTLMinute        int    `json:"smtp_verification_code_ttl_minutes"`
 	SMTPVerificationCodeCooldownSecond   int    `json:"smtp_verification_code_cooldown_seconds"`
+	EmailVerificationCodeDailyLimit      int    `json:"email_verification_code_daily_limit"`
+	SMSVerificationCodeDailyLimit        int    `json:"sms_verification_code_daily_limit"`
 	CaptchaEnabled                       bool   `json:"captcha_enabled"`
 	CaptchaMode                          int    `json:"captcha_mode"`
 	CaptchaComplexOfNoiseText            int    `json:"captcha_ComplexOfNoiseText"`
@@ -337,8 +359,10 @@ type qrLoginScanRequest struct {
 }
 
 type qrLoginConfirmRequest struct {
-	ScanToken string `json:"scan_token"`
-	Confirm   bool   `json:"confirm"`
+	ScanToken       string `json:"scan_token"`
+	Confirm         bool   `json:"confirm"`
+	DeviceKeyID     string `json:"device_key_id"`
+	DevicePublicKey string `json:"device_public_key"`
 }
 
 type uploadSiteLogoResponse struct {

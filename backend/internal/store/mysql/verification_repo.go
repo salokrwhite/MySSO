@@ -15,6 +15,16 @@ func (s *MySQLStore) SaveEmailVerificationCode(code domain.EmailVerificationCode
 	return err
 }
 
+func (s *MySQLStore) CountEmailVerificationCodes(email string, startAt, endAt time.Time) (int, error) {
+	var count int
+	err := s.db.QueryRow(`
+		SELECT COUNT(*)
+		FROM verification_codes
+		WHERE channel = 'email' AND target = ? AND created_at >= ? AND created_at < ?
+	`, email, startAt, endAt).Scan(&count)
+	return count, err
+}
+
 func (s *MySQLStore) GetEmailVerificationCode(email, purpose, code string) (domain.EmailVerificationCode, error) {
 	row := s.db.QueryRow(`
 		SELECT id, target, country, purpose, code, expires_at, consumed, created_at
@@ -62,6 +72,16 @@ func (s *MySQLStore) SaveSMSVerificationCode(code domain.SMSVerificationCode) er
 		VALUES (?, 'sms', ?, '', ?, ?, ?, ?, ?)
 	`, code.ID, code.Phone, code.Purpose, code.Code, code.ExpiresAt, code.Consumed, code.CreatedAt)
 	return err
+}
+
+func (s *MySQLStore) CountSMSVerificationCodes(phone string, startAt, endAt time.Time) (int, error) {
+	var count int
+	err := s.db.QueryRow(`
+		SELECT COUNT(*)
+		FROM verification_codes
+		WHERE channel = 'sms' AND target = ? AND created_at >= ? AND created_at < ?
+	`, phone, startAt, endAt).Scan(&count)
+	return count, err
 }
 
 func (s *MySQLStore) GetSMSVerificationCode(phone, purpose, code string) (domain.SMSVerificationCode, error) {

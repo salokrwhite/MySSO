@@ -10,6 +10,12 @@ const locale = {
       logout: "Kijelentkezés",
       accountCenter: "Fiókközpont",
     },
+    captcha: {
+      securityVerification: "Biztonsági ellenőrzés",
+      refresh: "Frissítés",
+      imageCaptcha: "Képes captcha",
+      imageCaptchaRequired: "Kérjük, adja meg a képes captchát",
+    },
     legal: {
       back: "Vissza a főoldalra",
       updatedAt: "Utoljára frissítve: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "A passkey sikeresen hozzáadva",
       passkeyNotAvailable:
         "Ezen az eszközön nincs ehhez a webhelyhez elérhető passkey. Használjon másik bejelentkezési módot.",
+      qrLogin: "QR bejelentkezés",
+      qrLoginDesc: "QR kód beolvasása a MySSO Android alkalmazással",
+      qrLoginScanned: "Beolvasva, kérjük, erősítse meg az alkalmazásban",
+      qrLoginScannedMask: "Ez a QR kód már be lett olvasva",
+      qrLoginCancelled: "A QR bejelentkezés törlésre került",
+      qrLoginExpired: "A QR kód lejárt, kérjük, frissítse",
+      qrLoginRefresh: "QR kód frissítése",
       passwordLogin: "Jelszó",
       otpLogin: "E-mail kód",
       phoneOtpLogin: "Telefonszám kód",
@@ -342,6 +355,7 @@ const locale = {
       noAuthorizedApps: "Nincsenek engedélyezett alkalmazások",
     },
     errors: {
+      applicationDisabled: "Ez az alkalmazás le lett tiltva",
       emailRequiredByServer: "Kérjük, adja meg az e-mail címét",
       passwordRequiredByServer: "Kérjük, adja meg a jelszót",
       invalidCredentials: "Érvénytelen fiók vagy hitelesítő adatok",

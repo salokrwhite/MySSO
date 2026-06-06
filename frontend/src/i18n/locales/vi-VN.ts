@@ -10,6 +10,12 @@ const locale = {
       logout: "Đăng xuất",
       accountCenter: "Trung tâm tài khoản",
     },
+    captcha: {
+      securityVerification: "Xác minh bảo mật",
+      refresh: "Làm mới",
+      imageCaptcha: "Captcha hình ảnh",
+      imageCaptchaRequired: "Vui lòng cung cấp captcha hình ảnh",
+    },
     legal: {
       back: "Quay về trang chủ",
       updatedAt: "Cập nhật gần đây: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "Khóa truy cập đã được liên kết",
       passkeyNotAvailable:
         "Không có khóa truy cập có thể sử dụng cho trang web này trên thiết bị hiện tại, vui lòng sử dụng phương thức đăng nhập khác.",
+      qrLogin: "Đăng nhập QR",
+      qrLoginDesc: "Quét mã QR để đăng nhập",
+      qrLoginScanned: "Đã quét mã QR! Đang chờ xác minh...",
+      qrLoginScannedMask: "Đã quét, vui lòng xác minh",
+      qrLoginCancelled: "Đăng nhập QR đã bị hủy",
+      qrLoginExpired: "Mã QR đã hết hạn, vui lòng làm mới mã QR",
+      qrLoginRefresh: "Làm mới mã QR",
       passwordLogin: "Đăng nhập bằng mật khẩu",
       otpLogin: "Đăng nhập bằng mã xác thực email",
       phoneOtpLogin: "Đăng nhập bằng mã xác thực số điện thoại",
@@ -312,6 +325,7 @@ const locale = {
       noAuthorizedApps: "Không có ứng dụng được ủy quyền",
     },
     errors: {
+      applicationDisabled: "Ứng dụng này đã bị vô hiệu hóa",
       emailRequiredByServer: "Vui lòng nhập email",
       passwordRequiredByServer: "Vui lòng nhập mật khẩu",
       invalidCredentials: "Tài khoản hoặc thông tin đăng nhập không đúng",

@@ -10,6 +10,12 @@ const locale = {
       logout: "Çıkış yap",
       accountCenter: "Hesap Merkezi",
     },
+    captcha: {
+      securityVerification: "Güvenlik doğrulaması",
+      refresh: "Yenile",
+      imageCaptcha: "Resim doğrulaması",
+      imageCaptchaRequired: "Lütfen resim doğrulamasını tamamlayın",
+    },
     legal: {
       back: "Ana sayfaya dön",
       updatedAt: "Son güncelleme: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey başarıyla eklendi",
       passkeyNotAvailable:
         "Bu cihazda bu site için passkey bulunmamaktadır. Başka bir giriş yöntemi kullanın.",
+      qrLogin: "QR kod ile giriş",
+      qrLoginDesc: "MySSO uygulamasıyla QR kodu tarayarak giriş yapın.",
+      qrLoginScanned: "QR kod tarandı. Uygulamada girişi onaylayın.",
+      qrLoginScannedMask: "Bu QR kodu tarandı",
+      qrLoginCancelled: "QR girişi iptal edildi",
+      qrLoginExpired: "QR kodun süresi doldu. Yenileyin.",
+      qrLoginRefresh: "QR kodu yenile",
       passwordLogin: "Parola",
       otpLogin: "E-posta Kodu",
       phoneOtpLogin: "Telefon Kodu",
@@ -227,6 +240,7 @@ const locale = {
         confirm: "Onayla ve Devam Et",
         cancel: "İptal Et ve Giriş Sayfasına Dön",
         errors: {
+          applicationDisabled: "Uygulama devre dışı bırakıldı",
           applicationRejected: "Uygulama Reddedildi",
           applicationRejectedWithReason: "Uygulama Reddedildi: {{reason}}",
           applicationAccessRestricted: "Uygulama Erişimi Kısıtlandı",

@@ -10,6 +10,12 @@ const locale = {
       logout: "ਲੌਗ ਆਉਟ",
       accountCenter: "ਖਾਤਾ ਕੇਂਦਰ",
     },
+    captcha: {
+      securityVerification: "ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣਿਕਰਨ",
+      refresh: "ਤਾਜ਼ਾ ਕਰੋ",
+      imageCaptcha: "ਚਿੱਤਰ ਕੈਪਚਾ",
+      imageCaptchaRequired: "ਕਿਰਪਾ ਕਰਕੇ ਚਿੱਤਰ ਕੈਪਚਾ ਪ੍ਰਦਾਨ ਕਰੋ",
+    },
     legal: {
       back: "ਮੁੱਖ ਪੰਨੇ 'ਤੇ ਵਾਪਸ",
       updatedAt: "ਆਖਰੀ ਅਪਡੇਟ: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "ਪਾਸਕੀ ਸਫਲਤਾਪੂਰਵਕ ਜੋੜੀ ਗਈ",
       passkeyNotAvailable:
         "ਇਸ ਡਿਵਾਈਸ 'ਤੇ ਇਸ ਸਾਈਟ ਲਈ ਕੋਈ ਪਾਸਕੀ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਕੋਈ ਹੋਰ ਸਾਈਨ-ਇਨ ਤਰੀਕਾ ਵਰਤੋ।",
+      qrLogin: "QR ਕੋਡ",
+      qrLoginDesc: "QR ਕੋਡ ਸਕੈਨ ਕਰਕੇ ਸਾਈਨ-ਇਨ ਕਰੋ",
+      qrLoginScanned: "QR ਕੋਡ ਸਕੈਨ ਹੋ ਗਿਆ! ਪ੍ਰਮਾਣਿਕਰਨ ਦੀ ਉਡੀਕ ਵਿੱਚ...",
+      qrLoginScannedMask: "ਸਕੈਨ ਹੋ ਗਿਆ, ਕਿਰਪਾ ਕਰਕੇ ਪੁਸ਼ਟੀ ਕਰੋ",
+      qrLoginCancelled: "QR ਕੋਡ ਸਾਈਨ-ਇਨ ਰੱਦ ਕੀਤਾ ਗਿਆ",
+      qrLoginExpired: "QR ਕੋਡ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋ ਗਈ, ਕਿਰਪਾ ਕਰਕੇ ਨਵਾਂ QR ਕੋਡ ਸਕੈਨ ਕਰੋ",
+      qrLoginRefresh: "QR ਕੋਡ ਤਾਜ਼ਾ ਕਰੋ",
       passwordLogin: "ਪਾਸਵਰਡ",
       otpLogin: "ਈਮੇਲ ਕੋਡ",
       phoneOtpLogin: "ਫੋਨ ਕੋਡ",
@@ -342,6 +355,7 @@ const locale = {
       noAuthorizedApps: "ਕੋਈ ਅਧਿਕਾਰਤ ਐਪਸ ਨਹੀਂ",
     },
     errors: {
+      applicationDisabled: "ਇਹ ਅਾਪਲੀਕੇਸ਼ਨ ਅਯੋਗ ਕੀਤਾ ਗਿਆ ਹੈ",
       emailRequiredByServer: "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ ਈਮੇਲ ਦਰਜ ਕਰੋ",
       passwordRequiredByServer: "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ",
       invalidCredentials: "ਅਵੈਧ ਖਾਤਾ ਜਾਂ ਕ੍ਰੈਡੈਂਸ਼ੀਅਲਸ",

@@ -10,6 +10,12 @@ const locale = {
       logout: "Odhlásit se",
       accountCenter: "Centrum účtu",
     },
+    captcha: {
+      securityVerification: "Bezpečnostní ověření",
+      refresh: "Obnovit",
+      imageCaptcha: "Obrázkový kód",
+      imageCaptchaRequired: "Zadejte obrázkový kód",
+    },
     legal: {
       back: "Zpět na domovskou stránku",
       updatedAt: "Poslední aktualizace: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Přístupový klíč byl úspěšně přidán",
       passkeyNotAvailable:
         "Na tomto zařízení není dostupný žádný přístupový klíč pro tento web. Použijte jinou metodu přihlášení.",
+      qrLogin: "QR kód",
+      qrLoginDesc: "Přihlaste se naskenováním QR kódu pomocí aplikace MySSO Android.",
+      qrLoginScanned: "Naskenováno. Potvrďte přihlášení v mobilní aplikaci.",
+      qrLoginScannedMask: "Tento QR kód byl již naskenován",
+      qrLoginCancelled: "Toto QR přihlášení bylo zrušeno",
+      qrLoginExpired: "QR kód vypršel. Obnovte jej.",
+      qrLoginRefresh: "Obnovit QR kód",
       passwordLogin: "Heslo",
       otpLogin: "E-mailový kód",
       phoneOtpLogin: "Telefonní kód",
@@ -342,6 +355,7 @@ const locale = {
       noAuthorizedApps: "Žádné autorizované aplikace",
     },
     errors: {
+      applicationDisabled: "Tato aplikace byla zakázána",
       emailRequiredByServer: "Zadejte prosím svůj e-mail",
       passwordRequiredByServer: "Zadejte prosím své heslo",
       invalidCredentials: "Neplatný účet nebo přihlašovací údaje",

@@ -596,7 +596,7 @@ func matchesClientSecret(providedSecret, storedSecret string) bool {
 	if security.VerifyPassword(providedSecret, storedSecret) {
 		return true
 	}
-	return providedSecret == storedSecret
+	return false
 }
 
 func (s *OAuthService) Discovery() map[string]any {

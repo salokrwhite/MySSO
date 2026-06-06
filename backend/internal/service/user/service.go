@@ -423,11 +423,23 @@ func (s *UserService) SendPhoneVerificationCode(userID, phone, purpose string) (
 	}
 
 	cooldownSeconds := s.settings.GetVerificationCodeCooldownSeconds()
+	now := time.Now().UTC()
+	dailyLimit := s.settings.GetVerificationCodeDailyLimit()
+	if dailyLimit.SMS > 0 {
+		startAt, endAt := settings.ChinaDayRange(now)
+		count, err := s.deps.Store.CountSMSVerificationCodes(phone, startAt, endAt)
+		if err != nil {
+			return 0, err
+		}
+		if count >= dailyLimit.SMS {
+			return cooldownSeconds, settings.VerificationDailyLimitError(now)
+		}
+	}
 	if cooldownSeconds > 0 {
 		if latest, err := s.deps.Store.GetLatestSMSVerificationCode(phone, purpose); err == nil {
 			nextAvailableAt := latest.CreatedAt.Add(time.Duration(cooldownSeconds) * time.Second)
-			if nextAvailableAt.After(time.Now().UTC()) {
-				remaining := int(time.Until(nextAvailableAt).Seconds())
+			if nextAvailableAt.After(now) {
+				remaining := int(nextAvailableAt.Sub(now).Seconds())
 				if remaining < 1 {
 					remaining = 1
 				}
@@ -445,9 +457,9 @@ func (s *UserService) SendPhoneVerificationCode(userID, phone, purpose string) (
 		Phone:     phone,
 		Purpose:   purpose,
 		Code:      code,
-		ExpiresAt: time.Now().UTC().Add(s.deps.Cfg.SMTP.VerificationCodeTTL),
+		ExpiresAt: now.Add(s.deps.Cfg.SMTP.VerificationCodeTTL),
 		Consumed:  false,
-		CreatedAt: time.Now().UTC(),
+		CreatedAt: now,
 	}
 	if err := s.deps.Store.SaveSMSVerificationCode(record); err != nil {
 		return 0, err

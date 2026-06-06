@@ -282,6 +282,12 @@ func seedInitialData(db *sql.DB, req CompleteRequest, cfg config.Config) error {
 	if err := upsertSetting(db, "smtp_verification_code_cooldown_seconds", strconv.Itoa(appdefaults.DefaultVerificationCodeCooldownSeconds), now); err != nil {
 		return err
 	}
+	if err := upsertSetting(db, "email_verification_code_daily_limit", strconv.Itoa(appdefaults.DefaultEmailVerificationCodeDailyLimit), now); err != nil {
+		return err
+	}
+	if err := upsertSetting(db, "sms_verification_code_daily_limit", strconv.Itoa(appdefaults.DefaultSMSVerificationCodeDailyLimit), now); err != nil {
+		return err
+	}
 	if err := upsertSetting(db, "developer_managed_users_search_window_seconds", strconv.Itoa(appdefaults.DefaultDeveloperManagedUsersSearchWindow), now); err != nil {
 		return err
 	}
@@ -825,6 +831,30 @@ func ensureSessionAuthColumns(db *sql.DB) error {
 	}
 	if acrCount == 0 {
 		if _, err := db.Exec(`ALTER TABLE sessions ADD COLUMN acr VARCHAR(255) NOT NULL DEFAULT '' AFTER authenticated_at`); err != nil {
+			return err
+		}
+	}
+	var deviceKeyIDCount int
+	if err := db.QueryRow(`
+		SELECT COUNT(*) FROM information_schema.columns
+		WHERE table_schema = DATABASE() AND table_name = 'sessions' AND column_name = 'device_key_id'
+	`).Scan(&deviceKeyIDCount); err != nil {
+		return err
+	}
+	if deviceKeyIDCount == 0 {
+		if _, err := db.Exec(`ALTER TABLE sessions ADD COLUMN device_key_id VARCHAR(128) NOT NULL DEFAULT '' AFTER acr`); err != nil {
+			return err
+		}
+	}
+	var devicePublicKeyCount int
+	if err := db.QueryRow(`
+		SELECT COUNT(*) FROM information_schema.columns
+		WHERE table_schema = DATABASE() AND table_name = 'sessions' AND column_name = 'device_public_key'
+	`).Scan(&devicePublicKeyCount); err != nil {
+		return err
+	}
+	if devicePublicKeyCount == 0 {
+		if _, err := db.Exec(`ALTER TABLE sessions ADD COLUMN device_public_key TEXT NULL AFTER device_key_id`); err != nil {
 			return err
 		}
 	}

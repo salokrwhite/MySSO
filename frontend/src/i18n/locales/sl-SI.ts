@@ -10,6 +10,12 @@ const locale = {
       logout: "Odjava",
       accountCenter: "Sredisce računa",
     },
+    captcha: {
+      securityVerification: "Varnostna preverjanja",
+      refresh: "Osveži",
+      imageCaptcha: "Slikovna captcha",
+      imageCaptchaRequired: "Prosimo, izpolnite slikovno captcha",
+    },
     legal: {
       back: "Nazaj na domačo stran",
       updatedAt: "Zadnja posodobitev: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey je bil uspešno povezan",
       passkeyNotAvailable:
         "Na tej napravi ni passkey za to spletno mesto. Uporabite drug način prijave.",
+      qrLogin: "Prijava z QR kodo",
+      qrLoginDesc: "Prijavite se tako, da skenirate QR kodo z aplikacijo MySSO.",
+      qrLoginScanned: "QR koda je bila optično prebrana. Potrdite prijavo v aplikaciji.",
+      qrLoginScannedMask: "Ta QR koda je bila optično prebrana",
+      qrLoginCancelled: "Prijava QR je bila preklicana",
+      qrLoginExpired: "QR koda je potekla. Osvežite.",
+      qrLoginRefresh: "Osveži QR kodo",
       passwordLogin: "Prijava z geslom",
       otpLogin: "Prijava z e-poštno kodo",
       phoneOtpLogin: "Prijava z telefonsko kodo",
@@ -227,6 +240,7 @@ const locale = {
         confirm: "Potrdi in nadaljuj",
         cancel: "Prekliči in se vrni na prijavo",
         errors: {
+          applicationDisabled: "Aplikacija je onemogočena",
           applicationRejected: "Aplikacija je bila zavrnjena",
           applicationRejectedWithReason: "Aplikacija je bila zavrnjena: {{reason}}",
           applicationAccessRestricted: "Dostop do aplikacije je omejen",

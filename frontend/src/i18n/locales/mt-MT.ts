@@ -10,6 +10,12 @@ const locale = {
       logout: "Iħalli l-Akkont",
       accountCenter: "Ċentru tal-Akkont",
     },
+    captcha: {
+      securityVerification: "Verifika tas-Sigurtà",
+      refresh: "Aġġorna",
+      imageCaptcha: "Captcha tal-immaġni",
+      imageCaptchaRequired: "Jekk jogħġbok ipprovdi captcha tal-immaġni",
+    },
     legal: {
       back: "Lura l-Ħome",
       updatedAt: "Aġġornat l-aħħar: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey miżjud b'suċċess",
       passkeyNotAvailable:
         "M'hemmx passkey għal dan is-sit disponibbli fuq dan id-dispositif. Uża metodu ieħor ta' tidħol.",
+      qrLogin: "Login tal-QR",
+      qrLoginDesc: "Illoggja billi tiskennja l-kodiċi QR bl-app MySSO.",
+      qrLoginScanned: "Kodiċi QR tiskennjat. Ikkonferma l-login fl-app.",
+      qrLoginScannedMask: "Dan il-kodiċi QR tiskennja",
+      qrLoginCancelled: "Login QR ikkanċella",
+      qrLoginExpired: "Kodiċi QR skada. Aġġorna.",
+      qrLoginRefresh: "Aġġorna kodiċi QR",
       passwordLogin: "Password",
       otpLogin: "Kodiċi tal-Email",
       phoneOtpLogin: "Kodiċi tat-Telefon",
@@ -342,6 +355,7 @@ const locale = {
       noAuthorizedApps: "L-ebda app awtorizzat",
     },
     errors: {
+      applicationDisabled: "Din l-applikazzjoni ġiet diżattivata",
       emailRequiredByServer: "Jekk jogħġbok daħħal l-email tiegħek",
       passwordRequiredByServer: "Jekk jogħġbok daħħal il-password tiegħek",
       invalidCredentials: "Akkont jew kredenzjali invalidi",

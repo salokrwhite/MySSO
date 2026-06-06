@@ -10,6 +10,12 @@ const locale = {
       logout: "로그아웃",
       accountCenter: "계정 센터",
     },
+    captcha: {
+      securityVerification: "보안 검증",
+      refresh: "새로고침",
+      imageCaptcha: "이미지 캡차",
+      imageCaptchaRequired: "이미지 캡차를 입력하세요",
+    },
     legal: {
       back: "홈페이지로 돌아가기",
       updatedAt: "최근 업데이트 시간: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "패스키가 연결되었습니다",
       passkeyNotAvailable:
         "현재 기기에는 이 사이트에 사용할 수 있는 패스키가 없습니다. 다른 로그인 방식을 사용하세요.",
+      qrLogin: "QR 로그인",
+      qrLoginDesc: "MySSO Android App으로 QR코드 스캔",
+      qrLoginScanned: "스캔 완료, 앱에서 확인하세요",
+      qrLoginScannedMask: "이 QR코드는 이미 스캔되었습니다",
+      qrLoginCancelled: "QR 로그인이 취소되었습니다",
+      qrLoginExpired: "QR코드가 만료되었습니다. 새로고침하세요",
+      qrLoginRefresh: "QR코드 새로고침",
       passwordLogin: "비밀번호 로그인",
       otpLogin: "이메일 인증 코드 로그인",
       phoneOtpLogin: "전화번호 인증 코드 로그인",
@@ -312,6 +325,7 @@ const locale = {
       noAuthorizedApps: "권한이 부여된 응용 프로그램이 없습니다",
     },
     errors: {
+      applicationDisabled: "이 애플리케이션은 비활성화되었습니다",
       emailRequiredByServer: "이메일을 입력하세요",
       passwordRequiredByServer: "비밀번호를 입력하세요",
       invalidCredentials: "계정 또는 자격 증명이 올바르지 않습니다",

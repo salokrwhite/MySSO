@@ -10,6 +10,12 @@ const locale = {
       logout: "Uitloggen",
       accountCenter: "Accountcentrum",
     },
+    captcha: {
+      securityVerification: "Beveiligingsverificatie",
+      refresh: "Vernieuwen",
+      imageCaptcha: "Afbeeldingscaptcha",
+      imageCaptchaRequired: "Gelieve de afbeeldingscaptcha in te vullen",
+    },
     legal: {
       back: "Terug naar start",
       updatedAt: "Laatst bijgewerkt: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey succesvol toegevoegd",
       passkeyNotAvailable:
         "Geen passkey voor deze site is beschikbaar op dit apparaat. Gebruik een andere inlogmethode.",
+      qrLogin: "QR-code login",
+      qrLoginDesc: "Meld u aan door de QR-code te scannen met de MySSO-app.",
+      qrLoginScanned: "QR-code gescand. Bevestig de login in de app.",
+      qrLoginScannedMask: "Deze QR-code is gescand",
+      qrLoginCancelled: "QR-login geannuleerd",
+      qrLoginExpired: "QR-code verlopen. Vernieuw.",
+      qrLoginRefresh: "QR-code vernieuwen",
       passwordLogin: "Wachtwoord",
       otpLogin: "E-mailcode",
       phoneOtpLogin: "Telefooncode",
@@ -248,6 +261,7 @@ const locale = {
         confirm: "Bevestigen en doorgaan",
         cancel: "Annuleren en terugkeren naar inloggen",
         errors: {
+          applicationDisabled: "Applicatie uitgeschakeld",
           applicationRejected: "Applicatie afgewezen",
           applicationRejectedWithReason: "Applicatie afgewezen: {{reason}}",
           applicationAccessRestricted: "Toegang tot de applicatie is beperkt",

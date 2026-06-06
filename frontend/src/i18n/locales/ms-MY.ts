@@ -10,6 +10,12 @@ const locale = {
       logout: "Log Keluar",
       accountCenter: "Pusat Akaun",
     },
+    captcha: {
+      securityVerification: "Pengesahan keselamatan",
+      refresh: "Muat semula",
+      imageCaptcha: "Captcha imej",
+      imageCaptchaRequired: "Sila berikan captcha imej",
+    },
     legal: {
       back: "Kembali ke Laman Utama",
       updatedAt: "Dikemas kini pada: {{date}}",
@@ -143,7 +149,14 @@ const locale = {
       passkeyLoginHint: "Perlu mengikat kunci akses di pusat akaun terlebih dahulu sebelum boleh digunakan.",
       passkeyLoginSuccess: "Kunci akses telah diikat",
       passkeyNotAvailable:
-        "Tiada kunci akses yang boleh digunakan untuk laman ini pada peranti semasa, sila gunakan kaedah log masuk lain.",
+        "Tiada kunci akses yang boleh digunakan untuk lamina ini pada peranti semasa, sila gunakan kaedah log masuk lain.",
+      qrLogin: "Login QR",
+      qrLoginDesc: "Log masuk dengan mengimbas kod QR menggunakan aplikasi MySSO.",
+      qrLoginScanned: "Kod QR diimbas. Sahkan log masuk dalam aplikasi.",
+      qrLoginScannedMask: "Kod QR ini telah diimbas",
+      qrLoginCancelled: "Login QR dibatalkan",
+      qrLoginExpired: "Kod QR luput. Muat semula.",
+      qrLoginRefresh: "Muat semula kod QR",
       passwordLogin: "Log Masuk Kata Laluan",
       otpLogin: "Log Masuk Kod Verifikasi Emel",
       phoneOtpLogin: "Log Masuk Kod Verifikasi Telefon",
@@ -312,6 +325,7 @@ const locale = {
       noAuthorizedApps: "Tiada aplikasi yang disahkan",
     },
     errors: {
+      applicationDisabled: "Aplikasi ini telah dinyahaktifkan",
       emailRequiredByServer: "Sila masukkan emel",
       passwordRequiredByServer: "Sila masukkan kata laluan",
       invalidCredentials: "Akaun atau maklumat masuk tidak betul",

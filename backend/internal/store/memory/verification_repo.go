@@ -14,6 +14,18 @@ func (s *MemoryStore) SaveEmailVerificationCode(code domain.EmailVerificationCod
 	return nil
 }
 
+func (s *MemoryStore) CountEmailVerificationCodes(email string, startAt, endAt time.Time) (int, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	count := 0
+	for _, item := range s.emailCodes {
+		if strings.EqualFold(item.Email, email) && !item.CreatedAt.Before(startAt) && item.CreatedAt.Before(endAt) {
+			count++
+		}
+	}
+	return count, nil
+}
+
 func (s *MemoryStore) GetEmailVerificationCode(email, purpose, code string) (domain.EmailVerificationCode, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -61,6 +73,19 @@ func (s *MemoryStore) SaveSMSVerificationCode(code domain.SMSVerificationCode) e
 	defer s.mu.Unlock()
 	s.smsCodes[code.ID] = code
 	return nil
+}
+
+func (s *MemoryStore) CountSMSVerificationCodes(phone string, startAt, endAt time.Time) (int, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	phone = strings.TrimSpace(phone)
+	count := 0
+	for _, item := range s.smsCodes {
+		if strings.TrimSpace(item.Phone) == phone && !item.CreatedAt.Before(startAt) && item.CreatedAt.Before(endAt) {
+			count++
+		}
+	}
+	return count, nil
 }
 
 func (s *MemoryStore) GetSMSVerificationCode(phone, purpose, code string) (domain.SMSVerificationCode, error) {

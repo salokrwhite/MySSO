@@ -273,6 +273,8 @@ export function useSystemSettings(
     const values = await rateLimitForm.validateFields([
       "developer_managed_users_search_window_seconds",
       "developer_managed_users_search_limit",
+      "email_verification_code_daily_limit",
+      "sms_verification_code_daily_limit",
       "captcha_image_rate_limit_per_minute",
       "captcha_precheck_rate_limit_per_minute",
       "captcha_target_rate_limit_per_minute"

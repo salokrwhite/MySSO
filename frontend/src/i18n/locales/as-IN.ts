@@ -10,6 +10,12 @@ const locale = {
       logout: "প্ৰস্থান কৰক",
       accountCenter: "একাউণ্ট কেন্দ্ৰ",
     },
+    captcha: {
+      securityVerification: "নিৰাপত্তা পৰীক্ষা",
+      refresh: "তাজা কৰক",
+      imageCaptcha: "ছবি CAPTCHA",
+      imageCaptchaRequired: "ছবি CAPTCHA প্ৰৱেশ কৰক",
+    },
     legal: {
       back: "মুখ্য পৃষ্ঠালৈ উভতি যাওক",
       updatedAt: "সৰ্বশেষ আপডেট: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "পাছকী সফলভাৱে যোগ কৰা হৈছে",
       passkeyNotAvailable:
         "এই ডিভাইছত এই ছাইটৰ বাবে কোনো পাছকী উপলব্ধ নহয়। আন লগইন পদ্ধতি ব্যৱহাৰ কৰক।",
+      qrLogin: "QR ক'ড",
+      qrLoginDesc: "MySSO Android এপ ব্যৱহাৰ কৰি QR ক'ড স্কেন কৰি লগইন কৰক।",
+      qrLoginScanned: "স্কেন কৰা হৈছে। মোবাইল এপত লগইন নিশ্চিত কৰক।",
+      qrLoginScannedMask: "এই QR ক'ড স্কেন কৰা হৈছে",
+      qrLoginCancelled: "এই QR লগইন বাতিল কৰা হৈছে",
+      qrLoginExpired: "QR ক'ডৰ ম্যাদ উকলি গৈছে। অনুগ্ৰহ কৰি তাজা কৰক।",
+      qrLoginRefresh: "QR ক'ড তাজা কৰক",
       passwordLogin: "পাছৱৰ্ড",
       otpLogin: "ইমেইল ক'ড",
       phoneOtpLogin: "ফ'ন ক'ড",
@@ -313,6 +326,7 @@ const locale = {
       noAuthorizedApps: "কোনো প্ৰাধিকাৰ দিয়া এপ নাই",
     },
     errors: {
+      applicationDisabled: "এই এপটো অক্ষম কৰা হৈছে",
       emailRequiredByServer: "অনুগ্ৰহ কৰি আপোনাৰ ইমেইল প্ৰৱেশ কৰক",
       passwordRequiredByServer: "অনুগ্ৰহ কৰি আপোনাৰ পাছৱৰ্ড প্ৰৱেশ কৰক",
       invalidCredentials: "অবৈধ একাউণ্ট বা পত্ৰ",

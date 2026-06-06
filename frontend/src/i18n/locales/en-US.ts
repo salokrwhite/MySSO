@@ -159,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey added successfully",
       passkeyNotAvailable:
         "No passkey for this site is available on this device. Use another sign-in method.",
+      qrLogin: "QR Code",
+      qrLoginDesc: "Scan the QR code with the MySSO Android app to sign in.",
+      qrLoginScanned: "Scanned. Confirm sign-in in the mobile app.",
+      qrLoginScannedMask: "This QR code has been scanned",
+      qrLoginCancelled: "This QR sign-in was cancelled",
+      qrLoginExpired: "QR code expired. Please refresh.",
+      qrLoginRefresh: "Refresh QR Code",
       passwordLogin: "Password",
       otpLogin: "Email Code",
       phoneOtpLogin: "Phone Code",
@@ -354,6 +361,7 @@ const locale = {
       noAuthorizedApps: "No authorized apps",
     },
     errors: {
+      applicationDisabled: "This application has been disabled",
       emailRequiredByServer: "Please enter your email",
       passwordRequiredByServer: "Please enter your password",
       invalidCredentials: "Invalid account or credentials",

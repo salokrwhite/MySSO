@@ -10,6 +10,12 @@ const locale = {
       logout: "Deconectare",
       accountCenter: "Centrul Contului",
     },
+    captcha: {
+      securityVerification: "Verificare de securitate",
+      refresh: "Reîmprospătare",
+      imageCaptcha: "Captcha cu imagine",
+      imageCaptchaRequired: "Vă rugăm să completați captcha cu imagine",
+    },
     legal: {
       back: "Înapoi la Pagina Principală",
       updatedAt: "Ultima actualizare: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey adăugat cu succes",
       passkeyNotAvailable:
         "Nu există passkey disponibil pentru acest site pe acest dispozitiv. Utilizați o altă metodă de autentificare.",
+      qrLogin: "Autentificare cu QR",
+      qrLoginDesc: "Autentificați-vă scanând codul QR cu aplicația MySSO.",
+      qrLoginScanned: "Cod QR scanat. Confirmați autentificarea în aplicație.",
+      qrLoginScannedMask: "Acest cod QR a fost scanat",
+      qrLoginCancelled: "Autentificarea QR a fost anulată",
+      qrLoginExpired: "Codul QR a expirat. Reîmprospătați.",
+      qrLoginRefresh: "Reîmprospătați codul QR",
       passwordLogin: "Parolă",
       otpLogin: "Cod E-mail",
       phoneOtpLogin: "Cod Telefon",
@@ -248,6 +261,7 @@ const locale = {
         confirm: "Confirmați și Continuați",
         cancel: "Anulați și Reveniți la Autentificare",
         errors: {
+          applicationDisabled: "Aplicație dezactivată",
           applicationRejected: "Aplicație respinsă",
           applicationRejectedWithReason: "Aplicație respinsă: {{reason}}",
           applicationAccessRestricted: "Acces la aplicație restricționat",

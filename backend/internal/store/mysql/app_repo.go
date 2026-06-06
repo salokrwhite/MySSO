@@ -84,6 +84,7 @@ func (s *MySQLStore) CountApps(status string) (int, error) {
 }
 
 func (s *MySQLStore) CreateApp(app domain.ClientApp) domain.ClientApp {
+	app.ClientSecret = normalizeAppClientSecret(app.ClientSecret)
 	app.HasClientSecret = strings.TrimSpace(app.ClientSecret) != ""
 	_, _ = s.db.Exec(`
 		INSERT INTO client_apps (id, owner_user_id, name, icon_url, client_id, client_secret, description, frontchannel_logout_uri, allow_get_session_logout, status, review_comment, created_at, updated_at)
@@ -94,13 +95,7 @@ func (s *MySQLStore) CreateApp(app domain.ClientApp) domain.ClientApp {
 }
 
 func (s *MySQLStore) UpdateApp(app domain.ClientApp) error {
-	if strings.TrimSpace(app.ClientSecret) != "" && !security.LooksLikeBcryptHash(app.ClientSecret) {
-		hashedSecret, err := security.HashPassword(app.ClientSecret)
-		if err != nil {
-			return err
-		}
-		app.ClientSecret = hashedSecret
-	}
+	app.ClientSecret = normalizeAppClientSecret(app.ClientSecret)
 	app.HasClientSecret = strings.TrimSpace(app.ClientSecret) != ""
 	if _, err := s.db.Exec(`
 		UPDATE client_apps
@@ -111,6 +106,18 @@ func (s *MySQLStore) UpdateApp(app domain.ClientApp) error {
 	}
 	s.replaceAppCollections(app)
 	return nil
+}
+
+func normalizeAppClientSecret(secret string) string {
+	secret = strings.TrimSpace(secret)
+	if secret == "" || security.LooksLikeBcryptHash(secret) {
+		return secret
+	}
+	hashedSecret, err := security.HashPassword(secret)
+	if err != nil {
+		return secret
+	}
+	return hashedSecret
 }
 
 func (s *MySQLStore) DeleteApp(id string) error {

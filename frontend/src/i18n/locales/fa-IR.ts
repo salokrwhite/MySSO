@@ -10,6 +10,12 @@ const locale = {
       logout: "خروج",
       accountCenter: "مرکز حساب",
     },
+    captcha: {
+      securityVerification: "تأیید امنیتی",
+      refresh: "تازه کردن",
+      imageCaptcha: "CAPTCHA تصویری",
+      imageCaptchaRequired: "CAPTCHA تصویری را وارد کنید",
+    },
     legal: {
       back: "بازگشت به صفحه اصلی",
       updatedAt: "آخرین به‌روزرسانی: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "کلید عبوری با موفقیت اضافه شد",
       passkeyNotAvailable:
         "هیچ کلید عبوری برای این سایت در این دستگاه موجود نیست. از روش ورود دیگری استفاده کنید.",
+      qrLogin: "کد QR",
+      qrLoginDesc: "برای ورود کد QR را با برنامه MySSO Android اسکن کنید.",
+      qrLoginScanned: "اسکن شد. لطفاً ورود را در برنامه تلفن همراه تأیید کنید.",
+      qrLoginScannedMask: "این کد QR قبلاً اسکن شده است",
+      qrLoginCancelled: "این ورود QR لغو شده است",
+      qrLoginExpired: "کد QR منقضی شده است. لطفاً تازه کنید.",
+      qrLoginRefresh: "تازه کردن کد QR",
       passwordLogin: "رمز عبور",
       otpLogin: "کد ایمیل",
       phoneOtpLogin: "کد تلفن",
@@ -340,6 +353,7 @@ const locale = {
       noAuthorizedApps: "هیچ برنامه مجوزدهی نشده",
     },
     errors: {
+      applicationDisabled: "این برنامه غیرفعال شده است",
       emailRequiredByServer: "لطفاً ایمیل خود را وارد کنید",
       passwordRequiredByServer: "لطفاً رمز عبور خود را وارد کنید",
       invalidCredentials: "حساب یا اعتبارسنجی نامعتبر",

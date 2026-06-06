@@ -10,6 +10,12 @@ const locale = {
       logout: "ログアウト",
       accountCenter: "アカウントセンター",
     },
+    captcha: {
+      securityVerification: "セキュリティ検証",
+      refresh: "更新",
+      imageCaptcha: "画像キャプチャ",
+      imageCaptchaRequired: "画像キャプチャを入力してください",
+    },
     legal: {
       back: "ホームページに戻る",
       updatedAt: "最終更新日: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "パスキーを正常にバインドしました",
       passkeyNotAvailable:
         "現在のデバイスにはこのサイト用のパスキーがありません。他のログイン方法を使用してください。",
+      qrLogin: "QRコードログイン",
+      qrLoginDesc: "MySSO Android AppでQRコードをスキャン",
+      qrLoginScanned: "スキャン済み、Appで確認してください",
+      qrLoginScannedMask: "このQRコードはスキャン済みです",
+      qrLoginCancelled: "QRコードログインがキャンセルされました",
+      qrLoginExpired: "QRコードが期限切れです、更新してください",
+      qrLoginRefresh: "QRコードを更新",
       passwordLogin: "パスワード",
       otpLogin: "メールコード",
       phoneOtpLogin: "電話コード",
@@ -312,6 +325,7 @@ const locale = {
       noAuthorizedApps: "承認されたアプリがありません",
     },
     errors: {
+      applicationDisabled: "このアプリケーションは無効化されています",
       emailRequiredByServer: "メールを入力してください",
       passwordRequiredByServer: "パスワードを入力してください",
       invalidCredentials: "アカウントまたは認証情報が正しくありません",

@@ -10,6 +10,12 @@ const locale = {
       logout: "Одјава",
       accountCenter: "Центар на сметка",
     },
+    captcha: {
+      securityVerification: "Безбедносна верификација",
+      refresh: "Освежи",
+      imageCaptcha: "Сликовна captcha",
+      imageCaptchaRequired: "Внесете сликовна captcha",
+    },
     legal: {
       back: "Врати се на почетна",
       updatedAt: "Последно ажурирано: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Паскејот е додаден успешно",
       passkeyNotAvailable:
         "На овој уред нема достапен паскей за овој сајт. Користете друга метода за најавување.",
+      qrLogin: "Најава со QR код",
+      qrLoginDesc: "Скенирајте QR код со MySSO Android апликација",
+      qrLoginScanned: "QR кодот е скениран, потврдете ја најавата во апликацијата",
+      qrLoginScannedMask: "Овој QR код веќе е скениран",
+      qrLoginCancelled: "Најавата со QR код е откажана",
+      qrLoginExpired: "QR кодот е рокен, ве молиме освежете",
+      qrLoginRefresh: "Освежи QR код",
       passwordLogin: "Лозинка",
       otpLogin: "Код за емаил",
       phoneOtpLogin: "Код за телефон",
@@ -340,6 +353,7 @@ const locale = {
       noAuthorizedApps: "Нема авторизирани апликации",
     },
     errors: {
+      applicationDisabled: "Оваа апликација е оневозможена",
       emailRequiredByServer: "Внесете го вашиот емаил",
       passwordRequiredByServer: "Внесете ја лозинката",
       invalidCredentials: "Неважечка сметка или креденцијали",

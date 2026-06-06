@@ -10,6 +10,12 @@ const locale = {
       logout: "Itxi saioa",
       accountCenter: "Kontu zentroa",
     },
+    captcha: {
+      securityVerification: "Segurtasun egiaztapena",
+      refresh: "Berriztu",
+      imageCaptcha: "Irudi CAPTCHA",
+      imageCaptchaRequired: "Sartu irudi CAPTCHA",
+    },
     legal: {
       back: "Itxuli hasierara",
       updatedAt: "Azken eguneraketa: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Sarbide-gakoa arrakastaz gehitu da",
       passkeyNotAvailable:
         "Ez dago sarbide-gakorik gune honetarako gailu honetan. Erabili saioa hasteko beste metodo bat.",
+      qrLogin: "QR kodea",
+      qrLoginDesc: "Saioa hasteko escaneatu QR kodea MySSO Android aplikazioarekin.",
+      qrLoginScanned: "Escaneatuta. Baieztatu saioa hasteko mugikorreko aplikazioan.",
+      qrLoginScannedMask: "QR kode hau dagoeneko escaneatuta dago",
+      qrLoginCancelled: "QR saio hau bertan bezelako da",
+      qrLoginExpired: "QR kodea iraungi da. Eguneratu.",
+      qrLoginRefresh: "QR kodea eguneratu",
       passwordLogin: "Pasahitza",
       otpLogin: "Helbide elektronikoaren kodea",
       phoneOtpLogin: "Telefono-kodea",
@@ -340,6 +353,7 @@ const locale = {
       noAuthorizedApps: "Baimendutako aplikaziorik ez",
     },
     errors: {
+      applicationDisabled: "Aplikazio hau desgaituta dago",
       emailRequiredByServer: "Sartu zure helbide elektronikoa",
       passwordRequiredByServer: "Sartu zure pasahitza",
       invalidCredentials: "Kontu edo kredentzial baliogabeak",

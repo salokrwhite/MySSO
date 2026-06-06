@@ -332,7 +332,7 @@ func (s *PasskeyService) PrepareLogin() (*PreparePasskeyOptionsResult, error) {
 	}, nil
 }
 
-func (s *PasskeyService) CompleteLogin(challengeToken, credentialResponse, ip, deviceID, userAgent string) (auth.PasswordLoginResult, error) {
+func (s *PasskeyService) CompleteLogin(challengeToken, credentialResponse, ip, deviceID, userAgent string, binding ...settings.DeviceBindingInput) (auth.PasswordLoginResult, error) {
 	challenge, err := s.deps.Store.GetPasskeyLoginChallenge(challengeToken)
 	if err != nil {
 		return auth.PasswordLoginResult{}, fmt.Errorf("passkey challenge expired")
@@ -405,7 +405,7 @@ func (s *PasskeyService) CompleteLogin(challengeToken, credentialResponse, ip, d
 	})
 
 	auth := auth.New(s.deps, s.audit, s.settings, s.user)
-	return auth.ContinuePostAuthentication(loginUser, ip, "passkey", "urn:mysso:acr:passkey")
+	return auth.ContinuePostAuthentication(loginUser, ip, "passkey", "urn:mysso:acr:passkey", binding...)
 }
 
 func passkeyCredentialsFromUserStore(dataStore interface {

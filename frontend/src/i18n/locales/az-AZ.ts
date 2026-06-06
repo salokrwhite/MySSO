@@ -10,6 +10,12 @@ const locale = {
       logout: "Çıxış",
       accountCenter: "Hesab Mərkəzi",
     },
+    captcha: {
+      securityVerification: "Təhlükəsizlik Yoxlaması",
+      refresh: "Yeniləyin",
+      imageCaptcha: "Şəkil CAPTCHA",
+      imageCaptchaRequired: "Şəkil CAPTCHA daxil edin",
+    },
     legal: {
       back: "Əsas Səhifəyə Qayıt",
       updatedAt: "Son yeniləmə: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "Keçid açarı uğurla əlavə edildi",
       passkeyNotAvailable:
         "Bu cihazda bu sayt üçün keçid açarı mövcud deyil. Başqa giriş üsulundan istifadə edin.",
+      qrLogin: "QR Kod",
+      qrLoginDesc: "Daxil olmaq üçün MySSO Android proqramı ilə QR kodu skan edin.",
+      qrLoginScanned: "Skan edildi. Mobil proqramda daxil olmanı təsdiqləyin.",
+      qrLoginScannedMask: "Bu QR kodu skan edilib",
+      qrLoginCancelled: "Bu QR daxil olma ləğv edildi",
+      qrLoginExpired: "QR kodu müddəti bitib. Yeniləyin.",
+      qrLoginRefresh: "QR Kodu Yeniləyin",
       passwordLogin: "Parol",
       otpLogin: "E-poçt Kodu",
       phoneOtpLogin: "Telefon Kodu",
@@ -313,6 +326,7 @@ const locale = {
       noAuthorizedApps: "İcazə verilən proqram yoxdur",
     },
     errors: {
+      applicationDisabled: "Bu proqram deaktiv edilib",
       emailRequiredByServer: "E-poçtunuzu daxil edin",
       passwordRequiredByServer: "Parolunuzu daxil edin",
       invalidCredentials: "Yanlış hesab və ya etimadnamə",

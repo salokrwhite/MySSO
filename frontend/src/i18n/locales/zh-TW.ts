@@ -10,6 +10,12 @@ const locale = {
       logout: "退出",
       accountCenter: "帳號中心",
     },
+    captcha: {
+      securityVerification: "安全驗證",
+      refresh: "刷新",
+      imageCaptcha: "圖形驗證碼",
+      imageCaptchaRequired: "請輸入圖形驗證碼",
+    },
     legal: {
       back: "返回首頁",
       updatedAt: "最近更新時間：{{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "通行密鑰已綁定",
       passkeyNotAvailable:
         "當前設備上沒有可用於此站點的通行密鑰，請改用其他登入方式。",
+      qrLogin: "掃碼登入",
+      qrLoginDesc: "使用 MySSO Android App 掃描 QR Code 登入",
+      qrLoginScanned: "已掃碼，請在手機 App 上確認登入",
+      qrLoginScannedMask: "該 QR Code 已被掃描",
+      qrLoginCancelled: "本次掃碼登入已取消",
+      qrLoginExpired: "QR Code 已過期，請刷新",
+      qrLoginRefresh: "刷新 QR Code",
       passwordLogin: "密碼登入",
       otpLogin: "郵箱驗證碼登入",
       phoneOtpLogin: "手機號驗證碼登入",
@@ -312,6 +325,7 @@ const locale = {
       noAuthorizedApps: "暫無授權應用",
     },
     errors: {
+      applicationDisabled: "該應用已被禁用",
       emailRequiredByServer: "請輸入郵箱",
       passwordRequiredByServer: "請輸入密碼",
       invalidCredentials: "帳號或憑證不正確",

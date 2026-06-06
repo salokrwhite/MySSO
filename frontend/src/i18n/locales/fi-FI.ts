@@ -10,6 +10,12 @@ const locale = {
       logout: "Kirjaudu ulos",
       accountCenter: "Tilin hallinta",
     },
+    captcha: {
+      securityVerification: "Turvatarkistus",
+      refresh: "Päivitä",
+      imageCaptcha: "Kuvateksti CAPTCHA",
+      imageCaptchaRequired: "Syötä kuvateksti CAPTCHA",
+    },
     legal: {
       back: "Palaa etusivulle",
       updatedAt: "Viimeksi päivitetty: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey lisätty onnistuneesti",
       passkeyNotAvailable:
         "Tällä laitteella ei ole käytettävissä passkeyä tälle sivustolle. Käytä toista kirjautumistapaa.",
+      qrLogin: "QR-koodi",
+      qrLoginDesc: "Kirjaudu sisään skannaamalla QR-koodi MySSO Android -sovelluksella.",
+      qrLoginScanned: "Skannattu. Vahvista kirjautuminen mobiilisovelluksessa.",
+      qrLoginScannedMask: "Tämä QR-koodi on jo skannattu",
+      qrLoginCancelled: "Tämä QR-kirjautuminen peruttiin",
+      qrLoginExpired: "QR-koodi on vanhentunut. Päivitä.",
+      qrLoginRefresh: "Päivitä QR-koodi",
       passwordLogin: "Salasana",
       otpLogin: "Sähköpostikoodi",
       phoneOtpLogin: "Puhelinkoodi",
@@ -340,6 +353,7 @@ const locale = {
       noAuthorizedApps: "Ei valtuutettuja sovelluksia",
     },
     errors: {
+      applicationDisabled: "Tämä sovellus on poistettu käytöstä",
       emailRequiredByServer: "Syötä sähköpostisi",
       passwordRequiredByServer: "Syötä salasanasi",
       invalidCredentials: "Tili tai todennusaineisto on virheellinen",

@@ -54,6 +54,8 @@ type SystemSettings struct {
 	SMTPForceSSL                         bool   `json:"smtp_force_ssl"`
 	SMTPVerificationCodeTTLMinute        int    `json:"smtp_verification_code_ttl_minutes"`
 	SMTPVerificationCodeCooldownSecond   int    `json:"smtp_verification_code_cooldown_seconds"`
+	EmailVerificationCodeDailyLimit      int    `json:"email_verification_code_daily_limit"`
+	SMSVerificationCodeDailyLimit        int    `json:"sms_verification_code_daily_limit"`
 	CaptchaEnabled                       bool   `json:"captcha_enabled"`
 	CaptchaMode                          int    `json:"captcha_mode"`
 	CaptchaComplexOfNoiseText            int    `json:"captcha_ComplexOfNoiseText"`
@@ -121,6 +123,12 @@ type SystemSettings struct {
 
 type VerificationCooldownError struct {
 	RetryAfterSeconds int
+	Message           string
+}
+
+type DeviceBindingInput struct {
+	KeyID     string
+	PublicKey string
 }
 
 type DeveloperManagedUsersSearchRateLimit struct {
@@ -135,6 +143,9 @@ type CaptchaRateLimit struct {
 }
 
 func (e *VerificationCooldownError) Error() string {
+	if strings.TrimSpace(e.Message) != "" {
+		return e.Message
+	}
 	return fmt.Sprintf("please wait %d seconds before requesting another verification code", e.RetryAfterSeconds)
 }
 
@@ -146,6 +157,7 @@ type RegisterInput struct {
 	Role     domain.Role
 	IP       string
 	DeviceID string
+	Device   DeviceBindingInput
 }
 
 type SettingsService struct {
@@ -207,6 +219,8 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 		"smtp_force_ssl",
 		"smtp_verification_code_ttl_minutes",
 		"smtp_verification_code_cooldown_seconds",
+		"email_verification_code_daily_limit",
+		"sms_verification_code_daily_limit",
 		"captcha_enabled",
 		"captcha_mode",
 		"captcha_ComplexOfNoiseText",
@@ -342,6 +356,8 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 	captchaImageRateLimit := normalizeRateLimitSetting(values["captcha_image_rate_limit_per_minute"], appdefaults.DefaultCaptchaImageRateLimitPerMinute, appdefaults.MaxCaptchaRateLimitPerMinute)
 	captchaPrecheckRateLimit := normalizeRateLimitSetting(values["captcha_precheck_rate_limit_per_minute"], appdefaults.DefaultCaptchaPrecheckRateLimitPerMinute, appdefaults.MaxCaptchaRateLimitPerMinute)
 	captchaTargetRateLimit := normalizeRateLimitSetting(values["captcha_target_rate_limit_per_minute"], appdefaults.DefaultCaptchaTargetRateLimitPerMinute, appdefaults.MaxCaptchaRateLimitPerMinute)
+	emailVerificationCodeDailyLimit := normalizeRateLimitSetting(values["email_verification_code_daily_limit"], appdefaults.DefaultEmailVerificationCodeDailyLimit, appdefaults.MaxVerificationCodeDailyLimit)
+	smsVerificationCodeDailyLimit := normalizeRateLimitSetting(values["sms_verification_code_daily_limit"], appdefaults.DefaultSMSVerificationCodeDailyLimit, appdefaults.MaxVerificationCodeDailyLimit)
 
 	oidcFirstPartyClientSecret := strings.TrimSpace(authutil.FallbackSetting(values["oidc_first_party_client_secret"], s.deps.Cfg.OIDC.FirstPartyClientSecret))
 	smtpPassword := strings.TrimSpace(authutil.FallbackSetting(values["smtp_password"], s.deps.Cfg.SMTP.Password))
@@ -383,6 +399,8 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 		SMTPForceSSL:                         authutil.FallbackBoolSetting(values["smtp_force_ssl"], s.deps.Cfg.SMTP.ForceSSL),
 		SMTPVerificationCodeTTLMinute:        ttlMinutes,
 		SMTPVerificationCodeCooldownSecond:   cooldownSeconds,
+		EmailVerificationCodeDailyLimit:      emailVerificationCodeDailyLimit,
+		SMSVerificationCodeDailyLimit:        smsVerificationCodeDailyLimit,
 		CaptchaEnabled:                       captchaSettings.Enabled,
 		CaptchaMode:                          captchaSettings.Mode,
 		CaptchaComplexOfNoiseText:            captchaSettings.ComplexOfNoiseText,
@@ -507,6 +525,8 @@ func (s *SettingsService) UpdateSystemSettings(input SystemSettings) error {
 	if input.SMTPVerificationCodeCooldownSecond < 0 {
 		input.SMTPVerificationCodeCooldownSecond = 0
 	}
+	input.EmailVerificationCodeDailyLimit = clampRateLimit(input.EmailVerificationCodeDailyLimit, appdefaults.MaxVerificationCodeDailyLimit)
+	input.SMSVerificationCodeDailyLimit = clampRateLimit(input.SMSVerificationCodeDailyLimit, appdefaults.MaxVerificationCodeDailyLimit)
 	captchaSettings := captcha.NormalizeSettings(captcha.Settings{
 		Enabled:            input.CaptchaEnabled,
 		Height:             appdefaults.DefaultCaptchaHeight,
@@ -694,6 +714,8 @@ func (s *SettingsService) UpdateSystemSettings(input SystemSettings) error {
 		"smtp_force_ssl":                                strconv.FormatBool(input.SMTPForceSSL),
 		"smtp_verification_code_ttl_minutes":            strconv.Itoa(input.SMTPVerificationCodeTTLMinute),
 		"smtp_verification_code_cooldown_seconds":       strconv.Itoa(input.SMTPVerificationCodeCooldownSecond),
+		"email_verification_code_daily_limit":           strconv.Itoa(input.EmailVerificationCodeDailyLimit),
+		"sms_verification_code_daily_limit":             strconv.Itoa(input.SMSVerificationCodeDailyLimit),
 		"captcha_enabled":                               strconv.FormatBool(input.CaptchaEnabled),
 		"captcha_mode":                                  strconv.Itoa(input.CaptchaMode),
 		"captcha_ComplexOfNoiseText":                    strconv.Itoa(input.CaptchaComplexOfNoiseText),
@@ -1096,6 +1118,48 @@ func (s *SettingsService) GetVerificationCodeCooldownSeconds() int {
 		}
 	}
 	return appdefaults.DefaultVerificationCodeCooldownSeconds
+}
+
+type VerificationCodeDailyLimit struct {
+	Email int
+	SMS   int
+}
+
+func ChinaDayRange(now time.Time) (time.Time, time.Time) {
+	location := time.FixedZone("UTC+8", 8*60*60)
+	localNow := now.In(location)
+	startLocal := time.Date(localNow.Year(), localNow.Month(), localNow.Day(), 0, 0, 0, 0, location)
+	endLocal := startLocal.Add(24 * time.Hour)
+	return startLocal.UTC(), endLocal.UTC()
+}
+
+func VerificationDailyLimitError(now time.Time) *VerificationCooldownError {
+	_, endAt := ChinaDayRange(now)
+	retryAfter := int(endAt.Sub(now.UTC()).Seconds())
+	if retryAfter < 1 {
+		retryAfter = 1
+	}
+	return &VerificationCooldownError{
+		RetryAfterSeconds: retryAfter,
+		Message:           "verification code daily send limit exceeded",
+	}
+}
+
+func (s *SettingsService) GetVerificationCodeDailyLimit() VerificationCodeDailyLimit {
+	values, err := s.deps.Store.GetSettings(
+		"email_verification_code_daily_limit",
+		"sms_verification_code_daily_limit",
+	)
+	if err != nil {
+		return VerificationCodeDailyLimit{
+			Email: appdefaults.DefaultEmailVerificationCodeDailyLimit,
+			SMS:   appdefaults.DefaultSMSVerificationCodeDailyLimit,
+		}
+	}
+	return VerificationCodeDailyLimit{
+		Email: normalizeRateLimitSetting(values["email_verification_code_daily_limit"], appdefaults.DefaultEmailVerificationCodeDailyLimit, appdefaults.MaxVerificationCodeDailyLimit),
+		SMS:   normalizeRateLimitSetting(values["sms_verification_code_daily_limit"], appdefaults.DefaultSMSVerificationCodeDailyLimit, appdefaults.MaxVerificationCodeDailyLimit),
+	}
 }
 
 func (s *SettingsService) GetCaptchaSettings() captcha.Settings {

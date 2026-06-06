@@ -11,9 +11,10 @@ import (
 	"mysso/backend/internal/service/audit"
 	"mysso/backend/internal/service/common/authutil"
 	"mysso/backend/internal/service/common/deps"
+	"mysso/backend/internal/service/settings"
 )
 
-func createLoginSession(dependencies *deps.Deps, auditService *audit.Service, userData domain.User, ip, acr string) (domain.Session, domain.User, error) {
+func createLoginSession(dependencies *deps.Deps, auditService *audit.Service, userData domain.User, ip, acr string, binding ...settings.DeviceBindingInput) (domain.Session, domain.User, error) {
 	if !authutil.AllowsAuthenticatedAccess(userData) {
 		return domain.Session{}, domain.User{}, fmt.Errorf("user status is %s", userData.Status)
 	}
@@ -29,6 +30,10 @@ func createLoginSession(dependencies *deps.Deps, auditService *audit.Service, us
 		AuthenticatedAt: now,
 		ACR:             acr,
 		ExpiresAt:       now.Add(24 * time.Hour),
+	}
+	if len(binding) > 0 {
+		session.DeviceKeyID = strings.TrimSpace(binding[0].KeyID)
+		session.DevicePublicKey = strings.TrimSpace(binding[0].PublicKey)
 	}
 	dependencies.Store.CreateSession(session)
 	auditService.Record(userData.ID, userData.Role, "user.login", userData.ID, map[string]any{"ip": ip, "acr": acr})

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"mysso/backend/internal/domain"
+	"mysso/backend/internal/service/settings"
 )
 
 const qrLoginChallengeTTL = 2 * time.Minute
@@ -102,13 +103,13 @@ func (s *AuthService) ScanQRLogin(scanToken, sessionToken string) (QRLoginStatus
 	challenge.UserDisplayName = user.DisplayName
 	challenge.UserRole = user.Role
 	challenge.UpdatedAt = now
-	if err := s.deps.Store.UpdateQRLoginChallenge(challenge); err != nil {
-		return QRLoginStatusResult{}, err
+	if err := s.deps.Store.ClaimPendingQRLoginChallenge(challenge); err != nil {
+		return QRLoginStatusResult{}, fmt.Errorf("qr login challenge is not pending")
 	}
 	return QRLoginStatusResult{Status: challenge.Status, ExpiresAt: challenge.ExpiresAt, User: user}, nil
 }
 
-func (s *AuthService) ConfirmQRLogin(scanToken, sessionToken, ip, userAgent string, confirm bool) (QRLoginStatusResult, error) {
+func (s *AuthService) ConfirmQRLogin(scanToken, sessionToken, ip, userAgent string, confirm bool, binding ...settings.DeviceBindingInput) (QRLoginStatusResult, error) {
 	if s.settings == nil || !s.settings.IsQRLoginEnabled() {
 		return QRLoginStatusResult{}, fmt.Errorf("qr login is disabled")
 	}
@@ -141,7 +142,7 @@ func (s *AuthService) ConfirmQRLogin(scanToken, sessionToken, ip, userAgent stri
 		}
 		return QRLoginStatusResult{Status: challenge.Status, ExpiresAt: challenge.ExpiresAt, User: user}, nil
 	}
-	session, updatedUser, err := createLoginSession(s.deps, s.audit, user, ip, "urn:mysso:acr:qr-login")
+	session, updatedUser, err := createLoginSession(s.deps, s.audit, user, ip, "urn:mysso:acr:qr-login", binding...)
 	if err != nil {
 		return QRLoginStatusResult{}, err
 	}

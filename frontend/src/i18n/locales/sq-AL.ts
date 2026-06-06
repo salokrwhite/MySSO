@@ -10,6 +10,12 @@ const locale = {
       logout: "Dilni",
       accountCenter: "Qendra e llogarisë",
     },
+    captcha: {
+      securityVerification: "Verifikim i sigurisë",
+      refresh: "Rimbush",
+      imageCaptcha: "Captcha me imazh",
+      imageCaptchaRequired: "Ju lutemi plotësoni captcha me imazh",
+    },
     legal: {
       back: "Kthehuni në faqen kryesore",
       updatedAt: "Përditësuar më së fundi: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Çelësi i qasjes u shtua me sukses",
       passkeyNotAvailable:
         "Nuk është disponueshëm asnjë çelës qasje për këtë site në këtë pajisje. Përdorni një metodë tjetër hyrjeje.",
+      qrLogin: "Hyrje me QR",
+      qrLoginDesc: "Identifikohuni duke skanuar kodin QR me aplikacionin MySSO.",
+      qrLoginScanned: "Kodi QR u skanua. Konfirmoni hyrjen në aplikacion.",
+      qrLoginScannedMask: "Ky kod QR është skanuar",
+      qrLoginCancelled: "Hyrja QR u anulua",
+      qrLoginExpired: "Kodi QR ka skaduar. Rifreskoni.",
+      qrLoginRefresh: "Rifresko kodin QR",
       passwordLogin: "Fjalëkalim",
       otpLogin: "Kod email",
       phoneOtpLogin: "Kod telefon",
@@ -248,6 +261,7 @@ const locale = {
         confirm: "Konfirmo dhe vazhdo",
         cancel: "Anulo dhe kthehu te hyrja",
         errors: {
+          applicationDisabled: "Aplikacioni është çaktivizuar",
           applicationRejected: "Aplikacioni u refuzua",
           applicationRejectedWithReason: "Aplikacioni u refuzua: {{reason}}",
           applicationAccessRestricted: "Qasja e aplikacionit është e kufizuar",

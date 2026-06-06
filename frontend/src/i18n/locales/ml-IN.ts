@@ -10,6 +10,12 @@ const locale = {
       logout: "ലോഗ്‌ഔട്ട്",
       accountCenter: "അക്കൗണ്ട് കേന്ദ്രം",
     },
+    captcha: {
+      securityVerification: "സുരക്ഷാ വെരിഫിക്കേഷൻ",
+      refresh: "പുതുക്കുക",
+      imageCaptcha: "ചിത്ര captcha",
+      imageCaptchaRequired: "ദയവായി ചിത്ര captcha നൽകുക",
+    },
     legal: {
       back: "ഹോമിലേക്ക് തിരിച്ചു പോകുക",
       updatedAt: "അവസാന അപ്‌ഡേറ്റ്: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "പാസ്കി വിജയകരമായി ചേർത്തു",
       passkeyNotAvailable:
         "ഈ ഉപകരണത്തിൽ ഈ സൈറ്റിനായി പാസ്കി ലഭ്യമല്ല. മറ്റൊരു സൈൻ ഇൻ രീതി ഉപയോഗിക്കുക.",
+      qrLogin: "QR കോഡ്",
+      qrLoginDesc: "QR കോഡ് സ്കാൻ ചെയ്ത് സൈൻ ഇൻ ചെയ്യുക",
+      qrLoginScanned: "QR കോഡ് സ്കാൻ ചെയ്തു! സ്ഥിരീകരിക്കാൻ കാത്തിരിക്കുന്നു...",
+      qrLoginScannedMask: "സ്കാൻ ചെയ്തു, ദയവായി സ്ഥിരീകരിക്കുക",
+      qrLoginCancelled: "QR കോഡ് സൈൻ ഇൻ റദ്ദാക്കി",
+      qrLoginExpired: "QR കോഡ് കാലഹരണപ്പെട്ടു, പുതിയ QR കോഡ് സ്കാൻ ചെയ്യുക",
+      qrLoginRefresh: "QR കോഡ് പുതുക്കുക",
       passwordLogin: "പാസ്വേഡ്",
       otpLogin: "ഇമെയിൽ കോഡ്",
       phoneOtpLogin: "ഫോൺ കോഡ്",
@@ -340,6 +353,7 @@ const locale = {
       noAuthorizedApps: "അംഗീകൃത അപ്ലിക്കേഷനുകളില്ല",
     },
     errors: {
+      applicationDisabled: "ഈ അപ്ലിക്കേഷൻ പ്രവർത്തനരഹിതമാക്കി",
       emailRequiredByServer: "ദയവായി നിങ്ങളുടെ ഇമെയിൽ നൽകുക",
       passwordRequiredByServer: "ദയവായി നിങ്ങളുടെ പാസ്വേഡ് നൽകുക",
       invalidCredentials: "അസാധുവായ അക്കൗണ്ട് അല്ലെങ്കിൽ ക്രെഡൻഷ്യലുകൾ",

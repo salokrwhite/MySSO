@@ -10,6 +10,12 @@ const locale = {
       logout: "வெளியேறவும்",
       accountCenter: "கணக்கு மையம்",
     },
+    captcha: {
+      securityVerification: "பாதுகாப்பு சரிபார்ப்பு",
+      refresh: "புதுப்பிக்கவும்",
+      imageCaptcha: "பட CAPTCHA",
+      imageCaptchaRequired: "தயவுசெய்து பட CAPTCHA ஐ வழங்கவும்",
+    },
     legal: {
       back: "முகப்புப்பக்கத்திற்கு திரும்பவும்",
       updatedAt: "இ אחרון மேம்பாடு நேரம்: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "பாஸ்கீ சின்ன வெற்றிகரமாக சேர்க்கப்பட்டது",
       passkeyNotAvailable:
         "இந்த சாதனத்தில் இந்த தளத்திற்கான பாஸ்கீ சின்னக் கிடையாது. வேறு உள்நுழைவு முறையைப் பயன்படுத்தவும்.",
+      qrLogin: "QR குறியீடு",
+      qrLoginDesc: "QR குறியீட்டை ஸ்கேன் செய்து உள்நுழையவும்",
+      qrLoginScanned: "QR குறியீடு ஸ்கேன் செய்யப்பட்டது! அங்கீகரிக்க காத்திருக்கிறது...",
+      qrLoginScannedMask: "ஸ்கேன் செய்யப்பட்டது, தயவுசெய்து உறுதிப்படுத்தவும்",
+      qrLoginCancelled: "QR குறியீடு உள்நுழைவு ரத்து செய்யப்பட்டது",
+      qrLoginExpired: "QR குறியீட்டின் காலாவதி முடிந்தது, புதிய QR குறியீட்டை ஸ்கேன் செய்யவும்",
+      qrLoginRefresh: "QR குறியீட்டை புதுப்பிக்கவும்",
       passwordLogin: "கடவுச்சொல்",
       otpLogin: "மின்னஞ்சல் குறியீடு",
       phoneOtpLogin: "தொலைபேசி குறியீடு",
@@ -321,6 +334,7 @@ const locale = {
       noAuthorizedApps: "அங்கீகரிக்கப்பட்ட பயன்பாடுகள் இல்லை",
     },
     errors: {
+      applicationDisabled: "இந்த பயன்பாடு முடக்கப்பட்டுள்ளது",
       emailRequiredByServer: "மின்னஞ்சலை உள்ளிடவும",
       passwordRequiredByServer: "கடவுச்சொல்லை உள்ளிடவும",
       invalidCredentials: "கணக்கு அல்லது அடையாளங்கள் செல்லுபடியாகாத",

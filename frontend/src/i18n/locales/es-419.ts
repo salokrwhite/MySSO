@@ -10,6 +10,12 @@ const locale = {
       logout: "Cerrar sesión",
       accountCenter: "Centro de cuenta",
     },
+    captcha: {
+      securityVerification: "Verificación de seguridad",
+      refresh: "Actualizar",
+      imageCaptcha: "CAPTCHA de imagen",
+      imageCaptchaRequired: "Ingrese el CAPTCHA de imagen",
+    },
     legal: {
       back: "Volver al inicio",
       updatedAt: "Última actualización: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Clave de acceso agregada exitosamente",
       passkeyNotAvailable:
         "No hay clave de acceso disponible para este sitio en este dispositivo. Use otro método de inicio de sesión.",
+      qrLogin: "Código QR",
+      qrLoginDesc: "Escanee el código QR con la aplicación MySSO Android para iniciar sesión.",
+      qrLoginScanned: "Escaneado. Confirme el inicio de sesión en la aplicación móvil.",
+      qrLoginScannedMask: "Este código QR ya ha sido escaneado",
+      qrLoginCancelled: "Este inicio de sesión QR ha sido cancelado",
+      qrLoginExpired: "El código QR ha expirado. Actualice.",
+      qrLoginRefresh: "Actualizar código QR",
       passwordLogin: "Contraseña",
       otpLogin: "Código de correo",
       phoneOtpLogin: "Código de teléfono",
@@ -340,6 +353,7 @@ const locale = {
       noAuthorizedApps: "Sin aplicaciones autorizadas",
     },
     errors: {
+      applicationDisabled: "Esta aplicación ha sido deshabilitada",
       emailRequiredByServer: "Por favor ingrese su correo electrónico",
       passwordRequiredByServer: "Por favor ingrese su contraseña",
       invalidCredentials: "Cuenta o credenciales inválidas",

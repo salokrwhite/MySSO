@@ -10,6 +10,12 @@ const locale = {
       logout: "Вийти",
       accountCenter: "Центр облікового запису",
     },
+    captcha: {
+      securityVerification: "Перевірка безпеки",
+      refresh: "Оновити",
+      imageCaptcha: "Captcha із зображенням",
+      imageCaptchaRequired: "Будь ласка, пройдіть перевірку із зображенням",
+    },
     legal: {
       back: "Повернутися на головну сторінку",
       updatedAt: "Останнє оновлення: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "Пасскей успішно додано",
       passkeyNotAvailable:
         "На цьому пристрої немає пасскей для цього сайту. Використовуйте інший спосіб входу.",
+      qrLogin: "Вхід через QR-код",
+      qrLoginDesc: "Увійдіть, відсканuvавши QR-код за допомогою програми MySSO.",
+      qrLoginScanned: "QR-код відскановано. Підтвердьте вхід у програмі.",
+      qrLoginScannedMask: "Цей QR-код був відскановано",
+      qrLoginCancelled: "Вхід через QR скасовано",
+      qrLoginExpired: "Термін дії QR-коду закінчився. Оновити.",
+      qrLoginRefresh: "Оновити QR-код",
       passwordLogin: "Пароль",
       otpLogin: "Код електронної пошти",
       phoneOtpLogin: "Код телефону",
@@ -227,6 +240,7 @@ const locale = {
         confirm: "Підтвердити та продовжити",
         cancel: "Скасувати та повернутися до входу",
         errors: {
+          applicationDisabled: "Застосунок вимкнено",
           applicationRejected: "Застосунок відхилено",
           applicationRejectedWithReason: "Застосунок відхилено: {{reason}}",
           applicationAccessRestricted: "Доступ до застосунку обмежено",

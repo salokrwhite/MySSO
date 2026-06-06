@@ -10,6 +10,12 @@ const locale = {
       logout: "Atsijungti",
       accountCenter: "Paskyros centras",
     },
+    captcha: {
+      securityVerification: "Saugumo patikra",
+      refresh: "Atnaujinti",
+      imageCaptcha: "Vaizdo captcha",
+      imageCaptchaRequired: "Įveskite vaizdo captcha",
+    },
     legal: {
       back: "Grįžti į pagrindinį puslapį",
       updatedAt: "Paskutinį kartą atnaujinta: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey sėkmingai pridėtas",
       passkeyNotAvailable:
         "Šiame įrenginyje nėra passkey šiam puslapiui. Naudokite kitą prisijungimo metodą.",
+      qrLogin: "Prisijungimas QR kodu",
+      qrLoginDesc: "Nuskaitykite QR kodą naudodami MySSO Android programėlę",
+      qrLoginScanned: "QR kodas nuskaitytas, patvirtinkite prisijungimą programėlėje",
+      qrLoginScannedMask: "Šis QR kodas jau buvo nuskaitytas",
+      qrLoginCancelled: "QR kodo prisijungimas buvo atšauktas",
+      qrLoginExpired: "QR kodas nebegalioja, atnaujinkite",
+      qrLoginRefresh: "Atnaujinti QR kodą",
       passwordLogin: "Slaptažodis",
       otpLogin: "El. pašto kodas",
       phoneOtpLogin: "Telefono kodas",
@@ -340,6 +353,7 @@ const locale = {
       noAuthorizedApps: "Nėra autorizuotų programėlių",
     },
     errors: {
+      applicationDisabled: "Ši programa buvo išjungta",
       emailRequiredByServer: "Įveskite el. paštą",
       passwordRequiredByServer: "Įveskite slaptažodį",
       invalidCredentials: "Neteisinga paskyra ar kredencialai",

@@ -9,6 +9,7 @@ import (
 
 	"mysso/backend/internal/domain"
 	"mysso/backend/internal/service/common/authutil"
+	"mysso/backend/internal/service/settings"
 	"mysso/backend/internal/store"
 )
 
@@ -91,7 +92,7 @@ func deriveLoginMethodFromACR(acr string) string {
 	}
 }
 
-func (s *AuthService) ContinuePostAuthentication(user domain.User, ip, loginMethod, acr string) (PasswordLoginResult, error) {
+func (s *AuthService) ContinuePostAuthentication(user domain.User, ip, loginMethod, acr string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
 	if user.DeletionScheduledAt != nil {
 		challenge, err := s.createDeletionLoginChallenge(user, acr)
 		if err != nil {
@@ -123,7 +124,7 @@ func (s *AuthService) ContinuePostAuthentication(user domain.User, ip, loginMeth
 	} else if enforced {
 		return result, nil
 	}
-	session, updatedUser, err := createLoginSession(s.deps, s.audit, user, ip, acr)
+	session, updatedUser, err := createLoginSession(s.deps, s.audit, user, ip, acr, binding...)
 	if err != nil {
 		return PasswordLoginResult{}, err
 	}
@@ -311,7 +312,7 @@ func (s *AuthService) SendLoginStepUpCode(challengeToken, channel string) (int, 
 	}
 }
 
-func (s *AuthService) CompleteLoginStepUp(challengeToken, emailOTP, smsOTP, ip string) (PasswordLoginResult, error) {
+func (s *AuthService) CompleteLoginStepUp(challengeToken, emailOTP, smsOTP, ip string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
 	challenge, user, err := s.loadLoginStepUpChallenge(challengeToken)
 	if err != nil {
 		return PasswordLoginResult{}, err
@@ -342,10 +343,10 @@ func (s *AuthService) CompleteLoginStepUp(challengeToken, emailOTP, smsOTP, ip s
 	if err := s.clearUserSecurityPolicy(user.ID, false, true, false); err != nil {
 		return PasswordLoginResult{}, err
 	}
-	return s.ContinuePostAuthentication(user, ip, challenge.LoginMethod, challenge.ACR)
+	return s.ContinuePostAuthentication(user, ip, challenge.LoginMethod, challenge.ACR, binding...)
 }
 
-func (s *AuthService) CompleteForcedMFAEnrollment(challengeToken, method, ip string) (PasswordLoginResult, error) {
+func (s *AuthService) CompleteForcedMFAEnrollment(challengeToken, method, ip string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
 	challenge, user, err := s.loadLoginMFAEnrollmentChallenge(challengeToken)
 	if err != nil {
 		return PasswordLoginResult{}, err
@@ -382,7 +383,7 @@ func (s *AuthService) CompleteForcedMFAEnrollment(challengeToken, method, ip str
 	s.deps.AppendUserOperationLog(user.ID, "user.security_policy.force_mfa_enrollment_completed", user.ID, map[string]any{
 		"method": method,
 	})
-	session, updatedUser, err := createLoginSession(s.deps, s.audit, user, ip, challenge.ACR)
+	session, updatedUser, err := createLoginSession(s.deps, s.audit, user, ip, challenge.ACR, binding...)
 	if err != nil {
 		return PasswordLoginResult{}, err
 	}

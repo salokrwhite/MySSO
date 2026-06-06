@@ -64,6 +64,13 @@ func writeLoginFlowResponse(c *gin.Context, s *Server, result service.PasswordLo
 	c.JSON(http.StatusOK, gin.H{"user": result.User})
 }
 
+func deviceBindingInput(keyID, publicKey string) service.DeviceBindingInput {
+	return service.DeviceBindingInput{
+		KeyID:     strings.TrimSpace(keyID),
+		PublicKey: strings.TrimSpace(publicKey),
+	}
+}
+
 func (s *Server) handleLogin(c *gin.Context) {
 	if !s.requireInstalled(c) {
 		return
@@ -88,7 +95,7 @@ func (s *Server) handleLogin(c *gin.Context) {
 			return service.ErrCaptchaRequired
 		}
 		return nil
-	})
+	}, deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
 	if err != nil {
 		if errors.Is(err, service.ErrCaptchaRequired) {
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -128,7 +135,7 @@ func (s *Server) handleCompletePasskeyLogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	result, err := s.services.Passkey.CompleteLogin(req.ChallengeToken, req.Credential, c.ClientIP(), deviceID, c.Request.UserAgent())
+	result, err := s.services.Passkey.CompleteLogin(req.ChallengeToken, req.Credential, c.ClientIP(), deviceID, c.Request.UserAgent(), deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
 	if err != nil {
 		if writeSecurityFlowError(c, err) {
 			return
@@ -149,7 +156,7 @@ func (s *Server) handleOTPLogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	result, err := s.services.Auth.LoginWithOTP(req.Email, req.OTP, c.ClientIP(), deviceID)
+	result, err := s.services.Auth.LoginWithOTP(req.Email, req.OTP, c.ClientIP(), deviceID, deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
 	if err != nil {
 		if writeSecurityFlowError(c, err) {
 			return
@@ -170,7 +177,7 @@ func (s *Server) handleSMSLogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	result, err := s.services.Auth.LoginWithPhoneOTP(req.Phone, req.OTP, c.ClientIP(), deviceID)
+	result, err := s.services.Auth.LoginWithPhoneOTP(req.Phone, req.OTP, c.ClientIP(), deviceID, deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
 	if err != nil {
 		if writeSecurityFlowError(c, err) {
 			return
@@ -275,7 +282,7 @@ func (s *Server) handleCompleteMFALogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	result, err := s.services.Auth.CompletePasswordLoginMFA(req.ChallengeToken, req.OTP, c.ClientIP(), deviceID)
+	result, err := s.services.Auth.CompletePasswordLoginMFA(req.ChallengeToken, req.OTP, c.ClientIP(), deviceID, deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
 	if err != nil {
 		if writeSecurityFlowError(c, err) {
 			return
@@ -296,7 +303,7 @@ func (s *Server) handleConfirmDeletionLogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	result, err := s.services.Auth.ConfirmDeletionLogin(req.ChallengeToken, c.ClientIP())
+	result, err := s.services.Auth.ConfirmDeletionLogin(req.ChallengeToken, c.ClientIP(), deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
@@ -412,6 +419,7 @@ func (s *Server) handleRegister(c *gin.Context) {
 		Role:     domain.RoleUser,
 		IP:       c.ClientIP(),
 		DeviceID: deviceID,
+		Device:   deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey),
 	})
 	if err != nil {
 		if writeSecurityFlowError(c, err) {
@@ -477,7 +485,7 @@ func (s *Server) handleCompletePhoneBinding(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	result, err := s.services.Auth.CompletePhoneBinding(req.ChallengeToken, req.Phone, req.Code, c.ClientIP(), deviceID)
+	result, err := s.services.Auth.CompletePhoneBinding(req.ChallengeToken, req.Phone, req.Code, c.ClientIP(), deviceID, deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
 	if err != nil {
 		if writeSecurityFlowError(c, err) {
 			return
@@ -536,7 +544,7 @@ func (s *Server) handleCompleteLoginStepUp(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	result, err := s.services.Auth.CompleteLoginStepUp(req.ChallengeToken, req.EmailOTP, req.SMSOTP, c.ClientIP())
+	result, err := s.services.Auth.CompleteLoginStepUp(req.ChallengeToken, req.EmailOTP, req.SMSOTP, c.ClientIP(), deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
@@ -553,7 +561,7 @@ func (s *Server) handleCompleteLoginMFAEnrollment(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	result, err := s.services.Auth.CompleteForcedMFAEnrollment(req.ChallengeToken, req.Method, c.ClientIP())
+	result, err := s.services.Auth.CompleteForcedMFAEnrollment(req.ChallengeToken, req.Method, c.ClientIP(), deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

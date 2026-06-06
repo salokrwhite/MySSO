@@ -88,6 +88,7 @@ func (s *MemoryStore) CountApps(status string) (int, error) {
 func (s *MemoryStore) CreateApp(app domain.ClientApp) domain.ClientApp {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	app.ClientSecret = normalizeAppClientSecret(app.ClientSecret)
 	app.HasClientSecret = strings.TrimSpace(app.ClientSecret) != ""
 	s.apps[app.ID] = app
 	s.appsByClientID[app.ClientID] = app.ID
@@ -100,17 +101,23 @@ func (s *MemoryStore) UpdateApp(app domain.ClientApp) error {
 	if _, ok := s.apps[app.ID]; !ok {
 		return ErrNotFound
 	}
-	if strings.TrimSpace(app.ClientSecret) != "" && !security.LooksLikeBcryptHash(app.ClientSecret) {
-		hashedSecret, err := security.HashPassword(app.ClientSecret)
-		if err != nil {
-			return err
-		}
-		app.ClientSecret = hashedSecret
-	}
+	app.ClientSecret = normalizeAppClientSecret(app.ClientSecret)
 	app.HasClientSecret = strings.TrimSpace(app.ClientSecret) != ""
 	s.apps[app.ID] = app
 	s.appsByClientID[app.ClientID] = app.ID
 	return nil
+}
+
+func normalizeAppClientSecret(secret string) string {
+	secret = strings.TrimSpace(secret)
+	if secret == "" || security.LooksLikeBcryptHash(secret) {
+		return secret
+	}
+	hashedSecret, err := security.HashPassword(secret)
+	if err != nil {
+		return secret
+	}
+	return hashedSecret
 }
 
 func (s *MemoryStore) DeleteApp(id string) error {

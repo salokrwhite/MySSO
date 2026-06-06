@@ -10,6 +10,12 @@ const locale = {
       logout: "Шығу",
       accountCenter: "Аккаунт орталығы",
     },
+    captcha: {
+      securityVerification: "Қауіпсіздік тексеруі",
+      refresh: "Жаңарту",
+      imageCaptcha: "Сурет captcha",
+      imageCaptchaRequired: "Сурет captcha енгізіңіз",
+    },
     legal: {
       back: "Басты бетке оралу",
       updatedAt: "Соңғы жаңарту: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey сәтті қосылды",
       passkeyNotAvailable:
         "Бұл құрылғыда бұл сайт үшін қол жетімді passkey жоқ. Басқа кіру әдісін пайдаланыңыз.",
+      qrLogin: "QR кіру",
+      qrLoginDesc: "MySSO Android қосымшасымен QR кодын сканерлеу",
+      qrLoginScanned: "Сканерленді, қосымшада растаңыз",
+      qrLoginScannedMask: "Бұл QR коды бұрын сканерленген",
+      qrLoginCancelled: "QR кіруі тоқтатылды",
+      qrLoginExpired: "QR кодының мерзімі аяқталды, жаңартыңыз",
+      qrLoginRefresh: "QR кодын жаңарту",
       passwordLogin: "Құпия сөз",
       otpLogin: "Электрондық пошта коды",
       phoneOtpLogin: "Телефон коды",
@@ -340,6 +353,7 @@ const locale = {
       noAuthorizedApps: "Рұқсат берілген қолданбалар жоқ",
     },
     errors: {
+      applicationDisabled: "Бұл қосымша өшірілді",
       emailRequiredByServer: "Электрондық поштаңызды енгізіңіз",
       passwordRequiredByServer: "Құпия сөзіңізді енгізіңіз",
       invalidCredentials: "Аккаунт немесе кіру құралдары жарамсыз",

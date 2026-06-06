@@ -14,6 +14,7 @@ import (
 type PasswordLoginResult = auth.PasswordLoginResult
 type RegisterInput = settings.RegisterInput
 type VerificationCooldownError = settings.VerificationCooldownError
+type DeviceBindingInput = settings.DeviceBindingInput
 type SystemSettings = settings.SystemSettings
 type LogoutResult = oauth.LogoutResult
 type CreateUserInput = admin.CreateUserInput

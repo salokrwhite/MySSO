@@ -10,6 +10,12 @@ const locale = {
       logout: "Odhlásiť sa",
       accountCenter: "Centrum účtu",
     },
+    captcha: {
+      securityVerification: "Bezpečnostné overenie",
+      refresh: "Obnoviť",
+      imageCaptcha: "Obrazová captcha",
+      imageCaptchaRequired: "Prosím, vyplňte obrazovú captcha",
+    },
     legal: {
       back: "Späť na domovskú stránku",
       updatedAt: "Posledná aktualizácia: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey bol úspešne viazaný",
       passkeyNotAvailable:
         "Na tomto zariadení nie je k dispozícii žiadny passkey pre tento web. Použite iný spôsob prihlásenia.",
+      qrLogin: "Prihlásenie pomocou QR kódu",
+      qrLoginDesc: "Prihláste sa naskenovaním QR kódu pomocou aplikácie MySSO.",
+      qrLoginScanned: "QR kód bol naskenovaný. Potvrďte prihlásenie v aplikácii.",
+      qrLoginScannedMask: "Tento QR kód bol naskenovaný",
+      qrLoginCancelled: "Prihlásenie QR bolo zrušené",
+      qrLoginExpired: "QR kód vypršal. Obnovte.",
+      qrLoginRefresh: "Obnoviť QR kód",
       passwordLogin: "Prihlásenie pomocou hesla",
       otpLogin: "Prihlásenie pomocou e-mailového kódu",
       phoneOtpLogin: "Prihlásenie pomocou telefónneho kódu",
@@ -227,6 +240,7 @@ const locale = {
         confirm: "Potvrdiť a pokračovať",
         cancel: "Zrušiť a vrátiť sa na prihlásenie",
         errors: {
+          applicationDisabled: "Aplikácia bola deaktivovaná",
           applicationRejected: "Aplikácia bola odmietnutá",
           applicationRejectedWithReason: "Aplikácia bola odmietnutá: {{reason}}",
           applicationAccessRestricted: "Prístup k aplikácii je obmedzený",

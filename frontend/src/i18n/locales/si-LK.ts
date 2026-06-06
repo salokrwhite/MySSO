@@ -10,6 +10,12 @@ const locale = {
       logout: "පිටවීම",
       accountCenter: "ගිණුම් මධ්‍යස්ථානය",
     },
+    captcha: {
+      securityVerification: "ආරක්‍ෂක තහවුරු කිරීම",
+      refresh: "නැවුම් කිරීම",
+      imageCaptcha: "පින්තූර  captcha",
+      imageCaptchaRequired: "කරුණාකර පින්තූර captcha පුරවන්න",
+    },
     legal: {
       back: "මුල් පිටුවට ආපන්න",
       updatedAt: "අවසාන යාවත්කාලීන කිරීම: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "පාස් කීය සාර්ථකව බැඳවා ඇත",
       passkeyNotAvailable:
         "මෙම උපාංගයේ මෙම වෙබ් අඩවිය සඳහා පාස් කීයක් නොමැත. කරුණාකර වෙනත් ලොගින් ක්‍රම භාවිතා කරන්න.",
+      qrLogin: "QR කේත ලොගින්",
+      qrLoginDesc: "MySSO යෙදුම භාවිතයෙන් QR කේතය පරිලෝකනය කර ලොගින් කරන්න.",
+      qrLoginScanned: "QR කේතය පරිලෝකනය කර ඇත. යෙදුමේ ලොගින් තහවුරු කරන්න.",
+      qrLoginScannedMask: "මෙම QR කේතය පරිලෝකනය කර ඇත",
+      qrLoginCancelled: "QR ලොගින් අවලංගු කර ඇත",
+      qrLoginExpired: "QR කේතය කල් ඉකුත් විය. නැවුම් කරන්න.",
+      qrLoginRefresh: "QR කේතය නැවුම් කරන්න",
       passwordLogin: "මුරපද ලොගින්",
       otpLogin: "විද්‍යුත් තැපෑල සත්‍යාපන කේත ලොගින්",
       phoneOtpLogin: "දුරකථන සත්‍යාපන කේත ලොගින්",
@@ -227,6 +240,7 @@ const locale = {
         confirm: "සනාථන කරලා ඉදිරියට යන්න",
         cancel: "අවලංගු කරලා ලොගින් වෙත ආපන්න",
         errors: {
+          applicationDisabled: "යෙදුම අබල කර ඇත",
           applicationRejected: "යෙදුම ප්‍රතික්ෂේප කරන ලදි",
           applicationRejectedWithReason: "යෙදුම ප්‍රතික්ෂේප කරන ලදි: {{reason}}",
           applicationAccessRestricted: "යෙදුමට ප්‍රවේශ සීමාව",

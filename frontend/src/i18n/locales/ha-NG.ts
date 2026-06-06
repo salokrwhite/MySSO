@@ -10,6 +10,12 @@ const locale = {
       logout: "Fita",
       accountCenter: "Cibiyar Asusu",
     },
+    captcha: {
+      securityVerification: "Tabbatar da Tsaro",
+      refresh: "Sabunta",
+      imageCaptcha: "Captcha Hoto",
+      imageCaptchaRequired: "Da fatan za a shigar da captcha hoton",
+    },
     legal: {
       back: "Dauki Tura zuwa Shafin Farko",
       updatedAt: "Yanzu sama da sabuntawa: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "An ƙara passkey cikin nasara",
       passkeyNotAvailable:
         "Babu passkey don wannan gidan yanar gizo a wannan na'ura. Yi amfani da hanyar shiga ta wani yanki.",
+      qrLogin: "Shiga QR",
+      qrLoginDesc: "Yi amfani da MySSO Android App don yin skan QR code",
+      qrLoginScanned: "An yi skan, da fatan za a tabbatar a cikin app",
+      qrLoginScannedMask: "An yi skan wannan QR code",
+      qrLoginCancelled: "An soke shiga QR",
+      qrLoginExpired: "QR code ya ɗauki, da fatan sabunta",
+      qrLoginRefresh: "Sabunta QR code",
       passwordLogin: "Kalmar Sirri",
       otpLogin: "Lambar Imel",
       phoneOtpLogin: "Lambar Waya",
@@ -342,6 +355,7 @@ const locale = {
       noAuthorizedApps: "Babu apps na izini",
     },
     errors: {
+      applicationDisabled: "An kashe wannan aikace-aikacen",
       emailRequiredByServer: "Lura da shigar da imel",
       passwordRequiredByServer: "Lura da shigar da kalmar sirri",
       invalidCredentials: "Asusu ko tabbatarwa ba daidai ba",

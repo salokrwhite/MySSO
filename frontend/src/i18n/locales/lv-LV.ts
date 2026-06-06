@@ -10,6 +10,12 @@ const locale = {
       logout: "Iziet",
       accountCenter: "Konta centrs",
     },
+    captcha: {
+      securityVerification: "Drošības pārbaude",
+      refresh: "Atsvaidzināt",
+      imageCaptcha: "Attēla captcha",
+      imageCaptchaRequired: "Lūdzu, ievadiet attēla captcha",
+    },
     legal: {
       back: "Atgriezties uz sākumu",
       updatedAt: "Pēdējā atjaunināšana: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Piekļuves atslēga veiksmīgi pievienota",
       passkeyNotAvailable:
         "Šajā ierīcē nav pieejama piekļuves atslēga šai vietnei. Izmantojiet citu pieslēgšanās metodi.",
+      qrLogin: "QR koda pieteikšanās",
+      qrLoginDesc: "Lai pieteiktos, skenējiet QR kodu ar MySSO Android lietotni",
+      qrLoginScanned: "QR kods nolasīts, lūdzu, apstipriniet pieteikšanos lietotnē",
+      qrLoginScannedMask: "Šis QR kods jau ir nolasīts",
+      qrLoginCancelled: "QR koda pieteikšanās ir atcelta",
+      qrLoginExpired: "QR kods ir beidzies, lūdzu, atsvaidziniet",
+      qrLoginRefresh: "Atsvaidzināt QR kodu",
       passwordLogin: "Parole",
       otpLogin: "E-pasta kods",
       phoneOtpLogin: "Telefona kods",
@@ -340,6 +353,7 @@ const locale = {
       noAuthorizedApps: "Nav autorizētu lietotņu",
     },
     errors: {
+      applicationDisabled: "Šī lietotne ir atspējota",
       emailRequiredByServer: "Lūdzu, ievadiet savu e-pastu",
       passwordRequiredByServer: "Lūdzu, ievadiet savu paroli",
       invalidCredentials: "Nepareizs konts vai akreditācijas dati",

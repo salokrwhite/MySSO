@@ -10,6 +10,12 @@ const locale = {
       logout: "Logga ut",
       accountCenter: "Kontocentral",
     },
+    captcha: {
+      securityVerification: "Säkerhetsverifiering",
+      refresh: "Uppdatera",
+      imageCaptcha: "Bildcaptcha",
+      imageCaptchaRequired: "Vänligen fyll i bildcaptcha",
+    },
     legal: {
       back: "Tillbaka till startsidan",
       updatedAt: "Senast uppdaterad: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey har lagts till",
       passkeyNotAvailable:
         "Ingen passkey för den här webbplatsen är tillgänglig på den här enheten. Använd en annan inloggningsmetod.",
+      qrLogin: "QR-kod inloggning",
+      qrLoginDesc: "Logga in genom att skanna QR-koden med MySSO-appen.",
+      qrLoginScanned: "QR-kod skannad. Bekräfta inloggningen i appen.",
+      qrLoginScannedMask: "Denna QR-kod har skannats",
+      qrLoginCancelled: "QR-inloggning avbruten",
+      qrLoginExpired: "QR-koden har gått ut. Uppdatera.",
+      qrLoginRefresh: "Uppdatera QR-koden",
       passwordLogin: "Lösenordsinloggning",
       otpLogin: "E-postverifieringskodslogin",
       phoneOtpLogin: "Telefonverifieringskodslogin",
@@ -227,6 +240,7 @@ const locale = {
         confirm: "Bekräfta auktorisering och fortsätt",
         cancel: "Avbryt och återgå till inloggning",
         errors: {
+          applicationDisabled: "Applikationen har inaktiverats",
           applicationRejected: "Applikationen har avvisats",
           applicationRejectedWithReason: "Applikationen har avvisats: {{reason}}",
           applicationAccessRestricted: "Åtkomst till applikationen är begränsad",

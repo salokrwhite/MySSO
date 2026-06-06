@@ -10,6 +10,12 @@ const locale = {
       logout: "Sair",
       accountCenter: "Central da Conta",
     },
+    captcha: {
+      securityVerification: "Verificação de segurança",
+      refresh: "Atualizar",
+      imageCaptcha: "Captcha de imagem",
+      imageCaptchaRequired: "Por favor, complete o captcha de imagem",
+    },
     legal: {
       back: "Voltar para Início",
       updatedAt: "Última atualização: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey adicionada com sucesso",
       passkeyNotAvailable:
         "Nenhuma passkey disponível para este site neste dispositivo. Use outro método de login.",
+      qrLogin: "Login com QR code",
+      qrLoginDesc: "Faça login escaneando o QR code com o aplicativo MySSO.",
+      qrLoginScanned: "QR code escaneado. Confirme o login no aplicativo.",
+      qrLoginScannedMask: "Este QR code foi escaneado",
+      qrLoginCancelled: "Login QR cancelado",
+      qrLoginExpired: "QR code expirado. Atualize.",
+      qrLoginRefresh: "Atualizar QR code",
       passwordLogin: "Senha",
       otpLogin: "Código de e-mail",
       phoneOtpLogin: "Código de telefone",
@@ -247,6 +260,7 @@ const locale = {
         confirm: "Confirmar e continuar",
         cancel: "Cancelar e voltar para o login",
         errors: {
+          applicationDisabled: "Aplicativo desativado",
           applicationRejected: "Aplicativo rejeitado",
           applicationRejectedWithReason: "Aplicativo rejeitado: {{reason}}",
           applicationAccessRestricted: "Acesso ao aplicativo restrito",

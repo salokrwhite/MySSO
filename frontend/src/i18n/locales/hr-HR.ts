@@ -10,6 +10,12 @@ const locale = {
       logout: "Odjava",
       accountCenter: "Središte računa",
     },
+    captcha: {
+      securityVerification: "Sigurnosna provjera",
+      refresh: "Osvježi",
+      imageCaptcha: "Slikovni captcha",
+      imageCaptchaRequired: "Molimo unesite slikovni captcha",
+    },
     legal: {
       back: "Povratak na početnu stranicu",
       updatedAt: "Zadnje ažurirano: {{date}}",
@@ -153,6 +159,13 @@ const locale = {
       passkeyLoginSuccess: "Passkey je uspješno dodan",
       passkeyNotAvailable:
         "Na ovom uređaju nema dostupnog passkey-a za ovu stranicu. Koristite drugu metodu prijave.",
+      qrLogin: "QR prijava",
+      qrLoginDesc: "Skenirajte QR kod aplikacijom MySSO Android",
+      qrLoginScanned: "Skenirano, molimo potvrdite u aplikaciji",
+      qrLoginScannedMask: "Ovaj QR kod je već skeniran",
+      qrLoginCancelled: "QR prijava je otkazana",
+      qrLoginExpired: "QR kod je istekao, molimo osvježite",
+      qrLoginRefresh: "Osvježi QR kod",
       passwordLogin: "Lozinka",
       otpLogin: "E-mail kod",
       phoneOtpLogin: "Telefonski kod",
@@ -342,6 +355,7 @@ const locale = {
       noAuthorizedApps: "Nema autoriziranih aplikacija",
     },
     errors: {
+      applicationDisabled: "Ova aplikacija je onemogućena",
       emailRequiredByServer: "Molimo unesite svoj e-mail",
       passwordRequiredByServer: "Molimo unesite svoju lozinku",
       invalidCredentials: "Neispravan račun ili vjerodajnice",

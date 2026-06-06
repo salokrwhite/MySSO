@@ -10,6 +10,12 @@ const locale = {
       logout: "لاگ آوٹ",
       accountCenter: "اکاؤنٹ سینٹر",
     },
+    captcha: {
+      securityVerification: "سیکیورٹی تصدیق",
+      refresh: "ریفریش",
+      imageCaptcha: "تصویری کیپچا",
+      imageCaptchaRequired: "براہ کرم تصویری کیپچا مکمل کریں",
+    },
     legal: {
       back: "ہوم پیج پر واپس جائیں",
       updatedAt: "آخری تازہ کاری: {{date}}",
@@ -144,6 +150,13 @@ const locale = {
       passkeyLoginSuccess: "پاسکے کامیابی سے بائنڈ ہو گیا ہے",
       passkeyNotAvailable:
         "اس سائٹ کے لیے اس آلے پر کوئی پاسکے دستیاب نہیں ہے، براہ کرم دوسرے لاگ ان طریقے استعمال کریں۔",
+      qrLogin: "QR کوڈ لاگ ان",
+      qrLoginDesc: "MySSO ایپ سے QR کوڈ اسکین کرکے لاگ ان کریں۔",
+      qrLoginScanned: "QR کوڈ اسکین ہو گیا ہے، براہ کرم ایپ میں لاگ ان کی تصدیق کریں۔",
+      qrLoginScannedMask: "یہ QR کوڈ اسکین ہو گیا ہے",
+      qrLoginCancelled: "QR لاگ ان منسوخ کر دیا گیا ہے",
+      qrLoginExpired: "QR کوڈ کی میعاد ختم ہو گئی ہے، براہ کرم ریفریش کریں۔",
+      qrLoginRefresh: "QR کوڈ ریفریش کریں",
       passwordLogin: "پاسورڈ سے لاگ ان",
       otpLogin: "ای میل تصدیق کوڈ سے لاگ ان",
       phoneOtpLogin: "فون نمبر تصدیق کوڈ سے لاگ ان",
@@ -227,6 +240,7 @@ const locale = {
         confirm: "تصدیق کریں اور جاری رکھیں",
         cancel: "منسوخ کریں اور لاگ ان پر واپس جائیں",
         errors: {
+          applicationDisabled: "ایپ غیر فعال کر دی گئی ہے",
           applicationRejected: "ایپ مسترد کر دی گئی ہے",
           applicationRejectedWithReason: "ایپ مسترد کر دی گئی ہے: {{reason}}",
           applicationAccessRestricted: "ایپ تک رسائی محدود کر دی گئی ہے",

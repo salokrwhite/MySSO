@@ -214,7 +214,7 @@ func (s *AuthService) SendPhoneBindingVerificationCode(challengeToken, phone str
 	return s.SendSMSVerificationCode(phone, "risk_phone_binding")
 }
 
-func (s *AuthService) CompletePhoneBinding(challengeToken, phone, code, ip, deviceID string) (PasswordLoginResult, error) {
+func (s *AuthService) CompletePhoneBinding(challengeToken, phone, code, ip, deviceID string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
 	if !s.settings.IsPhoneVerificationEnabled() {
 		return PasswordLoginResult{}, fmt.Errorf("phone verification is disabled")
 	}
@@ -278,5 +278,5 @@ func (s *AuthService) CompletePhoneBinding(challengeToken, phone, code, ip, devi
 	s.audit.Record(user.ID, user.Role, "user.risk.phone_bound", user.ID, map[string]any{
 		"reason": challenge.Reason,
 	})
-	return s.ContinuePostAuthentication(user, ip, deriveLoginMethodFromACR(challenge.ACR), challenge.ACR)
+	return s.ContinuePostAuthentication(user, ip, deriveLoginMethodFromACR(challenge.ACR), challenge.ACR, binding...)
 }
