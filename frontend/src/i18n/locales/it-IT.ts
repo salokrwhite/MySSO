@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Ultimo aggiornamento: {{date}}",
       agreement: {
         title: "Termini di servizio",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Benvenuto su {{siteName}}. Prima di registrarti, accedere, integrare o utilizzare i servizi di autenticazione unificata forniti da questo sistema, dovresti leggere attentamente questo accordo. Continuando a utilizzare il servizio, accetti di essere vincolato da questo accordo.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Per motivi di sicurezza, conformità, operazioni o manutenzione, la piattaforma può regolare, aggiornare, sospendere o terminare determinate interfacce, flussi o funzioni e cercherà di fornire un avviso quando appropriato.",
           liabilityP2:
             "Fino al limite consentito dalla legge, la piattaforma non è responsabile oltre gli obblighi statutari per interruzioni, dati anomali o perdite causate da forza maggiore, guasti di rete, motivi di terze parti o utilizzo improprio da parte tua.",
+accountP3:
+            "Per proteggere gli account degli utenti e degli sviluppatori, la piattaforma può eseguire una valutazione del rischio in scenari come l'accesso tramite password, l'accesso tramite codice, l'accesso tramite passkey, l'accesso tramite QR code, l'associazione del numero di telefono, la modifica dell'email, la modifica del numero di telefono, la modifica della password, la configurazione MFA, l'eliminazione dell'account, l'esportazione dei dati e la gestione delle app per sviluppatori. In base al risultato, la piattaforma può richiedere un'ulteriore verifica, ritardare l'elaborazione, limitare un'operazione o bloccare l'accesso.",
         },
       },
       privacy: {
         title: "Informativa sulla privacy",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} valuta le tue informazioni personali e la sicurezza del tuo account. Questa politica spiega come raccogliamo, utilizziamo, memorizziamo, condividiamo e proteggiamo le tue informazioni, nonché i diritti a tua disposizione.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Quando ti registri, accedi o utilizzi i servizi dell'account, potremmo raccogliere il tuo paese di registrazione, indirizzo email, numero di telefono, hash della password, sessioni di accesso, IP del dispositivo, record di autorizzazione e registri di sicurezza necessari.",
           dataCollectionP2:
             "Quando carichi un avatar, modifichi il tuo profilo, colleghi un numero di telefono, abiliti l'MFA o autorizzi un'app di terze parti, elaboriamo le informazioni che invii per fornire tale funzione.",
+dataCollectionP3:
+            "Per identificare il takeover di account, il credential stuffing, dispositivi anomali, reti anomale, richieste automatizzate e operazioni ad alto rischio, possiamo inoltre raccogliere o generare impronte digitali del dispositivo, identificatori della chiave pubblica del dispositivo, tipo di client, segnali di rischio del dispositivo, motivi di errore di accesso, risultati di verifica del codice, regione IP o etichette di rischio regionali, cronologia degli accessi, punteggi di rischio, livelli di rischio e azioni intraprese. Non raccogliamo contatti, contenuti degli SMS, registri delle chiamate, album fotografici, posizione precisa, contenuti del microfono o della fotocamera ai fini del controllo del rischio dell'account.",
           dataUsageTitle: "2. Come utilizziamo le informazioni",
           dataUsageP1:
             "Utilizziamo le informazioni correlate per fornire registrazione account, autenticazione accesso, consegna codici di verifica, controllo del rischio, conferma autorizzazione, revisione app sviluppatore, notifiche di sicurezza account e manutenzione affidabilità servizio.",
           dataUsageP2:
             "Analizziamo anche log e statistiche su base minima necessaria per rilevare attività anomale, migliorare l'esperienza del prodotto e rafforzare la sicurezza.",
+dataUsageP3:
+            "Le informazioni sul controllo del rischio sono utilizzate principalmente per decidere se consentire l'accesso o la continuazione di operazioni sensibili, richiedere un'ulteriore verifica tramite e-mail o SMS, richiedere l'associazione di un numero di telefono, attivare il blocco per tentativi falliti, registrare un evento di rischio, o per aiutare gli amministratori a indagare su problemi di sicurezza. Le informazioni di rischio segnalate dal client sono utilizzate solo come segnale ausiliario e non sono usate da sole per abbassare le decisioni di sicurezza.",
           dataSharingTitle: "3. Condivisione e divulgazione",
           dataSharingP1:
             "Forniamo informazioni di identità o dati correlati ai permessi alle app di terze parti solo quando autorizzi esplicitamente gli ambiti mostrati nella pagina di autorizzazione.",
@@ -83,6 +89,8 @@ const locale = {
             "Utilizziamo controlli di accesso, hashing delle password, scadenza dei codici di verifica, registri di audit e misure di minimizzazione dei dati per proteggere le tue informazioni personali e dati di autenticazione.",
           securityP2:
             "In conformità con i requisiti legali e commerciali, conserviamo le tue informazioni solo per il tempo necessario per soddisfare gli scopi del servizio; dopo l'eliminazione dell'account o la scadenza dei periodi di conservazione, elimineremo o anonimizzeremo i dati secondo la politica.",
+securityP3:
+            "I registri del rischio, la cronologia degli accessi, i profili del dispositivo e i registri dei tentativi falliti sono conservati per il periodo necessario per l'audit di sicurezza, la gestione delle controversie, l'indagine sugli attacchi e la conformità. Riduciamo i rischi di fughe e abusi tramite hashing, controlli di accesso, privilegi minimi e registri di audit.",
         },
       },
     },
@@ -103,6 +111,11 @@ const locale = {
       sendRegisterCode: "Invia codice",
       sendRegisterCodeSuccess: "Il codice di verifica è stato inviato. Controlla la tua casella di posta.",
       sendRegisterCodeFailed: "Invio del codice di verifica fallito",
+      legalConsentPrefix: "Ho letto e accetto",
+      legalConsentAnd: "e",
+      accountAgreement: "Termini di utilizzo dell'account",
+      accountPrivacyPolicy: "Informativa sulla privacy dell'account",
+      legalConsentRequired: "Si prega di leggere e accettare i Termini di utilizzo dell'account e l'Informativa sulla privacy dell'account",
       backToLoginWithAccount: "Hai già un account? Accedi",
       forgotPassword: "Hai dimenticato la password?",
       forgotPasswordPageTitle: "Reimposta password",
@@ -157,6 +170,7 @@ const locale = {
       qrLoginCancelled: "Login QR annullato",
       qrLoginExpired: "QR code scaduto, aggiorna",
       qrLoginRefresh: "Aggiorna QR code",
+      downloadApp: "Scarica l'app",
       passwordLogin: "Password",
       otpLogin: "Codice email",
       phoneOtpLogin: "Codice SMS",
@@ -575,9 +589,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Lunedì venerdì 09:00 - 18:00",
-      contactOverseasPersonValue: "Da fornire",
-      contactOverseasPhoneValue: "Da fornire",
-      contactOverseasEmailValue: "Da fornire",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Lunedì venerdì 09:00 - 18:00",
       contactRegionNotice:
         "Contatta prima il canale di supporto per la tua regione. Se non sei sicuro di quale regione si applica, inizia con il contatto della Cina continentale per assistenza nella messa in routing.",

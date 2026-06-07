@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Ultima actualizare: {{date}}",
       agreement: {
         title: "Acordul Utilizatorului",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Bine ați venit la {{siteName}}. Înainte de a vă înregistra, autentifica, integra sau utiliza serviciile de identitate unificată, vă rugăm să citiți cu atenție acest acord. Prin continuarea utilizării serviciului, sunteți de acord să fiți obligat de acest acord.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Din motive de securitate, conformitate, operațiuni sau întreținere, platforma poate ajusta, actualiza, suspenda sau întrerupe anumite interfețe, fluxuri sau funcții și va încerca să ofere notificări atunci când este adecvat.",
           liabilityP2:
             "În măsura permisă de lege, platforma nu este răspunzătoare dincolo de obligațiile legale pentru întreruperi, date anormale sau pierderi cauzate de forță majoră, defecțiuni de rețea, motive terțe sau utilizare necorespunzătoare din partea dvs.",
+accountP3:
+            "Pentru a proteja conturile utilizatorilor și dezvoltatorilor, platforma poate efectua evaluări de risc în scenarii precum autentificarea cu parolă, autentificarea cu cod, autentificarea cu passkey, autentificarea cu cod QR, asocierea numărului de telefon, schimbarea e-mailului, schimbarea numărului de telefon, schimbarea parolei, configurarea MFA, ștergerea contului, exportul de date și gestionarea aplicațiilor pentru dezvoltatori. În funcție de rezultat, platforma poate solicita verificări suplimentare, poate întârzia procesarea, poate restricționa o operațiune sau poate bloca accesul.",
         },
       },
       privacy: {
         title: "Politica de Confidențialitate",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} apreciază informațiile dvs. personale și securitatea contului. Această politică explică modul în care colectăm, utilizăm, stocăm, partajăm și protejăm informațiile dvs., precum și drepturile disponibile pentru dvs.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Când vă înregistrați, vă autentificați sau utilizați serviciile de cont, putem colecta țara de înregistrare, adresa de e-mail, numărul de telefon, hash-ul parolei, sesiunile de autentificare, IP-ul dispozitivului, înregistrările de autorizare și jurnalele de securitate necesare.",
           dataCollectionP2:
             "Când încărcați un avatar, vă schimbați profilul, legați un număr de telefon, activați MFA sau autorizați o aplicație terță, procesăm informațiile pe care le trimiteți după cum este necesar pentru a oferi acea funcție.",
+dataCollectionP3:
+            "Pentru a identifica preluarea conturilor, credential stuffing, dispozitive anormale, rețele anormale, cereri automatizate și operațiuni cu risc ridicat, putem, de asemenea, colecta sau genera amprente ale dispozitivelor, identificatori de cheie publică ai dispozitivelor, tipul clientului, semnale de risc ale dispozitivului, motivele eșecurilor de autentificare, rezultatele verificării codurilor, regiunea IP sau etichete regionale de risc, istoricul autentificărilor, scoruri de risc, niveluri de risc și acțiunile întreprinse. Nu colectăm contacte, conținut SMS, jurnale de apeluri, albume foto, locație precisă, conținut al microfonului sau al camerei în scopuri de gestionare a riscurilor contului.",
           dataUsageTitle: "2. Cum Utilizăm Informațiile",
           dataUsageP1:
             "Utilizăm informațiile relevante pentru a furniza înregistrarea contului, autentificarea la autentificare, livrarea codului de verificare, controlul riscului, confirmarea autorizării, revizuirea aplicației pentru dezvoltatori, notificările de securitate ale contului și menținerea fiabilității serviciului.",
           dataUsageP2:
             "De asemenea, analizăm jurnalele și statisticile pe o bază minim-necesară pentru a detecta activitatea anormală, a îmbunătăți experiența produsului și a consolida securitatea.",
+dataUsageP3:
+            "Informațiile de gestionare a riscurilor sunt utilizate în principal pentru a decide dacă se permite autentificarea sau continuarea operațiunilor sensibile, dacă se solicită verificarea suplimentară prin e-mail sau SMS, dacă se solicită asocierea unui număr de telefon, dacă se declanșează blocarea după încercări eșuate, dacă se înregistrează un eveniment de risc, sau pentru a ajuta administratorii să investigheze probleme de securitate. Informațiile de risc raportate de client sunt utilizate doar ca semnal auxiliar și nu sunt folosite de la sine pentru a reduce deciziile de securitate.",
           dataSharingTitle: "3. Partajare și Divulgare",
           dataSharingP1:
             "Furnizăm informații de identitate sau date legate de permisiuni aplicațiilor terțe numai atunci când autorizați în mod explicit domeniile afișate pe pagina de autorizare.",
@@ -83,6 +89,8 @@ const locale = {
             "Utilizăm controale de acces, hashing de parole, expirarea codului de verificare, jurnale de audit și măsuri de minimizare a datelor pentru a vă proteja informațiile personale și datele de autentificare.",
           securityP2:
             "Supuși cerințelor legale și comerciale, păstrăm informațiile dvs. numai atât timp cât este necesar pentru a îndeplini scopurile serviciului; după ștergerea contului sau expirarea perioadelor de păstrare, vom șterge sau anonimiza datele în conformitate cu politica.",
+securityP3:
+            "Jurnalele de risc, istoricul autentificărilor, profilurile dispozitivelor și înregistrările încercărilor eșuate sunt păstrate pe perioada necesară pentru auditul de securitate, soluționarea disputelor, investigarea atacurilor și conformitate. Reducem riscurile de scurgere și utilizare abuzivă prin hashing, controale de acces, privilegiul minim și înregistrări de audit.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "Codul de verificare a fost trimis. Vă rugăm să verificați inbox-ul.",
       sendRegisterCodeFailed: "Nu s-a putut trimite codul de verificare",
+      legalConsentPrefix: "Am citit și sunt de acord cu",
+      legalConsentAnd: "și",
+      accountAgreement: "Termenii de utilizare ai contului",
+      accountPrivacyPolicy: "Politica de confidențialitate a contului",
+      legalConsentRequired: "Vă rugăm să citiți și să acceptați Termenii de utilizare ai contului și Politica de confidențialitate a contului",
       backToLoginWithAccount: "Aveți deja un cont? Autentificați-vă",
       forgotPassword: "Ați uitat parola?",
       forgotPasswordPageTitle: "Resetați Parola",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "Autentificarea QR a fost anulată",
       qrLoginExpired: "Codul QR a expirat. Reîmprospătați.",
       qrLoginRefresh: "Reîmprospătați codul QR",
+      downloadApp: "Descarcă aplicația",
       passwordLogin: "Parolă",
       otpLogin: "Cod E-mail",
       phoneOtpLogin: "Cod Telefon",
@@ -661,9 +675,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Luni până Vineri 09:00 - 18:00",
-      contactOverseasPersonValue: "De furnizat",
-      contactOverseasPhoneValue: "De furnizat",
-      contactOverseasEmailValue: "De furnizat",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Luni până Vineri 09:00 - 18:00",
       contactRegionNotice:
         "Vă rugăm să contactați mai întâi canalul de suport pentru regiunea dvs. Dacă nu sunteți sigur care regiune se aplică, începeți cu contactul pentru China Continentală pentru ajutor la direcționare.",

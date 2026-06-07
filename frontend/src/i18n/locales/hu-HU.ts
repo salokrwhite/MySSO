@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Utoljára frissítve: {{date}}",
       agreement: {
         title: "Felhasználói szerződés",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Üdvözöljük a {{siteName}} oldalon. Regisztráció, bejelentkezés, integráció vagy a egységes azonosítási szolgáltatások használata előtt olvassa figyelmesen ezt a szerződést. A szolgáltatás további használatával elfogadja ezt a szerződést.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Biztonsági, jogi, operatív vagy karbantartási okokból a platform módosíthat, frissíthat, felfüggesztheti vagy leállíthat bizonyos felületeket, folyamatokat vagy funkciókat, és megpróbálja, amikor alkalmas, értesítést küldeni.",
           liabilityP2:
             "A jogszabályok által megengedett hatáskörben a platform nem vállal felelősséget a törvényi kötelezettségein túli megszakadt szolgáltatásokért, abnormális adatokért vagy a természeti katasztrófák, hálózati hibák, harmadik felek okai vagy Ön oldaláról származó helytelen használatból származó veszteségekért.",
+accountP3:
+            "A felhasználói és fejlesztői fiókok védelme érdekében a platform kockázatértékelést végezhet olyan helyzetekben, mint a jelszavas bejelentkezés, kódos bejelentkezés, passkey bejelentkezés, QR-kódos bejelentkezés, telefonszám összekapcsolása, e-mail módosítása, telefonszám módosítása, jelszó módosítása, MFA beállítás, fiók törlése, adatexport és fejlesztői alkalmazások kezelése. Az eredménytől függően a platform további ellenőrzést kérhet, késleltetheti a feldolgozást, korlátozhat egy műveletet vagy blokkolhatja a hozzáférést.",
         },
       },
       privacy: {
         title: "Adatvédelmi irányelvek",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "A {{siteName}} értékeli az Ön személyes adatait és fiók biztonságát. Ez az irányelv elmagyarázza, hogyan gyűjtjük, használjuk, tároljuk, osztjuk meg és védjük az Ön adatokat, valamint a számára elérhető jogokat.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Amikor regisztrál, jelentkezik be vagy használja a fiókszolgáltatásokat, gyűjthetjük a regisztrációs országát, e-mail címét, telefonszámát, jelszó kivonatát, bejelentkezési munkameneteket, eszköz IP-jét, engedélyezési rekordokat és szükséges biztonsági naplókat.",
           dataCollectionP2:
             "Amikor feltölt egy avatar képet, módosítja a profilját, köt ki egy telefonszámot, engedélyezi a kétlépcsős hitelesítést vagy engedélyezi egy harmadik féle alkalmazást, a funkció megadása érdekében a beadott adatokat feldolgozzuk.",
+dataCollectionP3:
+            "A fiók-átvétel, a credential stuffing, a rendellenes eszközök, hálózatok, automatizált kérések és magas kockázatú műveletek azonosítása érdekében eszköz-ujjlenyomatokat, eszköz nyilvános kulcs azonosítókat, kliens típust, eszköz kockázati jelzéseket, sikertelen bejelentkezések okait, kódellenőrzési eredményeket, IP régiót vagy regionális kockázati címkéket, bejelentkezési előzményeket, kockázati pontszámokat, kockázati szinteket és megtett intézkedéseket is gyűjthetünk vagy generálhatunk. A fiók kockázatkezelése céljából nem gyűjtünk névjegyeket, SMS tartalmat, hívásnaplókat, fotóalbumokat, pontos helyet, mikrofon vagy kamera tartalmat.",
           dataUsageTitle: "2. Adatok használata",
           dataUsageP1:
             "A kapcsolódó adatokat a fiók regisztrálására, bejelentkezési hitelesítésre, hitelesítő kódok kiszállítására, kockázatkezelésre, engedélyezés megerősítésére, fejlesztői alkalmazások átvizsgálatára, fiók biztonsági értesítésekre és szolgáltatás megbízhatóságának fenntartására használjuk.",
           dataUsageP2:
             "Továbbá a naplókat és statisztikákat minimális szükség alapján elemzünk, hogy feltárjuk a rendellenes tevékenységeket, javítsuk a termék élményét és erősítsük a biztonságot.",
+dataUsageP3:
+            "A kockázatkezelési információkat elsősorban annak eldöntésére használjuk, hogy engedélyezzük-e a bejelentkezést vagy az érzékeny műveletek folytatását, szükséges-e további e-mail vagy SMS ellenőrzés, szükséges-e telefonszám összekapcsolása, aktiválódjon-e a sikertelen próbálkozások zárolása, rögzítsünk-e kockázati eseményt, vagy segítsük a rendszergazdákat a biztonsági problémák kivizsgálásában. A kliens által jelentett kockázati információk csak kiegészítő jelzésként szolgálnak, és önmagukban nem használják a biztonsági döntések csökkentésére.",
           dataSharingTitle: "3. Megosztás és nyilvánosságra hozatal",
           dataSharingP1:
             "Csak akkor biztosítunk személyazonosságra vonatkozó adatokat vagy engedélyekkel kapcsolatos adatokat harmadik féle alkalmazásoknak, ha explicit módon engedélyezi az engedélyezési oldalon megjelenő hatóköröket.",
@@ -83,6 +89,8 @@ const locale = {
             "Hozzáférés-vezérlést, jelszó kivonatolást, hitelesítő kódok lejárati idejét, naplózást és adatok minimalizálását használunk az Ön személyes adataival és hitelesítési adataival kapcsolatos védelem érdekében.",
           securityP2:
             "Jogszabályi és üzleti követelmények alapján csak a szolgáltatás céljainak megvalósításához szükséges időtartamra tároljuk az Ön adatokat; a fiók törlése vagy a tárolási időszak lejárta után a szabályok szerint töröljük vagy anonimizáljuk az adatokat.",
+securityP3:
+            "A kockázati naplókat, bejelentkezési előzményeket, eszközprofilokat és a sikertelen próbálkozások rekordjait a biztonsági auditok, vitás ügyek rendezése, támadások kivizsgálása és a megfelelőség érdekében szükséges ideig őrizzük meg. A hashelés, hozzáférés-ellenőrzés, minimális jogosultság és auditnaplók révén csökkentjük a szivárgás és a visszaélés kockázatát.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "A hitelesítő kód elküldve. Kérjük, ellenőrizze az e-mail postafiókját.",
       sendRegisterCodeFailed: "A hitelesítő kód küldése sikertelen",
+      legalConsentPrefix: "Elolvastam és elfogadom",
+      legalConsentAnd: "és",
+      accountAgreement: "Fiók használati feltételek",
+      accountPrivacyPolicy: "Fiók adatvédelmi irányelvek",
+      legalConsentRequired: "Kérjük, olvassa el és fogadja el a Fiók használati feltételeket és a Fiók adatvédelmi irányelveket",
       backToLoginWithAccount: "Már van fiókja? Jelentkezzen be",
       forgotPassword: "Elfelejtette a jelszót?",
       forgotPasswordPageTitle: "Jelszó visszaállítása",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "A QR bejelentkezés törlésre került",
       qrLoginExpired: "A QR kód lejárt, kérjük, frissítse",
       qrLoginRefresh: "QR kód frissítése",
+      downloadApp: "Alkalmazás letöltése",
       passwordLogin: "Jelszó",
       otpLogin: "E-mail kód",
       phoneOtpLogin: "Telefonszám kód",
@@ -663,9 +677,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Hétfő–péntek 09:00–18:00",
-      contactOverseasPersonValue: "Későbbi kitöltés",
-      contactOverseasPhoneValue: "Későbbi kitöltés",
-      contactOverseasEmailValue: "Későbbi kitöltés",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Hétfő–péntek 09:00–18:00",
       contactRegionNotice:
         "Kérjük, először forduljon a saját régiójának támogatási csatornájához. Ha nem biztos abban, hogy melyik régió vonatkozik rá, kezdje a Közép-Kína kapcsolattartójával, aki továbbítja.",

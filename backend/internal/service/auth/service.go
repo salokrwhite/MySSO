@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -15,6 +16,7 @@ import (
 	"mysso/backend/internal/service/common/authutil"
 	"mysso/backend/internal/service/common/deps"
 	"mysso/backend/internal/service/common/templateutil"
+	riskservice "mysso/backend/internal/service/risk"
 	"mysso/backend/internal/service/settings"
 )
 
@@ -23,11 +25,15 @@ type AuthService struct {
 	audit    *audit.Service
 	settings *settings.Service
 	user     interface{ CleanupExpiredDeletionRequests() error }
+	risk     *riskservice.Service
 }
 
 type Service = AuthService
 
 type deviceBindingContextKey struct{}
+type clientRiskContextKey struct{}
+
+var ErrCaptchaRequired = errors.New("captcha is invalid or expired")
 
 func WithDeviceBinding(ctx context.Context, binding settings.DeviceBindingInput) context.Context {
 	return context.WithValue(ctx, deviceBindingContextKey{}, binding)
@@ -44,8 +50,27 @@ func deviceBindingFromContext(ctx context.Context) settings.DeviceBindingInput {
 	}
 }
 
-func New(dependencies *deps.Deps, auditService *audit.Service, settingsService *settings.Service, userService interface{ CleanupExpiredDeletionRequests() error }) *Service {
-	return &AuthService{deps: dependencies, audit: auditService, settings: settingsService, user: userService}
+func WithClientRisk(ctx context.Context, client riskservice.ClientInfo) context.Context {
+	return context.WithValue(ctx, clientRiskContextKey{}, client)
+}
+
+func clientRiskFromContext(ctx context.Context) riskservice.ClientInfo {
+	if ctx == nil {
+		return riskservice.ClientInfo{}
+	}
+	client, _ := ctx.Value(clientRiskContextKey{}).(riskservice.ClientInfo)
+	client.ClientType = strings.TrimSpace(client.ClientType)
+	client.UserAgent = strings.TrimSpace(client.UserAgent)
+	client.Fingerprint = strings.TrimSpace(client.Fingerprint)
+	return client
+}
+
+func New(dependencies *deps.Deps, auditService *audit.Service, settingsService *settings.Service, userService interface{ CleanupExpiredDeletionRequests() error }, riskService ...*riskservice.Service) *Service {
+	var riskSvc *riskservice.Service
+	if len(riskService) > 0 {
+		riskSvc = riskService[0]
+	}
+	return &AuthService{deps: dependencies, audit: auditService, settings: settingsService, user: userService, risk: riskSvc}
 }
 
 type PasswordLoginResult struct {
@@ -67,6 +92,10 @@ type PasswordLoginResult struct {
 	RequiresDeletionConfirmation bool
 	DeletionChallengeToken       string
 	DeletionScheduledAt          *time.Time
+	RiskLevel                    string
+	RiskAction                   string
+	RiskMessage                  string
+	RiskScore                    int
 	Session                      domain.Session
 	User                         domain.User
 }
@@ -90,10 +119,14 @@ func preferredLocaleForRegistrationCountry(country string) string {
 }
 
 func (s *AuthService) StartPasswordLogin(email, password, ip, deviceID string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
-	return s.StartPasswordLoginWithMFACaptcha(email, password, ip, deviceID, nil, binding...)
+	return s.StartPasswordLoginWithMFACaptcha(email, password, ip, deviceID, nil, PasswordLoginRiskOptions{}, binding...)
 }
 
-func (s *AuthService) StartPasswordLoginWithMFACaptcha(email, password, ip, deviceID string, verifyMFACaptcha func() error, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
+func (s *AuthService) StartPasswordLoginWithMFACaptcha(email, password, ip, deviceID string, verifyMFACaptcha func() error, riskOptions PasswordLoginRiskOptions, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
+	return s.StartPasswordLoginWithRisk(email, password, ip, deviceID, verifyMFACaptcha, riskservice.ClientInfo{}, riskOptions, binding...)
+}
+
+func (s *AuthService) StartPasswordLoginWithRisk(email, password, ip, deviceID string, verifyMFACaptcha func() error, clientRisk riskservice.ClientInfo, riskOptions PasswordLoginRiskOptions, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
 	if err := s.user.CleanupExpiredDeletionRequests(); err != nil {
 		return PasswordLoginResult{}, err
 	}
@@ -130,7 +163,7 @@ func (s *AuthService) StartPasswordLoginWithMFACaptcha(email, password, ip, devi
 	}
 	s.resetAuthAttempt(attempt)
 	if authutil.EffectiveUserMFAEnabled(user) {
-		challenge, err := s.createMFALoginChallengeWithCaptcha(user, verifyMFACaptcha)
+		challenge, err := s.createMFALoginChallengeWithRisk(user, verifyMFACaptcha, clientRisk)
 		if err != nil {
 			return PasswordLoginResult{}, err
 		}
@@ -142,7 +175,7 @@ func (s *AuthService) StartPasswordLoginWithMFACaptcha(email, password, ip, devi
 			User:           user,
 		}, nil
 	}
-	return s.ContinuePostAuthentication(user, ip, "password", "urn:mysso:acr:password", binding...)
+	return s.continuePostAuthenticationWithRiskOptions(user, ip, "password", "urn:mysso:acr:password", clientRisk, postAuthRiskOptions{RiskCaptchaSatisfied: riskOptions.CaptchaSatisfied, RiskCaptchaAllowed: true}, binding...)
 }
 
 func (s *AuthService) CompletePasswordLoginMFA(challengeToken, otp, ip, deviceID string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
@@ -191,10 +224,14 @@ func (s *AuthService) CompletePasswordLoginMFA(challengeToken, otp, ip, deviceID
 	}
 	_ = s.deps.Store.DeleteMFALoginChallenge(challenge.Token)
 	s.resetAuthAttempt(attempt)
-	return s.ContinuePostAuthentication(user, ip, "password", "urn:mysso:acr:password+mfa", binding...)
+	return s.continuePostAuthenticationWithRisk(user, ip, "password", "urn:mysso:acr:password+mfa", decodeRiskClient(challenge.RiskClientJSON), binding...)
 }
 
 func (s *AuthService) LoginWithOTP(email, otp, ip, deviceID string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
+	return s.LoginWithOTPWithRisk(email, otp, ip, deviceID, riskservice.ClientInfo{}, binding...)
+}
+
+func (s *AuthService) LoginWithOTPWithRisk(email, otp, ip, deviceID string, clientRisk riskservice.ClientInfo, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
 	if err := s.user.CleanupExpiredDeletionRequests(); err != nil {
 		return PasswordLoginResult{}, err
 	}
@@ -233,10 +270,14 @@ func (s *AuthService) LoginWithOTP(email, otp, ip, deviceID string, binding ...s
 		return PasswordLoginResult{}, loginBlockedByUserStatus(user, "invalid otp code")
 	}
 	s.resetAuthAttempt(attempt)
-	return s.ContinuePostAuthentication(user, ip, "email_otp", "urn:mysso:acr:email-otp", binding...)
+	return s.continuePostAuthenticationWithRisk(user, ip, "email_otp", "urn:mysso:acr:email-otp", clientRisk, binding...)
 }
 
 func (s *AuthService) LoginWithPhoneOTP(phone, otp, ip, deviceID string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
+	return s.LoginWithPhoneOTPWithRisk(phone, otp, ip, deviceID, riskservice.ClientInfo{}, binding...)
+}
+
+func (s *AuthService) LoginWithPhoneOTPWithRisk(phone, otp, ip, deviceID string, clientRisk riskservice.ClientInfo, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
 	if !s.settings.IsPhoneVerificationEnabled() {
 		return PasswordLoginResult{}, fmt.Errorf("phone verification is disabled")
 	}
@@ -278,7 +319,7 @@ func (s *AuthService) LoginWithPhoneOTP(phone, otp, ip, deviceID string, binding
 		return PasswordLoginResult{}, loginBlockedByUserStatus(user, "invalid otp code")
 	}
 	s.resetAuthAttempt(attempt)
-	return s.ContinuePostAuthentication(user, ip, "sms_otp", "urn:mysso:acr:sms-otp", binding...)
+	return s.continuePostAuthenticationWithRisk(user, ip, "sms_otp", "urn:mysso:acr:sms-otp", clientRisk, binding...)
 }
 
 func (s *AuthService) ConfirmDeletionLogin(challengeToken, ip string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
@@ -303,10 +344,14 @@ func (s *AuthService) ConfirmDeletionLogin(challengeToken, ip string, binding ..
 			return PasswordLoginResult{}, err
 		}
 	}
-	return s.ContinuePostAuthentication(user, ip, deriveLoginMethodFromACR(challenge.ACR), challenge.ACR, binding...)
+	return s.continuePostAuthenticationWithRisk(user, ip, deriveLoginMethodFromACR(challenge.ACR), challenge.ACR, decodeRiskClient(challenge.RiskClientJSON), binding...)
 }
 
 func (s *AuthService) createDeletionLoginChallenge(user domain.User, acr string) (domain.DeletionLoginChallenge, error) {
+	return s.createDeletionLoginChallengeWithRisk(user, acr, riskservice.ClientInfo{})
+}
+
+func (s *AuthService) createDeletionLoginChallengeWithRisk(user domain.User, acr string, clientRisk riskservice.ClientInfo) (domain.DeletionLoginChallenge, error) {
 	if user.DeletionScheduledAt == nil {
 		return domain.DeletionLoginChallenge{}, fmt.Errorf("no deletion is pending")
 	}
@@ -314,6 +359,7 @@ func (s *AuthService) createDeletionLoginChallenge(user domain.User, acr string)
 		Token:               uuid.NewString(),
 		UserID:              user.ID,
 		ACR:                 strings.TrimSpace(acr),
+		RiskClientJSON:      encodeRiskClient(clientRisk),
 		DeletionScheduledAt: *user.DeletionScheduledAt,
 		ExpiresAt:           time.Now().UTC().Add(10 * time.Minute),
 		CreatedAt:           time.Now().UTC(),
@@ -401,6 +447,10 @@ func (s *AuthService) createMFALoginChallenge(user domain.User) (domain.MFALogin
 }
 
 func (s *AuthService) createMFALoginChallengeWithCaptcha(user domain.User, verifyMFACaptcha func() error) (domain.MFALoginChallenge, error) {
+	return s.createMFALoginChallengeWithRisk(user, verifyMFACaptcha, riskservice.ClientInfo{})
+}
+
+func (s *AuthService) createMFALoginChallengeWithRisk(user domain.User, verifyMFACaptcha func() error, clientRisk riskservice.ClientInfo) (domain.MFALoginChallenge, error) {
 	method, target, err := resolveMFAMethodAndTarget(user)
 	if err != nil {
 		return domain.MFALoginChallenge{}, err
@@ -414,12 +464,13 @@ func (s *AuthService) createMFALoginChallengeWithCaptcha(user domain.User, verif
 		return domain.MFALoginChallenge{}, err
 	}
 	challenge := domain.MFALoginChallenge{
-		Token:     uuid.NewString(),
-		UserID:    user.ID,
-		Method:    method,
-		Target:    target,
-		ExpiresAt: time.Now().UTC().Add(10 * time.Minute),
-		CreatedAt: time.Now().UTC(),
+		Token:          uuid.NewString(),
+		UserID:         user.ID,
+		Method:         method,
+		Target:         target,
+		RiskClientJSON: encodeRiskClient(clientRisk),
+		ExpiresAt:      time.Now().UTC().Add(10 * time.Minute),
+		CreatedAt:      time.Now().UTC(),
 	}
 	if err := s.deps.Store.SaveMFALoginChallenge(challenge); err != nil {
 		return domain.MFALoginChallenge{}, err
@@ -516,6 +567,9 @@ func maskMFATarget(method, target string) string {
 }
 
 func (s *AuthService) Register(input settings.RegisterInput) (RegisterResult, error) {
+	if !input.AgreementAccepted || !input.PrivacyAccepted {
+		return RegisterResult{}, fmt.Errorf("agreement and privacy policy must be accepted")
+	}
 	email := strings.ToLower(strings.TrimSpace(input.Email))
 	country := strings.ToUpper(strings.TrimSpace(input.Country))
 	code := strings.TrimSpace(input.Code)
@@ -558,6 +612,24 @@ func (s *AuthService) Register(input settings.RegisterInput) (RegisterResult, er
 	}
 	if err := s.deps.Store.ConsumeEmailVerificationCode(verification.ID); err != nil {
 		return RegisterResult{}, err
+	}
+	if s.risk != nil {
+		registrationRisk, riskErr := s.risk.AssessLogin(riskservice.LoginParams{
+			UserID: "",
+			IP:     strings.TrimSpace(input.IP),
+			Client: riskservice.ClientInfo{
+				Fingerprint: strings.TrimSpace(input.DeviceID),
+				ClientType:  "web",
+				Signals:     []string{"register"},
+			},
+		})
+		if riskErr != nil {
+			return RegisterResult{}, riskErr
+		}
+		if registrationRisk.Action != riskservice.ActionAllow {
+			s.risk.RecordLogin("", input.IP, "", riskservice.ClientInfo{ClientType: "web", Fingerprint: strings.TrimSpace(input.DeviceID), Signals: []string{"register"}}, registrationRisk, false)
+			return RegisterResult{}, fmt.Errorf("access_denied")
+		}
 	}
 	passwordHash, err := security.HashPassword(password)
 	if err != nil {
@@ -740,7 +812,16 @@ func (s *AuthService) sendEmailVerificationCode(email, country, purpose string, 
 		Consumed:  false,
 		CreatedAt: now,
 	}
-	if err := s.deps.Store.SaveEmailVerificationCode(record); err != nil {
+	if dailyLimit.Email > 0 {
+		startAt, endAt := settings.ChinaDayRange(now)
+		saved, err := s.deps.Store.SaveEmailVerificationCodeWithinDailyLimit(record, startAt, endAt, dailyLimit.Email)
+		if err != nil {
+			return 0, err
+		}
+		if !saved {
+			return cooldownSeconds, settings.VerificationDailyLimitError(now)
+		}
+	} else if err := s.deps.Store.SaveEmailVerificationCode(record); err != nil {
 		return 0, err
 	}
 
@@ -823,7 +904,16 @@ func (s *AuthService) sendSMSVerificationCode(phone, purpose string, enforceCool
 		Consumed:  false,
 		CreatedAt: now,
 	}
-	if err := s.deps.Store.SaveSMSVerificationCode(record); err != nil {
+	if dailyLimit.SMS > 0 {
+		startAt, endAt := settings.ChinaDayRange(now)
+		saved, err := s.deps.Store.SaveSMSVerificationCodeWithinDailyLimit(record, startAt, endAt, dailyLimit.SMS)
+		if err != nil {
+			return 0, err
+		}
+		if !saved {
+			return cooldownSeconds, settings.VerificationDailyLimitError(now)
+		}
+	} else if err := s.deps.Store.SaveSMSVerificationCode(record); err != nil {
 		return 0, err
 	}
 

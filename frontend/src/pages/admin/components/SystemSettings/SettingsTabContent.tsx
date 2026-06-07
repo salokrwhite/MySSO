@@ -1,6 +1,7 @@
 import type { FormInstance } from "antd";
 import type { ScopeDefinition, SettingsTabKey, SystemSettings } from "../../types";
 import { AnnouncementSettings } from "./settings-panels/AnnouncementSettings";
+import { AppVersionSettings } from "./settings-panels/AppVersionSettings";
 import { EmailSettings } from "./settings-panels/EmailSettings";
 import { InternationalizationSettings } from "./settings-panels/InternationalizationSettings";
 import { RateLimitSettings } from "./settings-panels/RateLimitSettings";
@@ -19,6 +20,7 @@ type SettingsTabContentProps = {
   verificationForm: FormInstance<SystemSettings>;
   intlForm: FormInstance<SystemSettings>;
   sessionForm: FormInstance<SystemSettings>;
+  appVersionForm: FormInstance<SystemSettings>;
   smsForm: FormInstance<SystemSettings>;
   announcementForm: FormInstance<SystemSettings>;
   riskForm: FormInstance<SystemSettings>;
@@ -46,6 +48,7 @@ type SettingsTabContentProps = {
   onSaveVerification: () => void;
   onSaveIntl: () => void;
   onSaveSession: () => void;
+  onSaveAppVersion: () => void;
   onSaveSMS: () => void;
   onSaveAnnouncement: () => void;
   onSaveRisk: () => void;
@@ -96,6 +99,17 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
         initialValues={props.settings}
         saving={props.savingSettings}
         onSave={props.onSaveSession}
+      />
+    );
+  }
+
+  if (props.tabKey === "appVersion") {
+    return (
+      <AppVersionSettings
+        form={props.appVersionForm}
+        initialValues={props.settings}
+        saving={props.savingSettings}
+        onSave={props.onSaveAppVersion}
       />
     );
   }

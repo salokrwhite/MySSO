@@ -12,6 +12,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
+	github.com/lionsoul2014/ip2region/binding/golang v0.0.0-20260506125841-18ecd7ae852e
 	github.com/mojocn/base64Captcha v0.0.0-20190801020520-752b1cd608b2
 	golang.org/x/crypto v0.48.0
 	golang.org/x/image v0.37.0

@@ -74,13 +74,15 @@ func (s *MemoryStore) DeleteUserSecurityPolicy(userID string) error {
 
 func (s *MemoryStore) SaveLoginStepUpChallenge(challenge domain.LoginStepUpChallenge) error {
 	payload, err := authChallengePayload(struct {
-		EffectiveMode string `json:"effective_mode"`
-		EmailTarget   string `json:"email_target"`
-		PhoneTarget   string `json:"phone_target"`
+		EffectiveMode  string `json:"effective_mode"`
+		EmailTarget    string `json:"email_target"`
+		PhoneTarget    string `json:"phone_target"`
+		RiskClientJSON string `json:"risk_client_json,omitempty"`
 	}{
-		EffectiveMode: string(challenge.EffectiveMode),
-		EmailTarget:   challenge.EmailTarget,
-		PhoneTarget:   challenge.PhoneTarget,
+		EffectiveMode:  string(challenge.EffectiveMode),
+		EmailTarget:    challenge.EmailTarget,
+		PhoneTarget:    challenge.PhoneTarget,
+		RiskClientJSON: challenge.RiskClientJSON,
 	})
 	if err != nil {
 		return err
@@ -108,9 +110,10 @@ func (s *MemoryStore) GetLoginStepUpChallenge(token string) (domain.LoginStepUpC
 		return domain.LoginStepUpChallenge{}, ErrNotFound
 	}
 	payload, err := parseAuthChallengePayload[struct {
-		EffectiveMode string `json:"effective_mode"`
-		EmailTarget   string `json:"email_target"`
-		PhoneTarget   string `json:"phone_target"`
+		EffectiveMode  string `json:"effective_mode"`
+		EmailTarget    string `json:"email_target"`
+		PhoneTarget    string `json:"phone_target"`
+		RiskClientJSON string `json:"risk_client_json,omitempty"`
 	}](item.PayloadJSON)
 	if err != nil {
 		return domain.LoginStepUpChallenge{}, err
@@ -120,15 +123,16 @@ func (s *MemoryStore) GetLoginStepUpChallenge(token string) (domain.LoginStepUpC
 		effectiveMode = domain.LoginStepUpModeNone
 	}
 	return domain.LoginStepUpChallenge{
-		Token:         item.Token,
-		UserID:        item.UserID,
-		LoginMethod:   item.Channel,
-		ACR:           item.ACR,
-		EffectiveMode: effectiveMode,
-		EmailTarget:   payload.EmailTarget,
-		PhoneTarget:   payload.PhoneTarget,
-		ExpiresAt:     item.ExpiresAt,
-		CreatedAt:     item.CreatedAt,
+		Token:          item.Token,
+		UserID:         item.UserID,
+		LoginMethod:    item.Channel,
+		ACR:            item.ACR,
+		EffectiveMode:  effectiveMode,
+		EmailTarget:    payload.EmailTarget,
+		PhoneTarget:    payload.PhoneTarget,
+		RiskClientJSON: payload.RiskClientJSON,
+		ExpiresAt:      item.ExpiresAt,
+		CreatedAt:      item.CreatedAt,
 	}, nil
 }
 
@@ -145,6 +149,13 @@ func (s *MemoryStore) ConsumeLoginStepUpChallenge(token string, consumedAt time.
 }
 
 func (s *MemoryStore) SaveLoginMFAEnrollmentChallenge(challenge domain.LoginMFAEnrollmentChallenge) error {
+	payload, err := authChallengePayload(struct {
+		RiskClientJSON      string `json:"risk_client_json,omitempty"`
+		RiskStepUpSatisfied bool   `json:"risk_step_up_satisfied,omitempty"`
+	}{RiskClientJSON: challenge.RiskClientJSON, RiskStepUpSatisfied: challenge.RiskStepUpSatisfied})
+	if err != nil {
+		return err
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.saveAuthChallengeLocked(domain.AuthChallenge{
@@ -153,6 +164,7 @@ func (s *MemoryStore) SaveLoginMFAEnrollmentChallenge(challenge domain.LoginMFAE
 		UserID:        challenge.UserID,
 		Channel:       challenge.LoginMethod,
 		ACR:           challenge.ACR,
+		PayloadJSON:   payload,
 		ExpiresAt:     challenge.ExpiresAt,
 		CreatedAt:     challenge.CreatedAt,
 	})
@@ -166,13 +178,22 @@ func (s *MemoryStore) GetLoginMFAEnrollmentChallenge(token string) (domain.Login
 	if err != nil {
 		return domain.LoginMFAEnrollmentChallenge{}, ErrNotFound
 	}
+	payload, err := parseAuthChallengePayload[struct {
+		RiskClientJSON      string `json:"risk_client_json,omitempty"`
+		RiskStepUpSatisfied bool   `json:"risk_step_up_satisfied,omitempty"`
+	}](item.PayloadJSON)
+	if err != nil {
+		return domain.LoginMFAEnrollmentChallenge{}, err
+	}
 	return domain.LoginMFAEnrollmentChallenge{
-		Token:       item.Token,
-		UserID:      item.UserID,
-		LoginMethod: item.Channel,
-		ACR:         item.ACR,
-		ExpiresAt:   item.ExpiresAt,
-		CreatedAt:   item.CreatedAt,
+		Token:               item.Token,
+		UserID:              item.UserID,
+		LoginMethod:         item.Channel,
+		ACR:                 item.ACR,
+		RiskClientJSON:      payload.RiskClientJSON,
+		RiskStepUpSatisfied: payload.RiskStepUpSatisfied,
+		ExpiresAt:           item.ExpiresAt,
+		CreatedAt:           item.CreatedAt,
 	}, nil
 }
 

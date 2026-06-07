@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Laatst bijgewerkt: {{date}}",
       agreement: {
         title: "Gebruikersovereenkomst",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Welkom bij {{siteName}}. Voordat u zich registreert, inlogt, integreert of de eenheidsauthenticatieservices gebruikt, lees deze overeenkomst zorgvuldig door. Door te blijven gebruiken van de service, gaat u akkoord met deze overeenkomst.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Om veiligheids-, nalevings-, operatie- of onderhoudsredenen kan het platform bepaalde interfaces, stromen of functies aanpassen, upgraden, tijdelijk opheffen of beëindigen, en zal het proberen op de juiste momenten kennisgeving te doen.",
           liabilityP2:
             "Voor zover de wet dit toestaat, is het platform niet aansprakelijk buiten wettelijke verplichtingen voor onderbrekingen, abnormale gegevens of verliezen veroorzaakt door overmacht, netwerkstoringen, derde-partijredenen of onjuist gebruik aan uw zijde.",
+accountP3:
+            "Om gebruikers- en ontwikkelaarsaccounts te beschermen kan het platform risicobeoordelingen uitvoeren in scenario's zoals wachtwoordinlog, code-inlog, passkey-inlog, QR-code-inlog, telefoonnummer koppelen, e-mail wijzigen, telefoonnummer wijzigen, wachtwoord wijzigen, MFA-instelling, accountverwijdering, gegevensexport en beheer van ontwikkelaars-apps. Afhankelijk van het resultaat kan het platform aanvullende verificatie vereisen, de verwerking vertragen, een handeling beperken of de toegang blokkeren.",
         },
       },
       privacy: {
         title: "Privacybeleid",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} waardeert uw persoonlijke gegevens en accountbeveiliging. Dit beleid legt uit hoe we uw gegevens verzamelen, gebruiken, opslaan, delen en beschermen, evenals de rechten die voor u beschikbaar zijn.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Wanneer u zich registreert, inlogt of accountservices gebruikt, kunnen we uw registratieland, e-mailadres, telefoonnummer, wachtwoordhash, inlogsessies, apparaat-IP, autorisatierecords en noodzakelijke beveiligingslogboeken verzamelen.",
           dataCollectionP2:
             "Wanneer u een avatar uploadt, uw profiel wijzigt, een telefoonnummer bindt, MFA inschakelt of een derde-app autoriseert, verwerken we de door u ingediende gegevens zoals nodig om die functie te bieden.",
+dataCollectionP3:
+            "Om accountovernames, credential stuffing, afwijkende apparaten, afwijkende netwerken, geautomatiseerde verzoeken en hoog-risico handelingen te identificeren, kunnen wij ook apparaatvingerafdrukken, publieke-sleutel-ID's van apparaten, clienttypes, apparaatrisicosignalen, redenen van inlogfouten, codeverificatie-uitkomsten, IP-regio of regionale risicolabels, inloggeschiedenis, risicoscores, risiconiveaus en genomen acties verzamelen of genereren. Wij verzamelen voor risicobeheer van accounts geen contacten, sms-inhoud, belgeschiedenis, fotoalbums, nauwkeurige locatie, microfoon- of camerainhoud.",
           dataUsageTitle: "2. Hoe we gegevens gebruiken",
           dataUsageP1:
             "We gebruiken relevante gegevens om accountregistratie, inlogauthenticatie, verificatiecodebezorging, risicobeheer, autorisatiebevestiging, ontwikkelaar-appcontrole, accountbeveiligingsmeldingen en servicetrouwbaarheidsonderhoud te bieden.",
           dataUsageP2:
             "We analyseren ook logboeken en statistieken op een minimalistisch noodzakelijk niveau om abnormale activiteit te detecteren, de productervaring te verbeteren en de beveiliging te versterken.",
+dataUsageP3:
+            "Risicobeheerinformatie wordt voornamelijk gebruikt om te beslissen of inlog of voortzetting van gevoelige handelingen wordt toegestaan, of aanvullende verificatie via e-mail of sms wordt vereist, of een telefoonnummer moet worden gekoppeld, of een blokkering na mislukte pogingen wordt geactiveerd, of een risicogebeurtenis wordt vastgelegd, of om beheerders te helpen bij het onderzoeken van beveiligingsproblemen. Door de client gemelde risico-informatie wordt alleen als hulpsignaal gebruikt en op zichzelf niet gebruikt om beveiligingsbeslissingen te verlagen.",
           dataSharingTitle: "3. Delen en openbaarmaking",
           dataSharingP1:
             "We verstrekken alleen identiteitsinformatie of machtigingsgerelateerde gegevens aan derde-apps wanneer u expliciet de scopes die op de autorisatiepagina worden weergegeven, autoriseert.",
@@ -83,6 +89,8 @@ const locale = {
             "We gebruiken toegangscontroles, wachtwoordhashing, verificatiecodeverval, auditlogboeken en dataminimalisatiemaatregelen om uw persoonlijke gegevens en authenticatiegegevens te beschermen.",
           securityP2:
             "Onderhevig aan juridische en zakelijke vereisten, bewaren we uw gegevens alleen zolang nodig is om dienstdoeleinden te vervullen; na accountverwijdering of verloop van retentieperioden, zullen we de gegevens verwijderen of anonimiseren volgens het beleid.",
+securityP3:
+            "Risicologs, inloggeschiedenis, apparaatprofielen en records van mislukte pogingen worden bewaard voor de periode die nodig is voor beveiligingsaudits, geschillenbeslechting, onderzoek naar aanvallen en compliance. Wij beperken lek- en misbruikrisico's door hashing, toegangscontrole, minimale rechten en auditlogs.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "De verificatiecode is verzonden. Controleer uw inbox.",
       sendRegisterCodeFailed: "Verificatiecode verzenden mislukt",
+      legalConsentPrefix: "Ik heb gelezen en ga akkoord met",
+      legalConsentAnd: "en",
+      accountAgreement: "Account-gebruiksvoorwaarden",
+      accountPrivacyPolicy: "Account-privacybeleid",
+      legalConsentRequired: "Lees en accepteer de Account-gebruiksvoorwaarden en het Account-privacybeleid",
       backToLoginWithAccount: "Heeft u al een account? Log in",
       forgotPassword: "Wachtwoord vergeten?",
       forgotPasswordPageTitle: "Wachtwoord opnieuw instellen",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "QR-login geannuleerd",
       qrLoginExpired: "QR-code verlopen. Vernieuw.",
       qrLoginRefresh: "QR-code vernieuwen",
+      downloadApp: "App downloaden",
       passwordLogin: "Wachtwoord",
       otpLogin: "E-mailcode",
       phoneOtpLogin: "Telefooncode",
@@ -655,9 +669,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Maandag tot vrijdag 09:00 - 18:00",
-      contactOverseasPersonValue: "Wordt geleverd",
-      contactOverseasPhoneValue: "Wordt geleverd",
-      contactOverseasEmailValue: "Wordt geleverd",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Maandag tot vrijdag 09:00 - 18:00",
       contactRegionNotice:
         "Neem contact op met het ondersteuningskanaal voor uw regio eerst. Als u niet zeker weet welke regio van toepassing is, start met het Hoofdland China-contact voor routeringshulp.",

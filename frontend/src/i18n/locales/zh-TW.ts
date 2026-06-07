@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "最近更新時間：{{date}}",
       agreement: {
         title: "使用者協議",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "歡迎使用 {{siteName}}。你在註冊、登入、接入或使用本系統提供的統一認證能力前，應當認真閱讀本協議。繼續使用即視為你已理解並同意按照本協議約定使用相關服務。",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "平台可能基於安全、合規、運營維護等原因，對服務內容、介面能力、認證流程或功能頁面進行調整、升級、暫停或終止，並儘量提前告知。",
           liabilityP2:
             "在法律允許範圍內，對於因不可抗力、網路故障、第三方原因或你自身使用不當導致的服務中斷、數據異常或損失，平台不承擔超出法定範圍之外的責任。",
+          accountP3:
+            "為了保護使用者與開發者帳號安全，平台可能會在密碼登入、驗證碼登入、通行密鑰登入、QR Code 登入、手機號綁定、修改郵箱、修改手機號、修改密碼、MFA 設定、帳號註銷、資料匯出、開發者應用管理等場景進行風險識別，並依風險結果要求補充驗證、延遲處理、限制操作或阻斷存取。",
         },
       },
       privacy: {
         title: "隱私政策",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} 重視你的個人資訊與帳號安全。本政策用於說明我們如何收集、使用、保存、共享和保護你的個人資訊，以及你享有的相關權利。",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "在你註冊、登入或使用帳號服務時，我們可能收集註冊國家、郵箱地址、手機號、密碼摘要、登入會話、設備 IP、授權記錄及必要的安全日誌資訊。",
           dataCollectionP2:
             "當你主動上傳頭像、修改暱稱、綁定手機號、啟用雙重認證或授權第三方應用時，我們會按照功能需要處理你提交的相應資訊。",
+          dataCollectionP3:
+            "為了識別帳號盜用、撞庫、異常裝置、異常網路、自動化請求與高風險操作，我們還可能會收集或產生裝置指紋、裝置公鑰識別項、客戶端類型、裝置風險訊號、登入失敗原因、驗證碼驗證結果、IP 歸屬地或地區風險標籤、登入歷史、風控評分、風控等級與處置動作。我們不會為了帳號風控目的而收集通訊錄、簡訊內容、通話紀錄、相簿、精確定位、麥克風或攝影機內容。",
           dataUsageTitle: "2. 資訊的使用方式",
           dataUsageP1:
             "我們使用相關資訊完成帳號註冊、登入認證、驗證碼發送、風控校驗、授權確認、開發者接入審核、帳號安全通知及服務穩定性維護。",
           dataUsageP2:
             "我們也會基於最小必要原則，對日誌和統計資訊進行分析，以發現異常行為、優化產品體驗和提升系統安全性。",
+          dataUsageP3:
+            "風控資訊主要用於判斷是否允許登入或繼續敏感操作、是否要求郵箱/簡訊二次驗證、是否要求綁定手機號、是否觸發失敗嘗試鎖定、是否記錄風險事件，或協助管理員排查安全問題。客戶端上報的風險資訊僅作為輔助訊號，不會單獨用於降低安全判斷。",
           dataSharingTitle: "3. 資訊共享與披露",
           dataSharingP1:
             "只有在你明確授權的情況下，我們才會向第三方應用提供授權頁中展示的身份資訊或權限範圍對應的數據。",
@@ -83,6 +89,8 @@ const locale = {
             "我們採取訪問控制、密碼加密、驗證碼時效控制、審計日誌及最小化存儲等措施，盡力保障你的個人資訊與認證數據安全。",
           securityP2:
             "在符合法律法規和業務需要的前提下，我們僅在實現服務目的所必需的期間內保存你的資訊；當你註銷帳號或保存期限屆滿後，我們將按規則刪除或匿名化處理。",
+          securityP3:
+            "風控日誌、登入歷史、裝置畫像與失敗嘗試記錄會在滿足安全稽核、爭議處理、攻擊排查與合規要求所需的期限內保存，並透過雜湊、存取控制、最小權限與稽核記錄等方式降低外洩與濫用風險。",
         },
       },
     },
@@ -103,6 +111,11 @@ const locale = {
       sendRegisterCode: "發送驗證碼",
       sendRegisterCodeSuccess: "驗證碼已發送，請前往郵箱查收。",
       sendRegisterCodeFailed: "驗證碼發送失敗",
+      legalConsentPrefix: "我已閱讀並同意",
+      legalConsentAnd: "和",
+      accountAgreement: "帳號使用協議",
+      accountPrivacyPolicy: "帳號隱私政策",
+      legalConsentRequired: "請先閱讀並同意帳號使用協議和帳號隱私政策",
       backToLoginWithAccount: "已有帳號，去登入",
       forgotPassword: "找回密碼",
       forgotPasswordPageTitle: "找回密碼",
@@ -157,6 +170,7 @@ const locale = {
       qrLoginCancelled: "本次掃碼登入已取消",
       qrLoginExpired: "QR Code 已過期，請刷新",
       qrLoginRefresh: "刷新 QR Code",
+      downloadApp: "下載 APP",
       passwordLogin: "密碼登入",
       otpLogin: "郵箱驗證碼登入",
       phoneOtpLogin: "手機號驗證碼登入",
@@ -577,9 +591,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "週一至週五 09:00 - 18:00",
-      contactOverseasPersonValue: "待補充",
-      contactOverseasPhoneValue: "待補充",
-      contactOverseasEmailValue: "待補充",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "週一至週五 09:00 - 18:00",
       contactRegionNotice:
         "請根據你所在地區優先聯繫對應支援渠道；若無法判斷所屬地區，可先通過中國大陸聯絡人獲取轉接幫助。",

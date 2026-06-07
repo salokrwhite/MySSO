@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Poslednja izmena: {{date}}",
       agreement: {
         title: "Ugovor o korišćenju",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Dobrodošli na {{siteName}}. Pre registracije, prijave, povezivanja ili korišćenja usluga jedinstvene autentifikacije koje ovaj sistem nudi, trebate pažljivo pročitati ovaj ugovor. Nastavkom korišćenja usluga, saglasni ste da se pridržavate ovog ugovora.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Iz razloga sigurnosti, uključenosti u zakonodavstvo, operacija ili održavanja, platforma može prilagoditi, nadograditi, suspendovati ili prekinuti određene interfejse, tokove ili funkcije, i pokušat će dati obaveštenje kada je primereno.",
           liabilityP2:
             "U opsegu dozvoljenom zakonom, platforma nije odgovorna preko zakonskih obaveza za prekidane usluge, nenormalne podatke ili gubitke uzrokovane silnim prilikama, mrežnim greškama, razlozima trećih strana ili nepravilnim korišćenjem sa vaše strane.",
+accountP3:
+            "Radi zaštite korisničkih i razvojnih naloga, platforma može sprovoditi procene rizika u scenarijima kao što su prijava lozinkom, prijava kodom, prijava passkey-om, prijava QR kodom, povezivanje broja telefona, promena e-pošte, promena broja telefona, promena lozinke, podešavanja MFA, brisanje naloga, izvoz podataka i upravljanje aplikacijama za programere. U zavisnosti od rezultata, platforma može zahtevati dodatnu proveru, odložiti obradu, ograničiti radnju ili blokirati pristup.",
         },
       },
       privacy: {
         title: "Politika privatnosti",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} ceni vaše lične informacije i sigurnost naloga. Ova politika objašnjava kako sakupljamo, koristimo, čuvamo, delimo i zaštitavamo vaše informacije, kao i prava koja vam su dostupna.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Kada se registrujete, prijavljujete ili koristite usluge naloga, možemo sakupiti vašu zemlju registracije, e-adresu, broj telefona, hash lozinke, sesije prijave, IP uređaja, zapise autorizacije i potrebne sigurnosne zapise.",
           dataCollectionP2:
             "Kada postavite avatar, promenite profil, povežete broj telefona, uključite MFA ili autorizujete aplikaciju treće strane, obrađujemo informacije koje ste podigli po potrebi za pružanje te funkcije.",
+dataCollectionP3:
+            "Radi identifikacije preuzimanja naloga, credential stuffing-a, neuobičajenih uređaja, neuobičajenih mreža, automatizovanih zahteva i radnji visokog rizika, takođe možemo prikupljati ili generisati otiske uređaja, identifikatore javnog ključa uređaja, tip klijenta, signale rizika uređaja, razloge neuspelih prijava, rezultate provere kodova, IP regiju ili regionalne oznake rizika, istoriju prijava, rezultate rizika, nivoe rizika i preduzete radnje. Ne prikupljamo kontakte, sadržaj SMS-a, evidencije poziva, fotoalbume, preciznu lokaciju, sadržaj mikrofona ili kamere u svrhu kontrole rizika naloga.",
           dataUsageTitle: "2. Kako koristimo informacije",
           dataUsageP1:
             "Koristimo relevantne informacije za pružanje registracije naloga, autentifikaciju prijave, slanje verifikacionih kodova, kontrolu rizika, potvrdu autorizacije, pregled aplikacija developera, obaveštenja o sigurnosti naloga i održavanje pouzdanosti usluga.",
           dataUsageP2:
             "Takođe analiziramo zapise i statistike na osnovu minimalne potrebe da bismo detektovali nenormalnu aktivnost, unapredili korisničko iskustvo i ojačali sigurnost.",
+dataUsageP3:
+            "Informacije o kontroli rizika koriste se prvenstveno za odluku da li će se dozvoliti prijava ili nastavak osetljivih radnji, da li je potrebna dodatna provera putem e-pošte ili SMS-a, da li je potrebno povezivanje broja telefona, da li treba aktivirati zaključavanje nakon neuspelih pokušaja, da li treba zabeležiti rizik, ili za pomoć administratorima u istrazi bezbednosnih problema. Informacije o riziku koje prijavljuje klijent koriste se samo kao pomoćni signal i same po sebi ne smanjuju bezbednosne odluke.",
           dataSharingTitle: "3. Deljenje i otkrivanje",
           dataSharingP1:
             "Samo kada eksplicitno autorizujete dozvole prikazane na stranici autorizacije, pružamo informacije o identitetu ili podatke povezane sa dozvolama aplikacijama trećih strana.",
@@ -83,6 +89,8 @@ const locale = {
             "Koristimo kontrolu pristupa, heširanje lozinki, isteku verifikacionih kodova, zapise revizije i mere minimizacije podataka kako bismo zaštitili vaše lične informacije i podatke o autentifikaciji.",
           securityP2:
             "U skladu sa zakonskim i poslovnim zahtevima, zadržavamo vaše informacije samo dok je to neophodno za ispunjavanje ciljeva usluga; nakon brisanja naloga ili isteka perioda zadržavanja, brićemo ili anonimizovaćemo podatke prema politikama.",
+securityP3:
+            "Zapise rizika, istoriju prijava, profile uređaja i zapise neuspelih pokušaja čuvamo onoliko dugo koliko je potrebno za bezbednosnu reviziju, rešavanje sporova, istragu napada i usklađenost. Rizik od curenja i zloupotrebe smanjujemo heširanjem, kontrolom pristupa, najmanjim privilegijama i revizijskim zapisima.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "Verifikacioni kod je poslat. Proverite svoj e-poštovni sandućević.",
       sendRegisterCodeFailed: "Neuspešno slanje verifikacionog koda",
+      legalConsentPrefix: "Pročitao sam i slažem se sa",
+      legalConsentAnd: "i",
+      accountAgreement: "Uslovi korišćenja naloga",
+      accountPrivacyPolicy: "Politika privatnosti naloga",
+      legalConsentRequired: "Molimo pročitajte i prihvatite Uslove korišćenja naloga i Politiku privatnosti naloga",
       backToLoginWithAccount: "Već imate nalog? Prijavite se",
       forgotPassword: "Zaboravili ste lozinku?",
       forgotPasswordPageTitle: "Resetujte lozinku",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "QR prijava je otkazana",
       qrLoginExpired: "QR kod je istekao. Osvežite.",
       qrLoginRefresh: "Osveži QR kod",
+      downloadApp: "Preuzmi aplikaciju",
       passwordLogin: "Lozinka",
       otpLogin: "Kod e-pošte",
       phoneOtpLogin: "Kod telefona",
@@ -661,9 +675,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Ponedeljak do petak 09:00 - 18:00",
-      contactOverseasPersonValue: "Za dodavanje",
-      contactOverseasPhoneValue: "Za dodavanje",
-      contactOverseasEmailValue: "Za dodavanje",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Ponedeljak do petak 09:00 - 18:00",
       contactRegionNotice:
         "Prvo kontaktirajte kanal podrške za vaš region. Ako niste sigurni koji region se odnosi na vas, počnite sa kontaktom za Kinesku glavnu zemlju za pomoć u usmeravanju.",

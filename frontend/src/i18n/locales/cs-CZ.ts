@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Poslední aktualizace: {{date}}",
       agreement: {
         title: "Uživatelská smlouva",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Vítejte v {{siteName}}. Před registrací, přihlášením, integrací nebo používáním služeb jednotné identity si prosím pečlivě přečtěte tuto smlouvu. Pokračováním v používání služby souhlasíte s dodržováním této smlouvy.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Z bezpečnostních, compliance, provozních nebo údržbových důvodů může platforma upravovat, upgradovat, pozastavovat nebo ukončovat určité rozhraní, procesy nebo funkce a pokusí se poskytnout oznámení, když je to vhodné.",
           liabilityP2:
             "V rozsahu povoleném zákonem není platforma odpovědná nad rámec zákonných povinností za přerušení, abnormální data nebo ztráty způsobené vyšší mocí, selháním sítě, důvody třetích stran nebo nesprávným používáním vaší strany.",
+accountP3:
+            "Za účelem ochrany účtů uživatelů a vývojářů může platforma provádět hodnocení rizik ve scénářích, jako je přihlášení heslem, přihlášení kódem, přihlášení passkey, přihlášení QR kódem, vazba telefonního čísla, změna e-mailu, změna telefonního čísla, změna hesla, nastavení MFA, smazání účtu, export dat a správa aplikací vývojářů. V závislosti na výsledku může platforma vyžadovat dodatečné ověření, zpozdit zpracování, omezit operaci nebo zablokovat přístup.",
         },
       },
       privacy: {
         title: "Zásady ochrany osobních údajů",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} si váží vašich osobních údajů a bezpečnosti účtu. Tyto zásady vysvětlují, jak shromažďujeme, používáme, ukládáme, sdílíme a chráníme vaše informace, stejně jako práva, která máte k dispozici.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Když se registrujete, přihlašujete nebo používáte služby účtu, můžeme shromažďovat vaši registrační zemi, e-mailovou adresu, telefonní číslo, hash hesla, přihlašovací relace, IP zařízení, záznamy o autorizaci a nezbytné bezpečnostní protokoly.",
           dataCollectionP2:
             "Když nahrajete avatar, změníte svůj profil, navážete telefonní číslo, povolíte MFA nebo autorizujete aplikaci třetí strany, zpracováváme informace, které předložíte, podle potřeby pro poskytnutí této funkce.",
+dataCollectionP3:
+            "Za účelem identifikace převzetí účtů, credential stuffing, neobvyklých zařízení, neobvyklých sítí, automatizovaných požadavků a vysoce rizikových operací můžeme také shromažďovat nebo generovat otisky zařízení, identifikátory veřejných klíčů zařízení, typ klienta, signály rizika zařízení, důvody neúspěšných přihlášení, výsledky ověření kódů, oblast IP nebo regionální štítky rizika, historii přihlášení, skóre rizika, úrovně rizika a přijatá opatření. Pro účely kontroly rizik účtů neshromažďujeme kontakty, obsah SMS, záznamy hovorů, fotoalba, přesnou polohu, obsah mikrofonu ani kamey.",
           dataUsageTitle: "2. Jak používáme informace",
           dataUsageP1:
             "Používáme příslušné informace k poskytování registrace účtu, autentizace přihlášení, doručování ověřovacích kódů, kontroly rizik, potvrzení autorizace, kontroly aplikací vývojářů, oznámení o bezpečnosti účtu a údržby spolehlivosti služby.",
           dataUsageP2:
             "Také analyzujeme protokoly a statistiky na základě minimální nezbytnosti pro detekci neobvyklé aktivity, zlepšení uživatelského zážitku a posílení bezpečnosti.",
+dataUsageP3:
+            "Informace o kontrole rizik se používají především k rozhodnutí, zda povolit přihlášení nebo pokračování citlivých operací, zda vyžadovat dodatečné ověření e-mailem nebo SMS, zda vyžadovat vazbu telefonního čísla, zda spustit uzamčení po neúspěšných pokusech, zda zaznamenat rizikovou událost, nebo pomoci správcům při vyšetřování bezpečnostních problémů. Rizikové informace hlášené klientem slouží pouze jako pomocný signál a samy o sobě nesnižují bezpečnostní rozhodnutí.",
           dataSharingTitle: "3. Sdílení a zveřejnění",
           dataSharingP1:
             "Poskytujeme informace o identitě nebo data související s oprávněními aplikacím třetích stran pouze tehdy, když výslovně autorizujete rozsahy zobrazené na stránce autorizace.",
@@ -83,6 +89,8 @@ const locale = {
             "Používáme kontroly přístupu, hashování hesel, vypršení platnosti ověřovacích kódů, auditní protokoly a opatření pro minimalizaci dat k ochraně vašich osobních údajů a autentizačních dat.",
           securityP2:
             "Za dodržení zákonných a obchodních požadavků uchováváme vaše informace pouze po dobu nezbytnou k naplnění účelů služby; po smazání účtu nebo vypršení uchovávacích lhůt budeme data mazat nebo anonymizovat podle zásad.",
+securityP3:
+            "Logy rizik, historie přihlášení, profily zařízení a záznamy neúspěšných pokusů jsou uchovávány po dobu nezbytnou pro bezpečnostní audity, řešení sporů, vyšetřování útoků a dodržování předpisů. Rizika úniku a zneužití snižujeme pomocí hashování, řízení přístupu, minimálních oprávnění a auditních záznamů.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "Ověřovací kód byl odeslán. Zkontrolujte prosím svou doručenou poštu.",
       sendRegisterCodeFailed: "Nepodařilo se odeslat ověřovací kód",
+      legalConsentPrefix: "Přečetl(a) jsem a souhlasím s",
+      legalConsentAnd: "a",
+      accountAgreement: "Podmínky používání účtu",
+      accountPrivacyPolicy: "Zásady ochrany osobních údajů účtu",
+      legalConsentRequired: "Přečtěte si a odsouhlaste Podmínky používání účtu a Zásady ochrany osobních údajů účtu",
       backToLoginWithAccount: "Již máte účet? Přihlaste se",
       forgotPassword: "Zapomenuté heslo?",
       forgotPasswordPageTitle: "Obnovení hesla",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "Toto QR přihlášení bylo zrušeno",
       qrLoginExpired: "QR kód vypršel. Obnovte jej.",
       qrLoginRefresh: "Obnovit QR kód",
+      downloadApp: "Stáhnout aplikaci",
       passwordLogin: "Heslo",
       otpLogin: "E-mailový kód",
       phoneOtpLogin: "Telefonní kód",
@@ -663,9 +677,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Pondělí až pátek 09:00 - 18:00",
-      contactOverseasPersonValue: "Bude doplněno",
-      contactOverseasPhoneValue: "Bude doplněno",
-      contactOverseasEmailValue: "Bude doplněno",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Pondělí až pátek 09:00 - 18:00",
       contactRegionNotice:
         "Nejprve kontaktujte kanál podpory pro váš region. Pokud si nejste jisti, který region se vztahuje, začněte s kontaktem pro pevninskou Čínu pro pomoc s přesměrováním.",

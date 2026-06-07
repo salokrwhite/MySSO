@@ -157,7 +157,7 @@ func qrLoginPayloadJSON(challenge domain.QRLoginChallenge) (string, error) {
 		IP:              challenge.IP,
 		UserAgent:       challenge.UserAgent,
 	}
-	data, err := json.Marshal(payload)
+	data, err := json.Marshal(payload) // #nosec G117 -- intentionally persists short-lived QR session token for polling completion.
 	if err != nil {
 		return "", err
 	}

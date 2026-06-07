@@ -25,6 +25,7 @@ type Server struct {
 	installer         *installsvc.Service
 	cleanupWorkerOnce sync.Once
 	rateLimiter       *inMemoryRateLimiter
+	deviceReplayCache *replayCache
 	captchaService    *captcha.Service
 }
 
@@ -54,16 +55,18 @@ func NewServer(cfg config.Config) (*Server, error) {
 		}
 	}
 	engine := gin.Default()
+	_ = engine.SetTrustedProxies(trustedProxies(cfg.HTTP.TrustedProxies))
 	engine.MaxMultipartMemory = maxUploadImageBytes + maxUploadMultipartOverhead
 	server := &Server{
-		engine:         engine,
-		cfg:            cfg,
-		services:       services,
-		installer:      installer,
-		rateLimiter:    newInMemoryRateLimiter(),
-		captchaService: captcha.NewService(cfg.HTTP.DeviceCookieSecret),
+		engine:            engine,
+		cfg:               cfg,
+		services:          services,
+		installer:         installer,
+		rateLimiter:       newInMemoryRateLimiter(),
+		deviceReplayCache: newReplayCache(50000),
+		captchaService:    captcha.NewService(cfg.HTTP.DeviceCookieSecret),
 	}
-	_ = os.MkdirAll("uploads", 0755)
+	_ = os.MkdirAll("uploads", 0750)
 	engine.Use(func(c *gin.Context) {
 		applySecurityHeaders(c)
 		origin := c.GetHeader("Origin")
@@ -72,7 +75,7 @@ func NewServer(cfg config.Config) (*Server, error) {
 			c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 			c.Writer.Header().Set("Vary", "Origin")
 		}
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept, X-Device-Key-ID, X-Device-Timestamp, X-Device-Nonce, X-Device-Body-SHA256, X-Device-Signature")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept, X-Client-Type, X-Device-Key-ID, X-Device-Timestamp, X-Device-Nonce, X-Device-Body-SHA256, X-Device-Signature, X-Device-Risk-Score, X-Device-Risk-Level, X-Device-Fingerprint, X-Device-Risk-Signals")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 		if c.Request.Method == http.MethodOptions {
 			c.AbortWithStatus(http.StatusNoContent)
@@ -80,9 +83,22 @@ func NewServer(cfg config.Config) (*Server, error) {
 		}
 		c.Next()
 	})
+	engine.Use(riskHeaderMiddleware())
 	server.startCleanupWorker()
 	server.registerRoutes()
 	return server, nil
+}
+
+func trustedProxies(configured []string) []string {
+	items := make([]string, 0, len(configured)+2)
+	items = append(items, "127.0.0.1", "::1")
+	for _, item := range configured {
+		item = strings.TrimSpace(item)
+		if item != "" {
+			items = append(items, item)
+		}
+	}
+	return items
 }
 
 func applySecurityHeaders(c *gin.Context) {
@@ -243,6 +259,15 @@ func (s *Server) registerRoutes() {
 	admin.POST("/system-settings/site-logo", s.handleUploadSiteLogo)
 	admin.POST("/system-settings/test-email", s.handleSendTestEmail)
 	admin.POST("/system-settings/test-sms", s.handleSendTestSMS)
+	admin.GET("/risk/events", s.handleAdminRiskEvents)
+	admin.POST("/risk/events/delete", s.handleAdminDeleteRiskEvents)
+	admin.GET("/risk/account-summaries", s.handleAdminRiskAccountSummaries)
+	admin.GET("/risk/stats", s.handleAdminRiskStats)
+	admin.POST("/risk/users/:user_id/clear-profile", s.handleAdminClearUserRiskProfile)
+	admin.POST("/risk/users/:user_id/false-positive", s.handleAdminMarkUserRiskFalsePositive)
+	admin.GET("/risk/ip-blacklist", s.handleAdminIPBlacklist)
+	admin.POST("/risk/ip-blacklist", s.handleAdminAddIPBlacklist)
+	admin.DELETE("/risk/ip-blacklist/:ip", s.handleAdminRemoveIPBlacklist)
 }
 
 func (s *Server) startCleanupWorker() {
@@ -357,6 +382,10 @@ func (s *Server) rejectCrossSiteUnsafeRequest(c *gin.Context) bool {
 		return false
 	}
 
+	if hasDeviceSessionSignatureHeaders(c) {
+		return false
+	}
+
 	fetchSite := strings.ToLower(strings.TrimSpace(c.GetHeader("Sec-Fetch-Site")))
 	switch fetchSite {
 	case "same-origin", "same-site", "none":
@@ -385,6 +414,22 @@ func (s *Server) rejectCrossSiteUnsafeRequest(c *gin.Context) bool {
 	}
 
 	c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "cross-site request forbidden"})
+	return true
+}
+
+func hasDeviceSessionSignatureHeaders(c *gin.Context) bool {
+	requiredHeaders := []string{
+		"X-Device-Key-ID",
+		"X-Device-Timestamp",
+		"X-Device-Nonce",
+		"X-Device-Body-SHA256",
+		"X-Device-Signature",
+	}
+	for _, header := range requiredHeaders {
+		if strings.TrimSpace(c.GetHeader(header)) == "" {
+			return false
+		}
+	}
 	return true
 }
 

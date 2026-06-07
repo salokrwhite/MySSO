@@ -14,6 +14,24 @@ func (s *MemoryStore) SaveEmailVerificationCode(code domain.EmailVerificationCod
 	return nil
 }
 
+func (s *MemoryStore) SaveEmailVerificationCodeWithinDailyLimit(code domain.EmailVerificationCode, startAt, endAt time.Time, limit int) (bool, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if limit > 0 {
+		count := 0
+		for _, item := range s.emailCodes {
+			if strings.EqualFold(item.Email, code.Email) && !item.CreatedAt.Before(startAt) && item.CreatedAt.Before(endAt) {
+				count++
+			}
+		}
+		if count >= limit {
+			return false, nil
+		}
+	}
+	s.emailCodes[code.ID] = code
+	return true, nil
+}
+
 func (s *MemoryStore) CountEmailVerificationCodes(email string, startAt, endAt time.Time) (int, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -73,6 +91,25 @@ func (s *MemoryStore) SaveSMSVerificationCode(code domain.SMSVerificationCode) e
 	defer s.mu.Unlock()
 	s.smsCodes[code.ID] = code
 	return nil
+}
+
+func (s *MemoryStore) SaveSMSVerificationCodeWithinDailyLimit(code domain.SMSVerificationCode, startAt, endAt time.Time, limit int) (bool, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	phone := strings.TrimSpace(code.Phone)
+	if limit > 0 {
+		count := 0
+		for _, item := range s.smsCodes {
+			if strings.TrimSpace(item.Phone) == phone && !item.CreatedAt.Before(startAt) && item.CreatedAt.Before(endAt) {
+				count++
+			}
+		}
+		if count >= limit {
+			return false, nil
+		}
+	}
+	s.smsCodes[code.ID] = code
+	return true, nil
 }
 
 func (s *MemoryStore) CountSMSVerificationCodes(phone string, startAt, endAt time.Time) (int, error) {
@@ -135,6 +172,12 @@ func (s *MemoryStore) ConsumeSMSVerificationCode(id string) error {
 }
 
 func (s *MemoryStore) SaveMFALoginChallenge(challenge domain.MFALoginChallenge) error {
+	payload, err := authChallengePayload(struct {
+		RiskClientJSON string `json:"risk_client_json,omitempty"`
+	}{RiskClientJSON: challenge.RiskClientJSON})
+	if err != nil {
+		return err
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.saveAuthChallengeLocked(domain.AuthChallenge{
@@ -143,6 +186,7 @@ func (s *MemoryStore) SaveMFALoginChallenge(challenge domain.MFALoginChallenge) 
 		UserID:        challenge.UserID,
 		Channel:       challenge.Method,
 		Target:        challenge.Target,
+		PayloadJSON:   payload,
 		ExpiresAt:     challenge.ExpiresAt,
 		CreatedAt:     challenge.CreatedAt,
 	})
@@ -156,13 +200,20 @@ func (s *MemoryStore) GetMFALoginChallenge(token string) (domain.MFALoginChallen
 	if err != nil {
 		return domain.MFALoginChallenge{}, ErrNotFound
 	}
+	payload, err := parseAuthChallengePayload[struct {
+		RiskClientJSON string `json:"risk_client_json,omitempty"`
+	}](item.PayloadJSON)
+	if err != nil {
+		return domain.MFALoginChallenge{}, err
+	}
 	return domain.MFALoginChallenge{
-		Token:     item.Token,
-		UserID:    item.UserID,
-		Method:    item.Channel,
-		Target:    item.Target,
-		ExpiresAt: item.ExpiresAt,
-		CreatedAt: item.CreatedAt,
+		Token:          item.Token,
+		UserID:         item.UserID,
+		Method:         item.Channel,
+		Target:         item.Target,
+		RiskClientJSON: payload.RiskClientJSON,
+		ExpiresAt:      item.ExpiresAt,
+		CreatedAt:      item.CreatedAt,
 	}, nil
 }
 
@@ -181,7 +232,8 @@ func (s *MemoryStore) ConsumeMFALoginChallenge(token string, consumedAt time.Tim
 func (s *MemoryStore) SaveDeletionLoginChallenge(challenge domain.DeletionLoginChallenge) error {
 	payload, err := authChallengePayload(struct {
 		DeletionScheduledAt time.Time `json:"deletion_scheduled_at"`
-	}{DeletionScheduledAt: challenge.DeletionScheduledAt})
+		RiskClientJSON      string    `json:"risk_client_json,omitempty"`
+	}{DeletionScheduledAt: challenge.DeletionScheduledAt, RiskClientJSON: challenge.RiskClientJSON})
 	if err != nil {
 		return err
 	}
@@ -208,6 +260,7 @@ func (s *MemoryStore) GetDeletionLoginChallenge(token string) (domain.DeletionLo
 	}
 	payload, err := parseAuthChallengePayload[struct {
 		DeletionScheduledAt time.Time `json:"deletion_scheduled_at"`
+		RiskClientJSON      string    `json:"risk_client_json,omitempty"`
 	}](item.PayloadJSON)
 	if err != nil {
 		return domain.DeletionLoginChallenge{}, err
@@ -216,6 +269,7 @@ func (s *MemoryStore) GetDeletionLoginChallenge(token string) (domain.DeletionLo
 		Token:               item.Token,
 		UserID:              item.UserID,
 		ACR:                 item.ACR,
+		RiskClientJSON:      payload.RiskClientJSON,
 		DeletionScheduledAt: payload.DeletionScheduledAt,
 		ExpiresAt:           item.ExpiresAt,
 		CreatedAt:           item.CreatedAt,

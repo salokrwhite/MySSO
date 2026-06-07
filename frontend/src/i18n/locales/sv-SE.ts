@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Senast uppdaterad: {{date}}",
       agreement: {
         title: "Användaravtal",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Välkommen till {{siteName}}. Innan du registrerar dig, loggar in, integrerar eller använder de enhetliga autentiseringsfunktionerna som systemet tillhandahåller, bör du läsa detta avtal noggrant. Genom att fortsätta använda tjänsten godkänner du att du förstår och samtycker till att använda relaterade tjänster enligt detta avtal.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Plattformen kan på grund av säkerhet, efterlevnad, drift och underhåll justera, uppgradera, pausa eller avsluta tjänstinnehåll, API-funktioner, autentiseringsprocesser eller funktionssidor och försöka meddela i god tid.",
           liabilityP2:
             "I den utsträckning som tillåts av lagen ansvarar plattformen inte för tjänstavbrott, dataavvikelser eller förluster orsakade av force majeure, nätverksfel, tredjepartsskäl eller felaktig användning på din sida utöver det som krävs enligt lag.",
+accountP3:
+            "För att skydda användar- och utvecklarkonton kan plattformen utföra riskbedömningar i scenarier som inloggning med lösenord, inloggning med kod, inloggning med passkey, inloggning med QR-kod, telefonnummerkoppling, e-poständring, telefonnummerändring, lösenordsändring, MFA-inställning, kontotborttagning, dataexport och hantering av utvecklarappar. Beroende på resultatet kan plattformen kräva ytterligare verifiering, fördröja behandlingen, begränsa en åtgärd eller blockera åtkomst.",
         },
       },
       privacy: {
         title: "Integritetspolicy",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} värdesätter din personliga information och kontosäkerhet. Denna policy används för att förklara hur vi samlar in, använder, lagrar, delar och skyddar din personliga information, samt de rättigheter du har.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "När du registrerar dig, loggar in eller använder kontotjänster kan vi samla in registreringsland, e-postadress, telefonnummer, lösenordshash, inloggningssessioner, enhets-IP, auktoriseringsloggar och nödvändig säkerhetslogginformation.",
           dataCollectionP2:
             "När du aktivt laddar upp en avatar, ändrar ditt namn, binder ett telefonnummer, aktiverar tvåfaktorsverifiering eller auktoriserar ett tredjepartsprogram behandlar vi den information du skickar in enligt funktionens behov.",
+dataCollectionP3:
+            "För att identifiera kontokapning, credential stuffing, avvikande enheter, avvikande nätverk, automatiserade förfrågningar och högriskoperationer kan vi också samla in eller generera enhetsfingeravtryck, publika nyckelidentifierare för enheter, klienttyp, enhetsrisksignaler, orsaker till inloggningsfel, kodverifieringsresultat, IP-region eller regionala risketiketter, inloggningshistorik, riskpoäng, risknivåer och vidtagna åtgärder. Vi samlar inte in kontakter, SMS-innehåll, samtalsloggar, fotalbum, exakt position, mikrofon- eller kamerainnehåll för ändamål som rör kontoriskkontroll.",
           dataUsageTitle: "2. Hur informationen används",
           dataUsageP1:
             "Vi använder relevant information för att genomföra kontoregistrering, inloggningsautentisering, verifieringskodsändning, riskkontroll, auktoriseringsbekräftelse, granskning av utvecklarintegrering, kontosäkerhetsmeddelanden och tjänstestabilitetsunderhåll.",
           dataUsageP2:
             "Vi analyserar också loggar och statistik utifrån principen om minsta nödvändiga för att upptäcka onormalt beteende, optimera produktupplevelsen och förbättra systemets säkerhet.",
+dataUsageP3:
+            "Riskkontrollinformation används huvudsakligen för att avgöra om inloggning eller fortsatta känsliga åtgärder ska tillåtas, om ytterligare verifiering via e-post eller SMS krävs, om telefonnummerkoppling krävs, om låsning efter misslyckade försök ska utlösas, om en riskhändelse ska registreras, eller för att hjälpa administratörer att utreda säkerhetsproblem. Klientrapporterad riskinformation används endast som en hjälpsignal och används inte ensam för att sänka säkerhetsbeslut.",
           dataSharingTitle: "3. Informationsdelning och offentliggörande",
           dataSharingP1:
             "Vi tillhandahåller endast identitetsinformation eller data som motsvarar behörighetsområdet till tredjepartsprogram när du uttryckligen auktoriserar det.",
@@ -83,6 +89,8 @@ const locale = {
             "Vi tar åtgärder som åtkomstkontroll, lösenordskryptering, verifieringskods giltighetsperiodskontroll, revisionsloggar och minimerad lagring för att försöka säkerställa säkerheten för din personliga information och autentiseringsdata.",
           securityP2:
             "Under förutsättning att det överensstämmer med lagar och regler och affärsbehov, lagrar vi din information endast under den tid som är nödvändig för att uppnå tjänstens syfte; när du tar bort ditt konto eller lagringsperioden utgår, tar vi bort eller anonymiserar informationen enligt reglerna.",
+securityP3:
+            "Riskloggar, inloggningshistorik, enhetsprofiler och register över misslyckade försök sparas under den period som krävs för säkerhetsrevision, tvistlösning, attackutredning och regelefterlevnad. Vi minskar risken för läckor och missbruk genom hashning, åtkomstkontroll, minsta möjliga behörighet och granskningsloggar.",
         },
       },
     },
@@ -103,6 +111,11 @@ const locale = {
       sendRegisterCode: "Skicka verifieringskod",
       sendRegisterCodeSuccess: "Verifieringskoden har skickats. Vänligen kontrollera din e-post.",
       sendRegisterCodeFailed: "Misslyckades med att skicka verifieringskod",
+      legalConsentPrefix: "Jag har läst och godkänner",
+      legalConsentAnd: "och",
+      accountAgreement: "Kontots användarvillkor",
+      accountPrivacyPolicy: "Kontots integritetspolicy",
+      legalConsentRequired: "Läs och godkänn Kontots användarvillkor och Kontots integritetspolicy",
       backToLoginWithAccount: "Har du redan ett konto? Logga in",
       forgotPassword: "Glömt lösenord?",
       forgotPasswordPageTitle: "Återställ lösenord",
@@ -157,6 +170,7 @@ const locale = {
       qrLoginCancelled: "QR-inloggning avbruten",
       qrLoginExpired: "QR-koden har gått ut. Uppdatera.",
       qrLoginRefresh: "Uppdatera QR-koden",
+      downloadApp: "Ladda ner appen",
       passwordLogin: "Lösenordsinloggning",
       otpLogin: "E-postverifieringskodslogin",
       phoneOtpLogin: "Telefonverifieringskodslogin",
@@ -580,9 +594,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Måndag till fredag 09:00 - 18:00",
-      contactOverseasPersonValue: "Att tillhandahållas",
-      contactOverseasPhoneValue: "Att tillhandahållas",
-      contactOverseasEmailValue: "Att tillhandahållas",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Måndag till fredag 09:00 - 18:00",
       contactRegionNotice:
         "Vänligen kontakta den supportkanal som gäller för din region först. Om du inte kan avgöra vilken region du tillhör, kan du först kontakta huvudland Kina för vidarebefordran.",

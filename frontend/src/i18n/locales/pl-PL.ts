@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Ostatnia aktualizacja: {{date}}",
       agreement: {
         title: "Umowa użytkownika",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Witamy w {{siteName}}. Przed rejestracją, logowaniem, integracją lub korzystaniem z usług ujednoliconej tożsamości, prosimy o uważne przeczytanie tej umowy. Kontynuowanie korzystania z usługi oznacza zgodę na wiążące warunki tej umowy.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Ze względów bezpieczeństwa, zgodności, operacji lub konserwacji platforma może dostosowywać, aktualizować, zawieszać lub kończyć niektóre interfejsy, procesy lub funkcje, starając się zapewnić powiadomienia, gdy jest to odpowiednie.",
           liabilityP2:
             "W zakresie dozwolonym przez prawo, platforma nie ponosi odpowiedzialności wykraczającej poza obowiązki ustawowe za przerwy, nieprawidłowe dane lub straty spowodowane siłą wyższą, awariami sieci, przyczynami stron trzecich lub nieprawidłowym użyciem po Twojej stronie.",
+accountP3:
+            "W celu ochrony kont użytkowników i deweloperów platforma może przeprowadzać ocenę ryzyka w scenariuszach takich jak logowanie hasłem, logowanie kodem, logowanie passkey, logowanie kodem QR, wiązanie numeru telefonu, zmiana e-maila, zmiana numeru telefonu, zmiana hasła, konfiguracja MFA, usuwanie konta, eksport danych i zarządzanie aplikacjami deweloperskimi. W zależności od wyniku platforma może wymagać dodatkowej weryfikacji, opóźnić przetwarzanie, ograniczyć operację lub zablokować dostęp.",
         },
       },
       privacy: {
         title: "Polityka prywatności",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} ceni Twoje dane osobowe i bezpieczeństwo konta. Niniejsza polityka wyjaśnia, jak zbieramy, używamy, przechowujemy, udostępniamy i chronimy Twoje informacje oraz jakie przysługują Ci prawa.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Podczas rejestracji, logowania lub korzystania z usług konta możemy zbierać kraj rejestracji, adres e-mail, numer telefonu, hash hasła, sesje logowania, IP urządzenia, rekordy autoryzacji i niezbędne logi bezpieczeństwa.",
           dataCollectionP2:
             "Gdy przesyłasz awatar, zmieniasz swój profil, wiążesz numer telefonu, włączasz MFA lub autoryzujesz aplikację strony trzeciej, przetwarzamy informacje, które przesyłasz, zgodnie z potrzebami dostarczenia tej funkcji.",
+dataCollectionP3:
+            "W celu identyfikacji przejęcia kont, credential stuffing, nietypowych urządzeń, nietypowych sieci, zautomatyzowanych żądań i operacji wysokiego ryzyka możemy również zbierać lub generować odciski urządzeń, identyfikatory klucza publicznego urządzenia, typ klienta, sygnały ryzyka urządzenia, przyczyny niepowodzeń logowania, wyniki weryfikacji kodów, region IP lub regionalne etykiety ryzyka, historię logowań, oceny ryzyka, poziomy ryzyka i podjęte działania. Nie zbieramy kontaktów, treści SMS, rejestrów połączeń, albumów zdjęć, dokładnej lokalizacji, treści z mikrofonu ani kamery do celów kontroli ryzyka konta.",
           dataUsageTitle: "2. Jak używamy informacji",
           dataUsageP1:
             "Używamy odpowiednich informacji do rejestracji konta, uwierzytelniania logowania, dostarczania kodów weryfikacyjnych, kontroli ryzyka, potwierdzania autoryzacji, przeglądu aplikacji deweloperskich, powiadomień o bezpieczeństwie konta i utrzymania niezawodności usługi.",
           dataUsageP2:
             "Analizujemy również logi i statystyki na zasadzie minimalnej konieczności, aby wykrywać nietypową aktywność, poprawiać doświadczenie produktu i wzmacniać bezpieczeństwo.",
+dataUsageP3:
+            "Informacje o kontroli ryzyka są używane głównie do podejmowania decyzji, czy zezwolić na logowanie lub kontynuowanie wrażliwych operacji, czy wymagać dodatkowej weryfikacji e-mailem lub SMS-em, czy wymagać powiązania numeru telefonu, czy uruchomić blokadę po nieudanych próbach, czy zarejestrować zdarzenie ryzyka, oraz do pomocy administratorom w badaniu problemów bezpieczeństwa. Informacje o ryzyku zgłaszane przez klienta są używane wyłącznie jako sygnał pomocniczy i same w sobie nie obniżają decyzji bezpieczeństwa.",
           dataSharingTitle: "3. Udostępnianie i ujawnianie",
           dataSharingP1:
             "Udostępniamy informacje identyfikacyjne lub dane związane z zakresem pokazanym na stronie autoryzacji aplikacjom stron trzecich tylko wtedy, gdy wyraźnie udzielisz na to zgody.",
@@ -83,6 +89,8 @@ const locale = {
             "Stosujemy kontrole dostępu, hashowanie haseł, ważność kodów weryfikacyjnych, logi audytu i minimalizację danych, aby chronić Twoje dane osobowe i dane uwierzytelniające.",
           securityP2:
             "Z zastrzeżeniem wymogów prawnych i biznesowych, przechowujemy Twoje informacje tylko tak długo, jak jest to konieczne do realizacji celów usługi; po usunięciu konta lub wygaśnięciu okresów przechowywania, usuniemy lub zanonimizujemy dane zgodnie z polityką.",
+securityP3:
+            "Logi ryzyka, historię logowań, profile urządzeń i zapisy nieudanych prób przechowujemy przez okres niezbędny do audytu bezpieczeństwa, rozpatrywania sporów, badania ataków i zgodności. Ryzyko wycieku i nadużyć ograniczamy za pomocą haszowania, kontroli dostępu, zasady minimalnych uprawnień i dzienników audytu.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "Kod weryfikacyjny został wysłany. Sprawdź swoją skrzynkę odbiorczą.",
       sendRegisterCodeFailed: "Nie udało się wysłać kodu weryfikacyjnego",
+      legalConsentPrefix: "Przeczytałem i akceptuję",
+      legalConsentAnd: "oraz",
+      accountAgreement: "Warunki korzystania z konta",
+      accountPrivacyPolicy: "Polityka prywatności konta",
+      legalConsentRequired: "Proszę przeczytać i zaakceptować Warunki korzystania z konta oraz Politykę prywatności konta",
       backToLoginWithAccount: "Masz już konto? Zaloguj się",
       forgotPassword: "Zapomniałeś hasła?",
       forgotPasswordPageTitle: "Zresetuj hasło",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "Logowanie QR anulowane",
       qrLoginExpired: "Kod QR wygasł. Odśwież stronę.",
       qrLoginRefresh: "Odśwież kod QR",
+      downloadApp: "Pobierz aplikację",
       passwordLogin: "Hasło",
       otpLogin: "Kod e-mail",
       phoneOtpLogin: "Kod telefonu",
@@ -660,9 +674,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Poniedziałek - Piątek 09:00 - 18:00",
-      contactOverseasPersonValue: "Do uzupełnienia",
-      contactOverseasPhoneValue: "Do uzupełnienia",
-      contactOverseasEmailValue: "Do uzupełnienia",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Poniedziałek - Piątek 09:00 - 18:00",
       contactRegionNotice:
         "Skontaktuj się najpierw z kanałem wsparcia dla swojego regionu. Jeśli nie jesteś pewien, który region dotyczy, zacznij od kontaktu w Chinach kontynentalnych w celu uzyskania pomocy w kierowaniu.",

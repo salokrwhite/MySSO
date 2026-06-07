@@ -7,6 +7,12 @@ import (
 )
 
 func (s *MemoryStore) SavePhoneBindingChallenge(challenge domain.PhoneBindingChallenge) error {
+	payload, err := authChallengePayload(struct {
+		RiskClientJSON string `json:"risk_client_json,omitempty"`
+	}{RiskClientJSON: challenge.RiskClientJSON})
+	if err != nil {
+		return err
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -16,6 +22,7 @@ func (s *MemoryStore) SavePhoneBindingChallenge(challenge domain.PhoneBindingCha
 		UserID:        challenge.UserID,
 		Target:        challenge.Reason,
 		ACR:           challenge.ACR,
+		PayloadJSON:   payload,
 		ExpiresAt:     challenge.ExpiresAt,
 		CreatedAt:     challenge.CreatedAt,
 	})
@@ -30,13 +37,20 @@ func (s *MemoryStore) GetPhoneBindingChallenge(token string) (domain.PhoneBindin
 	if err != nil {
 		return domain.PhoneBindingChallenge{}, ErrNotFound
 	}
+	payload, err := parseAuthChallengePayload[struct {
+		RiskClientJSON string `json:"risk_client_json,omitempty"`
+	}](item.PayloadJSON)
+	if err != nil {
+		return domain.PhoneBindingChallenge{}, err
+	}
 	return domain.PhoneBindingChallenge{
-		Token:     item.Token,
-		UserID:    item.UserID,
-		Reason:    item.Target,
-		ACR:       item.ACR,
-		ExpiresAt: item.ExpiresAt,
-		CreatedAt: item.CreatedAt,
+		Token:          item.Token,
+		UserID:         item.UserID,
+		Reason:         item.Target,
+		ACR:            item.ACR,
+		RiskClientJSON: payload.RiskClientJSON,
+		ExpiresAt:      item.ExpiresAt,
+		CreatedAt:      item.CreatedAt,
 	}, nil
 }
 

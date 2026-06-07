@@ -17,8 +17,8 @@ const (
 	DefaultRegisterCodeBodyTemplate           = "你好，\n\n你的注册验证码是 {{code}} ，{{minutes}} 分钟内有效。\n\n邮箱：{{email}}\n国家：{{country}}\n\n如果这不是你的操作，请忽略此邮件。"
 	DefaultRegisterCodeSubjectTemplateEN      = "MySSO Registration Verification Code"
 	DefaultRegisterCodeBodyTemplateEN         = "Hello,\n\nYour registration verification code is {{code}}. It is valid for {{minutes}} minutes.\n\nEmail: {{email}}\nCountry/Region: {{country}}\n\nIf this was not you, please ignore this email."
-	DefaultResetPasswordCodeSubjectTemplate   = "MySSO 找回密码验证码"
-	DefaultResetPasswordCodeBodyTemplate      = "你好，\n\n你正在通过邮箱验证码重置 MySSO 账号密码，验证码是 {{code}} ，{{minutes}} 分钟内有效。\n\n邮箱：{{email}}\n\n如果这不是你的操作，请忽略此邮件。"
+	DefaultResetPasswordCodeSubjectTemplate   = "MySSO 找回密码验证码"                                                                                         // #nosec G101 -- notification template text, not a credential.
+	DefaultResetPasswordCodeBodyTemplate      = "你好，\n\n你正在通过邮箱验证码重置 MySSO 账号密码，验证码是 {{code}} ，{{minutes}} 分钟内有效。\n\n邮箱：{{email}}\n\n如果这不是你的操作，请忽略此邮件。" // #nosec G101 -- notification template text, not a credential.
 	DefaultResetPasswordCodeSubjectTemplateEN = "MySSO Password Reset Verification Code"
 	DefaultResetPasswordCodeBodyTemplateEN    = "Hello,\n\nYou are resetting the password for your MySSO account by email verification code. Your code is {{code}} and it is valid for {{minutes}} minutes.\n\nEmail: {{email}}\n\nIf this was not you, please ignore this email."
 	DefaultDeleteAccountCodeSubjectTemplate   = "MySSO 账号注销验证码"
@@ -57,7 +57,7 @@ const (
 	DefaultSMSSignature                       = ""
 	DefaultSMSLoginTemplate                   = "【{{signature}}】你的登录验证码是 {{code}}，{{minutes}} 分钟内有效。"
 	DefaultSMSRegisterTemplate                = "【{{signature}}】你的验证码是 {{code}}，{{minutes}} 分钟内有效。"
-	DefaultSMSResetPasswordTemplate           = "【{{signature}}】你正在重置密码，验证码是 {{code}}，{{minutes}} 分钟内有效。"
+	DefaultSMSResetPasswordTemplate           = "【{{signature}}】你正在重置密码，验证码是 {{code}}，{{minutes}} 分钟内有效。" // #nosec G101 -- notification template text, not a credential.
 	DefaultSMSBindPhoneTemplate               = "【{{signature}}】你正在绑定手机号，验证码是 {{code}}，{{minutes}} 分钟内有效。"
 	DefaultSMSDeleteAccountTemplate           = "【{{signature}}】你正在申请注销账号，验证码是 {{code}}，{{minutes}} 分钟内有效。"
 	DefaultAliyunSMSEndpoint                  = "dypnsapi.aliyuncs.com"
@@ -84,6 +84,7 @@ const (
 	DefaultOIDCAutoApproveRedirectHosts       = ""
 	DefaultSMTPVerificationCodeCooldownText   = "60"
 	DefaultRiskControlEnabled                 = false
+	DefaultRiskPhoneBindingEnabled            = false
 	DefaultRiskImmediateBindProbability       = 50
 	DefaultRiskDelayedBindProbability         = 50
 	DefaultRiskDelayedBindLoginCount          = 3

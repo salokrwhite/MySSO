@@ -44,11 +44,13 @@ type UserStore interface {
 
 type VerificationStore interface {
 	SaveEmailVerificationCode(code domain.EmailVerificationCode) error
+	SaveEmailVerificationCodeWithinDailyLimit(code domain.EmailVerificationCode, startAt, endAt time.Time, limit int) (bool, error)
 	CountEmailVerificationCodes(email string, startAt, endAt time.Time) (int, error)
 	GetEmailVerificationCode(email, purpose, code string) (domain.EmailVerificationCode, error)
 	GetLatestEmailVerificationCode(email, purpose string) (domain.EmailVerificationCode, error)
 	ConsumeEmailVerificationCode(id string) error
 	SaveSMSVerificationCode(code domain.SMSVerificationCode) error
+	SaveSMSVerificationCodeWithinDailyLimit(code domain.SMSVerificationCode, startAt, endAt time.Time, limit int) (bool, error)
 	CountSMSVerificationCodes(phone string, startAt, endAt time.Time) (int, error)
 	GetSMSVerificationCode(phone, purpose, code string) (domain.SMSVerificationCode, error)
 	GetLatestSMSVerificationCode(phone, purpose string) (domain.SMSVerificationCode, error)
@@ -208,6 +210,29 @@ type AuditSettingsStore interface {
 	UpsertSettings(values map[string]string) error
 }
 
+type RiskStore interface {
+	InsertRiskEvent(event domain.RiskEvent) error
+	ListRiskEvents(page, pageSize int, userID, eventType, level string) ([]domain.RiskEvent, int, error)
+	ListRiskAccountSummaries(page, pageSize int, userID, level string, mediumThreshold, highThreshold, criticalThreshold, scoreWindowDays, failedLoginScoreWeight, failedLoginScoreCap int) ([]domain.RiskAccountSummary, int, error)
+	DeleteRiskEvents(startAt, endAt *time.Time) (int64, error)
+	CountRiskEventsSince(eventType, identifierHash, ip string, since time.Time) (int, error)
+	UpsertDeviceProfile(profile domain.DeviceProfile) error
+	GetDeviceProfile(userID, fingerprint string) (domain.DeviceProfile, error)
+	CountUserDevicesSince(userID string, since time.Time) (int, error)
+	TrustDevice(userID, fingerprint, reason, updatedBy string, trustedUntil, mitigatedUntil *time.Time) error
+	ClearUserRiskProfile(userID string) error
+	SetUserRiskFalsePositive(userID, note string, until time.Time) error
+	GetUserRiskFalsePositiveUntil(userID string, now time.Time) (*time.Time, error)
+	InsertLoginHistory(history domain.LoginHistory) error
+	GetLastLoginHistory(userID string) (domain.LoginHistory, error)
+	CountFailedLogins(identifierHash, ip string, since time.Time) (int, error)
+	AddIPBlacklist(entry domain.IPBlacklistEntry) error
+	RemoveIPBlacklist(ip string) error
+	IsIPBlacklisted(ip string, now time.Time) (domain.IPBlacklistEntry, bool, error)
+	ListIPBlacklist() ([]domain.IPBlacklistEntry, error)
+	CountRiskEventsByLevel(since time.Time) (map[string]int, error)
+}
+
 type ScopeStore interface {
 	ListScopes() []domain.ScopeDefinition
 	GetScope(key string) (domain.ScopeDefinition, error)
@@ -232,6 +257,7 @@ type Store interface {
 	OAuthStore
 	DeveloperAccessStore
 	AuditSettingsStore
+	RiskStore
 	ScopeStore
 	CleanupStore
 }

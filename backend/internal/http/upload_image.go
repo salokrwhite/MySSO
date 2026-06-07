@@ -57,13 +57,13 @@ func (s *Server) storeUploadedImage(c *gin.Context, fileField string, filePrefix
 	if err != nil {
 		return "", err
 	}
-	if err := os.MkdirAll("uploads", 0755); err != nil {
+	if err := os.MkdirAll("uploads", 0750); err != nil {
 		return "", err
 	}
 
 	filename := filePrefix + "-" + strings.ReplaceAll(uuid.NewString(), "-", "") + extension
 	targetPath := filepath.Join("uploads", filename)
-	if err := os.WriteFile(targetPath, normalizedData, 0644); err != nil {
+	if err := os.WriteFile(targetPath, normalizedData, 0600); err != nil {
 		return "", err
 	}
 	return "/uploads/" + filename, nil

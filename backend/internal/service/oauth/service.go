@@ -165,6 +165,19 @@ func (s *OAuthService) GenerateAuthorizationCode(session domain.Session, clientI
 	return code.Code, nil
 }
 
+func (s *OAuthService) CanRedirectAuthorizeError(clientID, redirectURI string) bool {
+	clientID = strings.TrimSpace(clientID)
+	redirectURI = strings.TrimSpace(redirectURI)
+	if clientID == "" || redirectURI == "" {
+		return false
+	}
+	app, err := s.deps.Store.FindAppByClientID(clientID)
+	if err != nil || app.Status != domain.AppApproved {
+		return false
+	}
+	return authutil.Contains(app.RedirectURIs, redirectURI)
+}
+
 func (s *OAuthService) ExchangeAuthorizationCode(clientID, clientSecret, codeValue, redirectURI, verifier string) (map[string]any, error) {
 	app, err := s.deps.Store.FindAppByClientID(clientID)
 	if err != nil {

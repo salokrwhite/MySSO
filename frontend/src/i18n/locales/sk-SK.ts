@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Posledná aktualizácia: {{date}}",
       agreement: {
         title: "Smlouva o užívateľskej licence",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Vitajte v {{siteName}}. Predtým, ako sa zaregistrujete, prihlásite sa, pripojíte sa alebo použijete služby jednotnej autentifikácie poskytované týmto systémom, si prosím pozorne prečítajte túto zmluvu. Pokračovaním v používaní služby súhlasíte s použitím služieb v súlade s touto zmluvou.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Z dôvodom bezpečnosti, compliance, operatívneho údržby alebo údržby môže platforma upravovať, aktualizovať, pozastaviť alebo zrušiť obsah služieb, schopnosti rozhraní, autentifikačný proces alebo funkčné stránky a pokúsi sa v príslušnom prípade poskytnúť upozornenie.",
           liabilityP2:
             "V rozsahu povolenom zákonom, platforma nesie zodpovednosť len v rámci zákonnej povinnosti za prerušenia služieb,neobvyklýné údaje alebo straty spôsobené silnou núdzou, sieťovými zlyhaniami, dôvodmi tretích strán alebo neprípustným použitím zo strany používateľa.",
+accountP3:
+            "Na ochranu používateľských a vývojárskych účtov môže platforma vykonávať hodnotenie rizika v scenároch ako prihlásenie heslom, prihlásenie kódom, prihlásenie passkey, prihlásenie QR kódom, previazanie telefónneho čísla, zmena e-mailu, zmena telefónneho čísla, zmena hesla, nastavenie MFA, vymazanie účtu, export údajov a správa vývojárskych aplikácií. V závislosti od výsledku môže platforma vyžadovať dodatočné overenie, oneskoriť spracovanie, obmedziť operáciu alebo zablokovať prístup.",
         },
       },
       privacy: {
         title: "Zásady ochrany osobných údajov",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} sivládne vašich osobných údajov a bezpečnosti účtu. Táto zásada vysvetľuje, ako zbierame, používame, ukladáme, zdieľame a chránime vaše údaje, ako aj práva, ktoré máte.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Keď sa registrujete, prihlasujete sa alebo používate služby účtu, môžeme zbierať vašu krajinu registracie, e-mailovú adresu, telefónne číslo, hash hesla, prihlasovacie relácie, IP adresu zariadenia, záznamy autorizácie a potrebné bezpečnostné protokoly.",
           dataCollectionP2:
             "Keďzdravý uploadujete avatar, meníte prezývku, viažete telefónne číslo, povoľujete dvojfaktorové overenie alebo autorizujete aplikáciu tretích strán, spracujeme údaje, ktoré zadáte, v rozsahu potrebnom pre poskytovanie tejto funkcie.",
+dataCollectionP3:
+            "Na identifikáciu prevzatia účtov, credential stuffing, nezvyčajných zariadení, nezvyčajných sietí, automatizovaných požiadaviek a vysoko rizikových operácií môžeme tiež zhromažďovať alebo generovať odtlačky zariadení, identifikátory verejného kľúča zariadenia, typ klienta, signály rizika zariadenia, dôvody neúspešných prihlásení, výsledky overenia kódov, oblasť IP alebo regionálne štítky rizika, histöriu prihlásení, skóre rizika, úrovne rizika a prijaté opatrenia. Na účely kontroly rizika účtu nezískavame kontakty, obsah SMS, záznamy hovorov, fotoalbumy, presnú polohu, obsah mikrofónu ani kamery.",
           dataUsageTitle: "2. Spôsob použitia údajov",
           dataUsageP1:
             "Používame relevantné údaje na vykonanie registračného procesu, autentifikácie prihlásenia, odosielania overovacích kódov, kontroly rizika, potvrdenia autorizácie, kontrolu aplikácií vývojárov, oznámenia o bezpečnosti účtu a udržanie stability služieb.",
           dataUsageP2:
             "Taktiež analyzujeme protokoly a štatistiky na základe princípu minimálneho potrebného, aby sme detegovalineobvyklýné správanie, zlepšili užívateľské skúsenosti a posilnili bezpečnosť systému.",
+dataUsageP3:
+            "Informácie o kontrole rizika sa používajú predovšetkým na rozhodnutie, či povoliť prihlásenie alebo pokračovanie citlivých operácií, či vyžadovať dodatočné overenie e-mailom alebo SMS, či vyžadovať previazanie telefónneho čísla, či spustiť uzamknutie po neúspešných pokusoch, či zaznamenať rizikovú udalosť, alebo na pomoc administrátorom pri vyšetrovaní bezpečnostných problémov. Rizikové informácie hlásené klientom slúžia len ako pomocný signál a samé o sebe neznižujú bezpečnostné rozhodnutia.",
           dataSharingTitle: "3. Zdieľanie a správa údajov",
           dataSharingP1:
             "Poskytneme identifikačné údaje alebo údaje zodpovedajúce rozsahu oprávnení aplikáciám tretích strán iba vtedy, keď explicitneautorizovaťujete rozsah zobrazený na stránke autorizácie.",
@@ -83,6 +89,8 @@ const locale = {
             "Používame prístupové kontroly, hashovanie hesiel, obmedzenie platnosti overovacích kódov, auditné protokoly a opatrenia na minimalizáciu ukladania údajov, aby sme zabezpečili bezpečnosť vašich osobných údajov a autentifikačných údajov.",
           securityP2:
             "V súlade s právnymi a obchodnými požiadavkami uchovávame vaše údaje iba tak dlho, ako je to potrebné na dosiahnutie účelu služby; po vymazaní účtu alebo vypršaní terms of storage budeme údaje vymazať alebo anonymizovať podľa pravidiel.",
+securityP3:
+            "Záznamy rizika, história prihlásení, profily zariadení a záznamy neúspešných pokusov sa uchovávajú po dobu potrebnú na bezpečnostné audity, riešenie sporov, vyšetrovanie útokov a súlad. Riziká úniku a zneužitia znižujeme hašovaním, riadením prístupu, minimálnymi oprávneniami a audítorskými záznamami.",
         },
       },
     },
@@ -103,6 +111,11 @@ const locale = {
       sendRegisterCode: "Odoslať overovací kód",
       sendRegisterCodeSuccess: "Overovací kód bol odoslaný. Prosím, skontrolujte svoj e-mail.",
       sendRegisterCodeFailed: "Odoslanie overovacieho kódu zlyhalo",
+      legalConsentPrefix: "Prečítal(a) som a súhlasím s",
+      legalConsentAnd: "a",
+      accountAgreement: "Podmienky používania účtu",
+      accountPrivacyPolicy: "Pravidlá ochrany osobných údajov účtu",
+      legalConsentRequired: "Prečítajte si a odsúhlaste Podmienky používania účtu a Pravidlá ochrany osobných údajov účtu",
       backToLoginWithAccount: "Máte už účet? Prihláste sa",
       forgotPassword: "Zabudli ste heslo?",
       forgotPasswordPageTitle: "Obnoviť heslo",
@@ -157,6 +170,7 @@ const locale = {
       qrLoginCancelled: "Prihlásenie QR bolo zrušené",
       qrLoginExpired: "QR kód vypršal. Obnovte.",
       qrLoginRefresh: "Obnoviť QR kód",
+      downloadApp: "Stiahnuť aplikáciu",
       passwordLogin: "Prihlásenie pomocou hesla",
       otpLogin: "Prihlásenie pomocou e-mailového kódu",
       phoneOtpLogin: "Prihlásenie pomocou telefónneho kódu",
@@ -577,9 +591,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Pondelok až piatok 09:00 - 18:00",
-      contactOverseasPersonValue: "Čaká sa na doplnenie",
-      contactOverseasPhoneValue: "Čaká sa na doplnenie",
-      contactOverseasEmailValue: "Čaká sa na doplnenie",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Pondelok až piatok 09:00 - 18:00",
       contactRegionNotice:
         "Podľa vašej oblasti sa prosím obráťte najprv na príslušnú podporu; ak si nie ste istý, ktorá región sa týka, môžete sa najprv obrátiť na kontakt v predmorskej Číne.",

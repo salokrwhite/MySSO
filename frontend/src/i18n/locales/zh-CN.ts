@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "最近更新时间：{{date}}",
       agreement: {
         title: "用户协议",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-06",
         intro:
           "欢迎使用 {{siteName}}。你在注册、登录、接入或使用本系统提供的统一认证能力前，应当认真阅读本协议。继续使用即视为你已理解并同意按照本协议约定使用相关服务。",
         sections: {
@@ -30,6 +30,8 @@ const locale = {
             "你应当提供真实、合法且可联系的注册信息，并妥善保管账号、密码、验证码及其他登录凭据。因你保管不善导致的账号风险与损失，由你自行承担。",
           accountP2:
             "平台有权在发现异常登录、违规使用、账号冻结或安全风险时，采取限制登录、要求二次验证、冻结账号等安全措施。",
+          accountP3:
+            "为了保护用户和开发者账号安全，平台可能在登录、验证码登录、Passkey 登录、二维码登录、手机号绑定、修改邮箱、修改手机号、修改密码、MFA 设置、账号注销、数据导出、开发者应用管理等场景进行风险识别，并根据风险结果要求补充验证、延迟处理、限制操作或阻断访问。",
           acceptableUseTitle: "2. 合理使用",
           acceptableUseP1:
             "你不得利用本系统从事任何违反法律法规、侵害他人权益、干扰系统稳定运行或绕过安全控制的行为，包括但不限于恶意注册、撞库、批量请求、接口滥用等。",
@@ -54,20 +56,24 @@ const locale = {
       },
       privacy: {
         title: "隐私政策",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-06",
         intro:
           "{{siteName}} 重视你的个人信息与账号安全。本政策用于说明我们如何收集、使用、保存、共享和保护你的个人信息，以及你享有的相关权利。",
         sections: {
           dataCollectionTitle: "1. 我们收集的信息",
           dataCollectionP1:
-            "在你注册、登录或使用账号服务时，我们可能收集注册国家、邮箱地址、手机号、密码摘要、登录会话、设备 IP、授权记录及必要的安全日志信息。",
+            "在你注册、登录或使用账号服务时，我们可能收集注册国家、邮箱地址、手机号、密码摘要、登录会话、设备 IP、User-Agent、授权记录及必要的安全日志信息。",
           dataCollectionP2:
             "当你主动上传头像、修改昵称、绑定手机号、启用双重认证或授权第三方应用时，我们会按照功能需要处理你提交的相应信息。",
+          dataCollectionP3:
+            "为识别账号盗用、撞库、异常设备、异常网络、自动化请求和高风险操作，我们还可能收集或生成设备指纹、设备公钥标识、客户端类型、设备风险信号、登录失败原因、验证码验证结果、IP 归属地或地区风险标签、登录历史、风控评分、风控等级和处置动作。我们不会因账号风控目的采集通讯录、短信内容、通话记录、相册、精确定位、麦克风或摄像头内容。",
           dataUsageTitle: "2. 信息的使用方式",
           dataUsageP1:
             "我们使用相关信息完成账号注册、登录认证、验证码发送、风控校验、授权确认、开发者接入审核、账号安全通知及服务稳定性维护。",
           dataUsageP2:
             "我们也会基于最小必要原则，对日志和统计信息进行分析，以发现异常行为、优化产品体验和提升系统安全性。",
+          dataUsageP3:
+            "风控信息主要用于判断是否允许登录或继续敏感操作、是否要求邮箱/短信二次验证、是否要求绑定手机号、是否触发失败尝试锁定、是否记录风险事件或通知管理员排查。客户端上报的风险信息仅作为辅助信号，不会单独用于降低安全判断。",
           dataSharingTitle: "3. 信息共享与披露",
           dataSharingP1:
             "只有在你明确授权的情况下，我们才会向第三方应用提供授权页中展示的身份信息或权限范围对应的数据。",
@@ -83,6 +89,8 @@ const locale = {
             "我们采取访问控制、密码加密、验证码时效控制、审计日志及最小化存储等措施，尽力保障你的个人信息与认证数据安全。",
           securityP2:
             "在符合法律法规和业务需要的前提下，我们仅在实现服务目的所必需的期间内保存你的信息；当你注销账号或保存期限届满后，我们将按规则删除或匿名化处理。",
+          securityP3:
+            "风控日志、登录历史、设备画像和失败尝试记录会在满足安全审计、争议处理、攻击排查和合规要求所需的期限内保存，并通过哈希、访问控制、最小权限和审计记录等方式降低泄露与滥用风险。",
         },
       },
     },
@@ -103,6 +111,11 @@ const locale = {
       sendRegisterCode: "发送验证码",
       sendRegisterCodeSuccess: "验证码已发送，请前往邮箱查收。",
       sendRegisterCodeFailed: "验证码发送失败",
+      legalConsentPrefix: "我已阅读并同意",
+      legalConsentAnd: "和",
+      accountAgreement: "账号使用协议",
+      accountPrivacyPolicy: "账号隐私政策",
+      legalConsentRequired: "请先阅读并同意账号使用协议和账号隐私政策",
       backToLoginWithAccount: "已有账号，去登录",
       forgotPassword: "找回密码",
       forgotPasswordPageTitle: "找回密码",
@@ -157,6 +170,7 @@ const locale = {
       qrLoginCancelled: "本次扫码登录已取消",
       qrLoginExpired: "二维码已过期，请刷新",
       qrLoginRefresh: "刷新二维码",
+      downloadApp: "下载 APP",
       passwordLogin: "密码登录",
       otpLogin: "邮箱验证码登录",
       phoneOtpLogin: "手机号验证码登录",
@@ -580,9 +594,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "周一至周五 09:00 - 18:00",
-      contactOverseasPersonValue: "待补充",
-      contactOverseasPhoneValue: "待补充",
-      contactOverseasEmailValue: "待补充",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "周一至周五 09:00 - 18:00",
       contactRegionNotice:
         "请根据你所在地区优先联系对应支持渠道；若无法判断所属地区，可先通过中国大陆联系人获取转接帮助。",

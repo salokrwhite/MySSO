@@ -17,7 +17,6 @@ import { useAppReview } from "./hooks/useAppReview";
 import { useBatchAppActions } from "./hooks/useBatchAppActions";
 import { useBatchUserActions } from "./hooks/useBatchUserActions";
 import { useDeveloperAccessLogActions } from "./hooks/useDeveloperAccessLogActions";
-import { usePasskeyLogActions } from "./hooks/usePasskeyLogActions";
 import {
   useEmailSendLogActions,
   usePhoneSendLogActions,
@@ -25,8 +24,11 @@ import {
 import { useSystemSettings } from "./hooks/useSystemSettings";
 import { useUserCreateActions } from "./hooks/useUserCreateActions";
 import {
+  clearAdminUserRiskProfile,
+  deleteAdminRiskEvents,
   deleteScope as deleteScopeRequest,
   fetchAdminAppAuditLogs,
+  markAdminUserRiskFalsePositive,
   upsertScope as upsertScopeRequest,
 } from "./services/adminApi";
 import type { AdminPageType, ScopeDefinition, SettingsTabKey } from "./types";
@@ -57,6 +59,14 @@ export function AdminPage() {
   const [auditLogPageSize, setAuditLogPageSize] = useState(10);
   const [developerAccessLogPage, setDeveloperAccessLogPage] = useState(1);
   const [developerAccessLogPageSize, setDeveloperAccessLogPageSize] = useState(10);
+  const [riskEventPage, setRiskEventPage] = useState(1);
+  const [riskEventPageSize, setRiskEventPageSize] = useState(10);
+  const [riskAccountPage, setRiskAccountPage] = useState(1);
+  const [riskAccountPageSize, setRiskAccountPageSize] = useState(10);
+  const [riskUserIDFilter, setRiskUserIDFilter] = useState("");
+  const [riskEventTypeFilter, setRiskEventTypeFilter] = useState("all");
+  const [riskLevelFilter, setRiskLevelFilter] = useState("all");
+  const [deletingRiskEvents, setDeletingRiskEvents] = useState(false);
   const [userStatusFilter, setUserStatusFilter] = useState("all");
   const [userEmailKeyword, setUserEmailKeyword] = useState("");
   const [userIDKeyword, setUserIDKeyword] = useState("");
@@ -135,6 +145,26 @@ export function AdminPage() {
     }),
     [developerAccessLogPage, developerAccessLogPageSize],
   );
+  const riskLogsQuery = useMemo(
+    () => ({
+      eventPage: riskEventPage,
+      eventPageSize: riskEventPageSize,
+      accountPage: riskAccountPage,
+      accountPageSize: riskAccountPageSize,
+      userID: riskUserIDFilter,
+      eventType: riskEventTypeFilter,
+      level: riskLevelFilter,
+    }),
+    [
+      riskAccountPage,
+      riskAccountPageSize,
+      riskEventPage,
+      riskEventPageSize,
+      riskEventTypeFilter,
+      riskLevelFilter,
+      riskUserIDFilter,
+    ],
+  );
 
   const {
     users,
@@ -146,7 +176,11 @@ export function AdminPage() {
     logsTotal,
     developerAccessLogs,
     developerAccessLogsTotal,
-    passkeyLogs,
+    riskEvents,
+    riskEventsTotal,
+    riskAccountSummaries,
+    riskAccountSummariesTotal,
+    riskStats,
     emailSendLogs,
     phoneSendLogs,
     policies,
@@ -164,6 +198,7 @@ export function AdminPage() {
     appsQuery,
     auditLogsQuery,
     developerAccessLogsQuery,
+    riskLogsQuery,
   );
 
   const ensureCurrentPageLoaded = useCallback(() => load(), [load]);
@@ -244,13 +279,6 @@ export function AdminPage() {
     setError,
     systemSettings.messageApi,
   );
-  const { deletingPasskeyTable, confirmBatchDeletePasskeyLogs } =
-    usePasskeyLogActions(
-      sessionToken,
-      reloadCurrentPage,
-      setError,
-      systemSettings.messageApi,
-    );
   const { deletingEmailSendLogs, confirmBatchDeleteEmailSendLogs } =
     useEmailSendLogActions(
       sessionToken,
@@ -299,6 +327,54 @@ export function AdminPage() {
         setError(err instanceof Error ? err.message : t("删除 scope 失败"));
       } finally {
         setDeletingScopeKey(undefined);
+      }
+    },
+    [reloadCurrentPage, sessionToken, setError, systemSettings.messageApi, t],
+  );
+
+  const clearRiskProfile = useCallback(
+    async (userID: string) => {
+      try {
+        await clearAdminUserRiskProfile(sessionToken, userID);
+        await reloadCurrentPage();
+        systemSettings.messageApi.success(t("风险画像已清除"));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : t("清除风险画像失败"));
+      }
+    },
+    [reloadCurrentPage, sessionToken, setError, systemSettings.messageApi, t],
+  );
+
+  const markRiskFalsePositive = useCallback(
+    async (userID: string, input: { note: string; hours: number }) => {
+      try {
+        await markAdminUserRiskFalsePositive(sessionToken, userID, input);
+        await reloadCurrentPage();
+        systemSettings.messageApi.success(t("已标记为误报"));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : t("标记误报失败"));
+      }
+    },
+    [reloadCurrentPage, sessionToken, setError, systemSettings.messageApi, t],
+  );
+
+  const deleteRiskEvents = useCallback(
+    async (input: { deleteAll: boolean; startAt?: string; endAt?: string }) => {
+      setDeletingRiskEvents(true);
+      try {
+        const result = await deleteAdminRiskEvents(sessionToken, {
+          delete_all: input.deleteAll,
+          start_at: input.startAt,
+          end_at: input.endAt,
+        });
+        setRiskEventPage(1);
+        setRiskAccountPage(1);
+        await reloadCurrentPage();
+        systemSettings.messageApi.success(t("已硬删除 {{count}} 条风控事件日志", { count: result.deleted }));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : t("删除风控事件日志失败"));
+      } finally {
+        setDeletingRiskEvents(false);
       }
     },
     [reloadCurrentPage, sessionToken, setError, systemSettings.messageApi, t],
@@ -542,13 +618,46 @@ export function AdminPage() {
 
       {pageType === "riskLogs" ? (
         <RiskLogsPanel
-          passkeyLogs={passkeyLogs}
+          accountSummaries={riskAccountSummaries}
+          accountSummariesTotal={riskAccountSummariesTotal}
+          accountPage={riskAccountPage}
+          accountPageSize={riskAccountPageSize}
+          events={riskEvents}
+          eventsTotal={riskEventsTotal}
+          eventPage={riskEventPage}
+          eventPageSize={riskEventPageSize}
+          stats={riskStats}
+          userIDFilter={riskUserIDFilter}
+          eventTypeFilter={riskEventTypeFilter}
+          levelFilter={riskLevelFilter}
           refreshing={loading}
-          deletingPasskeyTable={deletingPasskeyTable}
+          deletingEvents={deletingRiskEvents}
           onRefresh={() => void reloadCurrentPage()}
-          onBatchDeletePasskeyLogs={(table, recordIds) =>
-            confirmBatchDeletePasskeyLogs(table, recordIds)
-          }
+          onAccountPageChange={(page, pageSize) => {
+            setRiskAccountPage(page);
+            setRiskAccountPageSize(pageSize);
+          }}
+          onEventPageChange={(page, pageSize) => {
+            setRiskEventPage(page);
+            setRiskEventPageSize(pageSize);
+          }}
+          onUserIDFilterChange={(value) => {
+            setRiskUserIDFilter(value);
+            setRiskAccountPage(1);
+            setRiskEventPage(1);
+          }}
+          onEventTypeFilterChange={(value) => {
+            setRiskEventTypeFilter(value);
+            setRiskEventPage(1);
+          }}
+          onLevelFilterChange={(value) => {
+            setRiskLevelFilter(value);
+            setRiskAccountPage(1);
+            setRiskEventPage(1);
+          }}
+          onClearRiskProfile={clearRiskProfile}
+          onMarkFalsePositive={markRiskFalsePositive}
+          onDeleteEvents={deleteRiskEvents}
         />
       ) : null}
 
@@ -587,6 +696,7 @@ export function AdminPage() {
           verificationForm={systemSettings.verificationForm}
           intlForm={systemSettings.intlForm}
           sessionForm={systemSettings.sessionForm}
+          appVersionForm={systemSettings.appVersionForm}
           smsForm={systemSettings.smsForm}
           announcementForm={systemSettings.announcementForm}
           riskForm={systemSettings.riskForm}
@@ -621,6 +731,7 @@ export function AdminPage() {
           }
           onSaveIntl={() => void systemSettings.saveIntlSettings()}
           onSaveSession={() => void systemSettings.saveSessionSettings()}
+          onSaveAppVersion={() => void systemSettings.saveAppVersionSettings()}
           onSaveSMS={() => void systemSettings.saveSMSSettings()}
           onSaveAnnouncement={() =>
             void systemSettings.saveAnnouncementSettings()

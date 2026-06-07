@@ -1,7 +1,7 @@
 package notify
 
 import (
-	"crypto/md5"
+	"crypto/md5" // #nosec G501 -- SmsBao requires MD5(password) in its API protocol.
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -239,6 +239,7 @@ func (s SmsBaoSender) Send(phone, _, content string, _ SendOptions) error {
 }
 
 func md5Encode(text string) string {
+	// #nosec G401,G501 -- SmsBao requires MD5(password) in its API protocol; not used as a security hash.
 	hash := md5.Sum([]byte(text))
 	return hex.EncodeToString(hash[:])
 }

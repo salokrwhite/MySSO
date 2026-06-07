@@ -48,14 +48,16 @@ export function LegalPage() {
             title: t("legal.privacy.sections.dataCollectionTitle"),
             paragraphs: [
               t("legal.privacy.sections.dataCollectionP1", { siteName }),
-              t("legal.privacy.sections.dataCollectionP2", { siteName })
+              t("legal.privacy.sections.dataCollectionP2", { siteName }),
+              t("legal.privacy.sections.dataCollectionP3", { siteName })
             ]
           },
           {
             title: t("legal.privacy.sections.dataUsageTitle"),
             paragraphs: [
               t("legal.privacy.sections.dataUsageP1", { siteName }),
-              t("legal.privacy.sections.dataUsageP2", { siteName })
+              t("legal.privacy.sections.dataUsageP2", { siteName }),
+              t("legal.privacy.sections.dataUsageP3", { siteName })
             ]
           },
           {
@@ -76,7 +78,8 @@ export function LegalPage() {
             title: t("legal.privacy.sections.securityTitle"),
             paragraphs: [
               t("legal.privacy.sections.securityP1", { siteName }),
-              t("legal.privacy.sections.securityP2", { siteName })
+              t("legal.privacy.sections.securityP2", { siteName }),
+              t("legal.privacy.sections.securityP3", { siteName })
             ]
           }
         ]
@@ -92,7 +95,8 @@ export function LegalPage() {
           title: t("legal.agreement.sections.accountTitle"),
           paragraphs: [
             t("legal.agreement.sections.accountP1", { siteName }),
-            t("legal.agreement.sections.accountP2", { siteName })
+            t("legal.agreement.sections.accountP2", { siteName }),
+            t("legal.agreement.sections.accountP3", { siteName })
           ]
         },
         {

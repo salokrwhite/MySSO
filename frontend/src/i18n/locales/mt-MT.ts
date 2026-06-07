@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Aġġornat l-aħħar: {{date}}",
       agreement: {
         title: "Kunsens tal-User",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Merħba f'{{siteName}}. Qabel ma tirreġistra, tidħol, tintegrat, jew tuża s-servizzi ta' identità unifikata, li tqis din l-agreement bir-reqqa. Billi tkompli tuża s-servizz, inti taqbel li tkun mqiegħed mill-agreement.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Għal raġunijiet ta' sigurtà, konformità, operazzjonijiet, jew manutenzjoni, il-pjattaforma tista' tadjusta, tgħolli, tissospendi, jew tterminaw ċerti interfacċi, flussi, jew funzjonijiet, u se ttiġi ħsieb li tipprovdi avviż meta xieraq.",
           liabilityP2:
             "Sakemm il-liġi tippermettilha, il-pjattaforma mhix responsabbli lil hinn mill-obbligi statwali għal interruzzjonijiet, dati anormali, jew ħsarat kkawżati minn forza majeure, fallimenti tan-netwerk, raġunijiet ta' terz-parti, jew użu mhux xieraq fuq il-baħar tiegħek.",
+accountP3:
+            "Sabiex tipproteġi l-kontijiet tal-utenti u tal-iżviluppaturi, il-pjattaforma tista' twettaq evalwazzjonijiet tar-riskju f'xenarji bħal login bil-password, login bil-kodiċi, login bil-passkey, login bil-kodiċi QR, it-twaħħil tan-numru tat-telefown, il-bidla tal-email, il-bidla tan-numru tat-telefown, il-bidla tal-password, is-settings tal-MFA, it-tħassir tal-kont, l-esportazzjoni tad-dejta, u l-ġestjoni tal-apps tal-iżviluppaturi. Skont ir-riżultat, il-pjattaforma tista' titlob verifika addizzjonali, ttawwal l-ipproċessar, tirrestrinġi operazzjoni, jew timblokka l-aċċess.",
         },
       },
       privacy: {
         title: "Politika tal-Privatezza",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} titqalbi l-informazzjoni personali tiegħek u s-sigurtà tal-akkont tiegħek. Din il-politika tispjega kif aħna nikkolleġixxu, nużaw, nħażnu, naqsmu, u nproteġu l-informazzjoni tiegħek, kif ukoll id-drittijiet disponibbli għalik.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Meta tirreġistra, tidħol, jew tuża s-servizzi tal-akkont, aħna nikkolleġixxu l-pajjiż tar-reġistrazzjoni tiegħek, l-indirizz tal-email, in-numru tat-telefon, il-hash tal-password, is-sessionijiet tat-tidħol, l-IP tad-dispositif, ir-rekordi ta' awtorizzazzjoni, u l-logs ta' sigurtà meħtieġa.",
           dataCollectionP2:
             "Meta tuploadja avatar, tibdel il-profil tiegħek, tgħaqqad numru tat-telefon, tħalli b' MFA, jew tawtorizza app ta' terz-parti, aħna niproċessaw l-informazzjoni li t提交s bħalma meħtieġ biex nipprovdu dik il-funzjoni.",
+dataCollectionP3:
+            "Sabiex jiġu identifikati t-teħid tal-kontijiet, il-credential stuffing, apparat anormali, netwerks anormali, talbiet awtomatizzati u operazzjonijiet ta' riskju għoli, nistgħu wkoll niġbru jew niġġeneraw fingerprints tal-apparat, identifikaturi tal-kjavi pubbliku tal-apparat, tip ta' klijent, sinjali ta' riskju tal-apparat, raġunijiet ta' fallimenti tal-login, riżultati tal-verifika tal-kodiċi, reġjun tal-IP jew tikketti ta' riskju reġjonali, storja tal-login, punteġġi ta' riskju, livelli ta' riskju u azzjonijiet meħuda. Aħna ma niġbrux kuntatti, kontenut tal-SMS, reġistri tat-telefonati, albums tar-ritratti, post preċiż, kontenut tal-mikrofonu jew tal-kamera għall-finijiet tal-kontroll tar-riskju tal-kont.",
           dataUsageTitle: "2. Kif Nużaw l-Informazzjoni",
           dataUsageP1:
             "Aħna nużaw l-informazzjoni relevanti biex nipprovdu reġistrazzjoni tal-akkont, awtentikazzjoni tat-tidħol, deliverja ta' kodiċi ta' verifika, kontroll tar-riskju, konferma ta' awtorizzazzjoni, verifika tal-app tad-dviluppatur, notifikazzjonijiet ta' sigurtà tal-akkont, u manutenzjoni tal-affidabbiltà tas-servizz.",
           dataUsageP2:
             "Aħna wkoll nanalizzaw logs u statistika fuq bażi ta' minimu-necessarju biex insirrin attività anormali, ntejbu l-esperjenza tal-prodott, u nsaħħu s-sigurtà.",
+dataUsageP3:
+            "L-informazzjoni tal-kontroll tar-riskju tintuża primarjament biex tiddeċiedi jekk tippermettix il-login jew il-kontinwazzjoni ta' operazzjonijiet sensittivi, jekk teħtieġx verifika addizzjonali permezz tal-email jew tal-SMS, jekk teħtieġx it-twaħħil tan-numru tat-telefown, jekk jiġux attivati l-blokki wara tentattivi falluti, jekk jiġix irreġistrat avveniment ta' riskju, jew biex tgħin lill-amministraturi jinvestigaw problemi ta' sigurtà. L-informazzjoni tar-riskju rrappurtata mill-klijent tintuża biss bħala sinjal awżiljarju u mhix użata waħedha biex tnaqqas id-deċiżjonijiet tas-sigurtà.",
           dataSharingTitle: "3. Qsim u Dikjarazzjoni",
           dataSharingP1:
             "Aħna nipprovdu informazzjoni tal-identità jew dati relatati mal-permessi lill-apps ta' terz-parti biss meta tuża tgħaqqad espliċitament l-ambiti muri fuq il-paġna ta' awtorizzazzjoni.",
@@ -83,6 +89,8 @@ const locale = {
             "Aħna nużaw kontrolli ta' aċċess, hashing tal-password, skadenza tal-kodiċi ta' verifika, logs ta' audit, u miżuri ta' minimizzazzjoni tad-data biex nproteġu l-informazzjoni personali tiegħek u d-dati ta' awtentikazzjoni.",
           securityP2:
             "Sottostanti l-ħtiġijiet legali u tan-negozju, aħna nżommu l-informazzjoni tiegħek biss sakemm meħtieġa biex nwettqu l-iskopijiet tas-servizz; wara tħassir tal-akkont jew skadenza tal-perjodi ta' żamma, aħna nħassru jew nanonimizzaw id-data skont il-politika.",
+securityP3:
+            "Il-logs tar-riskju, l-istorja tal-login, il-profili tal-apparat u r-reġistri tat-tentattivi falluti jinżammu għall-perjodu meħtieġ għall-awditjar tas-sigurtà, ir-riżoluzzjoni tat-tilwim, l-investigazzjoni tal-attakki u l-konformità. Innaqqsu r-riskji ta' tnixxija u użu ħażin permezz tal-hashing, il-kontroll tal-aċċess, il-privileġġ minimu u r-reġistri tal-awditjar.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "Il-kodiċi ta' verifika ġie mbagħat. Jekk jogħġbok iċċekkja l-inbox tiegħek.",
       sendRegisterCodeFailed: "Falliet biex tibgħat il-kodiċi ta' verifika",
+      legalConsentPrefix: "Qed taqra u taqbel ma'",
+      legalConsentAnd: "u",
+      accountAgreement: "Termini tal-Użu tal-Kont",
+      accountPrivacyPolicy: "Politika tal-Privatezza tal-Kont",
+      legalConsentRequired: "Jekk jogħġbok aqra u aċċetta t-Termini tal-Użu tal-Kont u l-Politika tal-Privatezza tal-Kont",
       backToLoginWithAccount: "Għandek akkont? Idħol",
       forgotPassword: "Nistinka l-password?",
       forgotPasswordPageTitle: "Iġġib lura l-Password",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "Login QR ikkanċella",
       qrLoginExpired: "Kodiċi QR skada. Aġġorna.",
       qrLoginRefresh: "Aġġorna kodiċi QR",
+      downloadApp: "Niżżel l-app",
       passwordLogin: "Password",
       otpLogin: "Kodiċi tal-Email",
       phoneOtpLogin: "Kodiċi tat-Telefon",
@@ -655,9 +669,9 @@ const locale = {
       contactMainlandPhoneValue: "NUMRU TA' TELEFON TIEGĦEK",
       contactMainlandEmailValue: "EMAIL TIEGĦEK",
       contactMainlandHoursValue: "It-Tnejn sal-Ħamis 09:00 - 18:00",
-      contactOverseasPersonValue: "Se jintrajn",
-      contactOverseasPhoneValue: "Se jintrajn",
-      contactOverseasEmailValue: "Se jintrajn",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "It-Tnejn sal-Ħamis 09:00 - 18:00",
       contactRegionNotice:
         "Jekk jogħġbok ikkuntatta l-kanal ta' appoġġ għar-reġjun tiegħek l-ewwel. Jekk ma tkunx ċert liema reġjun japplika, ibda bil-kontatt tal-Kina Mainland għal għajnuna fit-trasmissjoni.",

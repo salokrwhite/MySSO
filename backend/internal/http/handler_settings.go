@@ -37,6 +37,10 @@ func (s *Server) handlePublicSettings(c *gin.Context) {
 	verificationCodeCooldownSeconds := appdefaults.DefaultVerificationCodeCooldownSeconds
 	captchaEnabled := appdefaults.DefaultCaptchaEnabled
 	qrLoginEnabled := false
+	appCurrentVersionCode := 1
+	appCurrentVersionName := ""
+	appDownloadURL := ""
+	appForceUpdate := false
 	if s.services != nil {
 		settings, err := s.services.Settings.GetSystemSettings()
 		if err == nil && strings.TrimSpace(settings.SiteName) != "" {
@@ -62,6 +66,10 @@ func (s *Server) handlePublicSettings(c *gin.Context) {
 			verificationCodeCooldownSeconds = settings.SMTPVerificationCodeCooldownSecond
 			captchaEnabled = settings.CaptchaEnabled
 			qrLoginEnabled = settings.EnableQRLogin
+			appCurrentVersionCode = settings.APPCurrentVersionCode
+			appCurrentVersionName = strings.TrimSpace(settings.APPCurrentVersionName)
+			appDownloadURL = service.NormalizePublicHTTPURL(settings.APPDownloadURL)
+			appForceUpdate = settings.APPForceUpdate
 			for _, clientID := range service.SplitListSetting(settings.OIDCAutoApproveClientIDs) {
 				if !containsString(autoApproveClientIDs, clientID) {
 					autoApproveClientIDs = append(autoApproveClientIDs, clientID)
@@ -86,6 +94,10 @@ func (s *Server) handlePublicSettings(c *gin.Context) {
 			"allow_user_registration":                 s.services == nil || s.services.Settings.IsUserRegistrationAllowed(),
 			"enable_phone_verification":               s.services == nil || s.services.Settings.IsPhoneVerificationEnabled(),
 			"enable_qr_login":                         qrLoginEnabled,
+			"app_current_version_code":                appCurrentVersionCode,
+			"app_current_version_name":                appCurrentVersionName,
+			"app_download_url":                        appDownloadURL,
+			"app_force_update":                        appForceUpdate,
 			"site_logo_data_url":                      siteLogoDataURL,
 			"site_footer_text":                        siteFooterText,
 			"site_icp_record_number":                  siteICPRecordNumber,
@@ -220,6 +232,10 @@ func (s *Server) handleUpdateSystemSettings(c *gin.Context) {
 		AllowUserRegistration:                req.AllowUserRegistration,
 		EnablePhoneVerification:              req.EnablePhoneVerification,
 		EnableQRLogin:                        req.EnableQRLogin,
+		APPCurrentVersionCode:                req.APPCurrentVersionCode,
+		APPCurrentVersionName:                req.APPCurrentVersionName,
+		APPDownloadURL:                       req.APPDownloadURL,
+		APPForceUpdate:                       req.APPForceUpdate,
 		SiteName:                             req.SiteName,
 		SiteNameEN:                           req.SiteNameEN,
 		SiteBrowserTitle:                     req.SiteBrowserTitle,
@@ -249,6 +265,8 @@ func (s *Server) handleUpdateSystemSettings(c *gin.Context) {
 		SMTPForceSSL:                         req.SMTPForceSSL,
 		SMTPVerificationCodeTTLMinute:        req.SMTPVerificationCodeTTLMinute,
 		SMTPVerificationCodeCooldownSecond:   req.SMTPVerificationCodeCooldownSecond,
+		EmailVerificationCodeDailyLimit:      req.EmailVerificationCodeDailyLimit,
+		SMSVerificationCodeDailyLimit:        req.SMSVerificationCodeDailyLimit,
 		CaptchaEnabled:                       req.CaptchaEnabled,
 		CaptchaMode:                          req.CaptchaMode,
 		CaptchaComplexOfNoiseText:            req.CaptchaComplexOfNoiseText,
@@ -305,9 +323,34 @@ func (s *Server) handleUpdateSystemSettings(c *gin.Context) {
 		AliyunSMSBindPhoneTemplateCode:       req.AliyunSMSBindPhoneTemplateCode,
 		AliyunSMSDeleteTemplateCode:          req.AliyunSMSDeleteTemplateCode,
 		RiskControlEnabled:                   req.RiskControlEnabled,
+		RiskPhoneBindingEnabled:              req.RiskPhoneBindingEnabled,
 		RiskImmediateBindProbability:         req.RiskImmediateBindProbability,
 		RiskDelayedBindProbability:           req.RiskDelayedBindProbability,
 		RiskDelayedBindLoginCount:            req.RiskDelayedBindLoginCount,
+		RiskMediumThreshold:                  req.RiskMediumThreshold,
+		RiskHighThreshold:                    req.RiskHighThreshold,
+		RiskCriticalThreshold:                req.RiskCriticalThreshold,
+		RiskAutoBlockThreshold:               req.RiskAutoBlockThreshold,
+		RiskMaxFailedLogins:                  req.RiskMaxFailedLogins,
+		RiskLockoutMinutes:                   req.RiskLockoutMinutes,
+		RiskScoreWindowDays:                  req.RiskScoreWindowDays,
+		RiskFailedLoginScoreWeight:           req.RiskFailedLoginScoreWeight,
+		RiskFailedLoginScoreCap:              req.RiskFailedLoginScoreCap,
+		RiskEnableGeoCheck:                   req.RiskEnableGeoCheck,
+		RiskEnableDeviceCheck:                req.RiskEnableDeviceCheck,
+		RiskEnableBehaviorCheck:              req.RiskEnableBehaviorCheck,
+		RiskEnableIPBlacklist:                req.RiskEnableIPBlacklist,
+		RiskEnableMitigation:                 req.RiskEnableMitigation,
+		RiskAllowBlockStepUp:                 req.RiskAllowBlockStepUp,
+		RiskTrustedDeviceDays:                req.RiskTrustedDeviceDays,
+		RiskMitigationHours:                  req.RiskMitigationHours,
+		RiskTrustedDeviceScoreDiscount:       req.RiskTrustedDeviceScoreDiscount,
+		RiskMitigationScoreDiscount:          req.RiskMitigationScoreDiscount,
+		RiskHighRiskGeoDiscount:              req.RiskHighRiskGeoDiscount,
+		RiskNewDeviceDiscount:                req.RiskNewDeviceDiscount,
+		RiskIPChangeDiscount:                 req.RiskIPChangeDiscount,
+		RiskTrustedIPs:                       req.RiskTrustedIPs,
+		RiskHighRiskCountries:                req.RiskHighRiskCountries,
 		DeveloperManagedUsersSearchWindowSec: req.DeveloperManagedUsersSearchWindowSec,
 		DeveloperManagedUsersSearchLimit:     req.DeveloperManagedUsersSearchLimit,
 	}); err != nil {

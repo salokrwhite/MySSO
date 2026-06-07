@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -9,6 +10,7 @@ import (
 
 	"mysso/backend/internal/domain"
 	"mysso/backend/internal/service/common/authutil"
+	riskservice "mysso/backend/internal/service/risk"
 	"mysso/backend/internal/service/settings"
 	"mysso/backend/internal/store"
 )
@@ -18,6 +20,16 @@ const (
 	loginStepUpChallengeTTL       = 10 * time.Minute
 	mfaEnrollmentChallengeTTL     = 15 * time.Minute
 )
+
+type postAuthRiskOptions struct {
+	RiskStepUpSatisfied  bool
+	RiskCaptchaSatisfied bool
+	RiskCaptchaAllowed   bool
+}
+
+type PasswordLoginRiskOptions struct {
+	CaptchaSatisfied bool
+}
 
 func DefaultUserSecurityPolicy(userID string) domain.UserSecurityPolicy {
 	now := time.Now().UTC()
@@ -93,8 +105,16 @@ func deriveLoginMethodFromACR(acr string) string {
 }
 
 func (s *AuthService) ContinuePostAuthentication(user domain.User, ip, loginMethod, acr string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
+	return s.continuePostAuthenticationWithRisk(user, ip, loginMethod, acr, riskservice.ClientInfo{}, binding...)
+}
+
+func (s *AuthService) continuePostAuthenticationWithRisk(user domain.User, ip, loginMethod, acr string, clientRisk riskservice.ClientInfo, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
+	return s.continuePostAuthenticationWithRiskOptions(user, ip, loginMethod, acr, clientRisk, postAuthRiskOptions{}, binding...)
+}
+
+func (s *AuthService) continuePostAuthenticationWithRiskOptions(user domain.User, ip, loginMethod, acr string, clientRisk riskservice.ClientInfo, opts postAuthRiskOptions, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
 	if user.DeletionScheduledAt != nil {
-		challenge, err := s.createDeletionLoginChallenge(user, acr)
+		challenge, err := s.createDeletionLoginChallengeWithRisk(user, acr, clientRisk)
 		if err != nil {
 			return PasswordLoginResult{}, err
 		}
@@ -105,7 +125,7 @@ func (s *AuthService) ContinuePostAuthentication(user domain.User, ip, loginMeth
 			User:                         user,
 		}, nil
 	}
-	if result, enforced, err := s.maybeRequirePhoneBindingBeforeLogin(user, acr); err != nil {
+	if result, enforced, err := s.maybeRequirePhoneBindingBeforeLogin(user, acr, clientRisk); err != nil {
 		return PasswordLoginResult{}, err
 	} else if enforced {
 		return result, nil
@@ -119,7 +139,84 @@ func (s *AuthService) ContinuePostAuthentication(user domain.User, ip, loginMeth
 	} else if enforced {
 		return result, nil
 	}
-	if result, enforced, err := s.maybeRequireMFAEnrollment(user, policy, loginMethod, acr); err != nil {
+	if s.risk != nil && user.Role != domain.RoleAdmin {
+		device := settings.DeviceBindingInput{}
+		if len(binding) > 0 {
+			device = binding[0]
+		}
+		assessment, err := s.risk.AssessLogin(riskservice.LoginParams{
+			UserID:      user.ID,
+			IP:          ip,
+			DeviceKeyID: device.KeyID,
+			Client:      clientRisk,
+		})
+		if err != nil {
+			s.audit.Record(user.ID, user.Role, "risk.login_assessment_error", user.ID, map[string]any{"error": err.Error(), "ip": ip})
+			assessment := riskservice.Assessment{Score: 100, Level: riskservice.LevelCritical, Action: riskservice.ActionBlock, Message: "Risk assessment is unavailable"}
+			s.risk.RecordLogin(user.ID, ip, device.KeyID, clientRisk, assessment, false)
+			return PasswordLoginResult{User: user, RiskLevel: assessment.Level, RiskAction: assessment.Action, RiskMessage: assessment.Message, RiskScore: assessment.Score}, fmt.Errorf("access_denied")
+		} else {
+			riskConfig := s.risk.Config()
+			if assessment.Action == riskservice.ActionBlock {
+				if !riskBlockCanUseStepUp(assessment) {
+					s.risk.RecordLogin(user.ID, ip, device.KeyID, clientRisk, assessment, false)
+					return PasswordLoginResult{User: user, RiskLevel: assessment.Level, RiskAction: assessment.Action, RiskMessage: assessment.Message, RiskScore: assessment.Score}, fmt.Errorf("access_denied")
+				}
+				if opts.RiskStepUpSatisfied && riskConfig.AllowBlockStepUp {
+					assessment.Action = riskservice.ActionAllow
+					assessment.Message = ""
+					_ = s.risk.TrustDeviceAfterVerification(user.ID, clientRisk.Fingerprint, "block_step_up_completed")
+				} else if !riskConfig.AllowBlockStepUp {
+					s.risk.RecordLogin(user.ID, ip, device.KeyID, clientRisk, assessment, false)
+					return PasswordLoginResult{User: user, RiskLevel: assessment.Level, RiskAction: assessment.Action, RiskMessage: assessment.Message, RiskScore: assessment.Score}, fmt.Errorf("access_denied")
+				} else {
+					assessment.Action = riskservice.ActionStepUp
+					assessment.Message = "Strong verification is required"
+				}
+			}
+			if assessment.Action == riskservice.ActionCaptcha && opts.RiskCaptchaSatisfied {
+				assessment.Action = riskservice.ActionAllow
+				assessment.Message = ""
+			}
+			if assessment.Action == riskservice.ActionCaptcha && !opts.RiskCaptchaSatisfied {
+				if !opts.RiskCaptchaAllowed || s.settings == nil || !s.settings.GetCaptchaSettings().Enabled {
+					assessment.Action = riskservice.ActionStepUp
+					assessment.Message = "Additional verification is required"
+				} else {
+					s.risk.RecordLogin(user.ID, ip, device.KeyID, clientRisk, assessment, false)
+					return PasswordLoginResult{User: user, RiskLevel: assessment.Level, RiskAction: assessment.Action, RiskMessage: assessment.Message, RiskScore: assessment.Score}, ErrCaptchaRequired
+				}
+			}
+			if assessment.Action == riskservice.ActionStepUp {
+				policy.LoginStepUpMode = bestRiskStepUpMode(user)
+			}
+			if assessment.Action != riskservice.ActionAllow && !opts.RiskStepUpSatisfied {
+				if result, enforced, err := s.maybeRequireLoginStepUp(user, policy, loginMethod, acr, clientRisk); err != nil {
+					return PasswordLoginResult{}, err
+				} else if enforced {
+					result.RiskLevel = assessment.Level
+					result.RiskAction = assessment.Action
+					result.RiskMessage = assessment.Message
+					result.RiskScore = assessment.Score
+					s.risk.RecordLogin(user.ID, ip, device.KeyID, clientRisk, assessment, false)
+					return result, nil
+				}
+				assessment.Action = riskservice.ActionBlock
+				assessment.Message = "Additional verification is unavailable"
+				s.risk.RecordLogin(user.ID, ip, device.KeyID, clientRisk, assessment, false)
+				return PasswordLoginResult{User: user, RiskLevel: assessment.Level, RiskAction: assessment.Action, RiskMessage: assessment.Message, RiskScore: assessment.Score}, fmt.Errorf("access_denied")
+			}
+			if assessment.Action != riskservice.ActionAllow && opts.RiskStepUpSatisfied {
+				assessment.Action = riskservice.ActionAllow
+				assessment.Message = ""
+				_ = s.risk.TrustDeviceAfterVerification(user.ID, clientRisk.Fingerprint, "login_step_up_completed")
+			}
+			defer func() {
+				s.risk.RecordLogin(user.ID, ip, device.KeyID, clientRisk, assessment, true)
+			}()
+		}
+	}
+	if result, enforced, err := s.maybeRequireMFAEnrollment(user, policy, loginMethod, acr, clientRisk, opts); err != nil {
 		return PasswordLoginResult{}, err
 	} else if enforced {
 		return result, nil
@@ -131,7 +228,32 @@ func (s *AuthService) ContinuePostAuthentication(user domain.User, ip, loginMeth
 	return PasswordLoginResult{Session: session, User: updatedUser}, nil
 }
 
-func (s *AuthService) maybeRequireLoginStepUp(user domain.User, policy domain.UserSecurityPolicy, loginMethod, acr string) (PasswordLoginResult, bool, error) {
+func bestRiskStepUpMode(user domain.User) domain.LoginStepUpMode {
+	hasEmail := strings.TrimSpace(user.Email) != ""
+	hasPhone := strings.TrimSpace(user.Phone) != ""
+	if hasEmail && hasPhone {
+		return domain.LoginStepUpModeEmailAndSMS
+	}
+	if hasEmail {
+		return domain.LoginStepUpModeEmail
+	}
+	if hasPhone {
+		return domain.LoginStepUpModeSMS
+	}
+	return domain.LoginStepUpModeNone
+}
+
+func riskBlockCanUseStepUp(assessment riskservice.Assessment) bool {
+	for _, signal := range assessment.Signals {
+		switch strings.TrimSpace(signal.Name) {
+		case "ip_blacklisted":
+			return false
+		}
+	}
+	return true
+}
+
+func (s *AuthService) maybeRequireLoginStepUp(user domain.User, policy domain.UserSecurityPolicy, loginMethod, acr string, clientRisk ...riskservice.ClientInfo) (PasswordLoginResult, bool, error) {
 	effectiveMode, err := resolveStepUpModeForUser(user, policy.LoginStepUpMode)
 	if err != nil {
 		return PasswordLoginResult{}, false, err
@@ -139,7 +261,11 @@ func (s *AuthService) maybeRequireLoginStepUp(user domain.User, policy domain.Us
 	if effectiveMode == domain.LoginStepUpModeNone {
 		return PasswordLoginResult{}, false, nil
 	}
-	challenge, err := s.createLoginStepUpChallenge(user, loginMethod, acr, effectiveMode)
+	riskSnapshot := riskservice.ClientInfo{}
+	if len(clientRisk) > 0 {
+		riskSnapshot = clientRisk[0]
+	}
+	challenge, err := s.createLoginStepUpChallengeWithRisk(user, loginMethod, acr, effectiveMode, riskSnapshot)
 	if err != nil {
 		return PasswordLoginResult{}, false, err
 	}
@@ -153,7 +279,7 @@ func (s *AuthService) maybeRequireLoginStepUp(user domain.User, policy domain.Us
 	}, true, nil
 }
 
-func (s *AuthService) maybeRequireMFAEnrollment(user domain.User, policy domain.UserSecurityPolicy, loginMethod, acr string) (PasswordLoginResult, bool, error) {
+func (s *AuthService) maybeRequireMFAEnrollment(user domain.User, policy domain.UserSecurityPolicy, loginMethod, acr string, clientRisk riskservice.ClientInfo, opts postAuthRiskOptions) (PasswordLoginResult, bool, error) {
 	if !policy.ForceMFAEnrollmentNextLogin {
 		return PasswordLoginResult{}, false, nil
 	}
@@ -182,12 +308,14 @@ func (s *AuthService) maybeRequireMFAEnrollment(user domain.User, policy domain.
 		return PasswordLoginResult{}, false, fmt.Errorf("no available mfa method for current account")
 	}
 	challenge := domain.LoginMFAEnrollmentChallenge{
-		Token:       uuid.NewString(),
-		UserID:      user.ID,
-		LoginMethod: loginMethod,
-		ACR:         acr,
-		ExpiresAt:   time.Now().UTC().Add(mfaEnrollmentChallengeTTL),
-		CreatedAt:   time.Now().UTC(),
+		Token:               uuid.NewString(),
+		UserID:              user.ID,
+		LoginMethod:         loginMethod,
+		ACR:                 acr,
+		RiskClientJSON:      encodeRiskClient(clientRisk),
+		RiskStepUpSatisfied: opts.RiskStepUpSatisfied,
+		ExpiresAt:           time.Now().UTC().Add(mfaEnrollmentChallengeTTL),
+		CreatedAt:           time.Now().UTC(),
 	}
 	if err := s.deps.Store.SaveLoginMFAEnrollmentChallenge(challenge); err != nil {
 		return PasswordLoginResult{}, false, err
@@ -247,16 +375,21 @@ func AvailableMFAEnrollmentMethods(user domain.User) []string {
 }
 
 func (s *AuthService) createLoginStepUpChallenge(user domain.User, loginMethod, acr string, effectiveMode domain.LoginStepUpMode) (domain.LoginStepUpChallenge, error) {
+	return s.createLoginStepUpChallengeWithRisk(user, loginMethod, acr, effectiveMode, riskservice.ClientInfo{})
+}
+
+func (s *AuthService) createLoginStepUpChallengeWithRisk(user domain.User, loginMethod, acr string, effectiveMode domain.LoginStepUpMode, clientRisk riskservice.ClientInfo) (domain.LoginStepUpChallenge, error) {
 	challenge := domain.LoginStepUpChallenge{
-		Token:         uuid.NewString(),
-		UserID:        user.ID,
-		LoginMethod:   strings.TrimSpace(loginMethod),
-		ACR:           strings.TrimSpace(acr),
-		EffectiveMode: effectiveMode,
-		EmailTarget:   strings.TrimSpace(user.Email),
-		PhoneTarget:   strings.TrimSpace(user.Phone),
-		ExpiresAt:     time.Now().UTC().Add(loginStepUpChallengeTTL),
-		CreatedAt:     time.Now().UTC(),
+		Token:          uuid.NewString(),
+		UserID:         user.ID,
+		LoginMethod:    strings.TrimSpace(loginMethod),
+		ACR:            strings.TrimSpace(acr),
+		EffectiveMode:  effectiveMode,
+		EmailTarget:    strings.TrimSpace(user.Email),
+		PhoneTarget:    strings.TrimSpace(user.Phone),
+		RiskClientJSON: encodeRiskClient(clientRisk),
+		ExpiresAt:      time.Now().UTC().Add(loginStepUpChallengeTTL),
+		CreatedAt:      time.Now().UTC(),
 	}
 	if err := s.deps.Store.SaveLoginStepUpChallenge(challenge); err != nil {
 		return domain.LoginStepUpChallenge{}, err
@@ -343,7 +476,7 @@ func (s *AuthService) CompleteLoginStepUp(challengeToken, emailOTP, smsOTP, ip s
 	if err := s.clearUserSecurityPolicy(user.ID, false, true, false); err != nil {
 		return PasswordLoginResult{}, err
 	}
-	return s.ContinuePostAuthentication(user, ip, challenge.LoginMethod, challenge.ACR, binding...)
+	return s.continuePostAuthenticationWithRiskOptions(user, ip, challenge.LoginMethod, challenge.ACR, decodeRiskClient(challenge.RiskClientJSON), postAuthRiskOptions{RiskStepUpSatisfied: true}, binding...)
 }
 
 func (s *AuthService) CompleteForcedMFAEnrollment(challengeToken, method, ip string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
@@ -383,14 +516,7 @@ func (s *AuthService) CompleteForcedMFAEnrollment(challengeToken, method, ip str
 	s.deps.AppendUserOperationLog(user.ID, "user.security_policy.force_mfa_enrollment_completed", user.ID, map[string]any{
 		"method": method,
 	})
-	session, updatedUser, err := createLoginSession(s.deps, s.audit, user, ip, challenge.ACR, binding...)
-	if err != nil {
-		return PasswordLoginResult{}, err
-	}
-	return PasswordLoginResult{
-		Session: session,
-		User:    updatedUser,
-	}, nil
+	return s.continuePostAuthenticationWithRiskOptions(user, ip, challenge.LoginMethod, challenge.ACR, decodeRiskClient(challenge.RiskClientJSON), postAuthRiskOptions{RiskStepUpSatisfied: challenge.RiskStepUpSatisfied}, binding...)
 }
 
 func (s *AuthService) verifyLoginStepUpEmail(email, otp string) error {
@@ -407,4 +533,50 @@ func (s *AuthService) verifyLoginStepUpSMS(phone, otp string) error {
 		return fmt.Errorf("invalid login step-up verification code")
 	}
 	return s.deps.Store.ConsumeSMSVerificationCode(verification.ID)
+}
+
+func encodeRiskClient(client riskservice.ClientInfo) string {
+	client = normalizeRiskClient(client)
+	data, err := json.Marshal(client)
+	if err != nil {
+		return ""
+	}
+	return string(data)
+}
+
+func decodeRiskClient(raw string) riskservice.ClientInfo {
+	if strings.TrimSpace(raw) == "" {
+		return riskservice.ClientInfo{}
+	}
+	var client riskservice.ClientInfo
+	if err := json.Unmarshal([]byte(raw), &client); err != nil {
+		return riskservice.ClientInfo{}
+	}
+	return normalizeRiskClient(client)
+}
+
+func normalizeRiskClient(client riskservice.ClientInfo) riskservice.ClientInfo {
+	client.Score = 0
+	client.Level = ""
+	client.Fingerprint = strings.TrimSpace(client.Fingerprint)
+	client.ClientType = strings.TrimSpace(client.ClientType)
+	client.UserAgent = strings.TrimSpace(client.UserAgent)
+	seen := map[string]struct{}{}
+	signals := make([]string, 0, len(client.Signals))
+	for _, signal := range client.Signals {
+		signal = strings.TrimSpace(signal)
+		if signal == "" {
+			continue
+		}
+		if _, ok := seen[signal]; ok {
+			continue
+		}
+		seen[signal] = struct{}{}
+		signals = append(signals, signal)
+		if len(signals) >= 32 {
+			break
+		}
+	}
+	client.Signals = signals
+	return client
 }

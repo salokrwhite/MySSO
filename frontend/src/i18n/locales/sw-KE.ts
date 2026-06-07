@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Mwisho kusasishwa: {{date}}",
       agreement: {
         title: "Makubaliano ya Mtumiaji",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Karibu kwenye {{siteName}}. Kabla ya kujisajili, kuingia, au kutumia huduma zetu, tafadhali soma makubaliano haya kwa makini. Kwa kuendelea kutumia huduma, unakubali kufuata masharti haya.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Kwa sababu za usalama, kufuata sheria, uendeshaji, au matengenezo, jukwaa linaweza kurekebisha, kusasisha, kusimamisha, au kuacha njia fulani, michakato, au vipengele, na litajaribu kutoa taarifa wakati inafaa.",
           liabilityP2:
             "Kwa kiwango kinachoruhusiwa na sheria, jukwaa haliko jukumu zaidi ya jukumu la kisheria kwa msiamano, data isiyo ya kawaida, au hasara zinazotokana na nguvu za asili, hitilafu za mtandao, sababu za wengine, au matumizi mabaya upande wako.",
+accountP3:
+            "Ili kulinda akaunti za watumiaji na waendelezaji, jukwaa linaweza kufanya tathmini za hatari katika hali kama vile kuingia kwa nenosiri, kuingia kwa msimbo, kuingia kwa passkey, kuingia kwa msimbo wa QR, kufunga nambari ya simu, kubadilisha barua pepe, kubadilisha nambari ya simu, kubadilisha nenosiri, mipangilio ya MFA, kufuta akaunti, kutoa data, na kusimamia programu za waendelezaji. Kulingana na matokeo, jukwaa linaweza kuomba uthibitisho zaidi, kuchelewesha usindikaji, kupunguza operesheni, au kuzuia ufikiaji.",
         },
       },
       privacy: {
         title: "Sera ya Faragha",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} inaheshimu taarifa zako za kibinafsi na usalama wa akaunti. Sera hii inaelezea jinsi tunavyokusanya, kutumia, kuhifadhi, kushiriki, na kulinda taarifa zako, pamoja na haki zilizopo kwako.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Unapojisajili, kuingia, au kutumia huduma za akaunti, tunaweza kukusanya nchi ya usajili, anwani ya barua pepe, nambari ya simu, nenosiri la hash, vikao vya kuingia, IP ya kifaa, rekodi za idhini, na kumbukumbu za usalama zinazohitajika.",
           dataCollectionP2:
             "Unapopakia picha ya wasifu, kubadilisha maelezo yako, kuunganisha nambari ya simu, kuwasha MFA, au kuruhusu programu ya mtu mwingine, tunachakata taarifa unazowasilisha kulingana na mahitaji ya kazi hiyo.",
+dataCollectionP3:
+            "Ili kubaini unyakuzi wa akaunti, kujaza siri, vifaa visivyo vya kawaida, mitandao isivyo ya kawaida, maombi ya kiotomatiki, na operesheni zenye hatari kubwa, tunaweza pia kukusanya au kuzalisha alama za vidole za kifaa, vitambulisho vya funguo za umma za kifaa, aina ya mteja, ishara za hatari za kifaa, sababu za kushindwa kwa kuingia, matokeo ya uthibitisho wa msimbo, eneo la IP au lebo za hatari za eneo, historia ya kuingia, alama za hatari, viwango vya hatari, na hatua zilizochukuliwa. Hatukusanyi anwani, maudhui ya SMS, kumbukumbu za simu, albamu za picha, eneo sahihi, maudhui ya maikrofoni au kamera kwa madhumuni ya kudhibiti hatari za akaunti.",
           dataUsageTitle: "2. Jinsi Tunavyotumia Taarifa",
           dataUsageP1:
             "Tunatumia taarifa zinazohusiana kutoa usajili wa akaunti, uthibitishaji wa kuingia, utoaji wa nambari za uthibitishaji, udhibiti wa hatari, uthibitishaji wa idhini, ukaguzi wa programu za wasanidi, arifa za usalama wa akaunti, na matengenezo ya uimara wa huduma.",
           dataUsageP2:
             "Pia tunachanganua kumbukumbu na takwimu kwa kiwango cha chache cha uhitaji ili kugundua shughuli zisizo za kawaida, kuboresha uzoefu wa bidhaa, na kuimarisha usalama.",
+dataUsageP3:
+            "Maelezo ya kudhibiti hatari yanatumika hasa kuamua ikiwa kuingia au kuendelea na operesheni nyeti kunaruhusiwa, ikiwa uthibitisho zaidi kupitia barua pepe au SMS unahitajika, ikiwa kufunga nambari ya simu kunahitajika, ikiwa kufungwa kwa baada ya majaribio yaliyoshindwa kunapaswa kuanzishwa, ikiwa tukio la hatari linarekodiwa, au kusaidia wasimamizi kuchunguza matatizo ya usalama. Maelezo ya hatari yaliyoripotiwa na mteja yanatumika tu kama ishara ya msaidizi na hayatumiki peke yake kupunguza maamuzi ya usalama.",
           dataSharingTitle: "3. Kushiriki na Kufichua",
           dataSharingP1:
             "Tunatoa tu taarifa za utambulisho au data inayohusiana na ruhusa kwa programu za wengine unapotoa idhini wazi kwa ruhusa zilizoonyeshwa kwenye ukurasa wa idhini.",
@@ -83,6 +89,8 @@ const locale = {
             "Tunatumia vikwazo vya ufikiaji, hashing ya nenosiri, muda wa kumalizika kwa nambari za uthibitishaji, kumbukumbu za ukaguzi, na hatua za kupunguza data ili kulinda taarifa zako za kibinafsi na data ya uthibitishaji.",
           securityP2:
             "Kulingana na mahitaji ya kisheria na biashara, tunahifadhi taarifa zako kwa muda tu unaohitajika kutimiza madhumuni ya huduma; baada ya kufuta akaunti au muda wa kuhifadhi kumalizika, tutafuta au kuficha data kulingana na sera.",
+securityP3:
+            "Kumbukumbu za hatari, historia ya kuingia, wasifu wa kifaa, na kumbukumbu za majaribio yaliyoshindwa zinahifadhiwa kwa kipindi kinachohitajika kwa ukaguzi wa usalama, utatuzi wa migogoro, uchunguzi wa mashambulizi, na kufuata kanuni. Tunapunguza hatari za uvujaji na matumizi mabaya kupitia hashing, udhibiti wa ufikiaji, haki ndogo kabisa, na kumbukumbu za ukaguzi.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "Nambari ya uthibitishaji imetumwa. Tafadhali angalia kisanduku pokezi chako.",
       sendRegisterCodeFailed: "Imeshindwa kutuma nambari ya uthibitishaji",
+      legalConsentPrefix: "Nimesoma na ninakubali",
+      legalConsentAnd: "na",
+      accountAgreement: "Masharti ya Matumizi ya Akaunti",
+      accountPrivacyPolicy: "Sera ya Faragha ya Akaunti",
+      legalConsentRequired: "Tafadhali soma na ukubali Masharti ya Matumizi ya Akaunti na Sera ya Faragha ya Akaunti",
       backToLoginWithAccount: "Tayari una akaunti? Ingia",
       forgotPassword: "Umesahau nenosiri?",
       forgotPasswordPageTitle: "Weka upya Nenosiri",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "Kuingia kwa QR kumeughuliwa",
       qrLoginExpired: "Msimbo wa QR umeisha. Sasisha.",
       qrLoginRefresh: "Sasisha msimbo wa QR",
+      downloadApp: "Pakua programu",
       passwordLogin: "Nenosiri",
       otpLogin: "Nambari ya Barua Pepe",
       phoneOtpLogin: "Nambari ya Simu",
@@ -663,9 +677,9 @@ const locale = {
       contactMainlandPhoneValue: "NAMBARI_YAKO_YA_SIMU",
       contactMainlandEmailValue: "BARUA_PEPE_YAKO",
       contactMainlandHoursValue: "Jumatatu hadi Ijumaa 09:00 - 18:00",
-      contactOverseasPersonValue: "Itajazwa baadaye",
-      contactOverseasPhoneValue: "Itajazwa baadaye",
-      contactOverseasEmailValue: "Itajazwa baadaye",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Jumatatu hadi Ijumaa 09:00 - 18:00",
       contactRegionNotice:
         "Tafadhali wasiliana na kituo cha usaidiji kwa eneo lako kwanza. Ukiwa huna uhakika ni eneo lipi linatumika, anza na mwasiliana wa Bara la China kwa usaidizi wa uelekezaji.",

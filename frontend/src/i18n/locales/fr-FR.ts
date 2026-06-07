@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Dernière mise à jour : {{date}}",
       agreement: {
         title: "Conditions d'utilisation",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Bienvenue sur {{siteName}}. Avant de vous inscrire, de vous connecter, d'intégrer ou d'utiliser les services d'authentification unifiée, veuillez lire attentivement le présent accord. En continuant à utiliser le service, vous acceptez d'être lié par le présent accord.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Pour des raisons de sécurité, de conformité, d'exploitation ou de maintenance, la plateforme peut ajuster, mettre à niveau, suspendre ou mettre fin à certaines interfaces, processus ou fonctions, et s'efforcera de prévenir lorsque cela est approprié.",
           liabilityP2:
             "Dans la mesure permise par la loi, la plateforme n'est pas responsable au-delà de ses obligations légales des interruptions, anomalies de données ou pertes causées par un cas de force majeure, des défaillances réseau, des raisons tierces ou une utilisation incorrecte de votre part.",
+accountP3:
+            "Afin de protéger les comptes des utilisateurs et des développeurs, la plateforme peut effectuer une évaluation des risques dans des scénarios tels que la connexion par mot de passe, la connexion par code, la connexion par passkey, la connexion par QR code, la liaison du numéro de téléphone, le changement d'e-mail, le changement de numéro de téléphone, le changement de mot de passe, la configuration MFA, la suppression de compte, l'exportation de données et la gestion des applications de développeur. Selon le résultat, la plateforme peut exiger une vérification supplémentaire, retarder le traitement, restreindre une opération ou bloquer l'accès.",
         },
       },
       privacy: {
         title: "Politique de confidentialité",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} accorde une grande importance à vos informations personnelles et à la sécurité de votre compte. La présente politique explique comment nous collectons, utilisons, stockons, partageons et protégeons vos informations, ainsi que les droits dont vous disposez.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Lors de votre inscription, connexion ou utilisation des services de compte, nous pouvons collecter votre pays d'inscription, votre adresse e-mail, votre numéro de téléphone, l'empreinte de votre mot de passe, vos sessions de connexion, l'adresse IP de votre appareil, vos enregistrements d'autorisation et les journaux de sécurité nécessaires.",
           dataCollectionP2:
             "Lorsque vous téléchargez un avatar, modifiez votre profil, liez un numéro de téléphone, activez l'authentification à deux facteurs ou autorisez une application tierce, nous traitons les informations que vous soumettez selon les besoins de la fonctionnalité.",
+dataCollectionP3:
+            "Pour identifier les prises de contrôle de compte, le credential stuffing, les appareils anormaux, les réseaux anormaux, les requêtes automatisées et les opérations à haut risque, nous pouvons également collecter ou générer des empreintes d'appareil, des identifiants de clé publique d'appareil, le type de client, des signaux de risque d'appareil, les raisons d'échec de connexion, les résultats de vérification du code, la région IP ou les étiquettes de risque régional, l'historique de connexion, les scores de risque, les niveaux de risque et les actions prises. Nous ne collectons pas les contacts, le contenu des SMS, les journaux d'appels, les albums photos, la localisation précise, le contenu du microphone ou de la caméra à des fins de gestion des risques de compte.",
           dataUsageTitle: "2. Comment nous utilisons les informations",
           dataUsageP1:
             "Nous utilisons les informations pertinentes pour fournir l'inscription de compte, l'authentification de connexion, l'envoi de codes de vérification, le contrôle des risques, la confirmation d'autorisation, l'examen des applications de développeurs, les notifications de sécurité de compte et la maintenance de la fiabilité du service.",
           dataUsageP2:
             "Nous analysons également les journaux et les statistiques sur la base du principe de minimisation nécessaire afin de détecter les activités anormales, d'améliorer l'expérience produit et de renforcer la sécurité.",
+dataUsageP3:
+            "Les informations de gestion des risques sont principalement utilisées pour décider s'il faut autoriser la connexion ou la poursuite d'opérations sensibles, exiger une vérification supplémentaire par e-mail ou SMS, exiger la liaison d'un numéro de téléphone, déclencher un verrouillage après tentatives échouées, enregistrer un événement de risque, ou aider les administrateurs à enquêter sur des problèmes de sécurité. Les informations de risque signalées par le client sont utilisées uniquement comme signal auxiliaire et ne servent pas à elles seules à abaisser les décisions de sécurité.",
           dataSharingTitle: "3. Partage et divulgation",
           dataSharingP1:
             "Nous ne fournissons des informations d'identité ou des données liées aux autorisations aux applications tierces que lorsque vous les autorisez explicitement pour les portées affichées sur la page d'autorisation.",
@@ -83,6 +89,8 @@ const locale = {
             "Nous utilisons des contrôles d'accès, le hachage des mots de passe, l'expiration des codes de vérification, les journaux d'audit et des mesures de minimisation des données pour protéger vos informations personnelles et vos données d'authentification.",
           securityP2:
             "Sous réserve des exigences légales et commerciales, nous conservons vos informations uniquement pendant la durée nécessaire à la réalisation des objectifs du service ; après la suppression de votre compte ou l'expiration des délais de conservation, nous supprimerons ou rendrons anonymes les données conformément à la politique.",
+securityP3:
+            "Les journaux de risque, l'historique de connexion, les profils d'appareil et les enregistrements de tentatives échouées sont conservés pendant la période nécessaire à l'audit de sécurité, au traitement des litiges, à l'enquête sur les attaques et à la conformité. Nous réduisons les risques de fuite et d'utilisation abusive grâce au hachage, aux contrôles d'accès, au principe du moindre privilège et aux pistes d'audit.",
         },
       },
     },
@@ -103,6 +111,11 @@ const locale = {
       sendRegisterCode: "Envoyer le code",
       sendRegisterCodeSuccess: "Le code de vérification a été envoyé. Veuillez vérifier votre boîte de réception.",
       sendRegisterCodeFailed: "Échec de l'envoi du code de vérification",
+      legalConsentPrefix: "J'ai lu et j'accepte",
+      legalConsentAnd: "et",
+      accountAgreement: "Conditions d'utilisation du compte",
+      accountPrivacyPolicy: "Politique de confidentialité du compte",
+      legalConsentRequired: "Veuillez lire et accepter les Conditions d'utilisation du compte et la Politique de confidentialité du compte",
       backToLoginWithAccount: "Vous avez déjà un compte ? Se connecter",
       forgotPassword: "Mot de passe oublié ?",
       forgotPasswordPageTitle: "Réinitialiser le mot de passe",
@@ -154,6 +167,7 @@ const locale = {
       qrLoginCancelled: "Connexion QR annulée",
       qrLoginExpired: "QR code expiré. Veuillez actualiser.",
       qrLoginRefresh: "Actualiser le QR code",
+      downloadApp: "Télécharger l'application",
       passwordLogin: "Mot de passe",
       otpLogin: "Code e-mail",
       phoneOtpLogin: "Code SMS",
@@ -551,9 +565,9 @@ const locale = {
       contactMainlandPhoneValue: "VOTRE_NUMERO_DE_TELEPHONE",
       contactMainlandEmailValue: "VOTRE_EMAIL",
       contactMainlandHoursValue: "Lundi à vendredi 09:00 - 18:00",
-      contactOverseasPersonValue: "À renseigner",
-      contactOverseasPhoneValue: "À renseigner",
-      contactOverseasEmailValue: "À renseigner",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Lundi à vendredi 09:00 - 18:00",
       contactRegionNotice: "Veuillez contacter en priorité le canal de support de votre région. Si vous n'êtes pas sûr de la région concernée, commencez par le contact Chine continentale pour obtenir une aide de transfert.",
       contactNotice: "Pour les problèmes tels que les comptes gelés, les autorisations anormales, les clés d'accès perdues ou la récupération de suppression, contactez d'abord l'administrateur via le numéro de téléphone ou l'e-mail ci-dessus. Si votre plateforme dispose d'un système de tickets officiel, d'un tableau d'annonces ou d'un groupe d'exploitation, suivez d'abord ce canal officiel.",

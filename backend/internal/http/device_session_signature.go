@@ -84,7 +84,16 @@ func (s *Server) requireDeviceSessionSignature(c *gin.Context, session domain.Se
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid device signature"})
 		return false
 	}
+	replayKey := deviceSignatureReplayKey(session, keyID, nonce)
+	if s.deviceReplayCache != nil && !s.deviceReplayCache.markIfNew(replayKey, deviceSignatureTimestampSkew*2, time.Now().UTC()) {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "device signature replay detected"})
+		return false
+	}
 	return true
+}
+
+func deviceSignatureReplayKey(session domain.Session, keyID, nonce string) string {
+	return strings.TrimSpace(session.Token) + ":" + strings.TrimSpace(keyID) + ":" + strings.TrimSpace(nonce)
 }
 
 func deviceSignaturePayload(method, requestURI, timestamp, nonce, bodyHash string) string {

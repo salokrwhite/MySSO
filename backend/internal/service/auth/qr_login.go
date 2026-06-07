@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"mysso/backend/internal/domain"
+	riskservice "mysso/backend/internal/service/risk"
 	"mysso/backend/internal/service/settings"
 )
 
@@ -132,8 +133,6 @@ func (s *AuthService) ConfirmQRLogin(scanToken, sessionToken, ip, userAgent stri
 	challenge.UserEmail = user.Email
 	challenge.UserDisplayName = user.DisplayName
 	challenge.UserRole = user.Role
-	challenge.IP = strings.TrimSpace(ip)
-	challenge.UserAgent = trimForStorage(userAgent, 1024)
 	challenge.UpdatedAt = now
 	if !confirm {
 		challenge.Status = domain.QRLoginStatusCancelled
@@ -142,9 +141,36 @@ func (s *AuthService) ConfirmQRLogin(scanToken, sessionToken, ip, userAgent stri
 		}
 		return QRLoginStatusResult{Status: challenge.Status, ExpiresAt: challenge.ExpiresAt, User: user}, nil
 	}
-	session, updatedUser, err := createLoginSession(s.deps, s.audit, user, ip, "urn:mysso:acr:qr-login", binding...)
+	targetIP := strings.TrimSpace(challenge.IP)
+	if targetIP == "" {
+		targetIP = strings.TrimSpace(ip)
+	}
+	assessment := riskservice.Assessment{}
+	if s.risk != nil && user.Role != domain.RoleAdmin {
+		assessmentResult, err := s.risk.AssessLogin(riskservice.LoginParams{
+			UserID: user.ID,
+			IP:     targetIP,
+			Client: riskservice.ClientInfo{
+				ClientType: "web",
+				UserAgent:  strings.TrimSpace(challenge.UserAgent),
+			},
+			Now: time.Now().UTC(),
+		})
+		if err != nil {
+			return QRLoginStatusResult{}, err
+		}
+		assessment = assessmentResult
+		if assessment.Action != riskservice.ActionAllow {
+			s.risk.RecordLogin(user.ID, targetIP, "", riskservice.ClientInfo{ClientType: "web", UserAgent: strings.TrimSpace(challenge.UserAgent)}, assessment, false)
+			return QRLoginStatusResult{}, fmt.Errorf("access_denied")
+		}
+	}
+	session, updatedUser, err := createLoginSession(s.deps, s.audit, user, targetIP, "urn:mysso:acr:qr-login")
 	if err != nil {
 		return QRLoginStatusResult{}, err
+	}
+	if s.risk != nil && updatedUser.Role != domain.RoleAdmin {
+		s.risk.RecordLogin(updatedUser.ID, targetIP, "", riskservice.ClientInfo{ClientType: "web", UserAgent: strings.TrimSpace(challenge.UserAgent)}, assessment, true)
 	}
 	challenge.Status = domain.QRLoginStatusConfirmed
 	challenge.SessionToken = session.Token
@@ -153,10 +179,12 @@ func (s *AuthService) ConfirmQRLogin(scanToken, sessionToken, ip, userAgent stri
 		return QRLoginStatusResult{}, err
 	}
 	s.audit.Record(updatedUser.ID, updatedUser.Role, "user.qr_login.confirm", updatedUser.ID, map[string]any{
-		"ip": ip,
+		"target_ip":    targetIP,
+		"confirmer_ip": strings.TrimSpace(ip),
 	})
 	s.deps.AppendUserOperationLog(updatedUser.ID, "user.qr_login.confirm", updatedUser.ID, map[string]any{
-		"ip": ip,
+		"target_ip":    targetIP,
+		"confirmer_ip": strings.TrimSpace(ip),
 	})
 	return QRLoginStatusResult{Status: challenge.Status, ExpiresAt: challenge.ExpiresAt, User: updatedUser, Session: session}, nil
 }

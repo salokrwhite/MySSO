@@ -4,6 +4,10 @@ export const defaultSettings: SystemSettings = {
   allow_user_registration: true,
   enable_phone_verification: true,
   enable_qr_login: false,
+  app_current_version_code: 1,
+  app_current_version_name: "1.0.0",
+  app_download_url: "",
+  app_force_update: false,
   site_name: "MySSO",
   site_name_en: "MySSO",
   site_browser_title: "",
@@ -105,9 +109,34 @@ export const defaultSettings: SystemSettings = {
   aliyun_sms_bind_phone_template_code: "",
   aliyun_sms_delete_template_code: "",
   risk_control_enabled: false,
+  risk_phone_binding_enabled: false,
   risk_immediate_bind_probability: 50,
   risk_delayed_bind_probability: 50,
   risk_delayed_bind_login_count: 3,
+  risk_medium_threshold: 30,
+  risk_high_threshold: 60,
+  risk_critical_threshold: 80,
+  risk_auto_block_threshold: 90,
+  risk_max_failed_logins: 5,
+  risk_lockout_minutes: 15,
+  risk_score_window_days: 30,
+  risk_failed_login_score_weight: 5,
+  risk_failed_login_score_cap: 30,
+  risk_enable_geo_check: true,
+  risk_enable_device_check: true,
+  risk_enable_behavior_check: true,
+  risk_enable_ip_blacklist: true,
+  risk_enable_mitigation: true,
+  risk_allow_block_step_up: true,
+  risk_trusted_device_days: 30,
+  risk_mitigation_hours: 72,
+  risk_trusted_device_score_discount: 20,
+  risk_mitigation_score_discount: 15,
+  risk_high_risk_geo_discount: 20,
+  risk_new_device_discount: 10,
+  risk_ip_change_discount: 8,
+  risk_trusted_ips: "[]",
+  risk_high_risk_countries: "[]",
   developer_managed_users_search_window_seconds: 10,
   developer_managed_users_search_limit: 5
 };
@@ -116,6 +145,7 @@ export function getSettingsTabs(t: (key: string) => string): SettingsTab[] {
   return [
     { key: "site", label: t("站点信息") },
     { key: "session", label: t("用户会话") },
+    { key: "appVersion", label: t("APP 版本") },
     { key: "verification", label: t("验证码") },
     { key: "intl", label: t("国际化支持") },
     { key: "sms", label: t("发信配置") },
@@ -131,11 +161,12 @@ export function getSettingsTabMeta(t: (key: string) => string): Record<SettingsT
   return {
     site: { title: t("站点信息"), description: t("预留站点名称、域名和品牌信息配置。") },
     session: { title: t("用户会话"), description: t("预留登录会话、超时和单点登录策略配置。") },
+    appVersion: { title: t("APP 版本"), description: t("配置移动端最低可用版本和最新 APP 下载链接。") },
     verification: { title: t("验证码"), description: t("管理邮箱/短信验证码策略和图形人机验证。") },
     intl: { title: t("国际化支持"), description: t("配置邮箱验证码中英文模板，并按国家/地区自动选择发送语言。") },
     sms: { title: t("发信配置"), description: t("管理短信发信接口与模板配置，并预留阿里云等扩展能力。") },
     media: { title: t("公告配置"), description: t("分别配置用户中心和开发者后台的顶部公告，互不影响，可独立开启和编辑。") },
-    addons: { title: t("风控管理"), description: t("管理中国大陆注册用户的手机号绑定风控策略与触发概率。") },
+    addons: { title: t("风控管理"), description: t("配置账号登录风控评分、处置阈值、失败限制和注册后手机号绑定策略。") },
     rateLimit: { title: t("限流管理"), description: t("限制开发者后台高成本查询接口的短时间重复调用。") },
     email: { title: t("邮件"), description: t("管理 SMTP 连接、发件人和测试邮件。") },
     scope: { title: t("Scope 设置"), description: t("集中管理系统可用 scope、是否启用，以及开发者是否可在创建应用时直接申请。") }
@@ -177,8 +208,8 @@ export function getAdminPageMeta(t: (key: string) => string) {
       description: t("查看开发者侧用户组、访问限制和封禁操作记录，支持管理员硬删除。")
     },
     riskLogs: {
-      title: t("Passkey 数据"),
-      description: ""
+      title: t("风控日志"),
+      description: t("查看用户和开发者账号的综合风险评分、账号使用信息与风控事件明细。")
     },
     settings: {
       title: t("参数设置"),

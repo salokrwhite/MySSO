@@ -13,7 +13,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -103,7 +102,7 @@ func (s *Service) Complete(req CompleteRequest) error {
 	if installed {
 		return ErrAlreadyInstalled
 	}
-	if err := runMigrations(db); err != nil {
+	if err := runInitialMigration(db); err != nil {
 		return err
 	}
 	installed, err = isInstalled(db)
@@ -153,24 +152,19 @@ func isInstalled(db *sql.DB) (bool, error) {
 	return value == "true", nil
 }
 
-func runMigrations(db *sql.DB) error {
-	files, err := filepath.Glob(filepath.Join("migrations", "*.sql"))
+func runInitialMigration(db *sql.DB) error {
+	migrationPath := filepath.Join("migrations", "001_init.sql")
+	// #nosec G304 -- fixed repository migration path, not user-controlled input.
+	content, err := os.ReadFile(migrationPath)
 	if err != nil {
 		return err
 	}
-	sort.Strings(files)
-	for _, migrationPath := range files {
-		content, err := os.ReadFile(migrationPath)
-		if err != nil {
-			return err
+	for _, stmt := range splitSQLStatements(string(content)) {
+		if strings.TrimSpace(stmt) == "" {
+			continue
 		}
-		for _, stmt := range splitSQLStatements(string(content)) {
-			if strings.TrimSpace(stmt) == "" {
-				continue
-			}
-			if _, err := db.Exec(stmt); err != nil {
-				return fmt.Errorf("run migration %s: %w", filepath.Base(migrationPath), err)
-			}
+		if _, err := db.Exec(stmt); err != nil {
+			return fmt.Errorf("run migration %s: %w", filepath.Base(migrationPath), err)
 		}
 	}
 	return nil
@@ -540,6 +534,9 @@ func ApplyRuntimeSettings(db *sql.DB, cfg *config.Config) error {
 		return err
 	}
 	if err := ensureScopeDefinitionsTable(db); err != nil {
+		return err
+	}
+	if err := ensureRiskControlTables(db); err != nil {
 		return err
 	}
 	if err := ensureDefaultGatewayPolicy(db, time.Now().UTC()); err != nil {
@@ -1795,6 +1792,166 @@ func seedDefaultScopeDefinitions(db *sql.DB) error {
 				is_system = VALUES(is_system),
 				updated_at = VALUES(updated_at)
 		`, item.key, item.displayName, item.description, item.developerSelectable, now); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func ensureRiskControlTables(db *sql.DB) error {
+	statements := []string{
+		`CREATE TABLE IF NOT EXISTS risk_events (
+			id VARCHAR(64) NOT NULL,
+			user_id VARCHAR(64) NOT NULL DEFAULT '',
+			event_type VARCHAR(64) NOT NULL,
+			identifier_hash VARCHAR(128) NOT NULL DEFAULT '',
+			failure_reason VARCHAR(128) NOT NULL DEFAULT '',
+			risk_score INT NOT NULL DEFAULT 0,
+			risk_level VARCHAR(32) NOT NULL DEFAULT 'low',
+			action_taken VARCHAR(32) NOT NULL DEFAULT 'logged',
+			ip_address VARCHAR(64) NOT NULL DEFAULT '',
+			ip_country VARCHAR(64) NOT NULL DEFAULT '',
+			ip_region VARCHAR(128) NOT NULL DEFAULT '',
+			ip_city VARCHAR(128) NOT NULL DEFAULT '',
+			device_fingerprint VARCHAR(128) NOT NULL DEFAULT '',
+			device_key_id VARCHAR(128) NOT NULL DEFAULT '',
+			client_type VARCHAR(32) NOT NULL DEFAULT '',
+			user_agent TEXT,
+			signals_json JSON DEFAULT NULL,
+			created_at DATETIME NOT NULL,
+			PRIMARY KEY (id),
+			INDEX idx_risk_events_user_created_at (user_id, created_at),
+			INDEX idx_risk_events_type_created_at (event_type, created_at),
+			INDEX idx_risk_events_identifier_created_at (identifier_hash, created_at),
+			INDEX idx_risk_events_ip_created_at (ip_address, created_at),
+			INDEX idx_risk_events_level_created_at (risk_level, created_at)
+		)`,
+		`CREATE TABLE IF NOT EXISTS device_profiles (
+			id VARCHAR(64) NOT NULL,
+			user_id VARCHAR(64) NOT NULL,
+			device_fingerprint VARCHAR(128) NOT NULL,
+			device_key_id VARCHAR(128) NOT NULL DEFAULT '',
+			client_type VARCHAR(32) NOT NULL DEFAULT '',
+			first_ip VARCHAR(64) NOT NULL DEFAULT '',
+			last_ip VARCHAR(64) NOT NULL DEFAULT '',
+			first_seen_at DATETIME NOT NULL,
+			last_seen_at DATETIME NOT NULL,
+			last_risk_score INT NOT NULL DEFAULT 0,
+			last_risk_level VARCHAR(32) NOT NULL DEFAULT 'low',
+			blocked_at DATETIME DEFAULT NULL,
+			trusted_until DATETIME DEFAULT NULL,
+			mitigated_until DATETIME DEFAULT NULL,
+			trust_reason VARCHAR(500) NOT NULL DEFAULT '',
+			trust_updated_by VARCHAR(64) NOT NULL DEFAULT '',
+			PRIMARY KEY (id),
+			UNIQUE KEY uniq_device_profiles_user_fingerprint (user_id, device_fingerprint),
+			INDEX idx_device_profiles_user_last_seen (user_id, last_seen_at),
+			INDEX idx_device_profiles_trusted_until (trusted_until),
+			INDEX idx_device_profiles_mitigated_until (mitigated_until)
+		)`,
+		`CREATE TABLE IF NOT EXISTS login_history (
+			id VARCHAR(64) NOT NULL,
+			user_id VARCHAR(64) NOT NULL,
+			ip_address VARCHAR(64) NOT NULL DEFAULT '',
+			ip_country VARCHAR(64) NOT NULL DEFAULT '',
+			ip_region VARCHAR(128) NOT NULL DEFAULT '',
+			ip_city VARCHAR(128) NOT NULL DEFAULT '',
+			device_fingerprint VARCHAR(128) NOT NULL DEFAULT '',
+			device_key_id VARCHAR(128) NOT NULL DEFAULT '',
+			client_type VARCHAR(32) NOT NULL DEFAULT '',
+			risk_score INT NOT NULL DEFAULT 0,
+			risk_level VARCHAR(32) NOT NULL DEFAULT 'low',
+			success TINYINT(1) NOT NULL DEFAULT 0,
+			created_at DATETIME NOT NULL,
+			PRIMARY KEY (id),
+			INDEX idx_login_history_user_created_at (user_id, created_at),
+			INDEX idx_login_history_ip_created_at (ip_address, created_at)
+		)`,
+		`CREATE TABLE IF NOT EXISTS ip_blacklist (
+			id VARCHAR(64) NOT NULL,
+			ip_address VARCHAR(64) NOT NULL,
+			reason VARCHAR(500) NOT NULL DEFAULT '',
+			created_by VARCHAR(64) NOT NULL DEFAULT '',
+			created_at DATETIME NOT NULL,
+			expires_at DATETIME DEFAULT NULL,
+			PRIMARY KEY (id),
+			UNIQUE KEY uniq_ip_blacklist_ip (ip_address),
+			INDEX idx_ip_blacklist_expires_at (expires_at)
+		)`,
+	}
+	for _, statement := range statements {
+		if _, err := db.Exec(statement); err != nil {
+			return err
+		}
+	}
+	riskColumns := []struct {
+		name  string
+		query string
+	}{
+		{name: "identifier_hash", query: `ALTER TABLE risk_events ADD COLUMN identifier_hash VARCHAR(128) NOT NULL DEFAULT '' AFTER event_type`},
+		{name: "failure_reason", query: `ALTER TABLE risk_events ADD COLUMN failure_reason VARCHAR(128) NOT NULL DEFAULT '' AFTER identifier_hash`},
+	}
+	for _, column := range riskColumns {
+		if err := ensureColumn(db, "risk_events", column.name, column.query); err != nil {
+			return err
+		}
+	}
+	if err := ensureIndex(db, "risk_events", "idx_risk_events_identifier_created_at", `ALTER TABLE risk_events ADD INDEX idx_risk_events_identifier_created_at (identifier_hash, created_at)`); err != nil {
+		return err
+	}
+	deviceColumns := []struct {
+		name  string
+		query string
+	}{
+		{name: "trusted_until", query: `ALTER TABLE device_profiles ADD COLUMN trusted_until DATETIME DEFAULT NULL AFTER blocked_at`},
+		{name: "mitigated_until", query: `ALTER TABLE device_profiles ADD COLUMN mitigated_until DATETIME DEFAULT NULL AFTER trusted_until`},
+		{name: "trust_reason", query: `ALTER TABLE device_profiles ADD COLUMN trust_reason VARCHAR(500) NOT NULL DEFAULT '' AFTER mitigated_until`},
+		{name: "trust_updated_by", query: `ALTER TABLE device_profiles ADD COLUMN trust_updated_by VARCHAR(64) NOT NULL DEFAULT '' AFTER trust_reason`},
+	}
+	for _, column := range deviceColumns {
+		if err := ensureColumn(db, "device_profiles", column.name, column.query); err != nil {
+			return err
+		}
+	}
+	if err := ensureIndex(db, "device_profiles", "idx_device_profiles_trusted_until", `ALTER TABLE device_profiles ADD INDEX idx_device_profiles_trusted_until (trusted_until)`); err != nil {
+		return err
+	}
+	if err := ensureIndex(db, "device_profiles", "idx_device_profiles_mitigated_until", `ALTER TABLE device_profiles ADD INDEX idx_device_profiles_mitigated_until (mitigated_until)`); err != nil {
+		return err
+	}
+	now := time.Now().UTC()
+	defaults := map[string]string{
+		"risk_medium_threshold":              "30",
+		"risk_high_threshold":                "60",
+		"risk_critical_threshold":            "80",
+		"risk_auto_block_threshold":          "90",
+		"risk_max_failed_logins":             "5",
+		"risk_lockout_minutes":               "15",
+		"risk_score_window_days":             "30",
+		"risk_failed_login_score_weight":     "5",
+		"risk_failed_login_score_cap":        "30",
+		"risk_enable_geo_check":              "true",
+		"risk_enable_device_check":           "true",
+		"risk_enable_behavior_check":         "true",
+		"risk_enable_ip_blacklist":           "true",
+		"risk_enable_mitigation":             "true",
+		"risk_allow_block_step_up":           "true",
+		"risk_trusted_device_days":           "30",
+		"risk_mitigation_hours":              "72",
+		"risk_trusted_device_score_discount": "20",
+		"risk_mitigation_score_discount":     "15",
+		"risk_high_risk_geo_discount":        "20",
+		"risk_new_device_discount":           "10",
+		"risk_ip_change_discount":            "8",
+		"risk_trusted_ips":                   "[]",
+		"risk_high_risk_countries":           "[]",
+	}
+	for key, value := range defaults {
+		if _, err := db.Exec(`
+			INSERT INTO system_settings (setting_key, setting_value, updated_at)
+			VALUES (?, ?, ?)
+			ON DUPLICATE KEY UPDATE setting_key = setting_key
+		`, key, value, now); err != nil {
 			return err
 		}
 	}

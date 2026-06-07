@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Viimati uuendatud: {{date}}",
       agreement: {
         title: "Kasutajaleping",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Tere tulemast {{siteName}}. Enne registreerimist, sisselogimist, integreerimist või ühtse identiteediteenuse kasutamist lugege see leping hoolikalt läbi. Teenuse kasutamise jätkamisega nõustute selle lepinguga.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Turvalisuse, vastavuse, operatsiooniliste või hoolduslike põhjuste tõttu võib platvorm reguleerida, uuendada, peatada või lõpetada teatud liideseid, vooge või funktsioone ning püüab vajadusel teavitada.",
           liabilityP2:
             "Seadusega lubatud ulatuses ei vastuta platvorm seaduslike kohustuste ületavate katkestuste, ebanormaalsete andmete või kahjude eest, mis on põhjustatud jõud majeure'ist, võrguriketest, kolmandate osapoolte põhjustest või teie poolelt valest kasutusest.",
+accountP3:
+            "Kasutaja- ja arendajakontode kaitsmiseks võib platvorm teostada riskihindamisi stsenaariumides nagu parooliga sisselogimine, koodiga sisselogimine, passkey-ga sisselogimine, QR-koodiga sisselogimine, telefoninumbri sidumine, e-posti muutmine, telefoninumbri muutmine, parooli muutmine, MFA seadistamine, konto kustutamine, andmete eksport ja arendajarakenduste haldamine. Sõltuvalt tulemusest võib platvorm nõuda täiendavat kontrolli, töötlemist edasi lükata, toimingut piirata või juurdepääsu blokeerida.",
         },
       },
       privacy: {
         title: "Privaatsuspoliitika",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} väärtustab teie isikuandmeid ja konto turvalisust. See poliitika selgitab, kuidas me teie teavet kogume, kasutame, säilitame, jagame ja kaitseme, samuti teile kättesaadavaid õigusi.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Kui registreerite, logite sisse või kasutate kontoteenuseid, võime koguda teie registreerimisriigi, e-posti aadressi, telefoninumbri, parooli räsi, sisselogimissessioonide, seadme IP, autoriseerimiskirjete ja vajalike turvalogide teavet.",
           dataCollectionP2:
             "Kui laadite üles avatari, muudate profiili, sidute telefoninumbri, lubate MFA või autoriseerite kolmanda osapoole rakenduse, töötleme teie esitatud teavet vastavalt funktsiooni pakkumiseks vajalikule.",
+dataCollectionP3:
+            "Kontode ülevõtmise, credential stuffingu, ebanormaalsete seadmete, ebanormaalsete võrkude, automatiseeritud päringute ja kõrge riskitasemega toimingute tuvastamiseks võime samuti koguda või luua seadmete sõrmejälgi, seadme avaliku võtme identifikaatoreid, kliendi tüüpi, seadme riskisignaale, ebaõnnestunud sisselogimiste põhjuseid, koodi kontrollimise tulemusi, IP piirkonda või piirkondlikke riskimärgiseid, sisselogimisajalugu, riskiskoore, riskitasemeid ja võetud meetmeid. Konto riskijuhtimise eesmärgil me ei kogu kontakte, SMS-i sisu, kõnelogisid, fotoalbumeid, täpset asukohta, mikrofoni ega kaamera sisu.",
           dataUsageTitle: "2. Kuidas me teavet kasutame",
           dataUsageP1:
             "Kasutame asjakohast teavet kontode registreerimise, sisselogimise autentimise, kinnituskoodide edastamise, riskikontrolli, autoriseerimise kinnitamise, arendajarakenduste ülevaatamise, konto turvateadete ja teenuse usaldusväärsuse hooldamiseks.",
           dataUsageP2:
             "Analüüsime ka logisid ja statistikat minimaalselt vajalikul alusel, et tuvastada ebanormaalset tegevust, parandada tootekogemust ja tugevdada turvalisust.",
+dataUsageP3:
+            "Riskijuhtimise teavet kasutatakse peamiselt selleks, et otsustada, kas lubada sisselogimist või tundlike toimingute jätkamist, kas nõuda täiendavat e-posti või SMS-i kontrolli, kas nõuda telefoninumbri sidumist, kas käivitada lukustus pärast ebaõnnestunud katseid, kas salvestada riskisündmus, või aidata administraatoritel turvaprobleeme uurida. Kliendi esitatud riskiteavet kasutatakse ainult abistava signaalina ja see ei vähenda iseenesest turvaotsuseid.",
           dataSharingTitle: "3. Jagamine ja avalikustamine",
           dataSharingP1:
             "Anname kolmandate osapoolte rakendustele identiteediteavet või õigustega seotud andmeid ainult siis, kui autoriseerite autoriseerimislehel kuvatavad ulatused selgesõnaliselt.",
@@ -83,6 +89,8 @@ const locale = {
             "Kasutame teie isikuandmete ja autentimisandmete kaitsmiseks juurdepääsukontrolle, parooli räsimist, kinnituskoodide aegumist, auditi logisid ja andmete minimeerimise meetmeid.",
           securityP2:
             "Õiguslike ja äriliste nõuete kohaselt säilitame teie teavet ainult nii kaua, kui see on teenuse eesmärkide täitmiseks vajalik; pärast konto kustutamist või säilitamisperioodide lõppu kustutame või anonüümitame andmed vastavalt poliitikale.",
+securityP3:
+            "Riskilogisid, sisselogimisajalugu, seadmeprofiile ja ebaõnnestunud katsete kirjeid säilitatakse nii kaua, kui see on vajalik turvaauditite, vaidluste lahendamise, rünnakute uurimise ja vastavuse tagamiseks. Lekke- ja kuritarvitamise ohtu vähendame räsi, juurdepääsukontrolli, vähimate õiguste ja auditijälgede abil.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "Kinnituskood on saadetud. Palun kontrollige oma postkasti.",
       sendRegisterCodeFailed: "Kinnituskoodi saatmine ebaõnnestus",
+      legalConsentPrefix: "Olen lugenud ja nõustun",
+      legalConsentAnd: "ja",
+      accountAgreement: "Konto kasutustingimused",
+      accountPrivacyPolicy: "Konto privaatsuspoliitika",
+      legalConsentRequired: "Palun lugege ja nõustuge Konto kasutustingimuste ja Konto privaatsuspoliitikaga",
       backToLoginWithAccount: "Konto juba olemas? Logi sisse",
       forgotPassword: "Unustasid parooli?",
       forgotPasswordPageTitle: "Lähtesta parool",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "See QR sisselogimine on tühistatud",
       qrLoginExpired: "QR kood on aegunud. Värskendage.",
       qrLoginRefresh: "Värskenda QR koodi",
+      downloadApp: "Laadi rakendus alla",
       passwordLogin: "Parool",
       otpLogin: "E-posti kood",
       phoneOtpLogin: "Telefonikood",
@@ -654,9 +668,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Esmaspäevast reedeni 09:00 - 18:00",
-      contactOverseasPersonValue: "Lisatakse hiljem",
-      contactOverseasPhoneValue: "Lisatakse hiljem",
-      contactOverseasEmailValue: "Lisatakse hiljem",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Esmaspäevast reedeni 09:00 - 18:00",
       contactRegionNotice:
         "Palun võtke kõigepealt ühendust oma piirkonna toekanali. Kui te ei ole kindel, milline piirkond kehtib, alustage mandri-Hiina kontaktist suunamise abi saamiseks.",

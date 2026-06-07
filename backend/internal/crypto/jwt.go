@@ -6,7 +6,9 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"fmt"
+	"math/big"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -95,7 +97,7 @@ func (m *JWTManager) JWKS() map[string]any {
 	keys := make([]map[string]any, 0, len(keyIDs))
 	for _, keyID := range keyIDs {
 		publicKey := m.verificationKeys[keyID]
-		e := base64.RawURLEncoding.EncodeToString([]byte{byte(publicKey.E >> 16), byte(publicKey.E >> 8), byte(publicKey.E)})
+		e := base64.RawURLEncoding.EncodeToString(big.NewInt(int64(publicKey.E)).Bytes())
 		n := base64.RawURLEncoding.EncodeToString(publicKey.N.Bytes())
 		keys = append(keys, map[string]any{
 			"kty": "RSA",
@@ -120,7 +122,7 @@ func loadPrivateKey(privateKeyPEM, privateKeyPath string) (*rsa.PrivateKey, erro
 	if privateKeyPath == "" {
 		return nil, fmt.Errorf("missing OIDC signing private key configuration")
 	}
-	data, err := os.ReadFile(privateKeyPath)
+	data, err := readConfiguredKeyFile(privateKeyPath)
 	if err != nil {
 		return nil, fmt.Errorf("read OIDC signing private key file: %w", err)
 	}
@@ -198,7 +200,7 @@ func loadVerificationKeys(activeKeyID string, activePrivateKey *rsa.PrivateKey, 
 		if _, exists := keys[keyID]; exists {
 			return nil, fmt.Errorf("duplicate verify key id: %s", keyID)
 		}
-		data, err := os.ReadFile(keyPath)
+		data, err := readConfiguredKeyFile(keyPath)
 		if err != nil {
 			return nil, fmt.Errorf("read additional verify key %s: %w", keyID, err)
 		}
@@ -209,4 +211,16 @@ func loadVerificationKeys(activeKeyID string, activePrivateKey *rsa.PrivateKey, 
 		keys[keyID] = publicKey
 	}
 	return keys, nil
+}
+
+func readConfiguredKeyFile(path string) ([]byte, error) {
+	path = strings.TrimSpace(path)
+	if path == "" {
+		return nil, fmt.Errorf("key path is required")
+	}
+	cleanPath := filepath.Clean(path)
+	if cleanPath == "." {
+		return nil, fmt.Errorf("invalid key path")
+	}
+	return os.ReadFile(cleanPath)
 }

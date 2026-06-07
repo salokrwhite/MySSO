@@ -20,6 +20,7 @@ import (
 	"mysso/backend/internal/service/common/authutil"
 	"mysso/backend/internal/service/common/deps"
 	"mysso/backend/internal/service/common/templateutil"
+	riskservice "mysso/backend/internal/service/risk"
 	"mysso/backend/internal/service/settings"
 	"mysso/backend/internal/store"
 )
@@ -28,12 +29,17 @@ type UserService struct {
 	deps     *deps.Deps
 	audit    *audit.Service
 	settings *settings.Service
+	risk     *riskservice.Service
 }
 
 type Service = UserService
 
 func New(dependencies *deps.Deps, auditService *audit.Service, settingsService *settings.Service) *Service {
 	return &UserService{deps: dependencies, audit: auditService, settings: settingsService}
+}
+
+func (s *UserService) SetRiskService(risk *riskservice.Service) {
+	s.risk = risk
 }
 
 func (s *UserService) invalidateUserSessionsAndRefreshTokens(userID string) error {
@@ -91,6 +97,9 @@ func (s *UserService) UpdateUserMFA(userID string, enabled bool, method, current
 		return domain.User{}, err
 	}
 	if err := s.VerifyCurrentMFA(user, currentMFACode, ip, deviceID); err != nil {
+		return domain.User{}, err
+	}
+	if err := s.enforceSecurityOperationRisk(user, ip, deviceID, "update_mfa"); err != nil {
 		return domain.User{}, err
 	}
 	if !authutil.SupportsUserMFA(user) {
@@ -272,6 +281,9 @@ func (s *UserService) UpdateUserEmail(userID, email, code, currentPassword, ip, 
 		return domain.User{}, err
 	}
 	s.resetUserAttempt(attempt)
+	if err := s.enforceSecurityOperationRisk(user, ip, deviceID, "change_email"); err != nil {
+		return domain.User{}, err
+	}
 
 	previousEmail := user.Email
 	user.Email = email
@@ -351,6 +363,9 @@ func (s *UserService) UpdateUserPhone(userID, phone, code, currentPhoneCode, cur
 		return domain.User{}, err
 	}
 	s.resetUserAttempt(attempt)
+	if err := s.enforceSecurityOperationRisk(user, ip, deviceID, "change_phone"); err != nil {
+		return domain.User{}, err
+	}
 
 	previousPhone := user.Phone
 	user.Phone = phone
@@ -461,7 +476,16 @@ func (s *UserService) SendPhoneVerificationCode(userID, phone, purpose string) (
 		Consumed:  false,
 		CreatedAt: now,
 	}
-	if err := s.deps.Store.SaveSMSVerificationCode(record); err != nil {
+	if dailyLimit.SMS > 0 {
+		startAt, endAt := settings.ChinaDayRange(now)
+		saved, err := s.deps.Store.SaveSMSVerificationCodeWithinDailyLimit(record, startAt, endAt, dailyLimit.SMS)
+		if err != nil {
+			return 0, err
+		}
+		if !saved {
+			return cooldownSeconds, settings.VerificationDailyLimitError(now)
+		}
+	} else if err := s.deps.Store.SaveSMSVerificationCode(record); err != nil {
 		return 0, err
 	}
 
@@ -495,6 +519,9 @@ func (s *UserService) UpdateUserPassword(userID, currentPassword, newPassword, i
 	}
 	if security.VerifyPassword(newPassword, user.Password) {
 		return fmt.Errorf("new password must be different from current password")
+	}
+	if err := s.enforceSecurityOperationRisk(user, ip, deviceID, "change_password"); err != nil {
+		return err
 	}
 
 	passwordHash, err := security.HashPassword(newPassword)
@@ -550,6 +577,9 @@ func (s *UserService) ResetUserPasswordByEmail(email, code, newPassword, ip, dev
 	}
 	if user.Password != "" && security.VerifyPassword(newPassword, user.Password) {
 		return fmt.Errorf("new password must be different from current password")
+	}
+	if err := s.enforceSecurityOperationRisk(user, ip, deviceID, "reset_password"); err != nil {
+		return err
 	}
 
 	passwordHash, err := security.HashPassword(newPassword)
@@ -666,6 +696,9 @@ func (s *UserService) RequestUserDeletion(userID, currentPassword, emailCode, ph
 		}
 		s.resetUserAttempt(smsAttempt)
 	}
+	if err := s.enforceSecurityOperationRisk(user, ip, deviceID, "delete_account"); err != nil {
+		return domain.User{}, err
+	}
 	now := time.Now().UTC()
 	deletionAt := now.Add(appdefaults.AccountDeletionGracePeriod)
 	user.DeletionRequestedAt = &now
@@ -706,6 +739,9 @@ func (s *UserService) ExportUserDataCSV(userID, currentPassword, ip, deviceID st
 		return nil, "", err
 	}
 	if err := s.VerifyCurrentPassword(user, currentPassword, ip, deviceID); err != nil {
+		return nil, "", err
+	}
+	if err := s.enforceSecurityOperationRisk(user, ip, deviceID, "export_user_data"); err != nil {
 		return nil, "", err
 	}
 

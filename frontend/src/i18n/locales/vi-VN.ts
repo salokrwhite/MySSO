@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Cập nhật gần đây: {{date}}",
       agreement: {
         title: "Thỏa thuận người dùng",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Chào mừng đến với {{siteName}}. Trước khi đăng ký, đăng nhập, kết nối hoặc sử dụng khả năng xác thực thống nhất do hệ thống cung cấp, bạn nên đọc kỹ thỏa thuận này. Tiếp tục sử dụng đồng nghĩa với việc bạn đã hiểu và đồng ý tuân theo thỏa thuận này khi sử dụng các dịch vụ liên quan.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Nền tảng có thể điều chỉnh, nâng cấp, tạm dừng hoặc chấm dứt nội dung dịch vụ, khả năng giao diện, quy trình xác thực hoặc trang chức năng dựa trên lý do bảo mật, tuân thủ pháp luật, bảo trì vận hành, v.v., và sẽ cố gắng thông báo trước khi có thể.",
           liabilityP2:
             "Trong phạm vi pháp luật cho phép, đối với các gián đoạn dịch vụ, dữ liệu bất thường hoặc tổn thất do bất khả kháng, lỗi mạng, lý do bên thứ ba hoặc sử dụng không đúng cách của bạn, nền tảng sẽ không chịu trách nhiệm ngoài phạm vi pháp định.",
+accountP3:
+            "Để bảo vệ tài khoản người dùng và nhà phát triển, nền tảng có thể thực hiện đánh giá rủi ro trong các tình huống như đăng nhập bằng mật khẩu, đăng nhập bằng mã, đăng nhập bằng passkey, đăng nhập bằng mã QR, liên kết số điện thoại, thay đổi email, thay đổi số điện thoại, thay đổi mật khẩu, cài đặt MFA, xóa tài khoản, xuất dữ liệu và quản lý ứng dụng của nhà phát triển. Tùy theo kết quả, nền tảng có thể yêu cầu xác minh bổ sung, trì hoãn xử lý, hạn chế một thao tác hoặc chặn truy cập.",
         },
       },
       privacy: {
         title: "Chính sách bảo mật",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} coi trọng thông tin cá nhân và bảo mật tài khoản của bạn. Chính sách này được sử dụng để giải thích cách chúng tôi thu thập, sử dụng, lưu trữ, chia sẻ và bảo vệ thông tin cá nhân của bạn, cũng như các quyền liên quan mà bạn có.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Khi bạn đăng ký, đăng nhập hoặc sử dụng dịch vụ tài khoản, chúng tôi có thể thu thập quốc gia đăng ký, địa chỉ email, số điện thoại, bản băm mật khẩu, phiên đăng nhập, IP thiết bị, hồ sơ ủy quyền và thông tin nhật ký bảo mật cần thiết.",
           dataCollectionP2:
             "Khi bạn chủ động tải lên ảnh đại diện, sửa đổi biệt danh, liên kết số điện thoại, kích hoạt xác thực hai lớp hoặc ủy quyền cho ứng dụng bên thứ ba, chúng tôi sẽ xử lý thông tin tương ứng mà bạn gửi theo nhu cầu chức năng.",
+dataCollectionP3:
+            "Để nhận diện việc chiếm đoạt tài khoản, credential stuffing, thiết bị bất thường, mạng bất thường, yêu cầu tự động và các thao tác rủi ro cao, chúng tôi cũng có thể thu thập hoặc tạo dấu vân tay thiết bị, mã định danh khóa công khai của thiết bị, loại máy khách, tín hiệu rủi ro thiết bị, lý do đăng nhập thất bại, kết quả xác minh mã, khu vực IP hoặc nhãn rủi ro khu vực, lịch sử đăng nhập, điểm rủi ro, cấp độ rủi ro và các hành động đã thực hiện. Chúng tôi không thu thập danh bạ, nội dung SMS, nhật ký cuộc gọi, album ảnh, vị trí chính xác, nội dung micrô hoặc máy ảnh cho mục đích kiểm soát rủi ro tài khoản.",
           dataUsageTitle: "2. Cách sử dụng thông tin",
           dataUsageP1:
             "Chúng tôi sử dụng thông tin liên quan để hoàn thành đăng ký tài khoản, xác thực đăng nhập, gửi mã xác thực, kiểm tra rủi ro, xác nhận ủy quyền, kiểm duyệt kết nối nhà phát triển, thông báo bảo mật tài khoản và bảo trì độ ổn định của dịch vụ.",
           dataUsageP2:
             "Chúng tôi cũng sẽ phân tích nhật ký và thông tin thống kê dựa trên nguyên tắc tối thiểu cần thiết để phát hiện hành vi bất thường, tối ưu hóa trải nghiệm sản phẩm và nâng cao bảo mật hệ thống.",
+dataUsageP3:
+            "Thông tin kiểm soát rủi ro chủ yếu được sử dụng để quyết định có cho phép đăng nhập hoặc tiếp tục các thao tác nhạy cảm hay không, có yêu cầu xác minh bổ sung qua email hoặc SMS hay không, có yêu cầu liên kết số điện thoại hay không, có kích hoạt khóa sau các lần thử thất bại hay không, có ghi lại sự kiện rủi ro hay không, hoặc để hỗ trợ quản trị viên điều tra các vấn đề bảo mật. Thông tin rủi ro do máy khách báo cáo chỉ được sử dụng như tín hiệu hỗ trợ và không được dùng một mình để giảm các quyết định bảo mật.",
           dataSharingTitle: "3. Chia sẻ và tiết lộ thông tin",
           dataSharingP1:
             "Chúng tôi chỉ cung cấp thông tin nhận dạng hoặc dữ liệu tương ứng với phạm vi quyền cho ứng dụng bên thứ ba khi bạn ủy quyền rõ ràng.",
@@ -83,6 +89,8 @@ const locale = {
             "Chúng tôi áp dụng các biện pháp như kiểm soát truy cập, mã hóa mật khẩu, kiểm soát thời hạn mã xác thực, kiểm tra nhật ký và lưu trữ tối thiểu để cố gắng bảo vệ thông tin cá nhân và dữ liệu xác thực của bạn.",
           securityP2:
             "Trên cơ sở tuân thủ pháp luật và nhu cầu kinh doanh, chúng tôi chỉ lưu trữ thông tin của bạn trong thời gian cần thiết để thực hiện mục đích dịch vụ; sau khi bạn hủy tài khoản hoặc hết thời hạn lưu trữ, chúng tôi sẽ xóa hoặc xử lý ẩn danh theo quy tắc.",
+securityP3:
+            "Nhật ký rủi ro, lịch sử đăng nhập, hồ sơ thiết bị và bản ghi các lần thử thất bại được lưu giữ trong thời gian cần thiết để kiểm tra bảo mật, xử lý tranh chấp, điều tra tấn công và tuân thủ. Chúng tôi giảm thiểu rủi ro rò rỉ và lạm dụng thông qua băm, kiểm soát truy cập, đặc quyền tối thiểu và nhật ký kiểm tra.",
         },
       },
     },
@@ -103,6 +111,11 @@ const locale = {
       sendRegisterCode: "Gửi mã xác thực",
       sendRegisterCodeSuccess: "Mã xác thực đã được gửi, vui lòng kiểm tra email của bạn.",
       sendRegisterCodeFailed: "Gửi mã xác thực thất bại",
+      legalConsentPrefix: "Tôi đã đọc và đồng ý với",
+      legalConsentAnd: "và",
+      accountAgreement: "Điều khoản sử dụng tài khoản",
+      accountPrivacyPolicy: "Chính sách quyền riêng tư tài khoản",
+      legalConsentRequired: "Vui lòng đọc và đồng ý với Điều khoản sử dụng tài khoản và Chính sách quyền riêng tư tài khoản",
       backToLoginWithAccount: "Đã có tài khoản, đăng nhập",
       forgotPassword: "Quên mật khẩu",
       forgotPasswordPageTitle: "Khôi phục mật khẩu",
@@ -157,6 +170,7 @@ const locale = {
       qrLoginCancelled: "Đăng nhập QR đã bị hủy",
       qrLoginExpired: "Mã QR đã hết hạn, vui lòng làm mới mã QR",
       qrLoginRefresh: "Làm mới mã QR",
+      downloadApp: "Tải ứng dụng",
       passwordLogin: "Đăng nhập bằng mật khẩu",
       otpLogin: "Đăng nhập bằng mã xác thực email",
       phoneOtpLogin: "Đăng nhập bằng mã xác thực số điện thoại",
@@ -577,9 +591,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Thứ Hai đến Thứ Sáu 09:00 - 18:00",
-      contactOverseasPersonValue: "Chờ bổ sung",
-      contactOverseasPhoneValue: "Chờ bổ sung",
-      contactOverseasEmailValue: "Chờ bổ sung",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Thứ Hai đến Thứ Sáu 09:00 - 18:00",
       contactRegionNotice:
         "Vui lòng ưu tiên liên hệ kênh hỗ trợ tương ứng với khu vực bạn đang ở; nếu không thể xác định khu vực thuộc, có thể liên hệ Trung Quốc đại lục trước để được hỗ trợ chuyển tiếp.",

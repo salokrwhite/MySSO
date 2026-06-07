@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Dikemas kini pada: {{date}}",
       agreement: {
         title: "Perjanjian Pengguna",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Selamat datang ke {{siteName}}. Sebelum mendaftar, log masuk, mengakses atau menggunakan keupayaan pengesahan seragam yang disediakan oleh sistem ini, anda harus membaca perjanjian ini dengan teliti. Melanjutkan penggunaan bermakna anda telah memahami dan bersetuju untuk menggunakan perkhidmatan berkaitan mengikut perjanjian ini.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Platform mungkin melaksanakan pelarasan, peningkatan, penggangguran atau penamatan kepada kandungan perkhidmatan, keupayaan antara muka, proses pengesahan atau halaman fungsi untuk sebab-sebab keselamatan, pematuhan, penyelenggaraan operasi dan sebagainya, dan akan cuba memberitahu dengan terlebih dahulu.",
           liabilityP2:
             "Dalam lingkup yang dibenarkan oleh undang-undang, platform tidak akan menjalankan tanggungjawab melebihi lingkup sah untuk gangguan perkhidmatan, data yang tidak normal atau kerugian yang disebabkan oleh keadaaan luar kawalan, kegagalan rangkaian, sebab pihak ketiga atau penggunaan yang tidak betul oleh anda.",
+accountP3:
+            "Untuk melindungi akaun pengguna dan pembangun, platform boleh menjalankan penilaian risiko dalam senario seperti log masuk dengan kata laluan, log masuk dengan kod, log masuk dengan passkey, log masuk dengan kod QR, pengikatan nombor telefon, perubahan e-mel, perubahan nombor telefon, perubahan kata laluan, tetapan MFA, pemadaman akaun, eksport data, dan pengurusan aplikasi pembangun. Bergantung pada hasilnya, platform boleh meminta verifikasi tambahan, melambatkan pemprosesan, menyekat operasi, atau menyekat akses.",
         },
       },
       privacy: {
         title: "Dasar Privasi",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} menghargai maklumat peribadi dan keselamatan akaun anda. Dasar ini digunakan untuk menerangkan bagaimana kami mengumpul, menggunakan, menyimpan, berkongsi dan melindungi maklumat peribadi anda, serta hak berkaitan yang anda miliki.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Semasa anda mendaftar, log masuk atau menggunakan perkhidmatan akaun, kami mungkin mengumpul negara pendaftaran, alamat emel, nombor telefon, ringkasan kata laluan, sesi log masuk, IP peranti, catatan pengesahan dan maklumat log keselamatan yang diperlukan.",
           dataCollectionP2:
             "Apabila anda secara sukarela memuat naik avatar, mengubah nama panggilan, mengikat nombor telefon, mengaktifkan pengesahan berganda atau mengesahkan aplikasi pihak ketiga, kami akan memproses maklumat yang anda hantar mengikut keperluan fungsi.",
+dataCollectionP3:
+            "Untuk mengenal pasti pengambilalihan akaun, credential stuffing, peranti abnormal, rangkaian abnormal, permintaan automatik, dan operasi berisiko tinggi, kami juga boleh mengumpul atau menjana cap jari peranti, pengecam kunci awam peranti, jenis pelanggan, isyarat risiko peranti, sebab kegagalan log masuk, hasil pengesahan kod, wilayah IP atau label risiko serantau, sejarah log masuk, skor risiko, tahap risiko, dan tindakan yang diambil. Kami tidak mengumpul kenalan, kandungan SMS, log panggilan, album foto, lokasi tepat, kandungan mikrofon atau kamera untuk tujuan kawalan risiko akaun.",
           dataUsageTitle: "2. Cara Menggunakan Maklumat",
           dataUsageP1:
             "Kami menggunakan maklumat berkaitan untuk menyelesaikan pendaftaran akaun, pengesahan log masuk, penghantaran kod verifikasi, pengesahan risiko, pengesahan pengesahan, semakan integrasi pembangun, pemberitahuan keselamatan akaun dan penyelenggaraan kestabilan perkhidmatan.",
           dataUsageP2:
             "Kami juga akan menganalisis log dan maklumat statistik berdasarkan prinsip keperluan minimum untuk mengesan tingkah laku tidak normal, mengoptimumkan pengalaman produk dan meningkatkan keselamatan sistem.",
+dataUsageP3:
+            "Maklumat kawalan risiko terutamanya digunakan untuk memutuskan sama ada membenarkan log masuk atau meneruskan operasi sensitif, sama ada memerlukan verifikasi tambahan melalui e-mel atau SMS, sama ada memerlukan pengikatan nombor telefon, sama ada mencetuskan kuncian selepas percubaan yang gagal, sama ada merekodkan peristiwa risiko, atau untuk membantu pentadbir menyiasat isu keselamatan. Maklumat risiko yang dilaporkan oleh pelanggan hanya digunakan sebagai isyarat tambahan dan tidak digunakan sendiri untuk merendahkan keputusan keselamatan.",
           dataSharingTitle: "3. Kongsi dan pendedahan maklumat",
           dataSharingP1:
             "Hanya apabila anda mengesahkan secara jelas, kami akan menyediakan maklumat identiti atau data yang berkaitan dengan lingkup kebenaran kepada aplikasi pihak ketiga.",
@@ -83,6 +89,8 @@ const locale = {
             "Kami mengambil langkah-langkah seperti kawalan akses, penyulitan kata laluan, kawalan tempoh kod verifikasi, log audit dan penyimpanan minimum untuk memastikan keselamatan maklumat peribadi dan data pengesahan anda.",
           securityP2:
             "Dengan mematuhi keperluan undang-undang dan perniagaan, kami hanya menyimpan maklumat anda dalam tempoh yang diperlukan untuk mencapai tujuan perkhidmatan; selepas anda membatalkan akaun atau tempoh penyimpanan tamat, kami akan memadam atau mengendalikan data secara anonim mengikut peraturan.",
+securityP3:
+            "Log risiko, sejarah log masuk, profil peranti, dan rekod percubaan yang gagal disimpan untuk tempoh yang diperlukan untuk audit keselamatan, penyelesaian pertikaian, penyiasatan serangan, dan pematuhan. Kami mengurangkan risiko kebocoran dan penyalahgunaan melalui pencincangan, kawalan akses, keistimewaan minimum, dan rekod audit.",
         },
       },
     },
@@ -103,6 +111,11 @@ const locale = {
       sendRegisterCode: "Hantar kod verifikasi",
       sendRegisterCodeSuccess: "Kod verifikasi telah dihantar, sila semak emel anda.",
       sendRegisterCodeFailed: "Gagal menghantar kod verifikasi",
+      legalConsentPrefix: "Saya telah membaca dan bersetuju dengan",
+      legalConsentAnd: "dan",
+      accountAgreement: "Terma Penggunaan Akaun",
+      accountPrivacyPolicy: "Dasar Privasi Akaun",
+      legalConsentRequired: "Sila baca dan terima Terma Penggunaan Akaun dan Dasar Privasi Akaun",
       backToLoginWithAccount: "Sudah ada akaun, pergi log masuk",
       forgotPassword: "Lupa kata laluan",
       forgotPasswordPageTitle: "Pulihkan Kata Laluan",
@@ -157,6 +170,7 @@ const locale = {
       qrLoginCancelled: "Login QR dibatalkan",
       qrLoginExpired: "Kod QR luput. Muat semula.",
       qrLoginRefresh: "Muat semula kod QR",
+      downloadApp: "Muat turun aplikasi",
       passwordLogin: "Log Masuk Kata Laluan",
       otpLogin: "Log Masuk Kod Verifikasi Emel",
       phoneOtpLogin: "Log Masuk Kod Verifikasi Telefon",
@@ -577,9 +591,9 @@ const locale = {
       contactMainlandPhoneValue: "NOMBOR TELEFON ANDA",
       contactMainlandEmailValue: "EMEL ANDA",
       contactMainlandHoursValue: "Isnin hingga Jumaat 09:00 - 18:00",
-      contactOverseasPersonValue: "akan disediakan",
-      contactOverseasPhoneValue: "akan disediakan",
-      contactOverseasEmailValue: "akan disediakan",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Isnin hingga Jumaat 09:00 - 18:00",
       contactRegionNotice:
         "Sila hubungi saluran sokongan yang berkaitan dengan rantau anda terlebih dahulu; jika tidak dapat menentukan rantau yang berkaitan, anda boleh mula dengan penghubung Tiongkok Daratan untuk mendapatkan bantuan penukaran.",

@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Yanzu sama da sabuntawa: {{date}}",
       agreement: {
         title: "Yarjejeniyar Matasa",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Barka da zuwa {{siteName}}. Kafin ka yi rajista, shiga, haɗa, ko amfani da ikon shaida na daidaitawa da tsarin yana bayarwa, ya kamata ka karanta wannan yarjejeniya da hankali. Ci gaba da amfani da sabis yana nufin cewa ka fahimta kuma ka yarda da tsare-tsaren wannan yarjejeniya.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Saboda dalilai na tsaro, laikacin doka, aiki, ko gyara, dandalin na iya daidaita, haɓaka, dakatar, ko ƙare wasu hanyoyin, hanyoyin aiki, ko ayyuka, kuma zai yi ƙoƙari ya sanar da canje-canje lokacin da ya dace.",
           liabilityP2:
             "A cikin iyaka da doka ke yarda, dandalin ba shi da alhaki fiye da ƙa'idodin doka don katsewa, bayanai marasa daidaituwa, ko hasara da ke fitowa daga abubuwan da ba a iya magance su, kuskuren sadarwa, dalilai na ƙarshen uku, ko rashin amfani da kyau daga bangaren ka.",
+accountP3:
+            "Don karewa na asusun masu amfani da masu haɓakawa, dandalin na iya yin kimanta haɗari a cikin yanayi kamar shiga da kalmar wucewa, shiga da lambar, shiga da passkey, shiga da lambar QR, ɗaure lambar waya, canza imel, canza lambar waya, canza kalmar wucewa, saitunan MFA, goge asusu, fitar da bayanai, da sarrafa aikace-aikacen masu haɓakawa. Dangane da sakamakon, dandalin na iya neman ƙarin tabbatarwa, jinkirta aiwatarwa, iyakance aiki, ko toshe damar shiga.",
         },
       },
       privacy: {
         title: "Manufar Nasa",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} yana daraja bayanai na mutum da tsaron asusu. Wannan manufar tana bayyana yadda muke tattara, amfani, adana, raba, da kiyaye bayanai, da kuma hakkoki da ke akwai a gare ka.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Lokacin da ka yi rajista, shiga, ko amfani da sabis na asusu, zaku iya tattara ƙasar rajista, imel, lambar waya, hash na kalmar sirri, zaman shiga, IP na na'ura, rikodin izini, da log ɗin tsaro da ake buƙata.",
           dataCollectionP2:
             "Lokacin da ka upload avatar, canza profile, ɗaure lambar waya, kunna MFA, ko ba izini ga app na ƙarshen uku, muke sarrafa bayanai da ka aika bisa buƙatar aikin.",
+dataCollectionP3:
+            "Don gano ɗaukar asusun, cikawa na kayan shaidar, na'urori marasa daidaituwa, cibiyoyin sadarwa marasa daidaituwa, buƙatun atomatik da ayyuka masu haɗari, muna iya tattarawa ko samar da sawun na'urori, masu gano maɓallin jama'a na na'urar, nau'in abokin ciniki, siginar haɗari na na'urar, dalilin gazawar shiga, sakamakon tabbatar da lambar, yankin IP ko lakabin haɗari na yanki, tarihin shiga, maki na haɗari, matakan haɗari da matakan da aka ɗauka. Ba mu tattara lambobin sadarwa, abun ciki na SMS, rajistan kira, fayyace hotuna, daidaitaccen wuri, abun ciki na makirufo ko na kyamara don dalilai na sarrafa haɗarin asusu ba.",
           dataUsageTitle: "2. Yadda muke amfani da Bayanai",
           dataUsageP1:
             "Muke amfani da bayanai masu alaƙa don samar da rajista na asusu, shaida na shiga, aika lambar tabbatarwa, sarrafa haɗari, tabbatar da izini, duba apps na masu haɓaka, sanarwar tsaro na asusu, da kiyaye ƙaƙƙarfan sabis.",
           dataUsageP2:
             "Muna kuma nazarin log ɗin da ƙididdiga akan tsari na ƙarancin buƙata don gano ayyuka mara kyau, inganta amfanin samfurin, da ƙarfafa tsaro.",
+dataUsageP3:
+            "Ana amfani da bayanan sarrafa haɗari ne da farko don yanke shawarar ko za a ba da izinin shiga ko ci gaba da ayyuka masu mahimmanci, ko a buƙaci ƙarin tabbatarwa ta imel ko SMS, ko a buƙaci ɗaure lambar waya, ko a jawo makulli bayan ƙoƙarin da suka gaza, ko a yi rikodin taron haɗari, ko don taimakawa manajoci su bincike batutuwan tsaro. Ana amfani da bayanan haɗari da abokin ciniki ya ruwaito kawai a matsayin siga na taimako kuma ba a amfani da shi shi kaɗai don rage yanke shawarar tsaro ba.",
           dataSharingTitle: "3. Raba da Bayyana",
           dataSharingP1:
             "Muke ba apps na ƙarshen uku bayanai na halittar mutum ko bayanai masu alaƙa da izini ne kawai lokacin da ka ba izini ta hanyar tabbatar da izini da ke nunawa a shafin izini.",
@@ -83,6 +89,8 @@ const locale = {
             "Muke amfani da sarrafa hanyar shiga, hash na kalmar sirri, ƙarshen lokacin lambar tabbatarwa, log ɗin bincike, da matakan rage data don kiyaye bayanai na mutum da bayanai na shaida.",
           securityP2:
             "A ƙarƙashin buƙatun doka da kasuwanci, muke adana bayanai na ka kawai gwargwadon lokacin da ake buƙata don cimma manufar sabis; bayan cire asusu ko ƙarshen lokacin adana, za mu cire ko sanya bayanai cikin hanyar da ba a iya gane su ba cikin tsari na manufar.",
+securityP3:
+            "Ana kiyaye rajistan haɗari, tarihin shiga, bayanan martabar na'urori, da rikodin ƙoƙarin da suka gaza na tsawon lokacin da ake buƙata don binciken tsaro, warware rikici, binciken hare-hare, da bin ka'idoji. Muna rage haɗarin ɓacewa da amfani da rashin amfani ta hanyar hashing, sarrafa dama, ƙaramar izini, da rikodin bincike.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "An aika lambar tabbatarwa. Lura da bincika imel.",
       sendRegisterCodeFailed: "An kasa aika lambar tabbatarwa",
+      legalConsentPrefix: "Na karanta kuma na yarda da",
+      legalConsentAnd: "da",
+      accountAgreement: "Sharuɗɗan Amfani da Asusu",
+      accountPrivacyPolicy: "Manufar Sirri na Asusu",
+      legalConsentRequired: "Da fatan za a karanta kuma yarda da Sharuɗɗan Amfani da Asusu da Manufar Sirri na Asusu",
       backToLoginWithAccount: "Kuna da asusu? Shiga",
       forgotPassword: "An manta da kalmar sirri?",
       forgotPasswordPageTitle: "Dawo da Kalmar Sirri",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "An soke shiga QR",
       qrLoginExpired: "QR code ya ɗauki, da fatan sabunta",
       qrLoginRefresh: "Sabunta QR code",
+      downloadApp: "Saukar da app",
       passwordLogin: "Kalmar Sirri",
       otpLogin: "Lambar Imel",
       phoneOtpLogin: "Lambar Waya",
@@ -663,9 +677,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Litinin zuwa Juma'a 09:00 - 18:00",
-      contactOverseasPersonValue: "Za a bayar",
-      contactOverseasPhoneValue: "Za a bayar",
-      contactOverseasEmailValue: "Za a bayar",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Litinin zuwa Juma'a 09:00 - 18:00",
       contactRegionNotice:
         "Lura da haɗa taro da tashar taimako na yankin da kake cikin shi da farko. Idan ba ka tabbata wane yanki ya shafi ka ba, fara da taron cibiyar China don samun jagora.",

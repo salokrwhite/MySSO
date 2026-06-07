@@ -53,6 +53,10 @@ type MemoryStore struct {
 	userOperationLogs     []domain.UserOperationLog
 	emailSendLogs         []domain.EmailSendLog
 	phoneSendLogs         []domain.PhoneSendLog
+	riskEvents            []domain.RiskEvent
+	deviceProfiles        map[string]domain.DeviceProfile
+	loginHistory          []domain.LoginHistory
+	ipBlacklist           map[string]domain.IPBlacklistEntry
 	policies              map[string]domain.GatewayPolicy
 	scopes                map[string]domain.ScopeDefinition
 	settings              map[string]string
@@ -167,6 +171,10 @@ func NewStore() *MemoryStore {
 		userOperationLogs:     []domain.UserOperationLog{},
 		emailSendLogs:         []domain.EmailSendLog{},
 		phoneSendLogs:         []domain.PhoneSendLog{},
+		riskEvents:            []domain.RiskEvent{},
+		deviceProfiles:        map[string]domain.DeviceProfile{},
+		loginHistory:          []domain.LoginHistory{},
+		ipBlacklist:           map[string]domain.IPBlacklistEntry{},
 		policies: map[string]domain.GatewayPolicy{
 			policyID: {
 				ID:          policyID,

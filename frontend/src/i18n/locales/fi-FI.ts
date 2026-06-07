@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Viimeksi päivitetty: {{date}}",
       agreement: {
         title: "Käyttäjäehtos",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Tervetuloa {{siteName}}-palveluun. Ennen kuin rekisteröidyt, kirjaudut sisään, integroitu tai käytät järjestelmän tarjoamaa yhtenäistä tunnistautumispotentiaalia, sinun tulee lukea tämä sopimus huolellisesti. Jatkamalla käyttöä hyväksyt noudattavasi tämän sopimuksen ehtoja.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Turvallisuus-, sääntely-, operaatio- tai ylläpitusehtoihin perustuen alusta voi tarkistaa, päivittää, keskeyttää tai lopettaa tiettyjä rajapintoja, suoritustapoja tai toimintoja ja yrittää ilmoittaa muutoksista tarvittaessa.",
           liabilityP2:
             "Lain sallimassa rajoissa alusta ei vastaa lakisääteisten velvoitteiden ylittäviä katkoksia, epänormaaleja tietoja tai menetyksiä, jotka johtuvat luonnonkatastrofeista, verkkovirheistä, kolmannen osapuolen syistä tai sinun omasta väärinkäytöstä.",
+accountP3:
+            "Käyttäjä- ja kehittäjätilien suojaamiseksi alusta voi suorittaa riskinarviointeja skenaarioissa, kuten salasanakirjautuminen, koodikirjautuminen, passkey-kirjautuminen, QR-koodikirjautuminen, puhelinnumeron liittäminen, sähköpostin vaihto, puhelinnumeron vaihto, salasanan vaihto, MFA-asetukset, tilin poisto, tietojen vienti ja kehittäjäsovellusten hallinta. Tuloksesta riippuen alusta voi vaatia lisävahvistusta, viivästyttää käsittelyä, rajoittaa toimintoa tai estää pääsyn.",
         },
       },
       privacy: {
         title: "Tietosuojakäytäntö",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} arvostaa henkilötietojasi ja tilin turvallisuutta. Tämä käytäntö selittää, miten keräämme, käytämme, tallennamme, jaetaan ja suojamme tietojasi, sekä millaisia oikeuksia sinulla on.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Kun rekisteröidyt, kirjaudut sisään tai käytät tilapalveluita, voimme kerätä rekisteröinti maasi, sähköpostiosoitteesi, puhelinnumerosi, salasanan tiivisteen, kirjautumisistunnot, laitteen IP-osoitteen, suostumusrekisteröinnit ja tarvittavat turvallisuuslokit.",
           dataCollectionP2:
             "Kun lataat profiilikuvaa, muutat profiiliasi, kiinnität puhelinnumeron, ottaa kaksivaiheisen todentamisen käyttöön tai annat suostumuksen kolmannen osapuolen sovellukselle, käsittelemme sinun lähettämiäsi tietoja funktion tarpeiden mukaan.",
+dataCollectionP3:
+            "Tilin kaappaamisen, credential stuffingin, epänormaalien laitteiden, epänormaalien verkkojen, automatisoitujen pyyntöjen ja korkean riskin toimintojen tunnistamiseksi voimme myös kerätä tai tuottaa laitteen sormenjälkiä, laitteen julkisen avaimen tunnisteita, asiakastyypin, laitteen riskisignaaleja, kirjautumisvirheiden syitä, koodivahvistusten tuloksia, IP-alueen tai alueellisia riskimerkintöjä, kirjautumishistoriaa, riskipisteitä, riskitasoja ja toteutettuja toimenpiteitä. Emme kerää tilejä koskevan riskinhallinnan tarkoituksiin yhteystietoja, SMS-sisältöä, puhelulokeja, valokuva-albumeita, tarkkaa sijaintia, mikrofonin tai kameran sisältöä.",
           dataUsageTitle: "2. Tietojen käyttö",
           dataUsageP1:
             "Käytämme相关 tietoja tilin rekisteröimiseen, kirjautumistodentamiseen, vahvistuskoodin lähettämiseen, riskienhallintaan, suostumuksen vahvistamiseen, kehittäjän sovellusten tarkastamiseen, tilin turvallisuusilmoituksiin ja palvelun luotettavuuden ylläpitämiseen.",
           dataUsageP2:
             "Analysoimme myös lokitietoja ja tilastoja minimivaatimuksen perusteella havaitsemme poikkeavia toimintamalleja, parantaaksemme tuotekokemusta ja vahvistaaksemme turvallisuutta.",
+dataUsageP3:
+            "Riskinhallintatietoja käytetään pääasiassa päättämään, sallitaanko kirjautuminen tai arkaluonteisten toimintojen jatkaminen, vaaditaanko lisävahvistusta sähköpostilla tai tekstiviestillä, vaaditaanko puhelinnumeron liittämistä, käynnistetäänkö epäonnistuneiden yritysten lukitus, kirjataanko riskitapahtuma, tai auttamaan ylläpitäjiä tutkimaan tietoturvaongelmia. Asiakkaan ilmoittamia riskitietoja käytetään vain apusignaalina, eikä niitä käytetä yksinään tietoturvapäätösten lieventämiseen.",
           dataSharingTitle: "3. Jakaminen ja paljastaminen",
           dataSharingP1:
             "Annamme kolmannen osapuolen sovelluksille henkilöllisyystietoja tai oikeuksiin liittyviä tietoja vain, kun annat suostumuksen suostumus sivulla näytetyille oikeuksille.",
@@ -83,6 +89,8 @@ const locale = {
             "Käytämme pääsynvalvontaa, salasanan tiivistämistä, vahvistuskoodin vanhenemista, tarkastuslokeja ja datan minimoimista suojataksemme henkilötietojasi ja tunnistautumistietojasi.",
           securityP2:
             "Lainsäädännön ja liiketoiminnan vaatimusten alaisena säilytämme tietojasi vain niin pitkään kuin palvelun tarkoituksen saavuttaminen edellyttää; tilin poistamisen tai säilytysajan päättymisen jälkeen poistamme tai anonyymisoimme tiedot käytäntönmukaisesti.",
+securityP3:
+            "Riskilokit, kirjautumishistoria, laiteprofiilit ja epäonnistuneiden yritysten tiedot säilytetään tietoturvatarkastusten, riitojen ratkaisun, hyökkäystutkimusten ja vaatimustenmukaisuuden edellyttämän ajan. Pienennämme vuoto- ja väärinkäytön riskejä hajautuksella, pääsynhallinnalla, vähimmäisoikeuksilla ja tarkastuslokeilla.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "Vahvistuskoodi on lähetetty. Tarkista sähköpostisi.",
       sendRegisterCodeFailed: "Vahvistuskoodin lähettäminen epäonnistui",
+      legalConsentPrefix: "Olen lukenut ja hyväksyn",
+      legalConsentAnd: "ja",
+      accountAgreement: "Tilin käyttöehdot",
+      accountPrivacyPolicy: "Tilin tietosuojakäytäntö",
+      legalConsentRequired: "Lue ja hyväksy Tilin käyttöehdot ja Tilin tietosuojakäytäntö",
       backToLoginWithAccount: "Onko sinulla jo tili? Kirjaudu sisään",
       forgotPassword: "Unohtuiko salasana?",
       forgotPasswordPageTitle: "Palauta salasana",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "Tämä QR-kirjautuminen peruttiin",
       qrLoginExpired: "QR-koodi on vanhentunut. Päivitä.",
       qrLoginRefresh: "Päivitä QR-koodi",
+      downloadApp: "Lataa sovellus",
       passwordLogin: "Salasana",
       otpLogin: "Sähköpostikoodi",
       phoneOtpLogin: "Puhelinkoodi",
@@ -661,9 +675,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Maanantai - perjantai 09:00 - 18:00",
-      contactOverseasPersonValue: "To be provided",
-      contactOverseasPhoneValue: "To be provided",
-      contactOverseasEmailValue: "To be provided",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Maanantai - perjantai 09:00 - 18:00",
       contactRegionNotice:
         "Ota ensin yhteyttä alueesi tukikanavaan. Jos et ole varma, mikä alue koskee sinua, aloita Kiinan pääkontaktin kanssa saadaksesi ohjausta.",

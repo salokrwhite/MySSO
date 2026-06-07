@@ -14,12 +14,14 @@ import (
 
 func writeLoginFlowResponse(c *gin.Context, s *Server, result service.PasswordLoginResult) {
 	if result.RequiresMFA {
-		c.JSON(http.StatusOK, gin.H{
+		payload := gin.H{
 			"requires_mfa":    true,
 			"challenge_token": result.ChallengeToken,
 			"mfa_method":      result.MFAMethod,
 			"masked_target":   result.MaskedTarget,
-		})
+		}
+		addRiskPayload(payload, result)
+		c.JSON(http.StatusOK, payload)
 		return
 	}
 	if result.RequiresDeletionConfirmation {
@@ -41,14 +43,16 @@ func writeLoginFlowResponse(c *gin.Context, s *Server, result service.PasswordLo
 		return
 	}
 	if result.RequiresStepUpVerification {
-		c.JSON(http.StatusOK, gin.H{
+		payload := gin.H{
 			"requires_step_up_verification": true,
 			"step_up_challenge_token":       result.StepUpChallengeToken,
 			"step_up_mode":                  result.StepUpMode,
 			"masked_email_target":           result.MaskedEmailTarget,
 			"masked_phone_target":           result.MaskedPhoneTarget,
 			"user":                          result.User,
-		})
+		}
+		addRiskPayload(payload, result)
+		c.JSON(http.StatusOK, payload)
 		return
 	}
 	if result.RequiresMFAEnrollmentSetup {
@@ -61,7 +65,21 @@ func writeLoginFlowResponse(c *gin.Context, s *Server, result service.PasswordLo
 		return
 	}
 	s.setSessionCookie(c, result.Session.Token, result.Session.ExpiresAt)
-	c.JSON(http.StatusOK, gin.H{"user": result.User})
+	payload := gin.H{"user": result.User}
+	addRiskPayload(payload, result)
+	c.JSON(http.StatusOK, payload)
+}
+
+func addRiskPayload(payload gin.H, result service.PasswordLoginResult) {
+	if result.RiskAction == "" && result.RiskLevel == "" && result.RiskScore == 0 {
+		return
+	}
+	payload["risk_action"] = result.RiskAction
+	payload["risk_level"] = result.RiskLevel
+	payload["risk_score"] = result.RiskScore
+	if result.RiskMessage != "" {
+		payload["risk_message"] = result.RiskMessage
+	}
 }
 
 func deviceBindingInput(keyID, publicKey string) service.DeviceBindingInput {
@@ -81,30 +99,54 @@ func (s *Server) handleLogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	result, err := s.services.Auth.StartPasswordLoginWithMFACaptcha(req.Email, req.Password, c.ClientIP(), deviceID, func() error {
+	clientRisk := clientRiskWithServerDevice(c, deviceID)
+	riskOptions := service.PasswordLoginRiskOptions{}
+	hasCaptchaProof := req.Captcha != "" || req.CaptchaTicket != "" || req.CaptchaChallenge != "" || req.CaptchaSign != ""
+	mfaCaptchaSatisfied := false
+	if hasCaptchaProof {
+		settings := s.services.Settings.GetCaptchaSettings()
+		if settings.Enabled {
+			riskChallengeReq, riskOK := s.buildCaptchaChallengeRequest(c, captchaContext{
+				Flow:    "password_login_risk",
+				Purpose: "risk_login",
+				Target:  req.Email,
+			})
+			if riskOK && s.captchaService.Verify(req.CaptchaTicket, req.Captcha, req.CaptchaChallenge, req.CaptchaSign, riskChallengeReq) {
+				riskOptions.CaptchaSatisfied = true
+			}
+			mfaChallengeReq, mfaOK := s.buildCaptchaChallengeRequest(c, captchaContext{
+				Flow:    "password_login_mfa",
+				Purpose: "mfa_login",
+				Target:  req.Email,
+			})
+			mfaCaptchaSatisfied = mfaOK && s.captchaService.Verify(req.CaptchaTicket, req.Captcha, req.CaptchaChallenge, req.CaptchaSign, mfaChallengeReq)
+		}
+	}
+	result, err := s.services.Auth.StartPasswordLoginWithRisk(req.Email, req.Password, c.ClientIP(), deviceID, func() error {
 		settings := s.services.Settings.GetCaptchaSettings()
 		if !settings.Enabled {
 			return nil
 		}
-		challengeReq, ok := s.buildCaptchaChallengeRequest(c, captchaContext{
-			Flow:    "password_login_mfa",
-			Purpose: "mfa_login",
-			Target:  req.Email,
-		})
-		if !ok || !s.captchaService.Verify(req.CaptchaTicket, req.Captcha, req.CaptchaChallenge, req.CaptchaSign, challengeReq) {
+		if !mfaCaptchaSatisfied {
 			return service.ErrCaptchaRequired
 		}
 		return nil
-	}, deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
+	}, clientRisk, riskOptions, deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
 	if err != nil {
 		if errors.Is(err, service.ErrCaptchaRequired) {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error":            "captcha is invalid or expired",
 				"captcha_required": true,
+				"captcha_flow":     "password_login_mfa",
+				"captcha_purpose":  "mfa_login",
 			})
 			return
 		}
 		if writeSecurityFlowError(c, err) {
+			return
+		}
+		if strings.Contains(err.Error(), "access_denied") {
+			c.JSON(http.StatusForbidden, gin.H{"error": "access_denied", "risk_action": "block"})
 			return
 		}
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
@@ -156,7 +198,7 @@ func (s *Server) handleOTPLogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	result, err := s.services.Auth.LoginWithOTP(req.Email, req.OTP, c.ClientIP(), deviceID, deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
+	result, err := s.services.Auth.LoginWithOTPWithRisk(req.Email, req.OTP, c.ClientIP(), deviceID, clientRiskWithServerDevice(c, deviceID), deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
 	if err != nil {
 		if writeSecurityFlowError(c, err) {
 			return
@@ -177,7 +219,7 @@ func (s *Server) handleSMSLogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	result, err := s.services.Auth.LoginWithPhoneOTP(req.Phone, req.OTP, c.ClientIP(), deviceID, deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
+	result, err := s.services.Auth.LoginWithPhoneOTPWithRisk(req.Phone, req.OTP, c.ClientIP(), deviceID, clientRiskWithServerDevice(c, deviceID), deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
 	if err != nil {
 		if writeSecurityFlowError(c, err) {
 			return
@@ -397,6 +439,33 @@ func (s *Server) handleSendSMSCode(c *gin.Context) {
 }
 
 func writeSecurityFlowError(c *gin.Context, err error) bool {
+	if err == nil {
+		return false
+	}
+	var cooldownErr *service.VerificationCooldownError
+	if errors.As(err, &cooldownErr) {
+		c.JSON(http.StatusTooManyRequests, gin.H{
+			"error":               err.Error(),
+			"retry_after_seconds": cooldownErr.RetryAfterSeconds,
+		})
+		return true
+	}
+	message := strings.TrimSpace(err.Error())
+	switch {
+	case strings.Contains(message, "access_denied"):
+		c.JSON(http.StatusForbidden, gin.H{"error": "access_denied", "risk_action": "block"})
+		return true
+	case strings.Contains(message, "too many failed attempts"),
+		strings.Contains(message, "temporarily locked"),
+		strings.Contains(message, "please wait"):
+		c.JSON(http.StatusTooManyRequests, gin.H{"error": message})
+		return true
+	case strings.Contains(message, "ip blocked"),
+		strings.Contains(message, "IP blocked"),
+		strings.Contains(message, "blocked by risk control"):
+		c.JSON(http.StatusForbidden, gin.H{"error": message, "risk_action": "block"})
+		return true
+	}
 	return false
 }
 
@@ -410,16 +479,22 @@ func (s *Server) handleRegister(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	if !req.AgreementAccepted || !req.PrivacyAccepted {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "agreement and privacy policy must be accepted"})
+		return
+	}
 
 	result, err := s.services.Auth.Register(service.RegisterInput{
-		Country:  req.Country,
-		Email:    req.Email,
-		Code:     req.Code,
-		Password: req.Password,
-		Role:     domain.RoleUser,
-		IP:       c.ClientIP(),
-		DeviceID: deviceID,
-		Device:   deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey),
+		Country:           req.Country,
+		Email:             req.Email,
+		Code:              req.Code,
+		Password:          req.Password,
+		AgreementAccepted: req.AgreementAccepted,
+		PrivacyAccepted:   req.PrivacyAccepted,
+		Role:              domain.RoleUser,
+		IP:                c.ClientIP(),
+		DeviceID:          deviceID,
+		Device:            deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey),
 	})
 	if err != nil {
 		if writeSecurityFlowError(c, err) {
@@ -546,6 +621,10 @@ func (s *Server) handleCompleteLoginStepUp(c *gin.Context) {
 	}
 	result, err := s.services.Auth.CompleteLoginStepUp(req.ChallengeToken, req.EmailOTP, req.SMSOTP, c.ClientIP(), deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
 	if err != nil {
+		if strings.Contains(err.Error(), "access_denied") {
+			c.JSON(http.StatusForbidden, gin.H{"error": "access_denied", "risk_action": "block"})
+			return
+		}
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
@@ -563,6 +642,10 @@ func (s *Server) handleCompleteLoginMFAEnrollment(c *gin.Context) {
 	}
 	result, err := s.services.Auth.CompleteForcedMFAEnrollment(req.ChallengeToken, req.Method, c.ClientIP(), deviceBindingInput(req.DeviceKeyID, req.DevicePublicKey))
 	if err != nil {
+		if strings.Contains(err.Error(), "access_denied") {
+			c.JSON(http.StatusForbidden, gin.H{"error": "access_denied", "risk_action": "block"})
+			return
+		}
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

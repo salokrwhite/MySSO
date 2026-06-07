@@ -18,6 +18,7 @@ type Config struct {
 	OIDC    OIDCConfig
 	SMTP    SMTPConfig
 	SMS     SMSConfig
+	Risk    RiskConfig
 }
 
 type InstallConfig struct {
@@ -31,6 +32,7 @@ type HTTPConfig struct {
 	PublicBase         string
 	FrontendBase       string
 	DeviceCookieSecret string
+	TrustedProxies     []string
 }
 
 type DBConfig struct {
@@ -96,6 +98,11 @@ type SMSConfig struct {
 	AliyunDeleteTemplateCode    string
 }
 
+type RiskConfig struct {
+	IP2RegionIPv4Path string
+	IP2RegionIPv6Path string
+}
+
 func Default() Config {
 	_ = godotenv.Load(".env")
 
@@ -112,6 +119,7 @@ func Default() Config {
 			PublicBase:         publicBase,
 			FrontendBase:       frontendBase,
 			DeviceCookieSecret: getEnv("DEVICE_COOKIE_SECRET", ""),
+			TrustedProxies:     getEnvCSV("HTTP_TRUSTED_PROXIES"),
 		},
 		DB: DBConfig{
 			Driver:   getEnv("DB_DRIVER", "mysql"),
@@ -171,6 +179,10 @@ func Default() Config {
 			AliyunResetTemplateCode:     getEnv("ALIYUN_SMS_RESET_TEMPLATE_CODE", ""),
 			AliyunBindPhoneTemplateCode: getEnv("ALIYUN_SMS_BIND_PHONE_TEMPLATE_CODE", ""),
 			AliyunDeleteTemplateCode:    getEnv("ALIYUN_SMS_DELETE_TEMPLATE_CODE", ""),
+		},
+		Risk: RiskConfig{
+			IP2RegionIPv4Path: getEnv("IP2REGION_IPV4_XDB", "data/geoip/ip2region_v4.xdb"),
+			IP2RegionIPv6Path: getEnv("IP2REGION_IPV6_XDB", "data/geoip/ip2region_v6.xdb"),
 		},
 	}
 }

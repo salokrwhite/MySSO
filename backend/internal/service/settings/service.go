@@ -1,7 +1,10 @@
 package settings
 
 import (
+	"encoding/json"
 	"fmt"
+	"net"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -23,6 +26,10 @@ type SystemSettings struct {
 	AllowUserRegistration                bool   `json:"allow_user_registration"`
 	EnablePhoneVerification              bool   `json:"enable_phone_verification"`
 	EnableQRLogin                        bool   `json:"enable_qr_login"`
+	APPCurrentVersionCode                int    `json:"app_current_version_code"`
+	APPCurrentVersionName                string `json:"app_current_version_name"`
+	APPDownloadURL                       string `json:"app_download_url"`
+	APPForceUpdate                       bool   `json:"app_force_update"`
 	SiteName                             string `json:"site_name"`
 	SiteNameEN                           string `json:"site_name_en"`
 	SiteBrowserTitle                     string `json:"site_browser_title"`
@@ -114,9 +121,34 @@ type SystemSettings struct {
 	AliyunSMSBindPhoneTemplateCode       string `json:"aliyun_sms_bind_phone_template_code"`
 	AliyunSMSDeleteTemplateCode          string `json:"aliyun_sms_delete_template_code"`
 	RiskControlEnabled                   bool   `json:"risk_control_enabled"`
+	RiskPhoneBindingEnabled              bool   `json:"risk_phone_binding_enabled"`
 	RiskImmediateBindProbability         int    `json:"risk_immediate_bind_probability"`
 	RiskDelayedBindProbability           int    `json:"risk_delayed_bind_probability"`
 	RiskDelayedBindLoginCount            int    `json:"risk_delayed_bind_login_count"`
+	RiskMediumThreshold                  int    `json:"risk_medium_threshold"`
+	RiskHighThreshold                    int    `json:"risk_high_threshold"`
+	RiskCriticalThreshold                int    `json:"risk_critical_threshold"`
+	RiskAutoBlockThreshold               int    `json:"risk_auto_block_threshold"`
+	RiskMaxFailedLogins                  int    `json:"risk_max_failed_logins"`
+	RiskLockoutMinutes                   int    `json:"risk_lockout_minutes"`
+	RiskScoreWindowDays                  int    `json:"risk_score_window_days"`
+	RiskFailedLoginScoreWeight           int    `json:"risk_failed_login_score_weight"`
+	RiskFailedLoginScoreCap              int    `json:"risk_failed_login_score_cap"`
+	RiskEnableGeoCheck                   bool   `json:"risk_enable_geo_check"`
+	RiskEnableDeviceCheck                bool   `json:"risk_enable_device_check"`
+	RiskEnableBehaviorCheck              bool   `json:"risk_enable_behavior_check"`
+	RiskEnableIPBlacklist                bool   `json:"risk_enable_ip_blacklist"`
+	RiskEnableMitigation                 bool   `json:"risk_enable_mitigation"`
+	RiskAllowBlockStepUp                 bool   `json:"risk_allow_block_step_up"`
+	RiskTrustedDeviceDays                int    `json:"risk_trusted_device_days"`
+	RiskMitigationHours                  int    `json:"risk_mitigation_hours"`
+	RiskTrustedDeviceScoreDiscount       int    `json:"risk_trusted_device_score_discount"`
+	RiskMitigationScoreDiscount          int    `json:"risk_mitigation_score_discount"`
+	RiskHighRiskGeoDiscount              int    `json:"risk_high_risk_geo_discount"`
+	RiskNewDeviceDiscount                int    `json:"risk_new_device_discount"`
+	RiskIPChangeDiscount                 int    `json:"risk_ip_change_discount"`
+	RiskTrustedIPs                       string `json:"risk_trusted_ips"`
+	RiskHighRiskCountries                string `json:"risk_high_risk_countries"`
 	DeveloperManagedUsersSearchWindowSec int    `json:"developer_managed_users_search_window_seconds"`
 	DeveloperManagedUsersSearchLimit     int    `json:"developer_managed_users_search_limit"`
 }
@@ -150,14 +182,16 @@ func (e *VerificationCooldownError) Error() string {
 }
 
 type RegisterInput struct {
-	Country  string
-	Email    string
-	Code     string
-	Password string
-	Role     domain.Role
-	IP       string
-	DeviceID string
-	Device   DeviceBindingInput
+	Country           string
+	Email             string
+	Code              string
+	Password          string
+	AgreementAccepted bool
+	PrivacyAccepted   bool
+	Role              domain.Role
+	IP                string
+	DeviceID          string
+	Device            DeviceBindingInput
 }
 
 type SettingsService struct {
@@ -190,6 +224,10 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 		"allow_user_registration",
 		"enable_phone_verification",
 		"enable_qr_login",
+		"app_current_version_code",
+		"app_current_version_name",
+		"app_download_url",
+		"app_force_update",
 		"site_name",
 		"site_name_en",
 		"site_browser_title",
@@ -277,9 +315,34 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 		"aliyun_sms_bind_phone_template_code",
 		"aliyun_sms_delete_template_code",
 		"risk_control_enabled",
+		"risk_phone_binding_enabled",
 		"risk_immediate_bind_probability",
 		"risk_delayed_bind_probability",
 		"risk_delayed_bind_login_count",
+		"risk_medium_threshold",
+		"risk_high_threshold",
+		"risk_critical_threshold",
+		"risk_auto_block_threshold",
+		"risk_max_failed_logins",
+		"risk_lockout_minutes",
+		"risk_score_window_days",
+		"risk_failed_login_score_weight",
+		"risk_failed_login_score_cap",
+		"risk_enable_geo_check",
+		"risk_enable_device_check",
+		"risk_enable_behavior_check",
+		"risk_enable_ip_blacklist",
+		"risk_enable_mitigation",
+		"risk_allow_block_step_up",
+		"risk_trusted_device_days",
+		"risk_mitigation_hours",
+		"risk_trusted_device_score_discount",
+		"risk_mitigation_score_discount",
+		"risk_high_risk_geo_discount",
+		"risk_new_device_discount",
+		"risk_ip_change_discount",
+		"risk_trusted_ips",
+		"risk_high_risk_countries",
 		"developer_managed_users_search_window_seconds",
 		"developer_managed_users_search_limit",
 	)
@@ -368,6 +431,10 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 		AllowUserRegistration:                authutil.FallbackBoolSetting(values["allow_user_registration"], appdefaults.DefaultAllowUserRegistration),
 		EnablePhoneVerification:              authutil.FallbackBoolSetting(values["enable_phone_verification"], true),
 		EnableQRLogin:                        authutil.FallbackBoolSetting(values["enable_qr_login"], false),
+		APPCurrentVersionCode:                parseIntSetting(values["app_current_version_code"], 1),
+		APPCurrentVersionName:                strings.TrimSpace(values["app_current_version_name"]),
+		APPDownloadURL:                       strings.TrimSpace(values["app_download_url"]),
+		APPForceUpdate:                       authutil.FallbackBoolSetting(values["app_force_update"], false),
 		SiteName:                             authutil.FallbackSetting(values["site_name"], appdefaults.DefaultSiteName),
 		SiteNameEN:                           strings.TrimSpace(values["site_name_en"]),
 		SiteBrowserTitle:                     strings.TrimSpace(values["site_browser_title"]),
@@ -459,9 +526,34 @@ func (s *SettingsService) GetSystemSettings() (SystemSettings, error) {
 		AliyunSMSBindPhoneTemplateCode:       strings.TrimSpace(values["aliyun_sms_bind_phone_template_code"]),
 		AliyunSMSDeleteTemplateCode:          strings.TrimSpace(values["aliyun_sms_delete_template_code"]),
 		RiskControlEnabled:                   authutil.FallbackBoolSetting(values["risk_control_enabled"], appdefaults.DefaultRiskControlEnabled),
+		RiskPhoneBindingEnabled:              authutil.FallbackBoolSetting(values["risk_phone_binding_enabled"], appdefaults.DefaultRiskPhoneBindingEnabled),
 		RiskImmediateBindProbability:         riskImmediateProbability,
 		RiskDelayedBindProbability:           riskDelayedProbability,
 		RiskDelayedBindLoginCount:            riskDelayedLoginCount,
+		RiskMediumThreshold:                  parseIntSetting(values["risk_medium_threshold"], 30),
+		RiskHighThreshold:                    parseIntSetting(values["risk_high_threshold"], 60),
+		RiskCriticalThreshold:                parseIntSetting(values["risk_critical_threshold"], 80),
+		RiskAutoBlockThreshold:               parseIntSetting(values["risk_auto_block_threshold"], 90),
+		RiskMaxFailedLogins:                  parseIntSetting(values["risk_max_failed_logins"], 5),
+		RiskLockoutMinutes:                   parseIntSetting(values["risk_lockout_minutes"], 15),
+		RiskScoreWindowDays:                  parseIntSetting(values["risk_score_window_days"], 30),
+		RiskFailedLoginScoreWeight:           parseIntSetting(values["risk_failed_login_score_weight"], 5),
+		RiskFailedLoginScoreCap:              parseIntSetting(values["risk_failed_login_score_cap"], 30),
+		RiskEnableGeoCheck:                   authutil.FallbackBoolSetting(values["risk_enable_geo_check"], true),
+		RiskEnableDeviceCheck:                authutil.FallbackBoolSetting(values["risk_enable_device_check"], true),
+		RiskEnableBehaviorCheck:              authutil.FallbackBoolSetting(values["risk_enable_behavior_check"], true),
+		RiskEnableIPBlacklist:                authutil.FallbackBoolSetting(values["risk_enable_ip_blacklist"], true),
+		RiskEnableMitigation:                 authutil.FallbackBoolSetting(values["risk_enable_mitigation"], true),
+		RiskAllowBlockStepUp:                 authutil.FallbackBoolSetting(values["risk_allow_block_step_up"], true),
+		RiskTrustedDeviceDays:                parseIntSetting(values["risk_trusted_device_days"], 30),
+		RiskMitigationHours:                  parseIntSetting(values["risk_mitigation_hours"], 72),
+		RiskTrustedDeviceScoreDiscount:       parseIntSetting(values["risk_trusted_device_score_discount"], 20),
+		RiskMitigationScoreDiscount:          parseIntSetting(values["risk_mitigation_score_discount"], 15),
+		RiskHighRiskGeoDiscount:              parseIntSetting(values["risk_high_risk_geo_discount"], 20),
+		RiskNewDeviceDiscount:                parseIntSetting(values["risk_new_device_discount"], 10),
+		RiskIPChangeDiscount:                 parseIntSetting(values["risk_ip_change_discount"], 8),
+		RiskTrustedIPs:                       strings.TrimSpace(values["risk_trusted_ips"]),
+		RiskHighRiskCountries:                strings.TrimSpace(values["risk_high_risk_countries"]),
 		DeveloperManagedUsersSearchWindowSec: developerManagedUsersSearchWindowSec,
 		DeveloperManagedUsersSearchLimit:     developerManagedUsersSearchLimit,
 	}, nil
@@ -488,6 +580,17 @@ func (s *SettingsService) UpdateSystemSettings(input SystemSettings) error {
 
 	if strings.TrimSpace(input.SiteName) == "" {
 		input.SiteName = appdefaults.DefaultSiteName
+	}
+	if input.APPCurrentVersionCode < 1 {
+		input.APPCurrentVersionCode = 1
+	}
+	input.APPDownloadURL = strings.TrimSpace(input.APPDownloadURL)
+	if input.APPDownloadURL != "" {
+		if normalizedURL := normalizeHTTPURL(input.APPDownloadURL); normalizedURL == "" {
+			return fmt.Errorf("app download url must be a valid http or https URL")
+		} else {
+			input.APPDownloadURL = normalizedURL
+		}
 	}
 	if strings.TrimSpace(input.PublicBaseURL) == "" {
 		input.PublicBaseURL = s.deps.Cfg.HTTP.PublicBase
@@ -657,10 +760,20 @@ func (s *SettingsService) UpdateSystemSettings(input SystemSettings) error {
 	if input.RiskDelayedBindLoginCount <= 0 {
 		input.RiskDelayedBindLoginCount = appdefaults.DefaultRiskDelayedBindLoginCount
 	}
+	input.RiskTrustedDeviceDays = clampInt(input.RiskTrustedDeviceDays, 0, 365)
+	input.RiskMitigationHours = clampInt(input.RiskMitigationHours, 0, 8760)
+	input.RiskTrustedDeviceScoreDiscount = clampInt(input.RiskTrustedDeviceScoreDiscount, 0, 100)
+	input.RiskMitigationScoreDiscount = clampInt(input.RiskMitigationScoreDiscount, 0, 100)
+	input.RiskHighRiskGeoDiscount = clampInt(input.RiskHighRiskGeoDiscount, 0, 100)
+	input.RiskNewDeviceDiscount = clampInt(input.RiskNewDeviceDiscount, 0, 100)
+	input.RiskIPChangeDiscount = clampInt(input.RiskIPChangeDiscount, 0, 100)
+	input.RiskScoreWindowDays = clampInt(input.RiskScoreWindowDays, 1, 365)
+	input.RiskFailedLoginScoreWeight = clampInt(input.RiskFailedLoginScoreWeight, 0, 100)
+	input.RiskFailedLoginScoreCap = clampInt(input.RiskFailedLoginScoreCap, 0, 100)
 	if input.RiskImmediateBindProbability+input.RiskDelayedBindProbability != 100 {
 		return fmt.Errorf("risk probabilities must add up to 100")
 	}
-	if input.RiskControlEnabled {
+	if input.RiskControlEnabled || input.RiskPhoneBindingEnabled {
 		if err := validateRiskControlPrerequisites(input); err != nil {
 			return err
 		}
@@ -685,6 +798,10 @@ func (s *SettingsService) UpdateSystemSettings(input SystemSettings) error {
 		"allow_user_registration":                       strconv.FormatBool(input.AllowUserRegistration),
 		"enable_phone_verification":                     strconv.FormatBool(input.EnablePhoneVerification),
 		"enable_qr_login":                               strconv.FormatBool(input.EnableQRLogin),
+		"app_current_version_code":                      strconv.Itoa(input.APPCurrentVersionCode),
+		"app_current_version_name":                      strings.TrimSpace(input.APPCurrentVersionName),
+		"app_download_url":                              input.APPDownloadURL,
+		"app_force_update":                              strconv.FormatBool(input.APPForceUpdate),
 		"site_name":                                     strings.TrimSpace(input.SiteName),
 		"site_name_en":                                  strings.TrimSpace(input.SiteNameEN),
 		"site_browser_title":                            strings.TrimSpace(input.SiteBrowserTitle),
@@ -772,9 +889,34 @@ func (s *SettingsService) UpdateSystemSettings(input SystemSettings) error {
 		"aliyun_sms_bind_phone_template_code":           strings.TrimSpace(input.AliyunSMSBindPhoneTemplateCode),
 		"aliyun_sms_delete_template_code":               strings.TrimSpace(input.AliyunSMSDeleteTemplateCode),
 		"risk_control_enabled":                          strconv.FormatBool(input.RiskControlEnabled),
+		"risk_phone_binding_enabled":                    strconv.FormatBool(input.RiskPhoneBindingEnabled),
 		"risk_immediate_bind_probability":               strconv.Itoa(input.RiskImmediateBindProbability),
 		"risk_delayed_bind_probability":                 strconv.Itoa(input.RiskDelayedBindProbability),
 		"risk_delayed_bind_login_count":                 strconv.Itoa(input.RiskDelayedBindLoginCount),
+		"risk_medium_threshold":                         strconv.Itoa(input.RiskMediumThreshold),
+		"risk_high_threshold":                           strconv.Itoa(input.RiskHighThreshold),
+		"risk_critical_threshold":                       strconv.Itoa(input.RiskCriticalThreshold),
+		"risk_auto_block_threshold":                     strconv.Itoa(input.RiskAutoBlockThreshold),
+		"risk_max_failed_logins":                        strconv.Itoa(input.RiskMaxFailedLogins),
+		"risk_lockout_minutes":                          strconv.Itoa(input.RiskLockoutMinutes),
+		"risk_score_window_days":                        strconv.Itoa(input.RiskScoreWindowDays),
+		"risk_failed_login_score_weight":                strconv.Itoa(input.RiskFailedLoginScoreWeight),
+		"risk_failed_login_score_cap":                   strconv.Itoa(input.RiskFailedLoginScoreCap),
+		"risk_enable_geo_check":                         strconv.FormatBool(input.RiskEnableGeoCheck),
+		"risk_enable_device_check":                      strconv.FormatBool(input.RiskEnableDeviceCheck),
+		"risk_enable_behavior_check":                    strconv.FormatBool(input.RiskEnableBehaviorCheck),
+		"risk_enable_ip_blacklist":                      strconv.FormatBool(input.RiskEnableIPBlacklist),
+		"risk_enable_mitigation":                        strconv.FormatBool(input.RiskEnableMitigation),
+		"risk_allow_block_step_up":                      strconv.FormatBool(input.RiskAllowBlockStepUp),
+		"risk_trusted_device_days":                      strconv.Itoa(input.RiskTrustedDeviceDays),
+		"risk_mitigation_hours":                         strconv.Itoa(input.RiskMitigationHours),
+		"risk_trusted_device_score_discount":            strconv.Itoa(input.RiskTrustedDeviceScoreDiscount),
+		"risk_mitigation_score_discount":                strconv.Itoa(input.RiskMitigationScoreDiscount),
+		"risk_high_risk_geo_discount":                   strconv.Itoa(input.RiskHighRiskGeoDiscount),
+		"risk_new_device_discount":                      strconv.Itoa(input.RiskNewDeviceDiscount),
+		"risk_ip_change_discount":                       strconv.Itoa(input.RiskIPChangeDiscount),
+		"risk_trusted_ips":                              strings.TrimSpace(input.RiskTrustedIPs),
+		"risk_high_risk_countries":                      strings.TrimSpace(input.RiskHighRiskCountries),
 		"developer_managed_users_search_window_seconds": strconv.Itoa(input.DeveloperManagedUsersSearchWindowSec),
 		"developer_managed_users_search_limit":          strconv.Itoa(input.DeveloperManagedUsersSearchLimit),
 	}); err != nil {
@@ -1203,6 +1345,22 @@ func parseIntSetting(raw string, fallback int) int {
 	return fallback
 }
 
+func normalizeHTTPURL(raw string) string {
+	trimmed := strings.TrimSpace(raw)
+	if trimmed == "" {
+		return ""
+	}
+	parsedURL, err := url.ParseRequestURI(trimmed)
+	if err != nil || parsedURL == nil || (parsedURL.Scheme != "http" && parsedURL.Scheme != "https") || parsedURL.Host == "" {
+		return ""
+	}
+	return trimmed
+}
+
+func NormalizePublicHTTPURL(raw string) string {
+	return normalizeHTTPURL(raw)
+}
+
 func normalizeRateLimitSetting(raw string, fallback, max int) int {
 	value := parseIntSetting(raw, fallback)
 	return clampRateLimit(value, max)
@@ -1211,6 +1369,16 @@ func normalizeRateLimitSetting(raw string, fallback, max int) int {
 func clampRateLimit(value, max int) int {
 	if value < 0 {
 		return 0
+	}
+	if value > max {
+		return max
+	}
+	return value
+}
+
+func clampInt(value, min, max int) int {
+	if value < min {
+		return min
 	}
 	if value > max {
 		return max
@@ -1268,6 +1436,38 @@ func (s *SettingsService) GetDeveloperManagedUsersSearchRateLimit() DeveloperMan
 }
 
 func validateRiskControlPrerequisites(input SystemSettings) error {
+	if input.RiskMediumThreshold < 0 || input.RiskHighThreshold < 0 || input.RiskCriticalThreshold < 0 || input.RiskAutoBlockThreshold < 0 ||
+		input.RiskMediumThreshold > 100 || input.RiskHighThreshold > 100 || input.RiskCriticalThreshold > 100 || input.RiskAutoBlockThreshold > 100 {
+		return fmt.Errorf("risk thresholds must be between 0 and 100")
+	}
+	if !(input.RiskMediumThreshold <= input.RiskHighThreshold &&
+		input.RiskHighThreshold <= input.RiskCriticalThreshold &&
+		input.RiskCriticalThreshold <= input.RiskAutoBlockThreshold) {
+		return fmt.Errorf("risk thresholds must be ordered as medium <= high <= critical <= auto block")
+	}
+	if input.RiskMaxFailedLogins <= 0 {
+		return fmt.Errorf("risk max failed logins must be greater than 0")
+	}
+	if input.RiskLockoutMinutes <= 0 {
+		return fmt.Errorf("risk lockout minutes must be greater than 0")
+	}
+	if input.RiskScoreWindowDays <= 0 || input.RiskScoreWindowDays > 365 {
+		return fmt.Errorf("risk score window days must be between 1 and 365")
+	}
+	if input.RiskFailedLoginScoreWeight < 0 || input.RiskFailedLoginScoreWeight > 100 {
+		return fmt.Errorf("risk failed login score weight must be between 0 and 100")
+	}
+	if input.RiskFailedLoginScoreCap < 0 || input.RiskFailedLoginScoreCap > 100 {
+		return fmt.Errorf("risk failed login score cap must be between 0 and 100")
+	}
+	for _, item := range parseRiskListSetting(input.RiskTrustedIPs) {
+		if net.ParseIP(item) == nil {
+			if _, _, err := net.ParseCIDR(item); err != nil {
+				return fmt.Errorf("risk trusted IPs must contain only valid IP or CIDR values")
+			}
+		}
+	}
+
 	if strings.TrimSpace(input.SMTPHost) == "" ||
 		strings.TrimSpace(input.SMTPPort) == "" ||
 		strings.TrimSpace(input.SMTPUsername) == "" ||
@@ -1303,4 +1503,29 @@ func validateRiskControlPrerequisites(input SystemSettings) error {
 		return fmt.Errorf("please complete the sms template configuration before enabling risk control")
 	}
 	return nil
+}
+
+func parseRiskListSetting(raw string) []string {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return nil
+	}
+	var items []string
+	if err := json.Unmarshal([]byte(raw), &items); err == nil {
+		out := make([]string, 0, len(items))
+		for _, item := range items {
+			if item = strings.TrimSpace(item); item != "" {
+				out = append(out, item)
+			}
+		}
+		return out
+	}
+	parts := strings.FieldsFunc(raw, func(r rune) bool { return r == ',' || r == '\n' || r == ';' })
+	out := make([]string, 0, len(parts))
+	for _, part := range parts {
+		if part = strings.TrimSpace(part); part != "" {
+			out = append(out, part)
+		}
+	}
+	return out
 }

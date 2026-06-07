@@ -32,6 +32,9 @@ func (s *Server) handleDeveloperScopes(c *gin.Context) {
 
 func (s *Server) handleCreateApp(c *gin.Context) {
 	user := c.MustGet("user").(domain.User)
+	if !s.requireDeveloperRiskAllowed(c, user, "developer_app_create") {
+		return
+	}
 	var req createAppRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -57,6 +60,9 @@ func (s *Server) handleCreateApp(c *gin.Context) {
 
 func (s *Server) handleUpdateDeveloperApp(c *gin.Context) {
 	user := c.MustGet("user").(domain.User)
+	if !s.requireDeveloperRiskAllowed(c, user, "developer_app_update") {
+		return
+	}
 	var req createAppRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -100,6 +106,9 @@ func (s *Server) handleUploadDeveloperAppIcon(c *gin.Context) {
 
 func (s *Server) handleResetSecret(c *gin.Context) {
 	user := c.MustGet("user").(domain.User)
+	if !s.requireDeveloperRiskAllowed(c, user, "developer_app_reset_secret") {
+		return
+	}
 	app, err := s.services.Apps.ResetAppSecret(user.ID, c.Param("id"))
 	if err != nil {
 		if err == service.ErrForbidden {
@@ -129,6 +138,9 @@ func (s *Server) handleResetSecret(c *gin.Context) {
 
 func (s *Server) handleDeleteDeveloperApp(c *gin.Context) {
 	user := c.MustGet("user").(domain.User)
+	if !s.requireDeveloperRiskAllowed(c, user, "developer_app_delete") {
+		return
+	}
 	if err := s.services.Apps.DeleteDeveloperApp(user.ID, c.Param("id")); err != nil {
 		if err == service.ErrForbidden {
 			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})

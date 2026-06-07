@@ -1,8 +1,6 @@
 package service
 
 import (
-	"errors"
-
 	"mysso/backend/internal/service/admin"
 	"mysso/backend/internal/service/auth"
 	"mysso/backend/internal/service/common/appurl"
@@ -12,6 +10,7 @@ import (
 )
 
 type PasswordLoginResult = auth.PasswordLoginResult
+type PasswordLoginRiskOptions = auth.PasswordLoginRiskOptions
 type RegisterInput = settings.RegisterInput
 type VerificationCooldownError = settings.VerificationCooldownError
 type DeviceBindingInput = settings.DeviceBindingInput
@@ -25,7 +24,7 @@ type UpdateUserSecurityPolicyInput = admin.UpdateUserSecurityPolicyInput
 var ErrForbidden = appurl.ErrForbidden
 var ErrAppSecretRequiresApproval = appurl.ErrAppSecretRequiresApproval
 var ErrInvalidClientCredentials = appurl.ErrInvalidClientCredentials
-var ErrCaptchaRequired = errors.New("captcha is invalid or expired")
+var ErrCaptchaRequired = auth.ErrCaptchaRequired
 
 func BuildAuthorizeRedirect(baseRedirect, code, state string) string {
 	return appurl.BuildAuthorizeRedirect(baseRedirect, code, state)
@@ -37,4 +36,8 @@ func BuildAuthorizeErrorRedirect(baseRedirect, errorCode, description, state str
 
 func SplitListSetting(raw string) []string {
 	return templateutil.SplitListSetting(raw)
+}
+
+func NormalizePublicHTTPURL(raw string) string {
+	return settings.NormalizePublicHTTPURL(raw)
 }

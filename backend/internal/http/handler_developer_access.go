@@ -23,6 +23,9 @@ func (s *Server) handleDeveloperGroups(c *gin.Context) {
 
 func (s *Server) handleCreateDeveloperGroup(c *gin.Context) {
 	user := c.MustGet("user").(domain.User)
+	if !s.requireDeveloperRiskAllowed(c, user, "developer_group_create") {
+		return
+	}
 	var req developerGroupRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -38,6 +41,9 @@ func (s *Server) handleCreateDeveloperGroup(c *gin.Context) {
 
 func (s *Server) handleUpdateDeveloperGroup(c *gin.Context) {
 	user := c.MustGet("user").(domain.User)
+	if !s.requireDeveloperRiskAllowed(c, user, "developer_group_update") {
+		return
+	}
 	var req developerGroupRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -57,6 +63,9 @@ func (s *Server) handleUpdateDeveloperGroup(c *gin.Context) {
 
 func (s *Server) handleDeleteDeveloperGroup(c *gin.Context) {
 	user := c.MustGet("user").(domain.User)
+	if !s.requireDeveloperRiskAllowed(c, user, "developer_group_delete") {
+		return
+	}
 	if err := s.services.AccessControl.DeleteDeveloperGroup(user.ID, user.ID, c.Param("id")); err != nil {
 		status := http.StatusBadRequest
 		if strings.Contains(err.Error(), "forbidden") {
@@ -120,6 +129,9 @@ func (s *Server) allowDeveloperManagedUsersSearch(c *gin.Context, developerUserI
 
 func (s *Server) handleUpdateDeveloperManagedUserGroups(c *gin.Context) {
 	user := c.MustGet("user").(domain.User)
+	if !s.requireDeveloperRiskAllowed(c, user, "developer_managed_user_groups_update") {
+		return
+	}
 	var req developerManagedUserGroupsRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -138,6 +150,9 @@ func (s *Server) handleUpdateDeveloperManagedUserGroups(c *gin.Context) {
 
 func (s *Server) handleBatchUpdateDeveloperManagedUserGroups(c *gin.Context) {
 	user := c.MustGet("user").(domain.User)
+	if !s.requireDeveloperRiskAllowed(c, user, "developer_managed_user_groups_batch_update") {
+		return
+	}
 	var req batchDeveloperManagedUserGroupsRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -166,6 +181,9 @@ func (s *Server) handleDeveloperAccessApps(c *gin.Context) {
 
 func (s *Server) handleUpdateDeveloperAppBindings(c *gin.Context) {
 	user := c.MustGet("user").(domain.User)
+	if !s.requireDeveloperRiskAllowed(c, user, "developer_app_bindings_update") {
+		return
+	}
 	var req developerAppBindingsRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -184,6 +202,9 @@ func (s *Server) handleUpdateDeveloperAppBindings(c *gin.Context) {
 
 func (s *Server) handleCreateDeveloperAppBan(c *gin.Context) {
 	user := c.MustGet("user").(domain.User)
+	if !s.requireDeveloperRiskAllowed(c, user, "developer_app_ban_create") {
+		return
+	}
 	var req developerAppBanRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -212,6 +233,9 @@ func (s *Server) handleCreateDeveloperAppBan(c *gin.Context) {
 
 func (s *Server) handleDeleteDeveloperAppBan(c *gin.Context) {
 	user := c.MustGet("user").(domain.User)
+	if !s.requireDeveloperRiskAllowed(c, user, "developer_app_ban_delete") {
+		return
+	}
 	if err := s.services.AccessControl.UnbanAppUser(user.ID, user.ID, c.Param("id"), c.Param("user_id")); err != nil {
 		status := http.StatusBadRequest
 		if strings.Contains(err.Error(), "forbidden") {

@@ -7,6 +7,7 @@ import (
 	"mysso/backend/internal/domain"
 	"mysso/backend/internal/security"
 	"mysso/backend/internal/service/common/authutil"
+	riskservice "mysso/backend/internal/service/risk"
 )
 
 func AllowsAuthenticatedAccess(user domain.User) bool {
@@ -94,4 +95,19 @@ func (s *UserService) InvalidateAuthForSecurityEvent(user *domain.User) error {
 	}
 	user.AuthVersion++
 	return s.deps.Store.UpdateUserAndInvalidateAuth(*user)
+}
+
+func (s *UserService) enforceSecurityOperationRisk(user domain.User, ip, deviceID, operation string) error {
+	if s.risk == nil || user.Role == domain.RoleAdmin {
+		return nil
+	}
+	assessment, err := s.risk.AssessSecurityOperation(user, ip, deviceID, operation)
+	if err != nil {
+		return err
+	}
+	if assessment.Action != riskservice.ActionAllow {
+		s.risk.RecordLogin(user.ID, ip, "", riskservice.ClientInfo{ClientType: "web", Fingerprint: strings.TrimSpace(deviceID), Signals: []string{operation}}, assessment, false)
+		return fmt.Errorf("access_denied")
+	}
+	return nil
 }

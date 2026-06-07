@@ -31,6 +31,7 @@ export function useSystemSettings(
   const [verificationForm] = Form.useForm<SystemSettings>();
   const [intlForm] = Form.useForm<SystemSettings>();
   const [sessionForm] = Form.useForm<SystemSettings>();
+  const [appVersionForm] = Form.useForm<SystemSettings>();
   const [smsForm] = Form.useForm<SystemSettings>();
   const [announcementForm] = Form.useForm<SystemSettings>();
   const [riskForm] = Form.useForm<SystemSettings>();
@@ -71,6 +72,10 @@ export function useSystemSettings(
       sessionForm.setFieldsValue(settings);
       return;
     }
+    if (activeSettingsTab === "appVersion") {
+      appVersionForm.setFieldsValue(settings);
+      return;
+    }
     if (activeSettingsTab === "email") {
       smtpForm.setFieldsValue(settings);
       return;
@@ -99,7 +104,7 @@ export function useSystemSettings(
       intlForm.setFieldsValue(settings);
       return;
     }
-  }, [activeSettingsTab, announcementForm, intlForm, pageType, rateLimitForm, riskForm, settings, siteForm, smtpForm, verificationForm, sessionForm, smsForm]);
+  }, [activeSettingsTab, announcementForm, appVersionForm, intlForm, pageType, rateLimitForm, riskForm, settings, siteForm, smtpForm, verificationForm, sessionForm, smsForm]);
 
   const saveSystemSettings = useCallback(
     async (values: Partial<SystemSettings>, successText: string) => {
@@ -249,6 +254,15 @@ export function useSystemSettings(
     await saveSystemSettings(values, "用户会话设置已保存");
   }, [saveSystemSettings, sessionForm]);
 
+  const saveAppVersionSettings = useCallback(async () => {
+    try {
+      const values = await appVersionForm.validateFields(["app_current_version_code", "app_current_version_name", "app_download_url", "app_force_update"]);
+      await saveSystemSettings(values, "APP 版本设置已保存");
+    } catch (err) {
+      handleValidationError(appVersionForm, err);
+    }
+  }, [appVersionForm, handleValidationError, saveSystemSettings]);
+
   const saveAnnouncementSettings = useCallback(async () => {
     const values = await announcementForm.validateFields([
       "user_center_announcement_enabled",
@@ -262,6 +276,31 @@ export function useSystemSettings(
   const saveRiskSettings = useCallback(async () => {
     const values = await riskForm.validateFields([
       "risk_control_enabled",
+      "risk_medium_threshold",
+      "risk_high_threshold",
+      "risk_critical_threshold",
+      "risk_auto_block_threshold",
+      "risk_max_failed_logins",
+      "risk_lockout_minutes",
+      "risk_score_window_days",
+      "risk_failed_login_score_weight",
+      "risk_failed_login_score_cap",
+      "risk_enable_geo_check",
+      "risk_enable_device_check",
+      "risk_enable_behavior_check",
+      "risk_enable_ip_blacklist",
+      "risk_enable_mitigation",
+      "risk_allow_block_step_up",
+      "risk_trusted_device_days",
+      "risk_mitigation_hours",
+      "risk_trusted_device_score_discount",
+      "risk_mitigation_score_discount",
+      "risk_high_risk_geo_discount",
+      "risk_new_device_discount",
+      "risk_ip_change_discount",
+      "risk_trusted_ips",
+      "risk_high_risk_countries",
+      "risk_phone_binding_enabled",
       "risk_immediate_bind_probability",
       "risk_delayed_bind_probability",
       "risk_delayed_bind_login_count"
@@ -349,6 +388,7 @@ export function useSystemSettings(
     verificationForm,
     intlForm,
     sessionForm,
+    appVersionForm,
     smsForm,
     announcementForm,
     riskForm,
@@ -362,6 +402,7 @@ export function useSystemSettings(
     saveIntlSettings,
     saveSMSSettings,
     saveSessionSettings,
+    saveAppVersionSettings,
     saveAnnouncementSettings,
     saveRiskSettings,
     saveRateLimitSettings,

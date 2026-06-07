@@ -323,6 +323,88 @@ CREATE TABLE `user_security_policies` (
   KEY `idx_user_security_policies_updated_at` (`updated_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `risk_events` (
+  `id` varchar(64) NOT NULL,
+  `user_id` varchar(64) NOT NULL DEFAULT '',
+  `event_type` varchar(64) NOT NULL,
+  `identifier_hash` varchar(128) NOT NULL DEFAULT '',
+  `failure_reason` varchar(128) NOT NULL DEFAULT '',
+  `risk_score` int NOT NULL DEFAULT '0',
+  `risk_level` varchar(32) NOT NULL DEFAULT 'low',
+  `action_taken` varchar(32) NOT NULL DEFAULT 'logged',
+  `ip_address` varchar(64) NOT NULL DEFAULT '',
+  `ip_country` varchar(64) NOT NULL DEFAULT '',
+  `ip_region` varchar(128) NOT NULL DEFAULT '',
+  `ip_city` varchar(128) NOT NULL DEFAULT '',
+  `device_fingerprint` varchar(128) NOT NULL DEFAULT '',
+  `device_key_id` varchar(128) NOT NULL DEFAULT '',
+  `client_type` varchar(32) NOT NULL DEFAULT '',
+  `user_agent` text,
+  `signals_json` json DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_risk_events_user_created_at` (`user_id`,`created_at`),
+  KEY `idx_risk_events_type_created_at` (`event_type`,`created_at`),
+  KEY `idx_risk_events_identifier_created_at` (`identifier_hash`,`created_at`),
+  KEY `idx_risk_events_ip_created_at` (`ip_address`,`created_at`),
+  KEY `idx_risk_events_level_created_at` (`risk_level`,`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `device_profiles` (
+  `id` varchar(64) NOT NULL,
+  `user_id` varchar(64) NOT NULL,
+  `device_fingerprint` varchar(128) NOT NULL,
+  `device_key_id` varchar(128) NOT NULL DEFAULT '',
+  `client_type` varchar(32) NOT NULL DEFAULT '',
+  `first_ip` varchar(64) NOT NULL DEFAULT '',
+  `last_ip` varchar(64) NOT NULL DEFAULT '',
+  `first_seen_at` datetime NOT NULL,
+  `last_seen_at` datetime NOT NULL,
+  `last_risk_score` int NOT NULL DEFAULT '0',
+  `last_risk_level` varchar(32) NOT NULL DEFAULT 'low',
+  `blocked_at` datetime DEFAULT NULL,
+  `trusted_until` datetime DEFAULT NULL,
+  `mitigated_until` datetime DEFAULT NULL,
+  `trust_reason` varchar(500) NOT NULL DEFAULT '',
+  `trust_updated_by` varchar(64) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_device_profiles_user_fingerprint` (`user_id`,`device_fingerprint`),
+  KEY `idx_device_profiles_user_last_seen` (`user_id`,`last_seen_at`),
+  KEY `idx_device_profiles_trusted_until` (`trusted_until`),
+  KEY `idx_device_profiles_mitigated_until` (`mitigated_until`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `login_history` (
+  `id` varchar(64) NOT NULL,
+  `user_id` varchar(64) NOT NULL,
+  `ip_address` varchar(64) NOT NULL DEFAULT '',
+  `ip_country` varchar(64) NOT NULL DEFAULT '',
+  `ip_region` varchar(128) NOT NULL DEFAULT '',
+  `ip_city` varchar(128) NOT NULL DEFAULT '',
+  `device_fingerprint` varchar(128) NOT NULL DEFAULT '',
+  `device_key_id` varchar(128) NOT NULL DEFAULT '',
+  `client_type` varchar(32) NOT NULL DEFAULT '',
+  `risk_score` int NOT NULL DEFAULT '0',
+  `risk_level` varchar(32) NOT NULL DEFAULT 'low',
+  `success` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_login_history_user_created_at` (`user_id`,`created_at`),
+  KEY `idx_login_history_ip_created_at` (`ip_address`,`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `ip_blacklist` (
+  `id` varchar(64) NOT NULL,
+  `ip_address` varchar(64) NOT NULL,
+  `reason` varchar(500) NOT NULL DEFAULT '',
+  `created_by` varchar(64) NOT NULL DEFAULT '',
+  `created_at` datetime NOT NULL,
+  `expires_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_ip_blacklist_ip` (`ip_address`),
+  KEY `idx_ip_blacklist_expires_at` (`expires_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `users` (
   `id` varchar(64) NOT NULL,
   `country` varchar(64) NOT NULL DEFAULT '',
@@ -386,7 +468,31 @@ VALUES
     ('developer_managed_users_search_limit', '5', NOW()),
     ('captcha_image_rate_limit_per_minute', '60', NOW()),
     ('captcha_precheck_rate_limit_per_minute', '120', NOW()),
-    ('captcha_target_rate_limit_per_minute', '20', NOW())
+    ('captcha_target_rate_limit_per_minute', '20', NOW()),
+    ('risk_medium_threshold', '30', NOW()),
+    ('risk_high_threshold', '60', NOW()),
+    ('risk_critical_threshold', '80', NOW()),
+    ('risk_auto_block_threshold', '90', NOW()),
+    ('risk_max_failed_logins', '5', NOW()),
+    ('risk_lockout_minutes', '15', NOW()),
+    ('risk_score_window_days', '30', NOW()),
+    ('risk_failed_login_score_weight', '5', NOW()),
+    ('risk_failed_login_score_cap', '30', NOW()),
+    ('risk_enable_geo_check', 'true', NOW()),
+    ('risk_enable_device_check', 'true', NOW()),
+    ('risk_enable_behavior_check', 'true', NOW()),
+    ('risk_enable_ip_blacklist', 'true', NOW()),
+    ('risk_enable_mitigation', 'true', NOW()),
+    ('risk_allow_block_step_up', 'true', NOW()),
+    ('risk_trusted_device_days', '30', NOW()),
+    ('risk_mitigation_hours', '72', NOW()),
+    ('risk_trusted_device_score_discount', '20', NOW()),
+    ('risk_mitigation_score_discount', '15', NOW()),
+    ('risk_high_risk_geo_discount', '20', NOW()),
+    ('risk_new_device_discount', '10', NOW()),
+    ('risk_ip_change_discount', '8', NOW()),
+    ('risk_trusted_ips', '[]', NOW()),
+    ('risk_high_risk_countries', '[]', NOW())
 ON DUPLICATE KEY UPDATE
     setting_value = VALUES(setting_value),
     updated_at = VALUES(updated_at);

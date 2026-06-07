@@ -238,6 +238,90 @@ export type AdminPasskeyLogs = {
   usage_logs: AdminPasskeyUsageLog[];
 };
 
+export type RiskSignal = {
+  category: string;
+  name: string;
+  weight: number;
+  detail?: string;
+};
+
+export type RiskEvent = {
+  id: string;
+  user_id: string;
+  email?: string;
+  display_name?: string;
+  event_type: string;
+  identifier_hash?: string;
+  failure_reason?: string;
+  risk_score: number;
+  risk_level: string;
+  action_taken: string;
+  ip_address: string;
+  ip_country?: string;
+  ip_region?: string;
+  ip_city?: string;
+  device_fingerprint?: string;
+  device_key_id?: string;
+  client_type: string;
+  user_agent?: string;
+  signals?: RiskSignal[];
+  created_at: string;
+};
+
+export type RiskEventListResponse = {
+  items: RiskEvent[];
+  total: number;
+  page: number;
+  page_size: number;
+};
+
+export type RiskAccountSummary = {
+  user_id: string;
+  email?: string;
+  display_name?: string;
+  role?: string;
+  status?: string;
+  phone?: string;
+  mfa_enabled: boolean;
+  last_login_at?: string;
+  last_device_ip?: string;
+  created_at?: string;
+  comprehensive_score: number;
+  risk_level: string;
+  event_count: number;
+  login_success_count: number;
+  login_failure_count: number;
+  blocked_count: number;
+  step_up_count: number;
+  captcha_count: number;
+  device_count: number;
+  last_event_type?: string;
+  last_action_taken?: string;
+  last_ip_address?: string;
+  last_ip_country?: string;
+  last_ip_region?: string;
+  last_ip_city?: string;
+  last_client_type?: string;
+  last_event_at?: string;
+  trusted_until?: string;
+  mitigated_until?: string;
+  false_positive_until?: string;
+  false_positive_note?: string;
+};
+
+export type RiskAccountSummaryListResponse = {
+  items: RiskAccountSummary[];
+  total: number;
+  page: number;
+  page_size: number;
+};
+
+export type AdminRiskStats = {
+  levels_24h?: Record<string, number>;
+  ip_blacklist_count?: number;
+  config?: Record<string, unknown>;
+};
+
 export type Policy = {
   id: string;
   name: string;
@@ -260,6 +344,10 @@ export type SystemSettings = {
   allow_user_registration: boolean;
   enable_phone_verification: boolean;
   enable_qr_login: boolean;
+  app_current_version_code: number;
+  app_current_version_name: string;
+  app_download_url: string;
+  app_force_update: boolean;
   site_name: string;
   site_name_en: string;
   site_browser_title: string;
@@ -351,9 +439,34 @@ export type SystemSettings = {
   aliyun_sms_bind_phone_template_code: string;
   aliyun_sms_delete_template_code: string;
   risk_control_enabled: boolean;
+  risk_phone_binding_enabled: boolean;
   risk_immediate_bind_probability: number;
   risk_delayed_bind_probability: number;
   risk_delayed_bind_login_count: number;
+  risk_medium_threshold: number;
+  risk_high_threshold: number;
+  risk_critical_threshold: number;
+  risk_auto_block_threshold: number;
+  risk_max_failed_logins: number;
+  risk_lockout_minutes: number;
+  risk_score_window_days: number;
+  risk_failed_login_score_weight: number;
+  risk_failed_login_score_cap: number;
+  risk_enable_geo_check: boolean;
+  risk_enable_device_check: boolean;
+  risk_enable_behavior_check: boolean;
+  risk_enable_ip_blacklist: boolean;
+  risk_enable_mitigation: boolean;
+  risk_allow_block_step_up: boolean;
+  risk_trusted_device_days: number;
+  risk_mitigation_hours: number;
+  risk_trusted_device_score_discount: number;
+  risk_mitigation_score_discount: number;
+  risk_high_risk_geo_discount: number;
+  risk_new_device_discount: number;
+  risk_ip_change_discount: number;
+  risk_trusted_ips: string;
+  risk_high_risk_countries: string;
   developer_managed_users_search_window_seconds: number;
   developer_managed_users_search_limit: number;
 };
@@ -361,6 +474,7 @@ export type SystemSettings = {
 export type SettingsTabKey =
   | "site"
   | "session"
+  | "appVersion"
   | "verification"
   | "intl"
   | "sms"

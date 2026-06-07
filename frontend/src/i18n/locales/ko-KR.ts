@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "최근 업데이트 시간: {{date}}",
       agreement: {
         title: "이용약관",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}}를 사용해 주셔서 감사합니다. 본 시스템의 통합 인증 기능에 등록, 로그인, 접근 또는 사용하기 전에 본 약관을 신중히 읽어주세요. 계속 사용하면 본 약관에 따라 관련 서비스를 사용하는 것에 동의한 것으로 간주됩니다.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "플랫폼은 보안, 준수, 운영 유지 관리 등의 이유로 서비스 내용, 인터페이스 기능, 인증 프로세스 또는 기능 페이지를 조정, 업그레이드, 일시 중지 또는 종료할 수 있으며, 가능한 경우 사전 통지하려고 노력합니다.",
           liabilityP2:
             "법률이 허용하는 범위 내에서, 불가항력, 네트워크 장애, 타사 원인 또는 사용자 본인의 사용 부적절로 인한 서비스 중단, 데이터 이상 또는 손실에 대해 플랫폼은 법정 범위를 초과하는 책임을 지지 않습니다.",
+          accountP3:
+            "사용자 및 개발자 계정의 안전을 보호하기 위해 플랫폼은 비밀번호 로그인, 인증 코드 로그인, 패스키 로그인, QR 코드 로그인, 휴대전화 번호 연결, 이메일 변경, 휴대전화 번호 변경, 비밀번호 변경, MFA 설정, 계정 삭제, 데이터 내보내기, 개발자 앱 관리 등의 시나리오에서 위험 식별을 수행할 수 있으며, 위험 결과에 따라 추가 인증 요구, 처리 지연, 작업 제한 또는 접근 차단 조치를 취할 수 있습니다.",
         },
       },
       privacy: {
         title: "개인정보 처리방침",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}}는 귀하의 개인정보와 계정 보안을 중요시합니다. 본 정책은 우리가 귀하의 개인정보를 수집, 사용, 저장, 공유 및 보호하는 방법과 귀하가 가진 관련 권리를 설명합니다.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "귀하가 등록, 로그인 또는 계정 서비스를 사용할 때, 우리는 등록 국가, 이메일 주소, 전화번호, 비밀번호 해시, 로그인 세션, 기기 IP, 권한 부여 기록 및 필요한 보안 로그 정보를 수집할 수 있습니다.",
           dataCollectionP2:
             "귀하가 프로필 사진을 업로드하거나, 닉네임을 수정하거나, 전화번호를 연결하거나, 이중 인증을 활성화하거나, 타사 응용 프로그램에 권한을 부여할 때, 우리는 기능 필요에 따라 귀하가 제출한 해당 정보를 처리합니다.",
+          dataCollectionP3:
+            "계정 탈취, 크리덴셜 스터핑, 비정상 기기, 비정상 네트워크, 자동화 요청 및 고위험 작업을 식별하기 위해 당사는 기기 지문, 기기 공개 키 식별자, 클라이언트 유형, 기기 위험 신호, 로그인 실패 사유, 인증 코드 검증 결과, IP 귀속 지역 또는 지역 위험 라벨, 로그인 이력, 리스크 점수, 리스크 등급 및 처리 동작을 수집 또는 생성할 수 있습니다. 계정 리스크 통제 목적으로 연락처, 문자 메시지 내용, 통화 기록, 사진, 정밀한 위치, 마이크 또는 카메라 내용을 수집하지 않습니다.",
           dataUsageTitle: "2. 정보 사용 방식",
           dataUsageP1:
             "우리는 관련 정보를 사용하여 계정 등록, 로그인 인증, 인증 코드 전송, 위험 관리, 권한 부여 확인, 개발자 접속 검토, 계정 보안 알림 및 서비스 안정성 유지를 제공합니다.",
           dataUsageP2:
             "우리는 또한 이상 행위 발견, 제품 경험 최적화 및 시스템 보안 향상을 위해 최소한의 필요한 원칙에 따라 로그 및 통계 정보를 분석합니다.",
+          dataUsageP3:
+            "리스크 통제 정보는 주로 로그인 또는 민감한 작업의 계속 진행 허용 여부, 이메일/문자 추가 인증 요구 여부, 휴대전화 번호 연결 요구 여부, 실패 시도 잠금 트리거 여부, 리스크 이벤트 기록 여부를 판단하거나 관리자가 보안 문제를 조사하는 데 사용됩니다. 클라이언트에서 보고한 리스크 정보는 보조 신호로만 사용되며 단독으로 보안 판단을 낮추는 데 사용되지 않습니다.",
           dataSharingTitle: "3. 정보 공유 및 공개",
           dataSharingP1:
             "귀하가 명시적으로 권한을 부여한 경우에만, 우리는 권한 부여 페이지에 표시된 신원 정보 또는 권한 범위에 해당하는 데이터를 타사 응용 프로그램에 제공합니다.",
@@ -83,6 +89,8 @@ const locale = {
             "우리는 접근 제어, 비밀번호 암호화, 인증 코드 유효성 기간 제어, 감사 로그 및 최소화 저장 등의 조치를 취하여 귀하의 개인정보와 인증 데이터 보안을 최대한 보장합니다.",
           securityP2:
             "법령 및 업무 필요에 부합하는 전제 하에, 우리는 서비스 목적을 달성하는 데 필요한 기간 동안만 귀하의 정보를 저장합니다. 귀하가 계정을 삭제하거나 저장 기간이 만료된 후에는 규정에 따라 정보를 삭제하거나 익명화 처리합니다.",
+          securityP3:
+            "리스크 통제 로그, 로그인 이력, 기기 프로파일, 실패 시도 기록은 보안 감사, 분쟁 처리, 공격 조사 및 규정 준수에 필요한 기간 동안 보존되며, 해시, 접근 제어, 최소 권한 및 감사 기록을 통해 유출과 오용 위험을 줄입니다.",
         },
       },
     },
@@ -103,6 +111,11 @@ const locale = {
       sendRegisterCode: "인증 코드 보내기",
       sendRegisterCodeSuccess: "인증 코드가 전송되었습니다. 이메일을 확인하세요.",
       sendRegisterCodeFailed: "인증 코드 전송 실패",
+      legalConsentPrefix: "본인은 다음 내용을 읽고 동의합니다:",
+      legalConsentAnd: "및",
+      accountAgreement: "계정 이용 약관",
+      accountPrivacyPolicy: "계정 개인정보 처리방침",
+      legalConsentRequired: "계정 이용 약관 및 계정 개인정보 처리방침을 읽고 동의해 주세요",
       backToLoginWithAccount: "이미 계정이 있으신가요? 로그인하세요",
       forgotPassword: "비밀번호를 잊으셨나요?",
       forgotPasswordPageTitle: "비밀번호 재설정",
@@ -157,6 +170,7 @@ const locale = {
       qrLoginCancelled: "QR 로그인이 취소되었습니다",
       qrLoginExpired: "QR코드가 만료되었습니다. 새로고침하세요",
       qrLoginRefresh: "QR코드 새로고침",
+      downloadApp: "앱 다운로드",
       passwordLogin: "비밀번호 로그인",
       otpLogin: "이메일 인증 코드 로그인",
       phoneOtpLogin: "전화번호 인증 코드 로그인",
@@ -577,9 +591,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "월요일 ~ 금요일 09:00 - 18:00",
-      contactOverseasPersonValue: "추가 예정",
-      contactOverseasPhoneValue: "추가 예정",
-      contactOverseasEmailValue: "추가 예정",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "월요일 ~ 금요일 09:00 - 18:00",
       contactRegionNotice:
         "귀하의 지역에 따라 해당 지원 채널을 우선적으로 연락하세요. 소속 지역을 확인할 수 없는 경우 중국 본토 연락처를 통해 연결 도움을 받을 수 있습니다.",

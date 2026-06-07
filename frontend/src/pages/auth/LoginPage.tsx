@@ -25,6 +25,7 @@ type PublicSettings = {
     allow_user_registration?: boolean;
     enable_phone_verification?: boolean;
     enable_qr_login?: boolean;
+    app_download_url?: string;
     site_name?: string;
     site_name_en?: string;
     site_logo_data_url?: string;
@@ -76,6 +77,7 @@ export function LoginPage() {
   const [registrationAllowed, setRegistrationAllowed] = useState(true);
   const [phoneVerificationEnabled, setPhoneVerificationEnabled] = useState(true);
   const [qrLoginEnabled, setQRLoginEnabled] = useState(false);
+  const [appDownloadUrl, setAppDownloadUrl] = useState("");
   const [siteName, setSiteName] = useState(getStoredSiteName(i18n.language));
   const [siteLogoDataUrl, setSiteLogoDataUrl] = useState(localStorage.getItem("site_logo_data_url") || "");
   const [siteFooterText, setSiteFooterText] = useState(localStorage.getItem("site_footer_text") || "");
@@ -86,6 +88,19 @@ export function LoginPage() {
   const activeLoginTab: LoginTabKey =
     (!supportsSMSLogin && loginTab === "sms") || (!qrLoginEnabled && loginTab === "qr") ? "password" : loginTab;
   const { requestCaptcha, captchaModal } = useCaptchaGate();
+
+  function normalizeDownloadUrl(value?: string) {
+    const nextValue = value?.trim();
+    if (!nextValue) {
+      return "";
+    }
+    try {
+      const url = new URL(nextValue);
+      return url.protocol === "http:" || url.protocol === "https:" ? nextValue : "";
+    } catch {
+      return "";
+    }
+  }
 
   function translateLoginError(rawMessage: string) {
     const normalizedMessage = rawMessage.trim();
@@ -213,6 +228,7 @@ export function LoginPage() {
           setRegistrationAllowed(result.data?.allow_user_registration !== false);
           setPhoneVerificationEnabled(result.data?.enable_phone_verification !== false);
           setQRLoginEnabled(result.data?.enable_qr_login === true);
+          setAppDownloadUrl(normalizeDownloadUrl(result.data?.app_download_url));
           const nextSiteName = resolveSiteNameForLocale(i18n.language, result.data?.site_name, result.data?.site_name_en);
           const nextSiteLogo = result.data?.site_logo_data_url?.trim() || "";
           const nextSiteFooterText = result.data?.site_footer_text || "";
@@ -363,8 +379,8 @@ export function LoginPage() {
       if (!useOtp && err instanceof ApiError && err.payload.captcha_required) {
         try {
           const nextCaptchaPayload = await requestCaptcha({
-            flow: "password_login_mfa",
-            purpose: "mfa_login",
+            flow: "password_login_risk",
+            purpose: "risk_login",
             target: String(values.email || ""),
           });
           await submit(values, useOtp, nextCaptchaPayload);
@@ -708,6 +724,11 @@ export function LoginPage() {
                           <Button onClick={() => void createQRLoginChallenge()} loading={qrLoading}>
                             {t("auth.qrLoginRefresh")}
                           </Button>
+                          {appDownloadUrl ? (
+                            <Button type="link" href={appDownloadUrl} target="_blank" rel="noopener noreferrer">
+                              {t("auth.downloadApp")}
+                            </Button>
+                          ) : null}
                         </Space>
                       )
                     }

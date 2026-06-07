@@ -342,6 +342,7 @@ func (s *MySQLStore) GetSettings(keys ...string) (map[string]string, error) {
 			placeholders[i] = "?"
 			args = append(args, key)
 		}
+		// #nosec G202 -- placeholders are generated constants; setting keys are bound as query parameters.
 		query += " WHERE setting_key IN (" + strings.Join(placeholders, ",") + ")"
 	}
 	rows, err := s.db.Query(query, args...)

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Button, Card, Form, Input, Select, Space, Typography, message } from "antd";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Button, Card, Checkbox, Form, Input, Select, Space, Typography, message } from "antd";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { api } from "../../api/client";
 import { useEmailCodeCooldown } from "../../utils/emailCodeCooldown";
 import { buildSearchString, getSafeRedirect, pickAllowedSearchParams, withUpdatedSearch } from "../../utils/urlState";
@@ -39,9 +39,11 @@ export function RegisterPage() {
   const { requestCaptcha, captchaModal } = useCaptchaGate();
 
   function translateSecurityError(rawMessage: string) {
-    switch (rawMessage) {
+    switch (rawMessage.toLowerCase()) {
       case "cooldown_active":
         return t("errors.cooldownActive");
+      case "agreement and privacy policy must be accepted":
+        return t("auth.legalConsentRequired");
       default:
         return rawMessage;
     }
@@ -142,7 +144,7 @@ export function RegisterPage() {
     }
   }
 
-  async function submit(values: Record<string, string>) {
+  async function submit(values: Record<string, string | boolean>) {
     if (!registrationAllowed) {
       messageApi.warning(t("auth.registerDisabled"));
       return;
@@ -159,7 +161,9 @@ export function RegisterPage() {
           country: values.country,
           email: values.email,
           code: values.code,
-          password: values.password
+          password: values.password,
+          agreement_accepted: values.legal_consent === true,
+          privacy_accepted: values.legal_consent === true
         })
       });
       if (result.requires_phone_binding && result.phone_binding_challenge_token) {
@@ -179,7 +183,7 @@ export function RegisterPage() {
         800
       );
     } catch (err) {
-      messageApi.error(err instanceof Error ? err.message : t("auth.registerFailed"));
+      messageApi.error(err instanceof Error ? translateSecurityError(err.message) : t("auth.registerFailed"));
     } finally {
       setLoading(false);
     }
@@ -287,6 +291,40 @@ export function RegisterPage() {
               ]}
             >
               <Input.Password placeholder={t("auth.confirmPasswordPlaceholder")} />
+            </Form.Item>
+            <Form.Item
+              name="legal_consent"
+              valuePropName="checked"
+              rules={[
+                {
+                  validator(_, value) {
+                    if (value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error(t("auth.legalConsentRequired")));
+                  }
+                }
+              ]}
+            >
+              <Checkbox>
+                {t("auth.legalConsentPrefix")}{" "}
+                <Link
+                  to={`/legal/agreement?back_to=${encodeURIComponent(`${location.pathname}${location.search}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t("auth.accountAgreement")}
+                </Link>
+                {" "}
+                {t("auth.legalConsentAnd")}{" "}
+                <Link
+                  to={`/legal/privacy?back_to=${encodeURIComponent(`${location.pathname}${location.search}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t("auth.accountPrivacyPolicy")}
+                </Link>
+              </Checkbox>
             </Form.Item>
 
             <Space style={{ width: "100%", justifyContent: "space-between" }}>

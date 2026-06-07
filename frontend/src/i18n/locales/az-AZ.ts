@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Son yeniləmə: {{date}}",
       agreement: {
         title: "İstifadəçi Razılaşması",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}}-ə xoş gəlmisiniz. Qeydiyyatdan keçməzdən, daxil olmamışdan, inteqrasiya etməzdən və ya vahid kimlik xidmətlərindən istifadə etməzdən əvvəl, bu razılaşmanı diqqətlə oxuyun. Xidməti istifadə etməyə davam edərək, bu razılaşmaya əməl etməyə razı olursunuz.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Təhlükəsizlik, uyğunluq, əməliyyat və ya texniki xidmət səbəblərinə görə, platforma bəzi interfeysləri, axınları və ya funksiyaları tənzimləyə, yeniləyə, dayandıra və ya dayandıra bilər və uyğun olduqda bildiriş verməyə çalışacaq.",
           liabilityP2:
             "Qanunla icazə verilən həddə qədər, platforma fövqəladə hallar, şəbəkə nasazlıqları, üçüncü tərəf səbəbləri və ya sizin tərəfinizdən yanlış istifadə nəticəsində yaranan fasilələrə, qeyri-adi məlumatlara və ya itkilərə görə qanuni məsuliyyətdən kənar məsuliyyət daşımır.",
+accountP3:
+            "İstifadəçi və tərtibatçı hesablarını qorumaq üçün platforma şifrə ilə giriş, kodla giriş, açar açarla giriş, QR kodla giriş, telefon nömrəsinin bağlanması, e-poçtun dəyişdirilməsi, telefon nömrəsinin dəyişdirilməsi, şifrənin dəyişdirilməsi, MFA quraşdırması, hesabın silinməsi, məlumat ixracı və tərtibatçı tətbiq idarəetməsi kimi ssenarilərdə risk qiymətləndirməsi apara bilər. Nəticədən asılı olaraq platforma əlavə verifikasiya tələb edə, emalı gecikdırə, əməliyyatı məhdudlaşdıra və ya girişi bloklaya bilər.",
         },
       },
       privacy: {
         title: "Məxfilik Siyasəti",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} şəxsi məlumatlarınıza və hesab təhlükəsizliyinə dəyər verir. Bu siyasət məlumatlarınızı necə topladığımızı, istifadə etdiyimizi, saxladığımızı, paylaşdığımızı və qoruduğumuzu, həmçinin mövcud hüquqlarınızı izah edir.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Qeydiyyatdan keçdikdə, daxil olduqda və ya hesab xidmətlərindən istifadə etdikdə, qeydiyyat ölkənizi, e-poçt ünvanınızı, telefon nömrənizi, parol hash-inizi, giriş sessiyalarını, cihaz IP-nizi, icazə qeydlərini və lazımi təhlükəsizlik jurnallarını toplaya bilərik.",
           dataCollectionP2:
             "Avatar yüklədikdə, profilinizi dəyişdikdə, telefon nömrəsi bağladıqda, MFA-nı aktivləşdirdikdə və ya üçüncü tərəf proqramına icazə verdikdə, həmin funksiyanı təmin etmək üçün təqdim etdiyiniz məlumatları emal edirik.",
+dataCollectionP3:
+            "Hesabın ələ keçirilməsi, etimadnamə doldurulması, anormal cihazlar, anormal şəbəkələr, avtomatlaşdırılmış sorğular və yüksək riskli əməliyyatları müəyyən etmək üçün biz həmçinin cihaz barmaq izləri, cihaz açıq açar identifikatorları, müştəri növü, cihaz risk siqnalları, uğursuz giriş səbəbləri, kod verifikasiya nəticələri, IP bölgəsi və ya regional risk etiketləri, giriş tarixçəsi, risk balları, risk səviyyələri və görülən tədbirləri toplaya və ya yarada bilərik. Hesab risk nəzarəti məqsədləri üçün biz əlaqələri, SMS məzmununu, zəng qeydlərini, foto albomları, dəqiq yeri, mikrofon və ya kamera məzmununu toplamırıq.",
           dataUsageTitle: "2. Məlumatlardan Necə İstifadə Edilir",
           dataUsageP1:
             "Hesab qeydiyyatı, giriş doğrulaması, doğrulama kodlarının göndərilməsi, risk nəzarəti, icazə təsdiqi, tərtibatçı proqramı nəzərdən keçirilməsi, hesab təhlükəsizliyi bildirişləri və xidmət etibarlılığı texniki xidməti təmin etmək üçün müvafiq məlumatlardan istifadə edirik.",
           dataUsageP2:
             "Qeyri-adi fəaliyyəti aşkar etmək, məhsul təcrübəsini yaxşılaşdırmaq və təhlükəsizliyi gücləndirmək üçün minimum zəruri əsasda jurnalları və statistikaları təhlil edirik.",
+dataUsageP3:
+            "Risk nəzarət məlumatı əsasən girişin və ya həssas əməliyyatların davam etdirilməsinə icazə verilib-verilməyəcəyinə, e-poçt və ya SMS vasitəsilə əlavə verifikasiya tələb olunub-olunmadığına, telefon nömrəsinin bağlanmasının tələb olunub-olunmadığına, uğursuz cəhdlərdən sonra bloklamanın tetiklenib-tetikenməyəcəyinə, risk hadisəsinin qeydə alınıb-alınmayacağına qərar vermək və ya administratorların təhlükəsizlik problemlərini araşdırmasına kömək etmək üçün istifadə olunur. Müştəri tərəfindən bildirilən risk məlumatı yalnız köməkçi siqnal kimi istifadə olunur və təkbaşına təhlükəsizlik qərarlarını azaltmaq üçün istifadə olunmur.",
           dataSharingTitle: "3. Paylaşma və Açıqlama",
           dataSharingP1:
             "Yalnız icazə səhifəsində göstərilən icazələrə açıq şəkildə icazə verdiyiniz zaman üçüncü tərəf proqramlarına kimlik məlumatları və ya icazə ilə əlaqəli məlumatlar təqdim edirik.",
@@ -83,6 +89,8 @@ const locale = {
             "Şəxsi məlumatlarınızı və doğrulama məlumatlarınızı qorumaq üçün giriş nəzarəti, parol hash-ləri, doğrulama kodunun bitməsi, yoxlama jurnalları və məlumatların minimuma endirilməsi tədbirlərindən istifadə edirik.",
           securityP2:
             "Hüquqi və biznes tələblərinə əsasən, xidmət məqsədlərini yerinə yetirmək üçün zəruri olduğu müddətdə məlumatlarınızı saxlayırıq; hesab silindikdən və ya saxlama müddəti bitdikdən sonra, siyasətə uyğun olaraq məlumatları siləcək və ya anonimləşdirəcəyik.",
+securityP3:
+            "Risk qeydləri, giriş tarixçəsi, cihaz profilləri və uğursuz cəhdlər qeydləri təhlükəsizlik auditi, mübahisələrin həlli, hücumların araşdırılması və uyğunluq üçün tələb olunan müddət ərzində saxlanılır. Həşləmə, giriş nəzarəti, minimal imtiyaz və audit qeydləri vasitəsilə sızıntı və sui-istifadə risklərini azaldırıq.",
         },
       },
     },
@@ -103,6 +111,11 @@ const locale = {
       sendRegisterCode: "Kod Göndər",
       sendRegisterCodeSuccess: "Doğrulama kodu göndərildi. Qutu yoxlayın.",
       sendRegisterCodeFailed: "Doğrulama kodu göndərmək alınmadı",
+      legalConsentPrefix: "Oxudum və razıyam",
+      legalConsentAnd: "və",
+      accountAgreement: "Hesab İstifadə Şərtləri",
+      accountPrivacyPolicy: "Hesab Məxfilik Siyasəti",
+      legalConsentRequired: "Zəhmət olmasa Hesab İstifadə Şərtləri və Hesab Məxfilik Siyasətini oxuyub qəbul edin",
       backToLoginWithAccount: "Artıq hesabınız var? Daxil olun",
       forgotPassword: "Parolu unutmusunuz?",
       forgotPasswordPageTitle: "Parolu Sıfırla",
@@ -157,6 +170,7 @@ const locale = {
       qrLoginCancelled: "Bu QR daxil olma ləğv edildi",
       qrLoginExpired: "QR kodu müddəti bitib. Yeniləyin.",
       qrLoginRefresh: "QR Kodu Yeniləyin",
+      downloadApp: "Tətbiqi yüklə",
       passwordLogin: "Parol",
       otpLogin: "E-poçt Kodu",
       phoneOtpLogin: "Telefon Kodu",
@@ -565,9 +579,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Bazar ertəsindən Cüməyə 09:00 - 18:00",
-      contactOverseasPersonValue: "Təmin ediləcək",
-      contactOverseasPhoneValue: "Təmin ediləcək",
-      contactOverseasEmailValue: "Təmin ediləcək",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Bazar ertəsindən Cüməyə 09:00 - 18:00",
       contactRegionNotice: "Əvvəlcə regionunuz üçün dəstək kanalına müraciət edin. Hansı regionun tətbiq olunduğundan əmin deyilsinizsə, marşrutlaşdırma köməyi üçün Çin Materiki əlaqəsi ilə başlayın.",
       contactNotice: "Dondurulmuş hesablar, qeyri-adi icazələr, itirilmiş keçid açarları və ya silmə bərpası kimi problemlər üçün əvvəlcə yuxarıdakı telefon nömrəsi və ya e-poçt vasitəsilə idarəçi ilə əlaqə saxlayın. Əgər platformanız rəsmi bilet sistemi, elan lövhəsi və ya əməliyyat qrupu təqdim edirsə, əvvəlcə həmin rəsmi kanala əməl edin.",

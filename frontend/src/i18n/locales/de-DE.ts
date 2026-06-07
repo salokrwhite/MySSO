@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Zuletzt aktualisiert: {{date}}",
       agreement: {
         title: "Nutzungsvereinbarung",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Willkommen bei {{siteName}}. Bitte lesen Sie diese Vereinbarung sorgfältig durch, bevor Sie sich registrieren, anmelden, integrieren oder die einheitlichen Authentifizierungsdienste dieses Systems nutzen. Durch die weitere Nutzung erklären Sie sich damit einverstanden, die Dienste gemäß den Bedingungen dieser Vereinbarung zu nutzen.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Aus Gründen der Sicherheit, Compliance, Wartung oder des Betriebs kann die Plattform den Serviceinhalt, die API-Fähigkeiten, den Authentifizierungsprozess oder Funktionsseiten anpassen, upgraden, aussetzen oder beenden und wird dies nach Möglichkeit im Voraus mitteilen.",
           liabilityP2:
             "Im gesetzlich zulässigen Umfang ist die Plattform nicht für Dienstunterbrechungen, anormale Daten oder Verluste aufgrund höherer Gewalt, Netzwerkausfälle, Drittanbieter-Probleme oder unsachgemäße Nutzung durch Sie verantwortlich.",
+          accountP3:
+            "Zum Schutz von Benutzer- und Entwicklerkonten kann die Plattform eine Risikoprüfung in Szenarien wie Passwort-Anmeldung, Code-Anmeldung, Passkey-Anmeldung, QR-Code-Anmeldung, Telefonnummer-Bindung, E-Mail-Änderung, Telefonnummer-Änderung, Passwort-Änderung, MFA-Einrichtung, Kontolöschung, Datenexport und Verwaltung von Entwickler-Apps durchführen. Abhängig vom Ergebnis kann die Plattform zusätzliche Verifizierung verlangen, die Bearbeitung verzögern, Vorgänge einschränken oder den Zugriff blockieren.",
         },
       },
       privacy: {
         title: "Datenschutzrichtlinie",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} legt großen Wert auf Ihre persönlichen Informationen und Kontosicherheit. Diese Richtlinie erklärt, wie wir Ihre persönlichen Informationen sammeln, verwenden, speichern, teilen und schützen sowie welche Rechte Ihnen zustehen.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Bei der Registrierung, Anmeldung oder Nutzung der Kontodienste können wir Registrierungsland, E-Mail-Adresse, Telefonnummer, Passwort-Hash, Anmeldesitzungen, Gerät-IP, Autorisierungsaufzeichnungen und erforderliche Sicherheitsprotokolle sammeln.",
           dataCollectionP2:
             "Wenn Sie aktiv einen Avatar hochladen, Ihren Spitznamen ändern, eine Telefonnummer binden, Zwei-Faktor-Authentifizierung aktivieren oder Drittanbieter-Apps autorisieren, verarbeiten wir die entsprechenden Informationen entsprechend den Funktionsanforderungen.",
+          dataCollectionP3:
+            "Um Kontoübernahmen, Credential Stuffing, anormale Geräte, anormale Netzwerke, automatisierte Anfragen und risikoreiche Vorgänge zu erkennen, können wir außerdem Gerätefingerabdrücke, Geräte-Public-Key-Identifikatoren, Client-Typen, Geräterisikosignale, Fehlgründe bei Anmeldungen, Bestätigungscode-Ergebnisse, IP-Region oder regionale Risikokennzeichnungen, Anmeldeverlauf, Risikobewertungen, Risikostufen und durchgeführte Maßnahmen erfassen oder erzeugen. Wir erfassen für die Konto-Risikosteuerung keine Kontakte, SMS-Inhalte, Anrufverläufe, Fotoalben, genauen Standort, Mikrofon- oder Kamerainhalte.",
           dataUsageTitle: "2. Verwendung der Informationen",
           dataUsageP1:
             "Wir verwenden relevante Informationen zur Kontoregistrierung, Anmeldeauthentifizierung, Bestätigungscode-Versand, Risikokontrolle, Autorisierungsbestätigung, Entwickler-Integration-Überprüfung, Kontosicherheitsbenachrichtigungen und Aufrechterhaltung der Dienststabilität.",
           dataUsageP2:
             "Wir analysieren Protokolle und statistische Informationen auch auf Basis des Minimalprinzips, um anormales Verhalten zu erkennen, die Produkterfahrung zu optimieren und die Systemsicherheit zu verbessern.",
+          dataUsageP3:
+            "Risikoinformationen werden hauptsächlich verwendet, um zu entscheiden, ob eine Anmeldung oder sensible Vorgänge zugelassen werden, ob eine zusätzliche E-Mail- oder SMS-Verifizierung verlangt wird, ob eine Telefonnummer-Bindung erforderlich ist, ob eine Sperre nach fehlgeschlagenen Versuchen ausgelöst wird, ob ein Risikoereignis protokolliert wird, oder um Administratoren bei der Untersuchung von Sicherheitsproblemen zu unterstützen. Vom Client gemeldete Risikoinformationen werden nur als unterstützendes Signal verwendet und nicht allein zur Herabsetzung von Sicherheitsentscheidungen.",
           dataSharingTitle: "3. Informationsweitergabe und Offenlegung",
           dataSharingP1:
             "Wir geben Identitätsinformationen oder Berechtigungsdaten nur dann an Drittanbieter-Apps weiter, wenn Sie dies ausdrücklich auf der Autorisierungsseite genehmigt haben.",
@@ -83,6 +89,8 @@ const locale = {
             "Wir ergreifen Maßnahmen wie Zugriffskontrolle, Passwortverschlüsselung, Bestätigungscode-Zeitlimit, Audit-Protokolle und Minimierung der Speicherung, um Ihre persönlichen Informationen und Authentifizierungsdaten zu schützen.",
           securityP2:
             "Vorbehaltlich gesetzlicher Vorschriften und Geschäftsanforderungen speichern wir Ihre Informationen nur so lange, wie dies für die Erfüllung des Servicezwecks erforderlich ist; nach Kontolöschung oder Ablauf der Aufbewahrungsfristen werden wir die Daten gemäß den Regeln löschen oder anonymisieren.",
+          securityP3:
+            "Risikoprotokolle, Anmeldeverlauf, Geräteprofile und Aufzeichnungen fehlgeschlagener Versuche werden für den Zeitraum aufbewahrt, der für Sicherheitsprüfungen, Streitbeilegung, Angriffsuntersuchungen und Compliance erforderlich ist. Durch Hashing, Zugriffskontrollen, minimale Berechtigungen und Prüfprotokolle verringern wir das Risiko von Datenlecks und Missbrauch.",
         },
       },
     },
@@ -103,6 +111,11 @@ const locale = {
       sendRegisterCode: "Bestätigungscode senden",
       sendRegisterCodeSuccess: "Bestätigungscode gesendet. Bitte überprüfen Sie Ihre E-Mails.",
       sendRegisterCodeFailed: "Fehler beim Senden des Bestätigungscodes",
+      legalConsentPrefix: "Ich habe die",
+      legalConsentAnd: "und",
+      accountAgreement: "Konto-Nutzungsbedingungen",
+      accountPrivacyPolicy: "Konto-Datenschutzrichtlinie",
+      legalConsentRequired: "Bitte lesen und akzeptieren Sie die Konto-Nutzungsbedingungen und die Konto-Datenschutzrichtlinie",
       backToLoginWithAccount: "Bereits ein Konto? Anmelden",
       forgotPassword: "Passwort vergessen",
       forgotPasswordPageTitle: "Passwort zurücksetzen",
@@ -154,6 +167,7 @@ const locale = {
       qrLoginCancelled: "QR-Anmeldung abgebrochen",
       qrLoginExpired: "QR-Code abgelaufen. Bitte aktualisieren.",
       qrLoginRefresh: "QR-Code aktualisieren",
+      downloadApp: "App herunterladen",
       passwordLogin: "Passwort-Anmeldung",
       otpLogin: "E-Mail-Code-Anmeldung",
       phoneOtpLogin: "Telefon-Code-Anmeldung",
@@ -553,9 +567,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Montag bis Freitag 09:00 - 18:00",
-      contactOverseasPersonValue: "Zu ergänzen",
-      contactOverseasPhoneValue: "Zu ergänzen",
-      contactOverseasEmailValue: "Zu ergänzen",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Montag bis Freitag 09:00 - 18:00",
       contactRegionNotice: "Bitte kontaktieren Sie je nach Region zuerst den entsprechenden Support-Kanal. Bei Unsicherheit über die Region wenden Sie sich zuerst an den Festlandchina-Kontakt für Weiterleitungshilfe.",
       contactNotice: "Bei Kontosperrung, Autorisierungsanomalien, verlorenen Passkeys oder Löschungswiederherstellung kontaktieren Sie bitte zuerst den Administrator über obige E-Mail oder Telefon. Bei separaten Ticket-Systemen, Ankündigungen oder Betriebsgruppen folgen Sie bitte den offiziellen Benachrichtigungskanälen.",

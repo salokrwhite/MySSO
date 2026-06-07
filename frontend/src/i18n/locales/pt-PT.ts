@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Última atualização: {{date}}",
       agreement: {
         title: "Termos de Utilização",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Bem-vindo ao {{siteName}}. Antes de se registar, iniciar sessão, integrar ou utilizar os serviços de identidade unificada, leia atentamente este acordo. Continuar a utilizar o serviço significa que concorda em ficar vinculado a este acordo.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Por motivos de segurança, conformidade, operações ou manutenção, a plataforma pode ajustar, atualizar, suspender ou terminar certas interfaces, fluxos ou funções, e tentará fornecer avisos quando apropriado.",
           liabilityP2:
             "Na medida permitida por lei, a plataforma não é responsável além das obrigações legais por interrupções, dados anormais ou perdas causadas por força maior, falhas de rede, razões de terceiros ou uso inadequado do seu lado.",
+accountP3:
+            "Para proteger as contas de utilizadores e programadores, a plataforma pode realizar avaliações de risco em cenários como início de sessão por palavra-passe, início de sessão por código, início de sessão por passkey, início de sessão por QR code, associação de número de telefone, alteração de e-mail, alteração de número de telefone, alteração de palavra-passe, configuração MFA, eliminação de conta, exportação de dados e gestão de aplicações de programador. Consoante o resultado, a plataforma pode exigir verificação adicional, atrasar o processamento, restringir uma operação ou bloquear o acesso.",
         },
       },
       privacy: {
         title: "Política de Privacidade",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "O {{siteName}} valoriza as suas informações pessoais e segurança da conta. Esta política explica como recolhemos, usamos, armazenamos, partilhamos e protegemos as suas informações, bem como os direitos disponíveis para si.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Quando se regista, inicia sessão ou utiliza serviços de conta, podemos recolher o seu país de registo, endereço de e-mail, número de telefone, hash de palavra-passe, sessões de início de sessão, IP do dispositivo, registos de autorização e registos de segurança necessários.",
           dataCollectionP2:
             "Quando carrega um avatar, altera o seu perfil, vincula um número de telefone, ativa MFA ou autoriza uma aplicação de terceiros, processamos as informações que submete conforme necessário para fornecer essa função.",
+dataCollectionP3:
+            "Para identificar a apropriação de contas, credential stuffing, dispositivos anómalos, redes anómalas, pedidos automatizados e operações de alto risco, também podemos recolher ou gerar impressões digitais de dispositivos, identificadores de chave pública do dispositivo, tipo de cliente, sinais de risco do dispositivo, motivos de falha de início de sessão, resultados de verificação de códigos, região de IP ou etiquetas de risco regional, histórico de início de sessão, pontuações de risco, níveis de risco e ações tomadas. Não recolhemos contactos, conteúdo de SMS, registos de chamadas, álbuns de fotos, localização precisa, conteúdo do microfone ou da câmara para fins de gestão de risco de conta.",
           dataUsageTitle: "2. Como Usamos as Informações",
           dataUsageP1:
             "Usamos informações relevantes para fornecer registo de conta, autenticação de início de sessão, entrega de códigos de verificação, controlo de risco, confirmação de autorização, revisão de aplicações de programadores, notificações de segurança da conta e manutenção de confiabilidade do serviço.",
           dataUsageP2:
             "Também analisamos registos e estatísticas com base na necessidade mínima para detetar atividades anormais, melhorar a experiência do produto e fortalecer a segurança.",
+dataUsageP3:
+            "As informações de gestão de risco são usadas principalmente para decidir se se permite o início de sessão ou a continuação de operações sensíveis, se se exige verificação adicional por e-mail ou SMS, se se exige a associação de um número de telefone, se se ativa o bloqueio por tentativas falhadas, se se regista um evento de risco, ou para ajudar os administradores a investigar problemas de segurança. As informações de risco reportadas pelo cliente são usadas apenas como sinal auxiliar e não são usadas por si só para reduzir decisões de segurança.",
           dataSharingTitle: "3. Partilha e Divulgação",
           dataSharingP1:
             "Só fornecemos informações de identidade ou dados relacionados ao âmbito mostrado na página de autorização para aplicações de terceiros quando autoriza explicitamente.",
@@ -83,6 +89,8 @@ const locale = {
             "Usamos controlos de acesso, hash de palavra-passe, expiração de códigos de verificação, registos de auditoria e minimização de dados para proteger as suas informações pessoais e dados de autenticação.",
           securityP2:
             "Sujeito a requisitos legais e comerciais, retemos as suas informações apenas pelo tempo necessário para cumprir os propósitos do serviço; após a eliminação da conta ou expiração dos períodos de retenção, eliminaremos ou anonimizaremos os dados de acordo com a política.",
+securityP3:
+            "Os registos de risco, o histórico de início de sessão, os perfis de dispositivo e os registos de tentativas falhadas são conservados durante o período necessário para auditoria de segurança, tratamento de disputas, investigação de ataques e conformidade. Reduzimos os riscos de fuga e utilização abusiva através de hashing, controlos de acesso, privilégios mínimos e registos de auditoria.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "O código de verificação foi enviado. Verifique a sua caixa de entrada.",
       sendRegisterCodeFailed: "Falha ao enviar código de verificação",
+      legalConsentPrefix: "Li e aceito",
+      legalConsentAnd: "e",
+      accountAgreement: "Termos de utilização da conta",
+      accountPrivacyPolicy: "Política de privacidade da conta",
+      legalConsentRequired: "Por favor leia e aceite os Termos de utilização da conta e a Política de privacidade da conta",
       backToLoginWithAccount: "Já tem uma conta? Inicie sessão",
       forgotPassword: "Esqueceu-se da palavra-passe?",
       forgotPasswordPageTitle: "Redefinir Palavra-passe",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "Início de sessão QR cancelado",
       qrLoginExpired: "QR code expirou. Atualize.",
       qrLoginRefresh: "Atualizar QR code",
+      downloadApp: "Transferir aplicação",
       passwordLogin: "Palavra-passe",
       otpLogin: "Código de e-mail",
       phoneOtpLogin: "Código de telefone",
@@ -660,9 +674,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Segunda - Sexta 09:00 - 18:00",
-      contactOverseasPersonValue: "A ser fornecido",
-      contactOverseasPhoneValue: "A ser fornecido",
-      contactOverseasEmailValue: "A ser fornecido",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Segunda - Sexta 09:00 - 18:00",
       contactRegionNotice:
         "Contacte primeiro o canal de suporte para a sua região. Se não tiver a certeza de qual região se aplica, comece com o contacto da China Continental para obter ajuda com o encaminhamento.",

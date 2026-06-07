@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Última actualització: {{date}}",
       agreement: {
         title: "Acord d'usuari",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Us donem la benvinguda a {{siteName}}. Abans de registrar-vos, iniciar sessió, integrar o utilitzar els serveis d'identitat unificada, llegiu acuradament aquest acord. En continuar utilitzant el servei, accepteu estar vinculat pels termes d'aquest acord.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Per motius de seguretat, compliment, operacions o manteniment, la plataforma pot ajustar, actualitzar, suspendre o finalitzar determinades interfícies, processos o funcions i intentarà notificar-ho amb antelació quan sigui possible.",
           liabilityP2:
             "En la mesura permesa per la llei, la plataforma no és responsable més enllà de les obligacions legals per interrupcions, dades anormals o pèrdues causades per força major, fallades de xarxa, raons de tercers o ús inadequat per la vostra banda.",
+accountP3:
+            "Per protegir els comptes d'usuaris i desenvolupadors, la plataforma pot realitzar avaluacions de risc en escenaris com inici de sessió amb contrasenya, inici de sessió amb codi, inici de sessió amb passkey, inici de sessió amb codi QR, vinculació de número de telèfon, canvi de correu electrònic, canvi de número de telèfon, canvi de contrasenya, configuració MFA, eliminació de compte, exportació de dades i gestió d'aplicacions de desenvolupador. Segons el resultat, la plataforma pot sol·licitar verificació addicional, retardar el processament, restringir una operació o bloquejar l'accés.",
         },
       },
       privacy: {
         title: "Política de privadesa",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} valora la vostra informació personal i la seguretat del vostre compte. Aquesta política explica com recopilem, utilitzem, emmagatzemem, compartim i protegim la vostra informació, així com els drets que teniu.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Quan us registreu, inicieu sessió o utilitzeu els serveis del compte, podem recopilar el vostre país de registre, adreça de correu electrònic, número de telèfon, hash de contrasenya, sessions d'inici de sessió, IP del dispositiu, registres d'autorització i registres de seguretat necessaris.",
           dataCollectionP2:
             "Quan pengeu un avatar, canvieu el vostre perfil, vinculeu un número de telèfon, activeu MFA o autoritzeu una aplicació de tercers, processem la informació que subministreu segons sigui necessari per proporcionar aquesta funció.",
+dataCollectionP3:
+            "Per identificar l'apropiació de comptes, el credential stuffing, dispositius anòmals, xarxes anòmales, sol·licituds automatitzades i operacions d'alt risc, també podem recollir o generar empremtes dactilars de dispositius, identificadors de clau pública del dispositiu, tipus de client, senyals de risc del dispositiu, motius d'error d'inici de sessió, resultats de verificació de codis, regió IP o etiquetes de risc regional, historial d'inici de sessió, puntuacions de risc, nivells de risc i accions preses. No recollim contactes, contingut SMS, registres de trucades, àlbums de fotos, ubicació precisa, contingut del micròfon o de la càmera amb finalitats de control de risc del compte.",
           dataUsageTitle: "2. Com utilitzem la informació",
           dataUsageP1:
             "Utilitzem la informació rellevant per al registre del compte, autenticació d'inici de sessió, lliurament de codis de verificació, control de riscos, confirmació d'autorització, revisió d'aplicacions de desenvolupadors, notificacions de seguretat del compte i manteniment de la fiabilitat del servei.",
           dataUsageP2:
             "També analitzem registres i estadístiques sobre una base de necessitat mínima per detectar activitat inusual, millorar l'experiència del producte i enfortir la seguretat.",
+dataUsageP3:
+            "La informació de control de risc s'utilitza principalment per decidir si es permet l'inici de sessió o la continuació d'operacions sensibles, si es requereix verificació addicional per correu electrònic o SMS, si es requereix la vinculació d'un número de telèfon, si s'activa el bloqueig després d'intents fallits, si es registra un esdeveniment de risc, o per ajudar els administradors a investigar problemes de seguretat. La informació de risc informada pel client s'utilitza només com a senyal auxiliar i no s'utilitza per si sola per reduir les decisions de seguretat.",
           dataSharingTitle: "3. Compartició i divulgació",
           dataSharingP1:
             "Només proporcionem informació d'identitat o dades relacionades amb permisos a aplicacions de tercers quan heu autoritzat explícitament els àmbits mostrats a la pàgina d'autorització.",
@@ -83,6 +89,8 @@ const locale = {
             "Utilitzem controls d'accés, hash de contrasenyes, venciment de codis de verificació, registres d'auditoria i mesures de minimització de dades per protegir la vostra informació personal i dades d'autenticació.",
           securityP2:
             "Subjecte a requisits legals i empresarials, retenu la vostra informació només mentre sigui necessari per complir les finalitats del servei; després de l'eliminació del compte o el venciment dels períodes de retenció, eliminarem o anonimitzarem les dades segons la política.",
+securityP3:
+            "Els registres de risc, l'historial d'inici de sessió, els perfils de dispositiu i els registres d'intents fallits es conserven durant el període necessari per a l'auditoria de seguretat, la resolució de disputes, la investigació d'atacs i el compliment normatiu. Reduïm els riscos de fuites i abús mitjançant l'ús de funcions hash, controls d'accés, privilegi mínim i registres d'auditoria.",
         },
       },
     },
@@ -103,6 +111,11 @@ const locale = {
       sendRegisterCode: "Envia codi",
       sendRegisterCodeSuccess: "S'ha enviat el codi de verificació. Comproveu la vostra safata d'entrada.",
       sendRegisterCodeFailed: "No s'ha pogut enviar el codi de verificació",
+      legalConsentPrefix: "He llegit i accepto",
+      legalConsentAnd: "i",
+      accountAgreement: "Condicions d'ús del compte",
+      accountPrivacyPolicy: "Política de privacitat del compte",
+      legalConsentRequired: "Si us plau, llegiu i accepteu les Condicions d'ús del compte i la Política de privacitat del compte",
       backToLoginWithAccount: "Ja teniu compte? Inicieu sessió",
       forgotPassword: "Heu oblidat la contrasenya?",
       forgotPasswordPageTitle: "Restablir contrasenya",
@@ -154,6 +167,7 @@ const locale = {
       qrLoginCancelled: "Aquest inici de sessió QR ha estat cancel·lat",
       qrLoginExpired: "El codi QR ha expirat. Actualitzeu.",
       qrLoginRefresh: "Actualitzar codi QR",
+      downloadApp: "Descarrega l'aplicació",
       passwordLogin: "Contrasenya",
       otpLogin: "Codi de correu electrònic",
       phoneOtpLogin: "Codi de telèfon",
@@ -553,9 +567,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Dilluns a divendres 09:00 - 18:00",
-      contactOverseasPersonValue: "Per proporcionar",
-      contactOverseasPhoneValue: "Per proporcionar",
-      contactOverseasEmailValue: "Per proporcionar",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Dilluns a divendres 09:00 - 18:00",
       contactRegionNotice: "Contacteu primer amb el canal de suport de la vostra regió. Si no esteu segur de quina regió aplica, comenceu amb el contacte de la Xina continental per obtenir ajuda d'encaminament.",
       contactNotice: "Per a problemes com ara comptes congelats, autoritzacions anormals, claus d'accés perdudes o recuperació d'eliminació, contacteu primer amb l'administrador a través del número de telèfon o correu electrònic anterior. Si la vostra plataforma proporciona un sistema oficial de tiquets, tauler d'anuncis o grup d'operacions, seguiu primer aquest canal oficial.",

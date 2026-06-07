@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Azken eguneraketa: {{date}}",
       agreement: {
         title: "Erabiltzailearen akordioa",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Ongi etorri {{siteName}}-ra. Erregistratu, hasi saioa, integratu edo identitate bateratuaren zerbitzuak erabili aurretik, irakurri arretaz akordio hau. Zerbitzua erabiltzen jarraituz gero, akordio hau onartzen duzu.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Segurtasun, betetze, operazio edo mantentze arrazoiengatik, plataformak interfaze, fluxu edo funtzio jakin batzuk doitu, eguneratu, eten edo amaitu ditzake eta abisua ematen saiatuko da egokia denean.",
           liabilityP2:
             "Legeak baimentzen duen neurrian, plataforma ez da erantzule izango betebeharrak gainditzen dituzten eten, datu arraro edo galeren gainean, indar handiagoko gertaerak, sare-akatsak, hirugarrenen arrazoiak edo zure aldetik erabilera okerragatik eragindakoak.",
+accountP3:
+            "Erabiltzaileen eta garatzaileen kontuak babesteko, plataformak arrisku-ebaluazioak egin ditzake pasahitzarekin saio-hasiera, kodearen bidezko saio-hasiera, passkey-rekin saio-hasiera, QR kodearekin saio-hasiera, telefono-zenbakia lotzea, e-posta aldatzea, telefono-zenbakia aldatzea, pasahitza aldatzea, MFA konfigurazioa, kontua ezabatzea, datuen esportazioa eta garatzaileen aplikazioen kudeaketa bezalako egoeretan. Emaitzaren arabera, plataformak egiaztapen gehigarria eska dezake, prozesamendua atzeratu, eragiketa mugatu edo sarbidea blokeatu dezake.",
         },
       },
       privacy: {
         title: "Pribatutasun politika",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}}-k zure informazio pertsonala eta kontuaren segurtasuna baloratzen ditu. Politika honek azaltzen du nola biltzen, erabiltzen, gordetzen, partekatzen eta babesten ditugun zure datuak, baita zure eskura dauden eskubideak ere.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Erregistratzen, saioa hasten edo kontu-zerbitzuak erabiltzen dituzunean, zure erregistro-herrialdea, helbide elektronikoa, telefono-zenbakia, pasahitzaren hash-a, saioa hasteko saioak, gailuaren IP-a, baimen-erregistroak eta beharrezko segurtasun-erregistroak bildu ditzakegu.",
           dataCollectionP2:
             "Avatar bat igotzen, zure profila aldatzen, telefono-zenbaki bat lotzen, MFA gaitzen edo hirugarren baten aplikazio bat baimentzen duzunean, bidaltzen duzun informazioa prozesatzen dugu funtzio hori emateko beharrezkoa den bezala.",
+dataCollectionP3:
+            "Kontuen beregain hartzea, credential stuffing, gailu anormalak, sare anormalak, eskaera automatikoak eta arrisku handiko eragiketak identifikatzeko, gailuen hatz-markak, gailuaren gako publikoaren identifikatzaileak, bezero mota, gailuaren arrisku-seinaleak, saio-hasiera hutsen arrazoiak, kode egiaztapenaren emaitzak, IP eskualdea edo eskualdeko arrisku-etiketak, saio-hasiera historia, arrisku puntuazioak, arrisku mailak eta hartutako ekintzak ere bildu edo sor ditzakegu. Kontuaren arrisku-kontrolerako helburuetarako ez ditugu kontaktuak, SMS edukia, dei-erregistroak, foto-albumak, kokapen zehatza, mikrofonoaren edo kameraren edukia biltzen.",
           dataUsageTitle: "2. Nola erabiltzen dugu informazioa",
           dataUsageP1:
             "Informazio egokia erabiltzen dugu kontuaren erregistroa, saioa hasteko autentifikazioa, egiaztapen-kodeen entrega, arriskuen kontrola, baimenaren berrespena, garatzaileen aplikazioen berrikuspena, kontuaren segurtasun-jakinarazpenak eta zerbitzuaren fidagarritasunaren mantentzea emateko.",
           dataUsageP2:
             "Gainera, erregistroak eta estatistikak aztertzen ditugu gutxieneko oinarri beharrezkoan jarduera arraroa detektatzeko, produktuaren esperientzia hobetzeko eta segurtasuna indartzeko.",
+dataUsageP3:
+            "Arrisku-kontrolaren informazioa nagusiki saio-hasiera edo eragiketa sentikorrak jarraitzeko baimendu behar diren erabakitzeko, e-posta edo SMS bidez egiaztapen gehigarria behar den erabakitzeko, telefono-zenbakia lotu behar den erabakitzeko, saiakera hutsen ondoren blokeoa abiarazi behar den erabakitzeko, arrisku-gertaera bat erregistratu behar den erabakitzeko, edo administratzaileei segurtasun-arazoak ikertzen laguntzeko erabiltzen da. Bezeroak jakinarazitako arrisku-informazioa seinale lagungarri gisa soilik erabiltzen da, eta ez da bere kabuz segurtasun-erabakiak murrizteko erabiltzen.",
           dataSharingTitle: "3. Partekatzea eta argitaratzea",
           dataSharingP1:
             "Identitate-informazioa edo baimenarekin lotutako datuak hirugarrenen aplikazioei soilik ematen dizkiegu baimen-orrian erakutsitako esparruak esplizituki baimentzen dituzunean.",
@@ -83,6 +89,8 @@ const locale = {
             "Sarbide-kontrolak, pasahitzen hash-a, egiaztapen-kodeen iraungipena, auditoretza-erregistroak eta datuen minimizazio-neurriak erabiltzen ditugu zure informazio pertsonala eta autentifikazio-datuak babesteko.",
           securityP2:
             "Lege eta negozio-eskakizunen mende, zure informazioa zerbitzuaren helburuak betetzeko beharrezkoa den denboran soilik gordetzen dugu; kontua ezabatu edo gordetze-epeak iraungi ondoren, datuak ezabatu edo anonimizatuko ditugu politikaren arabera.",
+securityP3:
+            "Arrisku erregistroak, saio-hasiera historia, gailu profilak eta saiakera hutsen erregistroak segurtasun-ikuskapenerako, eztabaiden ebazpenerako, erasoen ikerketarako eta betetzerako behar den denbora-tartean gordetzen dira. Ihesaren eta abusuaren arriskuak murrizten ditugu hashing, sarbide-kontrol, gutxieneko pribilegio eta ikuskapen-erregistroen bidez.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "Egiaztapen-kodea bidali da. Begiratu zure sarrera-ontzia.",
       sendRegisterCodeFailed: "Egiaztapen-kodea bidaltzeak huts egin du",
+      legalConsentPrefix: "Irakurri dut eta onartzen dut",
+      legalConsentAnd: "eta",
+      accountAgreement: "Kontuaren erabilera-baldintzak",
+      accountPrivacyPolicy: "Kontuaren pribatutasun-politika",
+      legalConsentRequired: "Mesedez, irakurri eta onartu Kontuaren erabilera-baldintzak eta Kontuaren pribatutasun-politika",
       backToLoginWithAccount: "Kontua baduzu? Hasi saioa",
       forgotPassword: "Pasahitza ahaztu duzu?",
       forgotPasswordPageTitle: "Berrezarri pasahitza",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "QR saio hau bertan bezelako da",
       qrLoginExpired: "QR kodea iraungi da. Eguneratu.",
       qrLoginRefresh: "QR kodea eguneratu",
+      downloadApp: "Deskargatu aplikazioa",
       passwordLogin: "Pasahitza",
       otpLogin: "Helbide elektronikoaren kodea",
       phoneOtpLogin: "Telefono-kodea",
@@ -661,9 +675,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Astelehenetik ostiralera 09:00 - 18:00",
-      contactOverseasPersonValue: "Eman behar",
-      contactOverseasPhoneValue: "Eman behar",
-      contactOverseasEmailValue: "Eman behar",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Astelehenetik ostiralera 09:00 - 18:00",
       contactRegionNotice:
         "Jarri harremanetan lehenik zure eskualdeko laguntza-kanalarekin. Zein eskualde aplikatzen den ziur ez bazaude, hasi Txinako Herrialdeko kontaktuarekin birbideratze-laguntza lortzeko.",

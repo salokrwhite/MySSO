@@ -8,6 +8,9 @@ import {
   fetchAdminPasskeyLogs,
   fetchAdminPhoneSendLogs,
   fetchAdminPolicies,
+  fetchAdminRiskAccountSummaries,
+  fetchAdminRiskEvents,
+  fetchAdminRiskStats,
   fetchAdminScopes,
   fetchAdminSystemSettings,
   fetchAdminUsers,
@@ -16,6 +19,7 @@ import { defaultSettings } from "../constants";
 import type {
   AdminPageType,
   AdminPasskeyLogs,
+  AdminRiskStats,
   AdminDashboardSummary,
   AppItem,
   AuditLog,
@@ -23,6 +27,8 @@ import type {
   EmailSendLog,
   PhoneSendLog,
   Policy,
+  RiskAccountSummary,
+  RiskEvent,
   ScopeDefinition,
   SystemSettings,
   User,
@@ -52,6 +58,15 @@ export function useAdminData(
     page: number;
     pageSize: number;
   },
+  riskLogsQuery?: {
+    eventPage: number;
+    eventPageSize: number;
+    accountPage: number;
+    accountPageSize: number;
+    userID: string;
+    eventType: string;
+    level: string;
+  },
 ) {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
@@ -78,6 +93,11 @@ export function useAdminData(
     login_challenges: [],
     usage_logs: []
   });
+  const [riskEvents, setRiskEvents] = useState<RiskEvent[]>([]);
+  const [riskEventsTotal, setRiskEventsTotal] = useState(0);
+  const [riskAccountSummaries, setRiskAccountSummaries] = useState<RiskAccountSummary[]>([]);
+  const [riskAccountSummariesTotal, setRiskAccountSummariesTotal] = useState(0);
+  const [riskStats, setRiskStats] = useState<AdminRiskStats>({});
   const [emailSendLogs, setEmailSendLogs] = useState<EmailSendLog[]>([]);
   const [phoneSendLogs, setPhoneSendLogs] = useState<PhoneSendLog[]>([]);
   const [policies, setPolicies] = useState<Policy[]>([]);
@@ -136,7 +156,27 @@ export function useAdminData(
       }
 
       if (pageType === "riskLogs") {
-        setPasskeyLogs(await fetchAdminPasskeyLogs(sessionToken, options));
+        const [eventsResult, summariesResult, nextStats] = await Promise.all([
+          fetchAdminRiskEvents(sessionToken, {
+            page: riskLogsQuery?.eventPage,
+            pageSize: riskLogsQuery?.eventPageSize,
+            userID: riskLogsQuery?.userID,
+            eventType: riskLogsQuery?.eventType,
+            level: riskLogsQuery?.level,
+          }),
+          fetchAdminRiskAccountSummaries(sessionToken, {
+            page: riskLogsQuery?.accountPage,
+            pageSize: riskLogsQuery?.accountPageSize,
+            userID: riskLogsQuery?.userID,
+            level: riskLogsQuery?.level,
+          }),
+          fetchAdminRiskStats(sessionToken),
+        ]);
+        setRiskEvents(eventsResult.items);
+        setRiskEventsTotal(eventsResult.total);
+        setRiskAccountSummaries(summariesResult.items);
+        setRiskAccountSummariesTotal(summariesResult.total);
+        setRiskStats(nextStats);
         return;
       }
 
@@ -163,7 +203,7 @@ export function useAdminData(
     } finally {
       setLoading(false);
     }
-  }, [appsQuery, auditLogsQuery, developerAccessLogsQuery, pageType, sessionToken, usersQuery]);
+  }, [appsQuery, auditLogsQuery, developerAccessLogsQuery, pageType, riskLogsQuery, sessionToken, usersQuery]);
 
   const activeUsers = useMemo(() => users.filter((item) => item.status === "active").length, [users]);
   const pendingApps = useMemo(() => apps.filter((item) => item.status === "pending_review").length, [apps]);
@@ -181,6 +221,11 @@ export function useAdminData(
     developerAccessLogs,
     developerAccessLogsTotal,
     passkeyLogs,
+    riskEvents,
+    riskEventsTotal,
+    riskAccountSummaries,
+    riskAccountSummariesTotal,
+    riskStats,
     emailSendLogs,
     phoneSendLogs,
     policies,

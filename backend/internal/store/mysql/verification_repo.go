@@ -1,7 +1,11 @@
 package mysql
 
 import (
+	"context"
+	"crypto/sha256"
 	"database/sql"
+	"encoding/hex"
+	"fmt"
 	"time"
 
 	"mysso/backend/internal/domain"
@@ -13,6 +17,23 @@ func (s *MySQLStore) SaveEmailVerificationCode(code domain.EmailVerificationCode
 		VALUES (?, 'email', ?, ?, ?, ?, ?, ?, ?)
 	`, code.ID, code.Email, code.Country, code.Purpose, code.Code, code.ExpiresAt, code.Consumed, code.CreatedAt)
 	return err
+}
+
+func (s *MySQLStore) SaveEmailVerificationCodeWithinDailyLimit(code domain.EmailVerificationCode, startAt, endAt time.Time, limit int) (bool, error) {
+	return s.saveVerificationCodeWithinDailyLimit(
+		"email",
+		code.Email,
+		code.Country,
+		code.Purpose,
+		code.Code,
+		code.ID,
+		code.ExpiresAt,
+		code.Consumed,
+		code.CreatedAt,
+		startAt,
+		endAt,
+		limit,
+	)
 }
 
 func (s *MySQLStore) CountEmailVerificationCodes(email string, startAt, endAt time.Time) (int, error) {
@@ -74,6 +95,87 @@ func (s *MySQLStore) SaveSMSVerificationCode(code domain.SMSVerificationCode) er
 	return err
 }
 
+func (s *MySQLStore) SaveSMSVerificationCodeWithinDailyLimit(code domain.SMSVerificationCode, startAt, endAt time.Time, limit int) (bool, error) {
+	return s.saveVerificationCodeWithinDailyLimit(
+		"sms",
+		code.Phone,
+		"",
+		code.Purpose,
+		code.Code,
+		code.ID,
+		code.ExpiresAt,
+		code.Consumed,
+		code.CreatedAt,
+		startAt,
+		endAt,
+		limit,
+	)
+}
+
+func (s *MySQLStore) saveVerificationCodeWithinDailyLimit(channel, target, country, purpose, verificationCode, id string, expiresAt time.Time, consumed bool, createdAt, startAt, endAt time.Time, limit int) (bool, error) {
+	if limit <= 0 {
+		_, err := s.db.Exec(`
+			INSERT INTO verification_codes (id, channel, target, country, purpose, code, expires_at, consumed, created_at)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+		`, id, channel, target, country, purpose, verificationCode, expiresAt, consumed, createdAt)
+		return err == nil, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	defer cancel()
+	conn, err := s.db.Conn(ctx)
+	if err != nil {
+		return false, err
+	}
+	defer conn.Close()
+
+	lockName := verificationDailyLimitLockName(channel, target, startAt)
+	acquired, err := acquireMySQLLock(ctx, conn, lockName, 5)
+	if err != nil {
+		return false, err
+	}
+	if !acquired {
+		return false, fmt.Errorf("verification daily limit lock timeout")
+	}
+	defer releaseMySQLLock(ctx, conn, lockName)
+
+	var count int
+	if err := conn.QueryRowContext(ctx, `
+		SELECT COUNT(*)
+		FROM verification_codes
+		WHERE channel = ? AND target = ? AND created_at >= ? AND created_at < ?
+	`, channel, target, startAt, endAt).Scan(&count); err != nil {
+		return false, err
+	}
+	if count >= limit {
+		return false, nil
+	}
+	if _, err := conn.ExecContext(ctx, `
+		INSERT INTO verification_codes (id, channel, target, country, purpose, code, expires_at, consumed, created_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, id, channel, target, country, purpose, verificationCode, expiresAt, consumed, createdAt); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func acquireMySQLLock(ctx context.Context, conn *sql.Conn, name string, timeoutSeconds int) (bool, error) {
+	var acquired sql.NullInt64
+	if err := conn.QueryRowContext(ctx, `SELECT GET_LOCK(?, ?)`, name, timeoutSeconds).Scan(&acquired); err != nil {
+		return false, err
+	}
+	return acquired.Valid && acquired.Int64 == 1, nil
+}
+
+func releaseMySQLLock(ctx context.Context, conn *sql.Conn, name string) {
+	_, _ = conn.ExecContext(ctx, `SELECT RELEASE_LOCK(?)`, name)
+}
+
+func verificationDailyLimitLockName(channel, target string, startAt time.Time) string {
+	sum := sha256.Sum256([]byte(channel + ":" + target + ":" + startAt.Format("20060102")))
+	return fmt.Sprintf("mysso:vcode:%s:%s", channel, hex.EncodeToString(sum[:])[:32])
+}
+
 func (s *MySQLStore) CountSMSVerificationCodes(phone string, startAt, endAt time.Time) (int, error) {
 	var count int
 	err := s.db.QueryRow(`
@@ -126,12 +228,19 @@ func (s *MySQLStore) ConsumeSMSVerificationCode(id string) error {
 }
 
 func (s *MySQLStore) SaveMFALoginChallenge(challenge domain.MFALoginChallenge) error {
+	payload, err := authChallengePayload(struct {
+		RiskClientJSON string `json:"risk_client_json,omitempty"`
+	}{RiskClientJSON: challenge.RiskClientJSON})
+	if err != nil {
+		return err
+	}
 	return s.saveAuthChallenge(domain.AuthChallenge{
 		Token:         challenge.Token,
 		ChallengeType: authChallengeTypeMFA,
 		UserID:        challenge.UserID,
 		Channel:       challenge.Method,
 		Target:        challenge.Target,
+		PayloadJSON:   payload,
 		ExpiresAt:     challenge.ExpiresAt,
 		CreatedAt:     challenge.CreatedAt,
 	})
@@ -142,13 +251,20 @@ func (s *MySQLStore) GetMFALoginChallenge(token string) (domain.MFALoginChalleng
 	if err != nil {
 		return domain.MFALoginChallenge{}, err
 	}
+	payload, err := parseAuthChallengePayload[struct {
+		RiskClientJSON string `json:"risk_client_json,omitempty"`
+	}](item.PayloadJSON)
+	if err != nil {
+		return domain.MFALoginChallenge{}, err
+	}
 	return domain.MFALoginChallenge{
-		Token:     item.Token,
-		UserID:    item.UserID,
-		Method:    item.Channel,
-		Target:    item.Target,
-		ExpiresAt: item.ExpiresAt,
-		CreatedAt: item.CreatedAt,
+		Token:          item.Token,
+		UserID:         item.UserID,
+		Method:         item.Channel,
+		Target:         item.Target,
+		RiskClientJSON: payload.RiskClientJSON,
+		ExpiresAt:      item.ExpiresAt,
+		CreatedAt:      item.CreatedAt,
 	}, nil
 }
 
@@ -163,7 +279,8 @@ func (s *MySQLStore) ConsumeMFALoginChallenge(token string, consumedAt time.Time
 func (s *MySQLStore) SaveDeletionLoginChallenge(challenge domain.DeletionLoginChallenge) error {
 	payload, err := authChallengePayload(struct {
 		DeletionScheduledAt time.Time `json:"deletion_scheduled_at"`
-	}{DeletionScheduledAt: challenge.DeletionScheduledAt})
+		RiskClientJSON      string    `json:"risk_client_json,omitempty"`
+	}{DeletionScheduledAt: challenge.DeletionScheduledAt, RiskClientJSON: challenge.RiskClientJSON})
 	if err != nil {
 		return err
 	}
@@ -185,6 +302,7 @@ func (s *MySQLStore) GetDeletionLoginChallenge(token string) (domain.DeletionLog
 	}
 	payload, err := parseAuthChallengePayload[struct {
 		DeletionScheduledAt time.Time `json:"deletion_scheduled_at"`
+		RiskClientJSON      string    `json:"risk_client_json,omitempty"`
 	}](item.PayloadJSON)
 	if err != nil {
 		return domain.DeletionLoginChallenge{}, err
@@ -193,6 +311,7 @@ func (s *MySQLStore) GetDeletionLoginChallenge(token string) (domain.DeletionLog
 		Token:               item.Token,
 		UserID:              item.UserID,
 		ACR:                 item.ACR,
+		RiskClientJSON:      payload.RiskClientJSON,
 		DeletionScheduledAt: payload.DeletionScheduledAt,
 		ExpiresAt:           item.ExpiresAt,
 		CreatedAt:           item.CreatedAt,

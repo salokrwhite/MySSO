@@ -12,6 +12,7 @@ import (
 
 	"mysso/backend/internal/config"
 	"mysso/backend/internal/crypto"
+	"mysso/backend/internal/geoip"
 	"mysso/backend/internal/notify"
 	"mysso/backend/internal/service/accesscontrol"
 	"mysso/backend/internal/service/admin"
@@ -22,6 +23,7 @@ import (
 	"mysso/backend/internal/service/consent"
 	"mysso/backend/internal/service/oauth"
 	"mysso/backend/internal/service/passkey"
+	"mysso/backend/internal/service/risk"
 	"mysso/backend/internal/service/settings"
 	"mysso/backend/internal/service/user"
 	"mysso/backend/internal/store"
@@ -38,6 +40,7 @@ type Services struct {
 	Admin         *admin.Service
 	Consent       *consent.Service
 	Audit         *audit.Service
+	Risk          *risk.Service
 }
 
 func NewServices(cfg config.Config, dataStore store.Store) (*Services, error) {
@@ -55,6 +58,10 @@ func NewServices(cfg config.Config, dataStore store.Store) (*Services, error) {
 	if err != nil {
 		return nil, err
 	}
+	geoLocator, err := geoip.NewIP2RegionLocator(cfg.Risk)
+	if err != nil {
+		return nil, fmt.Errorf("init ip2region locator: %w", err)
+	}
 
 	cfgCopy := cfg
 	dependencies := &deps.Deps{
@@ -63,15 +70,18 @@ func NewServices(cfg config.Config, dataStore store.Store) (*Services, error) {
 		JWT:   jwtManager,
 		Mail:  notify.NewMailer(cfgCopy.SMTP),
 		SMS:   notify.NewSMSSender(cfgCopy.SMS),
+		GeoIP: geoLocator,
 	}
 
 	services := &Services{}
 	services.Audit = audit.New(dependencies)
 	services.Settings = settings.New(dependencies)
+	services.Risk = risk.New(dependencies)
 	services.AccessControl = accesscontrol.New(dependencies, services.Audit)
 	services.User = user.New(dependencies, services.Audit, services.Settings)
-	services.Auth = auth.New(dependencies, services.Audit, services.Settings, services.User)
-	services.Passkey = passkey.New(dependencies, services.Audit, services.Settings, services.User)
+	services.User.SetRiskService(services.Risk)
+	services.Auth = auth.New(dependencies, services.Audit, services.Settings, services.User, services.Risk)
+	services.Passkey = passkey.New(dependencies, services.Audit, services.Settings, services.User, services.Risk)
 	services.OAuth = oauth.New(dependencies, services.Audit, services.Settings, services.AccessControl)
 	services.Apps = apps.New(dependencies, services.Audit)
 	services.Admin = admin.New(dependencies, services.Audit)

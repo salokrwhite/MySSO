@@ -1,3 +1,5 @@
+import { buildRiskHeaders } from "../utils/riskHeaders";
+
 const REQUEST_TIMEOUT_MS = 5000;
 const LAST_SUCCESSFUL_API_BASE_STORAGE_KEY = "last_successful_api_base";
 const viteEnv = ((import.meta as ImportMeta & { env?: Record<string, string | boolean | undefined> }).env || {});
@@ -118,6 +120,11 @@ async function fetchWithTimeout(input: string, init: ApiRequestInit) {
 
 export async function api<T>(path: string, init?: ApiRequestInit, _sessionToken?: string): Promise<T> {
   const headers = new Headers(init?.headers || {});
+  Object.entries(buildRiskHeaders()).forEach(([key, value]) => {
+    if (!headers.has(key)) {
+      headers.set(key, value);
+    }
+  });
   if (init?.body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }

@@ -7,12 +7,15 @@ import type {
   AuditLogListResponse,
   AdminPasskeyLogs,
   AdminDashboardSummary,
+  AdminRiskStats,
   CreateUserInput,
   DeveloperAccessLog,
   DeveloperAccessLogListResponse,
   EmailSendLog,
   PhoneSendLog,
   Policy,
+  RiskAccountSummaryListResponse,
+  RiskEventListResponse,
   ScopeDefinition,
   SystemSettings,
   UpdateUserInput,
@@ -287,6 +290,116 @@ export async function fetchAdminPasskeyLogs(
     sessionToken,
     () => api<AdminPasskeyLogs>("/admin/passkey-logs", undefined, sessionToken),
     options,
+  );
+}
+
+export async function fetchAdminRiskEvents(
+  sessionToken: string,
+  query?: {
+    page?: number;
+    pageSize?: number;
+    userID?: string;
+    eventType?: string;
+    level?: string;
+  },
+) {
+  const params = new URLSearchParams();
+  if (typeof query?.page === "number" && query.page > 0) {
+    params.set("page", String(query.page));
+  }
+  if (typeof query?.pageSize === "number" && query.pageSize > 0) {
+    params.set("page_size", String(query.pageSize));
+  }
+  if (query?.userID?.trim()) {
+    params.set("user_id", query.userID.trim());
+  }
+  if (query?.eventType?.trim() && query.eventType !== "all") {
+    params.set("event_type", query.eventType.trim());
+  }
+  if (query?.level?.trim() && query.level !== "all") {
+    params.set("level", query.level.trim());
+  }
+  return api<RiskEventListResponse>(
+    `/admin/risk/events${params.size > 0 ? `?${params.toString()}` : ""}`,
+    undefined,
+    sessionToken,
+  );
+}
+
+export async function fetchAdminRiskAccountSummaries(
+  sessionToken: string,
+  query?: {
+    page?: number;
+    pageSize?: number;
+    userID?: string;
+    level?: string;
+  },
+) {
+  const params = new URLSearchParams();
+  if (typeof query?.page === "number" && query.page > 0) {
+    params.set("page", String(query.page));
+  }
+  if (typeof query?.pageSize === "number" && query.pageSize > 0) {
+    params.set("page_size", String(query.pageSize));
+  }
+  if (query?.userID?.trim()) {
+    params.set("user_id", query.userID.trim());
+  }
+  if (query?.level?.trim() && query.level !== "all") {
+    params.set("level", query.level.trim());
+  }
+  return api<RiskAccountSummaryListResponse>(
+    `/admin/risk/account-summaries${params.size > 0 ? `?${params.toString()}` : ""}`,
+    undefined,
+    sessionToken,
+  );
+}
+
+export async function fetchAdminRiskStats(
+  sessionToken: string,
+) {
+  const result = await api<{ data: AdminRiskStats }>(
+    "/admin/risk/stats",
+    undefined,
+    sessionToken,
+  );
+  return result.data;
+}
+
+export async function deleteAdminRiskEvents(
+  sessionToken: string,
+  input: { delete_all: boolean; start_at?: string; end_at?: string },
+) {
+  return api<{ deleted: number }>(
+    "/admin/risk/events/delete",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+    },
+    sessionToken,
+  );
+}
+
+export async function clearAdminUserRiskProfile(sessionToken: string, userID: string) {
+  return api<{ updated: boolean }>(
+    `/admin/risk/users/${encodeURIComponent(userID)}/clear-profile`,
+    { method: "POST" },
+    sessionToken,
+  );
+}
+
+export async function markAdminUserRiskFalsePositive(
+  sessionToken: string,
+  userID: string,
+  input: { note: string; hours: number },
+) {
+  return api<{ updated: boolean }>(
+    `/admin/risk/users/${encodeURIComponent(userID)}/false-positive`,
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+    },
+    sessionToken,
   );
 }
 

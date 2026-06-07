@@ -11,6 +11,7 @@ import (
 
 	"mysso/backend/internal/appdefaults"
 	"mysso/backend/internal/domain"
+	riskservice "mysso/backend/internal/service/risk"
 	"mysso/backend/internal/service/settings"
 )
 
@@ -50,7 +51,7 @@ func (s *AuthService) selectPhoneBindingRiskMode(country string) (string, error)
 	if err != nil {
 		return phoneBindingModeNone, err
 	}
-	if !settings.RiskControlEnabled || strings.ToUpper(strings.TrimSpace(country)) != "CN" {
+	if !settings.RiskPhoneBindingEnabled || strings.ToUpper(strings.TrimSpace(country)) != "CN" {
 		return phoneBindingModeNone, nil
 	}
 	if settings.RiskImmediateBindProbability <= 0 {
@@ -70,13 +71,18 @@ func (s *AuthService) selectPhoneBindingRiskMode(country string) (string, error)
 }
 
 func (s *AuthService) createPhoneBindingChallenge(user domain.User, reason, acr string) (domain.PhoneBindingChallenge, error) {
+	return s.createPhoneBindingChallengeWithRisk(user, reason, acr, riskservice.ClientInfo{})
+}
+
+func (s *AuthService) createPhoneBindingChallengeWithRisk(user domain.User, reason, acr string, clientRisk riskservice.ClientInfo) (domain.PhoneBindingChallenge, error) {
 	challenge := domain.PhoneBindingChallenge{
-		Token:     uuid.NewString(),
-		UserID:    user.ID,
-		Reason:    strings.TrimSpace(reason),
-		ACR:       strings.TrimSpace(acr),
-		ExpiresAt: time.Now().UTC().Add(30 * time.Minute),
-		CreatedAt: time.Now().UTC(),
+		Token:          uuid.NewString(),
+		UserID:         user.ID,
+		Reason:         strings.TrimSpace(reason),
+		ACR:            strings.TrimSpace(acr),
+		RiskClientJSON: encodeRiskClient(clientRisk),
+		ExpiresAt:      time.Now().UTC().Add(30 * time.Minute),
+		CreatedAt:      time.Now().UTC(),
 	}
 	if err := s.deps.Store.SavePhoneBindingChallenge(challenge); err != nil {
 		return domain.PhoneBindingChallenge{}, err
@@ -101,6 +107,10 @@ func (s *AuthService) loadPhoneBindingChallenge(challengeToken string) (domain.P
 }
 
 func (s *AuthService) enforcePendingPhoneBinding(user domain.User, reason, acr string) (PasswordLoginResult, error) {
+	return s.enforcePendingPhoneBindingWithRisk(user, reason, acr, riskservice.ClientInfo{})
+}
+
+func (s *AuthService) enforcePendingPhoneBindingWithRisk(user domain.User, reason, acr string, clientRisk riskservice.ClientInfo) (PasswordLoginResult, error) {
 	state, err := s.getPhoneBindingRiskState(user.ID)
 	if err != nil {
 		return PasswordLoginResult{}, err
@@ -118,7 +128,7 @@ func (s *AuthService) enforcePendingPhoneBinding(user domain.User, reason, acr s
 			return PasswordLoginResult{}, err
 		}
 	}
-	challenge, err := s.createPhoneBindingChallenge(user, reason, acr)
+	challenge, err := s.createPhoneBindingChallengeWithRisk(user, reason, acr, clientRisk)
 	if err != nil {
 		return PasswordLoginResult{}, err
 	}
@@ -133,7 +143,7 @@ func (s *AuthService) enforcePendingPhoneBinding(user domain.User, reason, acr s
 	}, nil
 }
 
-func (s *AuthService) maybeRequirePhoneBindingBeforeLogin(user domain.User, acr string) (PasswordLoginResult, bool, error) {
+func (s *AuthService) maybeRequirePhoneBindingBeforeLogin(user domain.User, acr string, clientRisk riskservice.ClientInfo) (PasswordLoginResult, bool, error) {
 	if !s.settings.IsPhoneVerificationEnabled() {
 		return PasswordLoginResult{}, false, nil
 	}
@@ -150,7 +160,7 @@ func (s *AuthService) maybeRequirePhoneBindingBeforeLogin(user domain.User, acr 
 		return PasswordLoginResult{}, false, nil
 	}
 	if policy.ForcePhoneBindingNextLogin {
-		result, resultErr := s.enforcePendingPhoneBinding(user, adminForcedPhoneBindingReason, acr)
+		result, resultErr := s.enforcePendingPhoneBindingWithRisk(user, adminForcedPhoneBindingReason, acr, clientRisk)
 		return result, true, resultErr
 	}
 	state, err := s.getPhoneBindingRiskState(user.ID)
@@ -158,7 +168,7 @@ func (s *AuthService) maybeRequirePhoneBindingBeforeLogin(user domain.User, acr 
 		return PasswordLoginResult{}, false, err
 	}
 	if user.Status == domain.UserPending {
-		result, resultErr := s.enforcePendingPhoneBinding(user, "pending_activation", acr)
+		result, resultErr := s.enforcePendingPhoneBindingWithRisk(user, "pending_activation", acr, clientRisk)
 		return result, true, resultErr
 	}
 	if user.Status != domain.UserActive || state.Mode != phoneBindingModeDelayed {
@@ -176,7 +186,7 @@ func (s *AuthService) maybeRequirePhoneBindingBeforeLogin(user domain.User, acr 
 		}
 		return PasswordLoginResult{}, false, nil
 	}
-	result, resultErr := s.enforcePendingPhoneBinding(user, "delayed_login_threshold", acr)
+	result, resultErr := s.enforcePendingPhoneBindingWithRisk(user, "delayed_login_threshold", acr, clientRisk)
 	return result, true, resultErr
 }
 
@@ -278,5 +288,5 @@ func (s *AuthService) CompletePhoneBinding(challengeToken, phone, code, ip, devi
 	s.audit.Record(user.ID, user.Role, "user.risk.phone_bound", user.ID, map[string]any{
 		"reason": challenge.Reason,
 	})
-	return s.ContinuePostAuthentication(user, ip, deriveLoginMethodFromACR(challenge.ACR), challenge.ACR, binding...)
+	return s.continuePostAuthenticationWithRisk(user, ip, deriveLoginMethodFromACR(challenge.ACR), challenge.ACR, decodeRiskClient(challenge.RiskClientJSON), binding...)
 }

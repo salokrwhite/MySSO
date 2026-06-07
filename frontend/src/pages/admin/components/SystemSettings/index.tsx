@@ -15,6 +15,7 @@ type SystemSettingsPanelProps = {
   verificationForm: FormInstance<SystemSettings>;
   intlForm: FormInstance<SystemSettings>;
   sessionForm: FormInstance<SystemSettings>;
+  appVersionForm: FormInstance<SystemSettings>;
   smsForm: FormInstance<SystemSettings>;
   announcementForm: FormInstance<SystemSettings>;
   riskForm: FormInstance<SystemSettings>;
@@ -42,6 +43,7 @@ type SystemSettingsPanelProps = {
   onSaveVerification: () => void;
   onSaveIntl: () => void;
   onSaveSession: () => void;
+  onSaveAppVersion: () => void;
   onSaveSMS: () => void;
   onSaveAnnouncement: () => void;
   onSaveRisk: () => void;
@@ -84,6 +86,7 @@ export function SystemSettingsPanel(props: SystemSettingsPanelProps) {
         verificationForm={props.verificationForm}
         intlForm={props.intlForm}
         sessionForm={props.sessionForm}
+        appVersionForm={props.appVersionForm}
         smsForm={props.smsForm}
         announcementForm={props.announcementForm}
         riskForm={props.riskForm}
@@ -111,6 +114,7 @@ export function SystemSettingsPanel(props: SystemSettingsPanelProps) {
         onSaveVerification={props.onSaveVerification}
         onSaveIntl={props.onSaveIntl}
         onSaveSession={props.onSaveSession}
+        onSaveAppVersion={props.onSaveAppVersion}
         onSaveSMS={props.onSaveSMS}
         onSaveAnnouncement={props.onSaveAnnouncement}
         onSaveRisk={props.onSaveRisk}

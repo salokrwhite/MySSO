@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Última actualización: {{date}}",
       agreement: {
         title: "Condicións de uso",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Dámosche a benvida a {{siteName}}. Antes de rexistrarte, conectarte, integrar ou usar os servizos de autenticación unificada, le con atención o presente acordo. Ao seguir usando o servizo, aceptas estar vinculado por este acordo.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Por razóns de seguridade, cumprimento, explotación ou mantemento, a plataforma pode axustar, mellorar, suspender ou poñer fin a certas interfaces, procesos ou funcións, e tentará avisar cando sexa apropiado.",
           liabilityP2:
             "Na medida permitida pola lei, a plataforma non é responsábel máis aló das súas obrigas legais das interrupcións, anomalías nos datos ou perdas causadas por forza maior, fallos de rede, razóns de terceiros ou un uso incorrecto por tua parte.",
+accountP3:
+            "Para protexer as contas de usuarios e desenvolvedores, a plataforma pode realizar avaliacións de risco en escenarios como inicio de sesión con contrasinal, inicio de sesión con código, inicio de sesión con passkey, inicio de sesión con código QR, vinculación de número de teléfono, cambio de correo electrónico, cambio de número de teléfono, cambio de contrasinal, configuración MFA, eliminación de conta, exportación de datos e xestión de aplicacións de desenvolvedor. Segundo o resultado, a plataforma pode solicitar verificación adicional, retardar o procesamento, restrinxir unha operación ou bloquear o acceso.",
         },
       },
       privacy: {
         title: "Política de privacidade",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} da moita importancia á túa información persoal e á seguranza da túa conta. Esta política explica como recollemos, usamos, almacenamos, compartimos e protexemos a túa información, así como os dereitos de que dispoñes.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Ao rexistrarte, conectarte ou usar os servizos da conta, podemos recoller o teu país de rexistro, enderezo de correo electrónico, número de teléfono, hash do contrasinal, sesións de acceso, IP do dispositivo, rexistros de autorización e os rexistros de seguridade necesarios.",
           dataCollectionP2:
             "Cando subes un avatar, modificas o teu perfil, lles un número de teléfono, activas a autenticación de dous factores ou autorizas unha aplicación de terceiros, procesamos a información que envías segundo as necesidades da función.",
+dataCollectionP3:
+            "Para identificar a apropiación de contas, o credential stuffing, dispositivos anormais, redes anormais, solicitudes automatizadas e operacións de alto risco, tamén podemos recoller ou xenerar impresións dixitais de dispositivos, identificadores de chave pública do dispositivo, tipo de cliente, sinais de risco do dispositivo, motivos de fallo de inicio de sesión, resultados de verificación de códigos, rexión IP ou etiquetas de risco rexional, historial de inicio de sesión, puntuacións de risco, niveis de risco e accións tomadas. Non recollemos contactos, contido de SMS, rexistros de chamadas, álbums de fotos, ubicación precisa, contido do micrófono ou da cámara con fins de control de risco da conta.",
           dataUsageTitle: "2. Como usamos a información",
           dataUsageP1:
             "Usamos a información relevante para fornecer o rexistro de conta, a autenticación de acceso, o envío de códigos de verificación, o control de riscos, a confirmación de autorización, a revisión de aplicacións de desenvolvedores, as notificacións de seguranza da conta e a mantención da fiabilidade do servizo.",
           dataUsageP2:
             "Tamén analizamos os rexistros e as estatísticas segundo o principio de minimización necesaria para detectar actividades anómalas, mellorar a experiencia do produto e fortalecer a seguranza.",
+dataUsageP3:
+            "A información de control de risco utilízase principalmente para decidir se se permite o inicio de sesión ou a continuación de operacións sensibles, se se require verificación adicional por correo electrónico ou SMS, se se require a vinculación dun número de teléfono, se se activa o bloqueo tras intentos fallidos, se se rexistra un evento de risco, ou para axudar aos administradores a investigar problemas de seguridade. A información de risco informada polo cliente utilízase só como sinal auxiliar e non se utiliza por si soa para reducir as decisións de seguridade.",
           dataSharingTitle: "3. Compartición e divulgación",
           dataSharingP1:
             "Só fornecemos información de identidade ou datos relacionados coas autorizacións ás aplicacións de terceiros cando llos autorizas explicitamente para os ámbitos amosados na páxina de autorización.",
@@ -83,6 +89,8 @@ const locale = {
             "Usamos controis de acceso, hash de contrasinais, caducidade de códigos de verificación, rexistros de auditoría e medidas de minimización de datos para protexer a túa información persoal e os teus datos de autenticación.",
           securityP2:
             "Suxeito ás esixencias legais e comerciais, conservamos a túa información só durante o tempo necesario para cumprir os obxectivos do servizo; após a eliminación da túa conta ou a caducidade dos prazos de conservación, eliminaremos ou anonimizaremos os datos conforme á política.",
+securityP3:
+            "Os rexistros de risco, o historial de inicio de sesión, os perfís de dispositivo e os rexistros de intentos fallidos consérvanse durante o período necesario para a auditoría de seguridade, a resolución de disputas, a investigación de ataques e o cumprimento. Reducimos os riscos de fuga e uso indebido mediante hash, control de acceso, privilexio mínimo e rexistros de auditoría.",
         },
       },
     },
@@ -103,6 +111,11 @@ const locale = {
       sendRegisterCode: "Enviar código",
       sendRegisterCodeSuccess: "O código de verificación foi enviado. Revisa a túa bandexa de entrada.",
       sendRegisterCodeFailed: "Erro ao enviar o código de verificación",
+      legalConsentPrefix: "Lin e acepto",
+      legalConsentAnd: "e",
+      accountAgreement: "Condicións de uso da conta",
+      accountPrivacyPolicy: "Política de privacidade da conta",
+      legalConsentRequired: "Lea e acepte as Condicións de uso da conta e a Política de privacidade da conta",
       backToLoginWithAccount: "Xa tes conta? Conectar",
       forgotPassword: "Esqueciches o contrasinal?",
       forgotPasswordPageTitle: "Restablecer o contrasinal",
@@ -154,6 +167,7 @@ const locale = {
       qrLoginCancelled: "Este acceso QR foi cancelado",
       qrLoginExpired: "O código QR expirou. Actualiza.",
       qrLoginRefresh: "Actualizar código QR",
+      downloadApp: "Descargar aplicación",
       passwordLogin: "Contrasinal",
       otpLogin: "Código de correo",
       phoneOtpLogin: "Código SMS",
@@ -551,9 +565,9 @@ const locale = {
       contactMainlandPhoneValue: "O_TEU_NUMERO_DE_TELEFONO",
       contactMainlandEmailValue: "O_TEU_CORREO",
       contactMainlandHoursValue: "Luns a venres 09:00 - 18:00",
-      contactOverseasPersonValue: "Por cubrir",
-      contactOverseasPhoneValue: "Por cubrir",
-      contactOverseasEmailValue: "Por cubrir",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Luns a venres 09:00 - 18:00",
       contactRegionNotice: "Contacta antes co canal de soporte da túa rexión. Se non estás seguro de que rexión se aplica, comeza co contacto de China continental para obter axuda de derivación.",
       contactNotice: "Para problemas como contas conxeladas, autorizacións anómalas, claves de acceso perdidas ou recuperación de eliminación, contacta antes co administrador a través do número de teléfono ou correo de arriba. Se a túa plataforma dispón dun sistema de tikets oficial, taboleiro de anuncios ou grupo de operacións, segue antes ese canal oficial.",

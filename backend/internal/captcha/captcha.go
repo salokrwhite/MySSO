@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/mojocn/base64Captcha"
 )
 
@@ -91,7 +92,7 @@ type Service struct {
 func NewService(secret string) *Service {
 	secret = strings.TrimSpace(secret)
 	if secret == "" {
-		secret = "mysso-captcha-runtime-fallback"
+		secret = runtimeSecret()
 	}
 	return &Service{
 		items:      map[string]entry{},
@@ -99,6 +100,14 @@ func NewService(secret string) *Service {
 		secret:     []byte(secret),
 		maxSize:    defaultMaxSize,
 	}
+}
+
+func runtimeSecret() string {
+	buf := make([]byte, 32)
+	if _, err := rand.Read(buf); err != nil {
+		return uuid.NewString()
+	}
+	return base64.RawURLEncoding.EncodeToString(buf)
 }
 
 func NormalizeSettings(settings Settings) Settings {

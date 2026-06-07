@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Pēdējā atjaunināšana: {{date}}",
       agreement: {
         title: "Lietotāja līgums",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Laipni lūdzam {{siteName}}. Pirms reģistrācijas, pieslēgšanās, integrēšanas vai lietošanas vienotās identitātes pakalpojumiem, lūdzu, rūpīgi lasiet šo līgumu. Turpinot lietot pakalpojumu, jūs piekrītat būt saistītam ar šo līgumu.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Drošības, atbilstības, darbības vai uzturēšanas iemeslu dēļ platforma var pielāgot, atjaunināt, apturēt vai pārtraukt noteiktas saskarnes, plūsmas vai funkcijas, un mēģinās sniegt paziņojumu, ja tas ir piemērojams.",
           liabilityP2:
             "Likumīgi atļautajā apjomā platforma nav atbildīga pāri juridiskajām pienākumiem par pārtraukumiem, nekorektiem datiem vai zaudējumiem, kas izraisīti ar spēku majeju, tīkla kļūdām, trešo pušu iemesliem vai nepareizu lietošanu jūsu pusē.",
+accountP3:
+            "Lai aizsargātu lietotāju un izstrādātāju kontus, platforma var veikt riska novērtējumu tādos scenārijos kā pieteikšanās ar paroli, pieteikšanās ar kodu, pieteikšanās ar passkey, pieteikšanās ar QR kodu, tālruņa numura saistīšana, e-pasta maiņa, tālruņa numura maiņa, paroles maiņa, MFA iestatīšana, konta dzēšana, datu eksports un izstrādātāju lietotņu pārvaldība. Atkarībā no rezultāta platforma var pieprasīt papildu verifikāciju, aizkavēt apstrādi, ierobežot darbību vai bloķēt piekļuvi.",
         },
       },
       privacy: {
         title: "Privātuma politika",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} cienīt jūsu personas datus un konta drošību. Šī politika izskaidro, kā mēs savāc, izmantojam, glabājam, dalāmies un aizsargājam jūsu informāciju, kā arī kādas tiesības jums ir pieejamas.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Kad jūs reģistrējaties, piesakāties vai lietojat konta pakalpojumus, mēs varam savākt jūsu reģistrācijas valsti, e-pasta adresi, telefona numuru, paroles hešu, pieslēgšanās sesijas, ierīces IP, autorizācijas ierakstus un nepieciešamus drošības žurnālus.",
           dataCollectionP2:
             "Kad jūs augšupielādējat avataru, mainat profilu, saistāt telefona numuru, aktivizējat MFA vai autorizējat trešo pušu lietotni, mēs apstrādājam jūsu iesniegto informāciju, kā tas ir nepieciešams, lai nodrošinātu šo funkciju.",
+dataCollectionP3:
+            "Lai identificētu kontu pārņemšanu, credential stuffing, neparastas ierīces, neparastus tīklus, automatizētus pieprasījumus un augsta riska darbības, mēs varam arī vākt vai ģenerēt ierīču pirkstu nospiedumus, ierīces publiskās atslēgas identifikatorus, klienta tipu, ierīces riska signālus, neizdevušos pieteikšanās iemeslus, koda verifikācijas rezultātus, IP reģionu vai reģionālās riska etiķetes, pieteikšanās vēsturi, riska rādītājus, riska līmeņus un veiktos pasākumus. Konta riska pārvaldības nolūkos mēs nevācam kontaktus, SMS saturu, zvanu žurnālus, fotoalbumus, precīzu atrašanās vietu, mikrofona vai kameras saturu.",
           dataUsageTitle: "2. Kā mēs izmantojam informāciju",
           dataUsageP1:
             "Mēs izmantojam attiecīgo informāciju, lai nodrošinātu konta reģistrāciju, pieslēgšanās autentifikāciju, verifikācijas kodu nodosanu, risku kontroli, autorizācijas apstiprinājumu, izstrādātāja lietotņu pārbaudi, konta drošības paziņojumus un pakalpojumu uzticamības uzturēšanu.",
           dataUsageP2:
             "Mēs arī analizējam žurnālus un statistiku minimalā nepieciešamajā apjomā, lai konstatētu neparastus darbības, uzlabotu produktu pieredzi un stiprinātu drošību.",
+dataUsageP3:
+            "Riska pārvaldības informācija galvenokārt tiek izmantota, lai izlemtu, vai atļaut pieteikšanos vai turpināt jutīgas darbības, vai pieprasīt papildu e-pasta vai SMS verifikāciju, vai pieprasīt tālruņa numura saistīšanu, vai aktivizēt bloķēšanu pēc neizdevušiem mēģinājumiem, vai reģistrēt riska notikumu, vai palīdzēt administratoriem izmeklēt drošības problēmas. Klienta ziņotā riska informācija tiek izmantota tikai kā palīgsignāls un pati par sevi netiek izmantota drošības lēmumu pazemināšanai.",
           dataSharingTitle: "3. Dalīšanās un atklāšana",
           dataSharingP1:
             "Mēs nododam personas datus vai atļauju saistītos datus trešo pušu lietotnēm tikai tad, kad jūs eksplicītā veidā autorizējat atļaujas, kas parādītas autorizācijas lapā.",
@@ -83,6 +89,8 @@ const locale = {
             "Mēs izmantojam piekļuves kontroli, paroles hešu, verifikācijas kodu derīguma termiņu, auditēšanas žurnālus un datu minimizācijas pasākumus, lai aizsargātu jūsu personas datus un autentifikācijas datus.",
           securityP2:
             "Atkarībā no juridiskajām un biznesa prasībām, mēs glabājam jūsu informāciju tikai tik ilgi, cik tas ir nepieciešams, lai izpildītu pakalpojuma mērķus; pēc konta dzēšanas vai saglabāšanas termiņu beigām mēs izdzēšam vai anonimizēsim datus saskaņā ar politiku.",
+securityP3:
+            "Riska žurnālus, pieteikšanās vēsturi, ierīču profilus un neizdevušos mēģinājumu ierakstus mēs glabājam tik ilgi, cik nepieciešams drošības auditam, domstarpību risināšanai, uzbrukumu izmeklēšanai un atbilstības nodrošināšanai. Noplūdes un ļaunprātīgas izmantošanas risku mēs samazinām ar hešēšanu, piekļuves kontroli, minimālajām tiesībām un audita žurnāliem.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "Verifikācijas kods ir nosūtīts. Lūdzu, pārbaudiet savu e-pasta kastīti.",
       sendRegisterCodeFailed: "Neizdevās nosūtīt verifikācijas kodu",
+      legalConsentPrefix: "Esmu izlasījis un piekrītu",
+      legalConsentAnd: "un",
+      accountAgreement: "Konta lietošanas noteikumi",
+      accountPrivacyPolicy: "Konta privātuma politika",
+      legalConsentRequired: "Lūdzu, izlasiet un piekrītiet Konta lietošanas noteikumiem un Konta privātuma politikai",
       backToLoginWithAccount: "Vai jau esat reģistrējies? Piesakieties",
       forgotPassword: "Aizmirsi paroli?",
       forgotPasswordPageTitle: "Atjaunot paroli",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "QR koda pieteikšanās ir atcelta",
       qrLoginExpired: "QR kods ir beidzies, lūdzu, atsvaidziniet",
       qrLoginRefresh: "Atsvaidzināt QR kodu",
+      downloadApp: "Lejupielādēt lietotni",
       passwordLogin: "Parole",
       otpLogin: "E-pasta kods",
       phoneOtpLogin: "Telefona kods",
@@ -661,9 +675,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Pirmdiena līdz piektdiena 09:00 - 18:00",
-      contactOverseasPersonValue: "Tiks sniegts",
-      contactOverseasPhoneValue: "Tiks sniegts",
-      contactOverseasEmailValue: "Tiks sniegts",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Pirmdiena līdz piektdiena 09:00 - 18:00",
       contactRegionNotice:
         "Lūdzu, sāciet ar atbalsta kanālu savā reģionā. Ja neesat pārliecināts, kurš reģions attiecas, sāciet ar Ķīnas kontinentālās daļas kontaktu, lai iegūtu maršrutēšanas palīdzību.",

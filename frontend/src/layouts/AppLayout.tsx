@@ -379,7 +379,7 @@ export function AppLayout() {
           {
             key: "/admin/risk-logs",
             icon: <BarChartOutlined />,
-            label: adminT("Passkey 数据"),
+            label: adminT("风控日志"),
           },
           {
             key: "/admin/settings",

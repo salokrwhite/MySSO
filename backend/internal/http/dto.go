@@ -102,12 +102,14 @@ type confirmDeletionLoginRequest struct {
 }
 
 type registerRequest struct {
-	Country         string `json:"country"`
-	Email           string `json:"email"`
-	Code            string `json:"code"`
-	Password        string `json:"password"`
-	DeviceKeyID     string `json:"device_key_id"`
-	DevicePublicKey string `json:"device_public_key"`
+	Country           string `json:"country"`
+	Email             string `json:"email"`
+	Code              string `json:"code"`
+	Password          string `json:"password"`
+	AgreementAccepted bool   `json:"agreement_accepted"`
+	PrivacyAccepted   bool   `json:"privacy_accepted"`
+	DeviceKeyID       string `json:"device_key_id"`
+	DevicePublicKey   string `json:"device_public_key"`
 }
 
 type phoneBindingCodeRequest struct {
@@ -202,6 +204,10 @@ type updateSystemSettingsRequest struct {
 	AllowUserRegistration                bool   `json:"allow_user_registration"`
 	EnablePhoneVerification              bool   `json:"enable_phone_verification"`
 	EnableQRLogin                        bool   `json:"enable_qr_login"`
+	APPCurrentVersionCode                int    `json:"app_current_version_code"`
+	APPCurrentVersionName                string `json:"app_current_version_name"`
+	APPDownloadURL                       string `json:"app_download_url"`
+	APPForceUpdate                       bool   `json:"app_force_update"`
 	SiteName                             string `json:"site_name"`
 	SiteNameEN                           string `json:"site_name_en"`
 	SiteBrowserTitle                     string `json:"site_browser_title"`
@@ -289,9 +295,34 @@ type updateSystemSettingsRequest struct {
 	AliyunSMSBindPhoneTemplateCode       string `json:"aliyun_sms_bind_phone_template_code"`
 	AliyunSMSDeleteTemplateCode          string `json:"aliyun_sms_delete_template_code"`
 	RiskControlEnabled                   bool   `json:"risk_control_enabled"`
+	RiskPhoneBindingEnabled              bool   `json:"risk_phone_binding_enabled"`
 	RiskImmediateBindProbability         int    `json:"risk_immediate_bind_probability"`
 	RiskDelayedBindProbability           int    `json:"risk_delayed_bind_probability"`
 	RiskDelayedBindLoginCount            int    `json:"risk_delayed_bind_login_count"`
+	RiskMediumThreshold                  int    `json:"risk_medium_threshold"`
+	RiskHighThreshold                    int    `json:"risk_high_threshold"`
+	RiskCriticalThreshold                int    `json:"risk_critical_threshold"`
+	RiskAutoBlockThreshold               int    `json:"risk_auto_block_threshold"`
+	RiskMaxFailedLogins                  int    `json:"risk_max_failed_logins"`
+	RiskLockoutMinutes                   int    `json:"risk_lockout_minutes"`
+	RiskScoreWindowDays                  int    `json:"risk_score_window_days"`
+	RiskFailedLoginScoreWeight           int    `json:"risk_failed_login_score_weight"`
+	RiskFailedLoginScoreCap              int    `json:"risk_failed_login_score_cap"`
+	RiskEnableGeoCheck                   bool   `json:"risk_enable_geo_check"`
+	RiskEnableDeviceCheck                bool   `json:"risk_enable_device_check"`
+	RiskEnableBehaviorCheck              bool   `json:"risk_enable_behavior_check"`
+	RiskEnableIPBlacklist                bool   `json:"risk_enable_ip_blacklist"`
+	RiskEnableMitigation                 bool   `json:"risk_enable_mitigation"`
+	RiskAllowBlockStepUp                 bool   `json:"risk_allow_block_step_up"`
+	RiskTrustedDeviceDays                int    `json:"risk_trusted_device_days"`
+	RiskMitigationHours                  int    `json:"risk_mitigation_hours"`
+	RiskTrustedDeviceScoreDiscount       int    `json:"risk_trusted_device_score_discount"`
+	RiskMitigationScoreDiscount          int    `json:"risk_mitigation_score_discount"`
+	RiskHighRiskGeoDiscount              int    `json:"risk_high_risk_geo_discount"`
+	RiskNewDeviceDiscount                int    `json:"risk_new_device_discount"`
+	RiskIPChangeDiscount                 int    `json:"risk_ip_change_discount"`
+	RiskTrustedIPs                       string `json:"risk_trusted_ips"`
+	RiskHighRiskCountries                string `json:"risk_high_risk_countries"`
 	DeveloperManagedUsersSearchWindowSec int    `json:"developer_managed_users_search_window_seconds"`
 	DeveloperManagedUsersSearchLimit     int    `json:"developer_managed_users_search_limit"`
 }

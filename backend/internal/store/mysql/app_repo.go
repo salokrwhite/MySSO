@@ -32,6 +32,7 @@ func (s *MySQLStore) ListAppsPaginated(page, pageSize int, statusFilter, nameKey
 	offset := (page - 1) * pageSize
 	queryArgs := append([]any{}, args...)
 	queryArgs = append(queryArgs, pageSize, offset)
+	// #nosec G202 -- filter SQL is built from fixed fragments; values are bound parameters.
 	rows, err := s.db.Query(`
 		SELECT id, owner_user_id, name, icon_url, client_id, client_secret, description, frontchannel_logout_uri, allow_get_session_logout, status, review_comment, created_at, updated_at
 		FROM client_apps
@@ -180,6 +181,7 @@ func (s *MySQLStore) listApps(whereClause string, arg any) []domain.ClientApp {
 	`
 	args := []any{}
 	if whereClause != "" {
+		// #nosec G202 -- callers pass fixed internal WHERE fragments; values are bound as parameters.
 		query += " " + whereClause
 		args = append(args, arg)
 	}

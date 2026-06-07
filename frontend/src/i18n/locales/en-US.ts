@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Last updated: {{date}}",
       agreement: {
         title: "User Agreement",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-06",
         intro:
           "Welcome to {{siteName}}. Before registering, signing in, integrating, or using the unified identity services, please read this agreement carefully. By continuing to use the service, you agree to be bound by this agreement.",
         sections: {
@@ -30,6 +30,8 @@ const locale = {
             "You must provide true, lawful, and reachable registration information and keep your account, password, verification codes, and other credentials properly protected. You are responsible for losses caused by poor credential management on your side.",
           accountP2:
             "If abnormal sign-in activity, policy violations, frozen status, or security risks are detected, the platform may require additional verification, restrict sign-in, or suspend access for safety reasons.",
+          accountP3:
+            "To protect user and developer accounts, the platform may perform risk checks during password sign-in, code sign-in, passkey sign-in, QR sign-in, phone binding, email changes, phone changes, password changes, MFA settings, account deletion, data export, and developer app management. Depending on the result, the platform may require additional verification, delay processing, restrict an operation, or block access.",
           acceptableUseTitle: "2. Acceptable Use",
           acceptableUseP1:
             "You must not use this system for any unlawful activity, rights infringement, abuse of authentication interfaces, mass requests, credential stuffing, or any behavior that threatens platform stability or bypasses security controls.",
@@ -54,20 +56,24 @@ const locale = {
       },
       privacy: {
         title: "Privacy Policy",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-06",
         intro:
           "{{siteName}} values your personal information and account security. This policy explains how we collect, use, store, share, and protect your information, as well as the rights available to you.",
         sections: {
           dataCollectionTitle: "1. Information We Collect",
           dataCollectionP1:
-            "When you register, sign in, or use account services, we may collect your registration country, email address, phone number, password hash, sign-in sessions, device IP, authorization records, and necessary security logs.",
+            "When you register, sign in, or use account services, we may collect your registration country, email address, phone number, password hash, sign-in sessions, device IP address, User-Agent, authorization records, and necessary security logs.",
           dataCollectionP2:
             "When you upload an avatar, change your profile, bind a phone number, enable MFA, or authorize a third-party app, we process the information you submit as needed to provide that function.",
+          dataCollectionP3:
+            "To identify account takeover, credential stuffing, abnormal devices, abnormal networks, automated requests, and high-risk operations, we may also collect or generate device fingerprints, device public-key identifiers, client type, device risk signals, failed sign-in reasons, verification-code results, IP region or regional risk labels, sign-in history, risk scores, risk levels, and actions taken. We do not collect contacts, SMS content, call records, photos, precise location, microphone content, or camera content for account risk-control purposes.",
           dataUsageTitle: "2. How We Use Information",
           dataUsageP1:
             "We use relevant information to provide account registration, sign-in authentication, verification code delivery, risk control, authorization confirmation, developer app review, account security notifications, and service reliability maintenance.",
           dataUsageP2:
             "We also analyze logs and statistics on a minimal-necessary basis to detect abnormal activity, improve product experience, and strengthen security.",
+          dataUsageP3:
+            "Risk-control information is primarily used to decide whether to allow sign-in or sensitive operations, require email or SMS step-up verification, require phone binding, trigger failed-attempt lockout, record risk events, or help administrators investigate security issues. Client-reported risk information is used only as an auxiliary signal and is not used by itself to lower security decisions.",
           dataSharingTitle: "3. Sharing and Disclosure",
           dataSharingP1:
             "We only provide identity information or permission-related data to third-party apps when you explicitly authorize the scopes shown on the authorization page.",
@@ -83,6 +89,8 @@ const locale = {
             "We use access controls, password hashing, verification-code expiration, audit logs, and data minimization measures to protect your personal information and authentication data.",
           securityP2:
             "Subject to legal and business requirements, we retain your information only as long as necessary to fulfill service purposes; after account deletion or expiration of retention periods, we will delete or anonymize the data according to policy.",
+          securityP3:
+            "Risk logs, sign-in history, device profiles, and failed-attempt records are retained for the period necessary for security auditing, dispute handling, attack investigation, and compliance. We reduce leakage and misuse risks through hashing, access controls, least privilege, and audit records.",
         },
       },
     },
@@ -107,6 +115,12 @@ const locale = {
       sendRegisterCodeSuccess:
         "The verification code has been sent. Please check your inbox.",
       sendRegisterCodeFailed: "Failed to send verification code",
+      legalConsentPrefix: "I have read and agree to the",
+      legalConsentAnd: "and",
+      accountAgreement: "Account Terms of Use",
+      accountPrivacyPolicy: "Account Privacy Policy",
+      legalConsentRequired:
+        "Please read and agree to the Account Terms of Use and Account Privacy Policy",
       backToLoginWithAccount: "Already have an account? Sign in",
       forgotPassword: "Forgot password?",
       forgotPasswordPageTitle: "Reset Password",
@@ -166,6 +180,7 @@ const locale = {
       qrLoginCancelled: "This QR sign-in was cancelled",
       qrLoginExpired: "QR code expired. Please refresh.",
       qrLoginRefresh: "Refresh QR Code",
+      downloadApp: "Download App",
       passwordLogin: "Password",
       otpLogin: "Email Code",
       phoneOtpLogin: "Phone Code",
@@ -669,9 +684,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Monday to Friday 09:00 - 18:00",
-      contactOverseasPersonValue: "To be provided",
-      contactOverseasPhoneValue: "To be provided",
-      contactOverseasEmailValue: "To be provided",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Monday to Friday 09:00 - 18:00",
       contactRegionNotice:
         "Please contact the support channel for your region first. If you are unsure which region applies, start with the Mainland China contact for routing help.",

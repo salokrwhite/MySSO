@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Paskutinį kartą atnaujinta: {{date}}",
       agreement: {
         title: "Naudotojo sutartis",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Sveiki atvykę į {{siteName}}. Prieš registruodamiesi, prisijungdami, integruodami arba naudojant vieningas tapatybės paslaugas, apsvarstykite šią sutartį atsargiai. Tęsdami naudotis paslaugomis, jūs sutinkate būti įpareigotas šia sutartimi.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Saugumo, taisyklių įvykdymo, operacijų ar priežiūros reikmėms, platforma gali pritaikyti, atnaujinti, sustabdyti ar nutraukti tam tikras sąsajas, srautus ar funkcijas ir bandys pateikti pranešimą, kai tinkama.",
           liabilityP2:
             "Įstatymų leidžiamame apygardose, platforma neatsako už pertraukas, netikslus duomenis ar nuostolius, sukeltus dėl privalomųjų aplinkybių, tinklo gedimų, trečiųjų šalių priežasčių ar netinkamo jūsų naudojimo.",
+accountP3:
+            "Siekiant apsaugoti vartotojų ir kūrėjų paskyras, platforma gali atlikti rizikos vertinimus tokiuose scenarijuose kaip prisijungimas slaptažodžiu, prisijungimas kodu, prisijungimas passkey, prisijungimas QR kodu, telefono numerio susiejimas, el. pašto keitimas, telefono numerio keitimas, slaptažodžio keitimas, MFA nustatymas, paskyros ištrynimas, duomenų eksportas ir kūrėjų programų valdymas. Priklausomai nuo rezultato, platforma gali reikalauti papildomo patikrinimo, atidėti apdorojimą, apriboti veiksmą arba blokuoti prieigą.",
         },
       },
       privacy: {
         title: "Privatumo politika",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} vertina jūsų asmenines informaciją ir paskyros saugumą. Ši politika paaiškina, kaip mes rinkame, naudojame, saugome, bendriname ir apsaugome jūsų informaciją, taip pat teises, kurias jūs turite.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Kai registruojatės, prisijunkate ar naudojate paskyros paslaugas, mes galime rinkti registracijos šalį, el. pašto adresą, telefono numerį, slaptažodžio maišą, prisijungimo sesijas, įrenginio IP, autoryzavimo įrašus ir būtinus saugumo žurnalus.",
           dataCollectionP2:
             "Kai įkeliate avatarą, keičiate profilio duomenis, prisiekite telefono numerį, įgalinate MFA arba autoryzujete trečiosios šalies programėlę, mes tvarkome jūsų pateiktą informaciją, kaip reikia, kad suteiktume tą funkciją.",
+dataCollectionP3:
+            "Siekdama nustatyti paskyrų perėmimą, credential stuffing, neįprastus įrenginius, neįprastus tinklus, automatizuotas užklausas ir didelės rizikos veiksmus, mes taip pat galime rinkti ar generuoti įrenginių atspaudus, įrenginio viešojo rakto identifikatorius, kliento tipą, įrenginio rizikos signalus, nesėkmingų prisijungimų priežastis, kodų patikros rezultatus, IP regioną ar regionines rizikos žymas, prisijungimų istoriją, rizikos balus, rizikos lygius ir atliktus veiksmus. Paskyros rizikos valdymo tikslais mes nerenkame kontaktų, SMS turinio, skambučių žurnalų, nuotraukų albumų, tikslios vietos, mikrofono ar kameros turinio.",
           dataUsageTitle: "2. Kaip mes naudojame informaciją",
           dataUsageP1:
             "Mes naudojame susijusią informaciją, kad atliktume paskyros registraciją, prisijungimo autentifikaciją, patvirtinimo kodų pristatymą, rizikos valdymą, autoryzavimo patvirtinimą, kūrėjo programėlės peržiūrą, paskyros saugumo pranešimus ir paslaugų patikimumo priežiūrą.",
           dataUsageP2:
             "Mes taip pat analizuojame žurnalus ir statistiką minimaliai būtina mastu, kad aptiktume nenormalią veiklą, pagerintume produkto patirtį ir sustiprintume saugumą.",
+dataUsageP3:
+            "Rizikos valdymo informacija daugiausia naudojama nuspręsti, ar leisti prisijungti ar tęsti jautrius veiksmus, ar reikalauti papildomo el. pašto ar SMS patikrinimo, ar reikalauti telefono numerio susiejimo, ar aktyvuoti užrakinimą po nesėkmingų bandymų, ar įrašyti rizikos įvykį, ar padėti administratoriams tirti saugumo problemas. Kliento pateikta rizikos informacija naudojama tik kaip pagalbinis signalas ir savaime nenaudojama saugumo sprendimams mažinti.",
           dataSharingTitle: "3. Informacijos bendrinimas ir atskleidimas",
           dataSharingP1:
             "Mes suteikiame tapatybės informaciją ar teisėmis susijusius duomenis trečiosioms šalims tik tada, kai jūs aiškiai autoryzujete sritis, rodomas autoryzacijos puslapyje.",
@@ -83,6 +89,8 @@ const locale = {
             "Mes naudojame prieigos kontrolę, slaptažodžių maišymą, patvirtinimo kodų galiojimo laiką, audito žurnalus ir duomenų minimizavimo priemones, kad apsaugotume jūsų asmeninę informaciją ir autentifikacijos duomenis.",
           securityP2:
             "Atitinkant įstatymus ir verslo poreikius, mes laikome jūsų informaciją tik tiek, kiek reikia paslaugų tikslams įgyvendinti; po paskyros ištrynimo ar laikymo periodų pasibaigimo mes ištrinsime arba anonimizuosime duomenis pagal politiką.",
+securityP3:
+            "Rizikos žurnalai, prisijungimų istorija, įrenginių profiliai ir nesėkmingų bandymų įrašai saugomi tiek, kiek reikia saugumo auditams, ginčų sprendimui, atakų tyrimui ir atitikties užtikrinimui. Nutekėjimo ir piktnaudžiavimo riziką mažiname naudodami maišymą, prieigos kontrolę, mažiausias teises ir audito žurnalus.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "Patvirtinimo kodas buvo išsiųstas. Prašome patikrinti savo paštą.",
       sendRegisterCodeFailed: "Nepavyko išsiųsti patvirtinimo kodo",
+      legalConsentPrefix: "Perskaičiau ir sutinku su",
+      legalConsentAnd: "ir",
+      accountAgreement: "Paskyros naudojimo sąlygos",
+      accountPrivacyPolicy: "Paskyros privatumo politika",
+      legalConsentRequired: "Prašome perskaityti ir sutikti su Paskyros naudojimo sąlygomis ir Paskyros privatumo politika",
       backToLoginWithAccount: "Jau turite paskyrą? Prisijunkite",
       forgotPassword: "Pamiršote slaptažodį?",
       forgotPasswordPageTitle: "Atstatyti slaptažodį",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "QR kodo prisijungimas buvo atšauktas",
       qrLoginExpired: "QR kodas nebegalioja, atnaujinkite",
       qrLoginRefresh: "Atnaujinti QR kodą",
+      downloadApp: "Atsisiųsti programėlę",
       passwordLogin: "Slaptažodis",
       otpLogin: "El. pašto kodas",
       phoneOtpLogin: "Telefono kodas",
@@ -661,9 +675,9 @@ const locale = {
       contactMainlandPhoneValue: "JŪSŲ_TELEFONO_NR",
       contactMainlandEmailValue: "JŪSŲ_EL_PAŠTAS",
       contactMainlandHoursValue: "Pirmadienis - penktadienis 09:00 - 18:00",
-      contactOverseasPersonValue: "Bus pateikta",
-      contactOverseasPhoneValue: "Bus pateikta",
-      contactOverseasEmailValue: "Bus pateikta",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Pirmadienis - penktadienis 09:00 - 18:00",
       contactRegionNotice:
         "Pirmiausia susisiekite su palaikymo kanalu, atitinkančiu jūsų regioną. Jei nesate tikri, kuris regionas taikomas, pradėkite su Kinijos žemyno kontaktų informacija, kad gautumėte perdavimą.",

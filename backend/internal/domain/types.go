@@ -86,12 +86,13 @@ type PasskeyUsageLog struct {
 }
 
 type PhoneBindingChallenge struct {
-	Token     string
-	UserID    string
-	Reason    string
-	ACR       string
-	ExpiresAt time.Time
-	CreatedAt time.Time
+	Token          string
+	UserID         string
+	Reason         string
+	ACR            string
+	RiskClientJSON string
+	ExpiresAt      time.Time
+	CreatedAt      time.Time
 }
 
 type LoginStepUpMode string
@@ -116,24 +117,27 @@ type UserSecurityPolicy struct {
 }
 
 type LoginStepUpChallenge struct {
-	Token         string
-	UserID        string
-	LoginMethod   string
-	ACR           string
-	EffectiveMode LoginStepUpMode
-	EmailTarget   string
-	PhoneTarget   string
-	ExpiresAt     time.Time
-	CreatedAt     time.Time
+	Token          string
+	UserID         string
+	LoginMethod    string
+	ACR            string
+	EffectiveMode  LoginStepUpMode
+	EmailTarget    string
+	PhoneTarget    string
+	RiskClientJSON string
+	ExpiresAt      time.Time
+	CreatedAt      time.Time
 }
 
 type LoginMFAEnrollmentChallenge struct {
-	Token       string
-	UserID      string
-	LoginMethod string
-	ACR         string
-	ExpiresAt   time.Time
-	CreatedAt   time.Time
+	Token               string
+	UserID              string
+	LoginMethod         string
+	ACR                 string
+	RiskClientJSON      string
+	RiskStepUpSatisfied bool
+	ExpiresAt           time.Time
+	CreatedAt           time.Time
 }
 
 type AppStatus string
@@ -272,18 +276,20 @@ type QRLoginChallenge struct {
 }
 
 type MFALoginChallenge struct {
-	Token     string
-	UserID    string
-	Method    string
-	Target    string
-	ExpiresAt time.Time
-	CreatedAt time.Time
+	Token          string
+	UserID         string
+	Method         string
+	Target         string
+	RiskClientJSON string
+	ExpiresAt      time.Time
+	CreatedAt      time.Time
 }
 
 type DeletionLoginChallenge struct {
 	Token               string
 	UserID              string
 	ACR                 string
+	RiskClientJSON      string
 	DeletionScheduledAt time.Time
 	ExpiresAt           time.Time
 	CreatedAt           time.Time
@@ -334,6 +340,114 @@ type UserOperationLog struct {
 	TargetID  string         `json:"target_id"`
 	Detail    map[string]any `json:"detail"`
 	CreatedAt time.Time      `json:"created_at"`
+}
+
+type RiskSignal struct {
+	Category string `json:"category"`
+	Name     string `json:"name"`
+	Weight   int    `json:"weight"`
+	Detail   string `json:"detail,omitempty"`
+}
+
+type RiskEvent struct {
+	ID                string       `json:"id"`
+	UserID            string       `json:"user_id"`
+	Email             string       `json:"email,omitempty"`
+	DisplayName       string       `json:"display_name,omitempty"`
+	EventType         string       `json:"event_type"`
+	IdentifierHash    string       `json:"identifier_hash,omitempty"`
+	FailureReason     string       `json:"failure_reason,omitempty"`
+	RiskScore         int          `json:"risk_score"`
+	RiskLevel         string       `json:"risk_level"`
+	ActionTaken       string       `json:"action_taken"`
+	IPAddress         string       `json:"ip_address"`
+	IPCountry         string       `json:"ip_country,omitempty"`
+	IPRegion          string       `json:"ip_region,omitempty"`
+	IPCity            string       `json:"ip_city,omitempty"`
+	DeviceFingerprint string       `json:"device_fingerprint,omitempty"`
+	DeviceKeyID       string       `json:"device_key_id,omitempty"`
+	ClientType        string       `json:"client_type"`
+	UserAgent         string       `json:"user_agent,omitempty"`
+	Signals           []RiskSignal `json:"signals,omitempty"`
+	CreatedAt         time.Time    `json:"created_at"`
+}
+
+type RiskAccountSummary struct {
+	UserID             string     `json:"user_id"`
+	Email              string     `json:"email,omitempty"`
+	DisplayName        string     `json:"display_name,omitempty"`
+	Role               Role       `json:"role,omitempty"`
+	Status             UserStatus `json:"status,omitempty"`
+	Phone              string     `json:"phone,omitempty"`
+	MFAEnabled         bool       `json:"mfa_enabled"`
+	LastLoginAt        *time.Time `json:"last_login_at,omitempty"`
+	LastDeviceIP       string     `json:"last_device_ip,omitempty"`
+	CreatedAt          time.Time  `json:"created_at,omitempty"`
+	ComprehensiveScore int        `json:"comprehensive_score"`
+	RiskLevel          string     `json:"risk_level"`
+	EventCount         int        `json:"event_count"`
+	LoginSuccessCount  int        `json:"login_success_count"`
+	LoginFailureCount  int        `json:"login_failure_count"`
+	BlockedCount       int        `json:"blocked_count"`
+	StepUpCount        int        `json:"step_up_count"`
+	CaptchaCount       int        `json:"captcha_count"`
+	DeviceCount        int        `json:"device_count"`
+	LastEventType      string     `json:"last_event_type,omitempty"`
+	LastActionTaken    string     `json:"last_action_taken,omitempty"`
+	LastIPAddress      string     `json:"last_ip_address,omitempty"`
+	LastIPCountry      string     `json:"last_ip_country,omitempty"`
+	LastIPRegion       string     `json:"last_ip_region,omitempty"`
+	LastIPCity         string     `json:"last_ip_city,omitempty"`
+	LastClientType     string     `json:"last_client_type,omitempty"`
+	LastEventAt        *time.Time `json:"last_event_at,omitempty"`
+	TrustedUntil       *time.Time `json:"trusted_until,omitempty"`
+	MitigatedUntil     *time.Time `json:"mitigated_until,omitempty"`
+	FalsePositiveUntil *time.Time `json:"false_positive_until,omitempty"`
+	FalsePositiveNote  string     `json:"false_positive_note,omitempty"`
+}
+
+type DeviceProfile struct {
+	ID                string     `json:"id"`
+	UserID            string     `json:"user_id"`
+	DeviceFingerprint string     `json:"device_fingerprint"`
+	DeviceKeyID       string     `json:"device_key_id,omitempty"`
+	ClientType        string     `json:"client_type"`
+	FirstIP           string     `json:"first_ip,omitempty"`
+	LastIP            string     `json:"last_ip,omitempty"`
+	FirstSeenAt       time.Time  `json:"first_seen_at"`
+	LastSeenAt        time.Time  `json:"last_seen_at"`
+	LastRiskScore     int        `json:"last_risk_score"`
+	LastRiskLevel     string     `json:"last_risk_level"`
+	BlockedAt         *time.Time `json:"blocked_at,omitempty"`
+	TrustedUntil      *time.Time `json:"trusted_until,omitempty"`
+	MitigatedUntil    *time.Time `json:"mitigated_until,omitempty"`
+	TrustReason       string     `json:"trust_reason,omitempty"`
+	TrustUpdatedBy    string     `json:"trust_updated_by,omitempty"`
+}
+
+type LoginHistory struct {
+	ID                string    `json:"id"`
+	UserID            string    `json:"user_id"`
+	IPAddress         string    `json:"ip_address"`
+	IPCountry         string    `json:"ip_country,omitempty"`
+	IPRegion          string    `json:"ip_region,omitempty"`
+	IPCity            string    `json:"ip_city,omitempty"`
+	DeviceFingerprint string    `json:"device_fingerprint,omitempty"`
+	DeviceKeyID       string    `json:"device_key_id,omitempty"`
+	ClientType        string    `json:"client_type"`
+	RiskScore         int       `json:"risk_score"`
+	RiskLevel         string    `json:"risk_level"`
+	Success           bool      `json:"success"`
+	CreatedAt         time.Time `json:"created_at"`
+}
+
+type IPBlacklistEntry struct {
+	ID        string     `json:"id"`
+	IPAddress string     `json:"ip_address"`
+	Reason    string     `json:"reason"`
+	CreatedBy string     `json:"created_by"`
+	CreatedAt time.Time  `json:"created_at"`
+	ExpiresAt *time.Time `json:"expires_at,omitempty"`
 }
 
 type GatewayPolicy struct {

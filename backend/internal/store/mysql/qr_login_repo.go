@@ -44,16 +44,23 @@ func (s *MySQLStore) GetQRLoginChallengeByScanToken(token string) (domain.QRLogi
 }
 
 func (s *MySQLStore) getQRLoginChallenge(column, token string) (domain.QRLoginChallenge, error) {
-	if column != "token" && column != "lookup_token" {
+	columnSQL := ""
+	switch column {
+	case "token":
+		columnSQL = "token"
+	case "lookup_token":
+		columnSQL = "lookup_token"
+	default:
 		return domain.QRLoginChallenge{}, ErrNotFound
 	}
-	row := s.db.QueryRow(`
+	query := `
 		SELECT token, lookup_token, status, user_id, COALESCE(CAST(payload_json AS CHAR), ''),
 			expires_at, created_at, updated_at
 		FROM auth_challenges
-		WHERE `+column+` = ? AND challenge_type = ? AND expires_at >= UTC_TIMESTAMP()
+		WHERE ` + columnSQL + ` = ? AND challenge_type = ? AND expires_at >= UTC_TIMESTAMP()
 		LIMIT 1
-	`, strings.TrimSpace(token), authChallengeTypeQRLogin)
+	`
+	row := s.db.QueryRow(query, strings.TrimSpace(token), authChallengeTypeQRLogin)
 
 	var item domain.QRLoginChallenge
 	var status string
@@ -131,7 +138,7 @@ func qrLoginPayloadJSON(challenge domain.QRLoginChallenge) (string, error) {
 		IP:              challenge.IP,
 		UserAgent:       challenge.UserAgent,
 	}
-	data, err := json.Marshal(payload)
+	data, err := json.Marshal(payload) // #nosec G117 -- intentionally persists short-lived QR session token for polling completion.
 	if err != nil {
 		return "", err
 	}

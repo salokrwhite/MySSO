@@ -15,6 +15,10 @@ export type PublicSettings = {
   developer_announcement_content?: string;
   enable_phone_verification?: boolean;
   enable_qr_login?: boolean;
+  app_current_version_code?: number;
+  app_current_version_name?: string;
+  app_download_url?: string;
+  app_force_update?: boolean;
   captcha_enabled?: boolean;
   oidc_first_party_client_id?: string;
 };

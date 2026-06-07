@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Përditësuar më së fundi: {{date}}",
       agreement: {
         title: "Rregullat e përdorimit",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Mirë se vini në {{siteName}}. Përpara se të regjistroheni, të hyni, të lidhni ose të përdorni aftësinë e autentifikimit të unifikuar e ofruar nga ky sistem, duhet të lexoni këtë marrëveshje me kujdes. Duke vazhduar të përdorni shërbimin, ju pranoni që do të bindeni me këtë marrëveshje.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             " Për arsye sigurie, përputhje me ligjin, operacione ose mirëmbajtje, platforma mund të rregullojë, të përmirësojë, të ndërprerë ose të përfundojë ndonjë ndërfaqe, rrjetësi ose funksion, dhe do të përpiqet të japë njoftim kur është e përshtatshme.",
           liabilityP2:
             " Në kufirin e lejuar nga ligji, platforma nuk është përgjegjëse përtej detyrave statute për ndërprerjet, të dhënat e të pabërthamta ose humbjet e shkaktuar nga forcë majeure, dështime të rrjetit, arsye të tretit ose përdorim i pasaktë nga ana juaj.",
+accountP3:
+            "Për të mbrojtur llogaritë e përdoruesve dhe zhvilluesve, platforma mund të kryejë vlerësime rreziku në skenarë si hyrja me fjalëkalim, hyrja me kod, hyrja me passkey, hyrja me kod QR, lidhja e numrit të telefonit, ndryshimi i emailit, ndryshimi i numrit të telefonit, ndryshimi i fjalëkalimit, cilësimet MFA, fshirja e llogarisë, eksportimi i të dhënave dhe menaxhimi i aplikacioneve për zhvillues. Në varësi të rezultatit, platforma mund të kërkojë verifikim shtesë, të vonojë përpunimin, të kufizojë një veprim ose të bllokojë aksesin.",
         },
       },
       privacy: {
         title: "Politika e privatësisë",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} vlerëson informacionin tuaj personal dhe sigurinë e llogarisë tuaj. Kjo politikë shpjegon se si ne mbledhim, përdorim, ruajmë, ndajmë dhe mbrojmë informacionin tuaj, si dhe të drejtat e disponueshme për ju.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             " Kur regjistroheni, hyni ose përdorni shërbimet e llogarisë, ne mund të mbledhim vendin tuaj të regjistrimit, adresën tuaj email, numrin e telefonit, hash-in e fjalëkalimit, sesionet e hyrjes, IP-në e pajisjes, regjistrat e autorizimit dhe regjistrat e sigurisë të nevojshme.",
           dataCollectionP2:
             " Kur ngarkoni një avatar, ndryshoni profilin tuaj, lidhni një numër telefonit, aktivizoni MFA ose autorizoni një aplikacion të tretit, ne përpunojmë informacionin që jepni sipas nevojës për të ofruar atë funksion.",
+dataCollectionP3:
+            "Për të identifikuar marrjen e llogarive, credential stuffing, pajisje jonormale, rrjete jonormale, kërkesa të automatizuara dhe veprime me rrezik të lartë, ne mund gjithashtu të mbledhim ose gjenerojmë gjurmë gishtash të pajisjeve, identifikues të çelësit publik të pajisjes, llojin e klientit, sinjale rreziku të pajisjes, arsyet e hyrjeve të dështuara, rezultatet e verifikimit të kodit, rajonin IP ose etiketat rajonale të rrezikut, historikun e hyrjes, rezultatet e rrezikut, nivelet e rrezikut dhe veprimet e ndërmarra. Ne nuk mbledhim kontakte, përmbajtje SMS, regjistra thirrjesh, albume fotografish, vendndodhje të saktë, përmbajtje mikrofoni ose kamere për qëllime të kontrollit të rrezikut të llogarisë.",
           dataUsageTitle: "2. Si përdorim informacionin",
           dataUsageP1:
             " Ne përdorim informacionin e rrelevantë për të ofruar regjistrim të llogarisë, autentifikim të hyrjes, dorëzim të kodit të verifikimit, kontroll të rrezikut, konfirmim të autorizimit, rishqyrtim të aplikacionit të zhvilluesit, njoftimet e sigurisë së llogarisë dhe mirëmbajtjen e sigurisë së shërbimit.",
           dataUsageP2:
             " Ne analizojmë gjithashtu regjistrat dhe statistikat në një bazë minimale të nevojshme për të zbuluar aktivitetin e të pabërthamë, për të përmirësuar përvoja e produktit dhe për të forcuar sigurinë.",
+dataUsageP3:
+            "Informacioni i kontrollit të rrezikut përdoret kryesisht për të vendosur nëse do të lejohet hyrja ose vazhdimi i veprimeve të ndjeshme, nëse do të kërkohet verifikim shtesë me email ose SMS, nëse do të kërkohet lidhja e numrit të telefonit, nëse do të aktivizohet bllokimi pas përpjekjeve të dështuara, nëse do të regjistrohet një ngjarje rreziku, ose për të ndihmuar administratorët të hetojnë çështje sigurie. Informacioni i rrezikut i raportuar nga klienti përdoret vetëm si sinjal ndihmës dhe nuk përdoret vetëm për të ulur vendimmarrjen e sigurisë.",
           dataSharingTitle: "3. Ndajmë dhe zbulojmë",
           dataSharingP1:
             " Ne vetëm kur ju autorizoni eksplicitisht, ne ofrojmë informacion të identitetit ose të dhëna të lidhura me lejet për aplikacionet e tretit bazuar në ambiljet e treguara në faqen e autorizimit.",
@@ -83,6 +89,8 @@ const locale = {
             " Ne përdorim kontrolla qasje, hash-in e fjalëkalimit, skadimin e kodit të verifikimit, regjistrat e verifikimit dhe masurat e minimizimit të të dhënave për të mbrojtur informacionin tuaj personal dhe të dhënat e autentifikimit.",
           securityP2:
             " Në varësi të kërkesave ligjore dhe biznesore, ne ruajmë informacionin tuaj vetëm për sa kohë që është e nevojshme për të përmbushur qëllimet e shërbimit; pas fshirjes së llogarisë ose skadimit të periudhave të ruajtjes, ne do të fshim ose anonimizojmë të dhënat sipas politikës.",
+securityP3:
+            "Regjistrat e rrezikut, historikun e hyrjes, profilet e pajisjeve dhe regjistrimet e përpjekjeve të dështuara i mbajmë për periudhën e nevojshme për auditimin e sigurisë, zgjidhjen e mosmarrëveshjeve, hetimin e sulmeve dhe përputhshmërinë. Ne reduktojmë rreziqet e rrjedhjes dhe abuzimit përmes hashimit, kontrolleve të aksesit, privilegjeve minimale dhe gjurmëve të auditimit.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "Kodi i verifikimit është dërguar. Ju lutem kontrolloni kuti postare tuaj.",
       sendRegisterCodeFailed: "Dështoi të dërgohet kodi i verifikimit",
+      legalConsentPrefix: "Kam lexuar dhe pranoj",
+      legalConsentAnd: "dhe",
+      accountAgreement: "Kushtet e përdorimit të llogarisë",
+      accountPrivacyPolicy: "Politika e privatësisë së llogarisë",
+      legalConsentRequired: "Ju lutem lexoni dhe pranoni Kushtet e përdorimit të llogarisë dhe Politikën e privatësisë së llogarisë",
       backToLoginWithAccount: "E keni tashmë një llogari? Hyni",
       forgotPassword: "Harruat fjalëkalimin?",
       forgotPasswordPageTitle: "Rikthejeni fjalëkalimin",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "Hyrja QR u anulua",
       qrLoginExpired: "Kodi QR ka skaduar. Rifreskoni.",
       qrLoginRefresh: "Rifresko kodin QR",
+      downloadApp: "Shkarko aplikacionin",
       passwordLogin: "Fjalëkalim",
       otpLogin: "Kod email",
       phoneOtpLogin: "Kod telefon",
@@ -661,9 +675,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "E hënë deri në E premte 09:00 - 18:00",
-      contactOverseasPersonValue: "Do të sigurohet",
-      contactOverseasPhoneValue: "Do të sigurohet",
-      contactOverseasEmailValue: "Do të sigurohet",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "E hënë deri në E premte 09:00 - 18:00",
       contactRegionNotice:
         "Ju lutem kontaktoni kanalën e mbështetjes për rajonin tuaj së pari. Nëse nuk jeni të sigurt se cili rajon është i aplikueshëm, filloni me kontaktin e Kinës kontinentale për ndihmë në rrugëtim.",

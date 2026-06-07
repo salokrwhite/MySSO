@@ -15,3 +15,18 @@ backend/.cache/
 backend/.env
 backend/.env.*
 !backend/.env.example
+
+# Android app
+APP/.gradle/
+APP/.kotlin/
+APP/.idea/
+APP/build/
+APP/app/build/
+APP/app/bin/
+APP/**/.cxx/
+APP/local.properties
+APP/keystore.properties
+APP/*.jks
+APP/*.keystore
+APP/*.p12
+APP/*.pem

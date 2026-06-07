@@ -271,13 +271,17 @@ func (s *MySQLStore) DeleteUser(id string) error {
 	for appRows.Next() {
 		var appID, clientID string
 		if err := appRows.Scan(&appID, &clientID); err != nil {
-			appRows.Close()
+			if closeErr := appRows.Close(); closeErr != nil {
+				return closeErr
+			}
 			return err
 		}
 		appIDs = append(appIDs, appID)
 		clientIDs = append(clientIDs, clientID)
 	}
-	appRows.Close()
+	if err := appRows.Close(); err != nil {
+		return err
+	}
 
 	for _, appID := range appIDs {
 		if _, err := tx.Exec(`DELETE FROM client_redirect_uris WHERE app_id = ?`, appID); err != nil {

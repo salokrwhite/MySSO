@@ -4,7 +4,9 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -20,13 +22,14 @@ func (s *Server) handleAuthorize(c *gin.Context) {
 	state := c.Query("state")
 	promptValues := parsePromptValues(c.Query("prompt"))
 	promptLoginSatisfied := strings.TrimSpace(c.Query("prompt_login_satisfied")) == "1"
+	canRedirectError := s.canRedirectAuthorizeError(c.Query("client_id"), redirectURI)
 	if promptValues["login"] && !promptLoginSatisfied {
 		s.redirectAuthorizeToFrontend(c)
 		return
 	}
 	sessionToken := s.extractSessionToken(c)
 	if sessionToken == "" {
-		if strings.EqualFold(strings.TrimSpace(c.Query("prompt")), "none") && redirectURI != "" {
+		if promptValues["none"] && canRedirectError {
 			c.Redirect(http.StatusFound, service.BuildAuthorizeErrorRedirect(redirectURI, "login_required", "end-user authentication required", state))
 			return
 		}
@@ -35,7 +38,7 @@ func (s *Server) handleAuthorize(c *gin.Context) {
 	}
 	_, session, err := s.services.Auth.CurrentUser(sessionToken)
 	if err != nil {
-		if redirectURI != "" && strings.EqualFold(strings.TrimSpace(c.Query("prompt")), "none") {
+		if promptValues["none"] && canRedirectError {
 			c.Redirect(http.StatusFound, service.BuildAuthorizeErrorRedirect(redirectURI, "login_required", err.Error(), state))
 			return
 		}
@@ -61,7 +64,7 @@ func (s *Server) handleAuthorize(c *gin.Context) {
 		ConsentAccepted:     false,
 	})
 	if err != nil {
-		if redirectURI != "" {
+		if canRedirectError {
 			c.Redirect(http.StatusFound, service.BuildAuthorizeErrorRedirect(redirectURI, normalizeAuthorizeError(err.Error()), err.Error(), state))
 			return
 		}
@@ -111,11 +114,23 @@ func (s *Server) buildAuthorizeRedirectURL(session domain.Session, req authorize
 	return service.BuildAuthorizeRedirect(strings.TrimSpace(req.RedirectURI), code, strings.TrimSpace(req.State)), nil
 }
 
+func (s *Server) canRedirectAuthorizeError(clientID, redirectURI string) bool {
+	if s.services == nil || s.services.OAuth == nil {
+		return false
+	}
+	return s.services.OAuth.CanRedirectAuthorizeError(clientID, redirectURI)
+}
+
 func (s *Server) handleToken(c *gin.Context) {
 	if !s.requireInstalled(c) {
 		return
 	}
 	clientID, clientSecret := oauthClientCredentials(c)
+	if ok, retryAfter := s.rateLimiter.allow("oauth-token:"+c.ClientIP()+":"+clientID, 60, time.Minute, time.Now().UTC()); !ok {
+		c.Header("Retry-After", strconv.Itoa(int(retryAfter.Seconds())))
+		c.JSON(http.StatusTooManyRequests, gin.H{"error": "too many token requests"})
+		return
+	}
 	var (
 		result map[string]any
 		err    error

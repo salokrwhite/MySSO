@@ -14,7 +14,8 @@ func mysqlAppUserKey(appID, userID string) []any {
 }
 
 func (s *MySQLStore) ListDeveloperGroups(ownerUserID string) ([]domain.DeveloperGroup, error) {
-	rows, err := s.db.Query(`
+	// #nosec G202 -- app/email/group SQL fragments are fixed predicates; all values are bound parameters.
+	rows, err := s.db.Query(` // #nosec G202 -- app/email/group SQL fragments are fixed predicates; all values are bound parameters.
 		SELECT id, owner_user_id, name, description, created_at, updated_at
 		FROM developer_groups
 		WHERE owner_user_id = ?
@@ -259,6 +260,7 @@ func managedUsersGroupPredicate(groupIDs []string) (string, []any) {
 		placeholders = append(placeholders, "?")
 		args = append(args, groupID)
 	}
+	// #nosec G202 -- placeholders are generated constants; group IDs are bound as query parameters.
 	return " AND EXISTS (SELECT 1 FROM developer_group_members gm WHERE gm.user_id = c.user_id AND gm.group_id IN (" + strings.Join(placeholders, ",") + "))", args
 }
 
@@ -268,6 +270,7 @@ func appendUserIDInClause(query string, args []any, userIDs []string) (string, [
 		placeholders = append(placeholders, "?")
 		args = append(args, userID)
 	}
+	// #nosec G202 -- placeholders are generated constants; user IDs are bound as query parameters.
 	return query + strings.Join(placeholders, ",") + ")", args
 }
 
@@ -332,16 +335,7 @@ func (s *MySQLStore) ListManagedUsersPaginated(ownerUserID string, page, pageSiz
 	offset := (page - 1) * pageSize
 	pageArgs := append([]any{}, baseArgs...)
 	pageArgs = append(pageArgs, pageSize, offset)
-	rows, err := s.db.Query(`
-		SELECT c.user_id, u.display_name, u.email, u.phone, MAX(c.created_at) AS last_authorized_at
-		FROM client_apps a
-		INNER JOIN consents c ON c.client_id = a.client_id
-		INNER JOIN users u ON u.id = c.user_id
-		WHERE a.owner_user_id = ?`+appClause+emailClause+groupClause+`
-		GROUP BY c.user_id, u.display_name, u.email, u.phone
-		ORDER BY last_authorized_at DESC, c.user_id ASC
-		LIMIT ? OFFSET ?
-	`, pageArgs...)
+	rows, err := s.db.Query(managedUsersPageQuery(appClause, emailClause, groupClause), pageArgs...)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -386,8 +380,23 @@ func (s *MySQLStore) ListManagedUsersPaginated(ownerUserID string, page, pageSiz
 	return items, total, nil
 }
 
+func managedUsersPageQuery(appClause, emailClause, groupClause string) string {
+	// #nosec G202 -- clauses are fixed predicates returned by managedUsers*Predicate; values are bound parameters.
+	return `
+		SELECT c.user_id, u.display_name, u.email, u.phone, MAX(c.created_at) AS last_authorized_at
+		FROM client_apps a
+		INNER JOIN consents c ON c.client_id = a.client_id
+		INNER JOIN users u ON u.id = c.user_id
+		WHERE a.owner_user_id = ?` + appClause + emailClause + groupClause + `
+		GROUP BY c.user_id, u.display_name, u.email, u.phone
+		ORDER BY last_authorized_at DESC, c.user_id ASC
+		LIMIT ? OFFSET ?
+	`
+}
+
 func (s *MySQLStore) loadManagedUserAuthorizedApps(ownerUserID, appID string, userIDs []string, itemByUserID map[string]*domain.DeveloperManagedUser) error {
 	appClause, appArgs := managedUsersAppPredicate(appID)
+	// #nosec G202 -- app predicate and IN placeholders are fixed fragments; all values are bound parameters.
 	query := `
 		SELECT c.user_id, a.id, a.client_id, a.name, MAX(c.created_at) AS last_authorized_at
 		FROM client_apps a
@@ -419,6 +428,7 @@ func (s *MySQLStore) loadManagedUserAuthorizedApps(ownerUserID, appID string, us
 }
 
 func (s *MySQLStore) loadManagedUserGroups(ownerUserID string, userIDs []string, itemByUserID map[string]*domain.DeveloperManagedUser) error {
+	// #nosec G202 -- app predicate and IN placeholders are fixed fragments; all values are bound parameters.
 	query := `
 		SELECT m.user_id, g.id, g.name
 		FROM developer_group_members m
@@ -447,6 +457,7 @@ func (s *MySQLStore) loadManagedUserGroups(ownerUserID string, userIDs []string,
 
 func (s *MySQLStore) loadManagedUserBans(ownerUserID, appID string, userIDs []string, now time.Time, itemByUserID map[string]*domain.DeveloperManagedUser) error {
 	appClause, appArgs := managedUsersAppPredicate(appID)
+	// #nosec G202 -- app predicate and IN placeholders are fixed fragments; all values are bound parameters.
 	query := `
 		SELECT b.ban_id, b.app_id, b.user_id, b.ban_reason, b.ban_expires_at, b.ban_created_at, b.ban_updated_at
 		FROM app_user_access_states b

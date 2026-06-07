@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Zadnja posodobitev: {{date}}",
       agreement: {
         title: "Pogodba uporabnika",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Dobrodošli v {{siteName}}. Preden se registrirate, prijavite se, priključite ali uporabite storitve enotne overovitve, ki jih ponuja ta sistem, prosim, previdno preberite to pogodbo. Nadaljnim uporabo storitve se strinjate z uporabo storitve v skladu s to pogodbo.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Zaradi varnosti, skladnosti, operativnega vzdrževanja ali vzdrževanja lahko platforma prilagaja, posodablja, zaustavlja ali prekine vsebino storitev, zmogljivosti vmesnikov, postopek overovitve ali funkcionalne strani in si bo pri ustreznih okoliščinah potrudila posredovati obvestilo.",
           liabilityP2:
             "V obsegu, ki ga dovoljuje zakon, platforma nosi odgovornost le v okviru zakonske obveznosti za prekinitev storitev, nenavadne podatke ali izgube, ki jih povzročijo nepredvidljive dogodki, omrežni okvare, razlogi tretjih oseb ali neustrezna uporaba na vaši strani.",
+accountP3:
+            "Za zaščito uporabniških in razvijalskih računov lahko platforma izvaja ocene tveganja v scenarijih, kot so prijava z geslom, prijava s kodo, prijava s passkey, prijava s QR kodo, povezava telefonske številke, sprememba e-pošte, sprememba telefonske številke, sprememba gesla, nastavitev MFA, brisanje računa, izvoz podatkov in upravljanje razvijalskih aplikacij. Glede na rezultat lahko platforma zahteva dodatno preverjanje, zadrži obdelavo, omeji dejanje ali blokira dostop.",
         },
       },
       privacy: {
         title: "Pravila zasebnosti",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} ceni vaše osebne podatke in varnost računa. Ta politika pojasnjuje, kako zbiramo, uporabljamo, shranjujemo, delimo in varujemo vaše podatke, kot tudi pravice, ki jih imate.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Ko se registrirate, prijavite se ali uporabite storitve računa, lahko zbiramo vašo državo registracije, e-poštni naslov, telefonsko številko, kodo gesla, seje prijave, IP naslov naprave, zapise avtorizacije in potrebne varnostne dnevnike.",
           dataCollectionP2:
             "Ko主动上传ujete avatar, spremenite vzdevek, povežete telefonsko številko, omogočite dvojno overovitev ali avtorizirate aplikacijo tretje osebe, bomo obdelali podatke, ki jih vnesete, v obsegu, ki je potreben za zagotavljanje te funkcije.",
+dataCollectionP3:
+            "Za prepoznavanje prevzema računov, credential stuffing, nenavadnih naprav, nenavadnih omrežij, avtomatiziranih zahtevkov in visoko tveganih dejanj lahko prav tako zbiramo ali ustvarjamo prstne odtise naprav, identifikatorje javnih ključev naprav, vrsto odjemalca, signale tveganja naprave, razloge za neuspele prijave, rezultate preverjanja kod, območje IP ali regionalne oznake tveganja, zgodovino prijav, ocene tveganja, ravni tveganja in izvedene ukrepe. Za namene obvladovanja tveganja računa ne zbiramo stikov, vsebine SMS, dnevnikov klicev, fotoalbumov, natančne lokacije, vsebine mikrofona ali kamere.",
           dataUsageTitle: "2. Način uporabe podatkov",
           dataUsageP1:
             "Uporabljamo relevantne podatke za izvedbo registracijskega postopka, overovitve prijave, pošiljanje potrditvenih kod, nadzor tveganj, potrditev avtorizacije, pregled aplikacij razvijalcev, obvestila o varnosti računa in vzdrževanje stabilnosti storitev.",
           dataUsageP2:
             "Tudi analiziramo dnevnike in statistike na podlagi načela minimalne potrebe, da bi zaznali nenavadno vedenje, izboljšali uporabniško izkušnjo in okrepili varnost sistema.",
+dataUsageP3:
+            "Informacije o obvladovanju tveganja se uporabljajo predvsem za odločitev, ali dovoliti prijavo ali nadaljevanje občutljivih dejanj, ali zahtevati dodatno preverjanje po e-pošti ali SMS, ali zahtevati povezavo telefonske številke, ali sprožiti zaklepanje po neuspelih poskusih, ali zabeležiti tvegan dogodek, ali za pomoč skrbnikom pri preiskavi varnostnih težav. Informacije o tveganju, ki jih poroča odjemalec, se uporabljajo le kot pomožni signal in same po sebi ne znižujejo varnostnih odločitev.",
           dataSharingTitle: "3. Deljenje in upravljanje podatkov",
           dataSharingP1:
             "Podatke o identifikaciji ali podatke, ki ustrezajo obsegu dovoljenj, bomo posredovali aplikacijam tretje osebe le, če izrecno avtorizirate obseg, ki je prikazan na strani avtorizacije.",
@@ -83,6 +89,8 @@ const locale = {
             "Uporabljamo dostopne kontrole, kodiranje gesel, omejitev veljavnosti potrditvenih kod, revizijske dnevnike in ukrepe za minimizacijo shranjevanja podatkov, da zagotovimo varnost vaših osebnih podatkov in podatkov za overovitev.",
           securityP2:
             "V skladu z pravnimi in poslovnimi zahtevami shranjujemo vaše podatke le toliko dolgo, kot je potrebno za dosego namena storitve; po brisanju računa ali poteku obdobja shranjevanja bomo podatke izbrisali ali anonimizirali v skladu s pravili.",
+securityP3:
+            "Dnevnike tveganja, zgodovino prijav, profile naprav in zapise neuspelih poskusov hranimo toliko časa, kolikor je potrebno za varnostne preglede, reševanje sporov, preiskave napadov in skladnost. Tveganja uhajanja in zlorabe zmanjšujemo z zgoščevanjem, nadzorom dostopa, načelom najmanjših pravic in revizijskimi sledmi.",
         },
       },
     },
@@ -103,6 +111,11 @@ const locale = {
       sendRegisterCode: "Pošlji potrditveno kodo",
       sendRegisterCodeSuccess: "Potrditvena koda je bila poslana. Prosimo, preverite svojo e-pošto.",
       sendRegisterCodeFailed: "Pošiljanje potrditvene kode ni uspelo",
+      legalConsentPrefix: "Prebral sem in se strinjam s",
+      legalConsentAnd: "in",
+      accountAgreement: "Pogoji uporabe računa",
+      accountPrivacyPolicy: "Pravilnik o zasebnosti računa",
+      legalConsentRequired: "Preberite in sprejmite Pogoje uporabe računa in Pravilnik o zasebnosti računa",
       backToLoginWithAccount: "Imate že račun? Prijavite se",
       forgotPassword: "Ste pozabili geslo?",
       forgotPasswordPageTitle: "Ponastavi geslo",
@@ -157,6 +170,7 @@ const locale = {
       qrLoginCancelled: "Prijava QR je bila preklicana",
       qrLoginExpired: "QR koda je potekla. Osvežite.",
       qrLoginRefresh: "Osveži QR kodo",
+      downloadApp: "Prenesi aplikacijo",
       passwordLogin: "Prijava z geslom",
       otpLogin: "Prijava z e-poštno kodo",
       phoneOtpLogin: "Prijava z telefonsko kodo",
@@ -577,9 +591,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Ponedeljek do petek 09:00 - 18:00",
-      contactOverseasPersonValue: "Načakajoč dopolnitev",
-      contactOverseasPhoneValue: "Načakajoč dopolnitev",
-      contactOverseasEmailValue: "Načakajoč dopolnitev",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Ponedeljek do petek 09:00 - 18:00",
       contactRegionNotice:
         "Podle vašega regiona se prosimo, obrnite se najprej na ustrezno podporo; če niste prepričani, kateri region velja za vas, lahko se najprej obrnite na kontakt v središnji Kitajski.",

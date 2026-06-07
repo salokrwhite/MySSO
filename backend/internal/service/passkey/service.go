@@ -19,6 +19,7 @@ import (
 	"mysso/backend/internal/service/auth"
 	"mysso/backend/internal/service/common/authutil"
 	"mysso/backend/internal/service/common/deps"
+	riskservice "mysso/backend/internal/service/risk"
 	"mysso/backend/internal/service/settings"
 	"mysso/backend/internal/service/user"
 )
@@ -30,12 +31,17 @@ type PasskeyService struct {
 	audit    *audit.Service
 	settings *settings.Service
 	user     *user.Service
+	risk     *riskservice.Service
 }
 
 type Service = PasskeyService
 
-func New(dependencies *deps.Deps, auditService *audit.Service, settingsService *settings.Service, userService *user.Service) *Service {
-	return &PasskeyService{deps: dependencies, audit: auditService, settings: settingsService, user: userService}
+func New(dependencies *deps.Deps, auditService *audit.Service, settingsService *settings.Service, userService *user.Service, riskService ...*riskservice.Service) *Service {
+	var riskSvc *riskservice.Service
+	if len(riskService) > 0 {
+		riskSvc = riskService[0]
+	}
+	return &PasskeyService{deps: dependencies, audit: auditService, settings: settingsService, user: userService, risk: riskSvc}
 }
 
 type PreparePasskeyOptionsResult struct {
@@ -252,6 +258,9 @@ func (s *PasskeyService) CompleteRegistration(userID, challengeToken, credential
 		return domain.Passkey{}, fmt.Errorf("passkey challenge expired")
 	}
 	defer func() { _ = s.deps.Store.DeletePasskeyRegistrationChallenge(challengeToken) }()
+	if err := s.enforceSecurityOperationRisk(user, ip, deviceID, "passkey_create"); err != nil {
+		return domain.Passkey{}, err
+	}
 	credentialJSON, err := json.Marshal(credential)
 	if err != nil {
 		return domain.Passkey{}, err
@@ -294,6 +303,9 @@ func (s *PasskeyService) DeletePasskey(userID, passkeyID, currentPassword, curre
 		return err
 	}
 	if err := s.user.VerifyCurrentMFA(user, currentMFACode, ip, deviceID); err != nil {
+		return err
+	}
+	if err := s.enforceSecurityOperationRisk(user, ip, deviceID, "passkey_delete"); err != nil {
 		return err
 	}
 	if err := s.deps.Store.DeletePasskey(userID, passkeyID); err != nil {
@@ -404,8 +416,23 @@ func (s *PasskeyService) CompleteLogin(challengeToken, credentialResponse, ip, d
 		CreatedAt:    time.Now().UTC(),
 	})
 
-	auth := auth.New(s.deps, s.audit, s.settings, s.user)
+	auth := auth.New(s.deps, s.audit, s.settings, s.user, s.risk)
 	return auth.ContinuePostAuthentication(loginUser, ip, "passkey", "urn:mysso:acr:passkey", binding...)
+}
+
+func (s *PasskeyService) enforceSecurityOperationRisk(user domain.User, ip, deviceID, operation string) error {
+	if s.risk == nil || user.Role == domain.RoleAdmin {
+		return nil
+	}
+	assessment, err := s.risk.AssessSecurityOperation(user, ip, deviceID, operation)
+	if err != nil {
+		return err
+	}
+	if assessment.Action != riskservice.ActionAllow {
+		s.risk.RecordLogin(user.ID, ip, "", riskservice.ClientInfo{ClientType: "web", Fingerprint: strings.TrimSpace(deviceID), Signals: []string{operation}}, assessment, false)
+		return fmt.Errorf("access_denied")
+	}
+	return nil
 }
 
 func passkeyCredentialsFromUserStore(dataStore interface {

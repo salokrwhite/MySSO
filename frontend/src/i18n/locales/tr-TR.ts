@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Son güncelleme: {{date}}",
       agreement: {
         title: "Kullanıcı Sözleşmesi",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}}'e hoş geldiniz. Kayıt olmadan, giriş yapmadan, entegre etmeden veya bu sistemin sağladığı birleşik kimlik doğrulama yeteneğini kullanmadan önce bu sözleşmeyi dikkatlice okuyunuz. Hizmeti kullanmaya devam etmek, bu sözleşme hükümleri uyarınca hizmeti kullanmayı kabul ettiğiniz olarak kabul edilecektir.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Güvenlik, uyumluluk, operasyonel veya bakım nedenleriyle, platform belirli arayüzleri, akışları veya işlevleri ayarlayabilir, yükseltebilir, askıya alabilir veya sonlandırabilir ve uygun olduğunda bildirimde bulunmaya çalışacaktır.",
           liabilityP2:
             "Yasalarca izin verilen ölçüde, platform, doğal afetler, ağ arızaları, üçüncü taraf nedenleri veya tarafınızdaki kullanım hatası nedeniyle oluşan kesintiler, anormal veriler veya kayıplar için yasal yükümlülüklerinden öteye geçen sorumluluk kabul etmeyecektir.",
+accountP3:
+            "Kullanıcı ve geliştirici hesaplarını korumak için platform, parola ile oturum açma, kod ile oturum açma, passkey ile oturum açma, QR kodu ile oturum açma, telefon numarası bağlama, e-posta değiştirme, telefon numarası değiştirme, parola değiştirme, MFA ayarları, hesap silme, veri dışa aktarma ve geliştirici uygulama yönetimi gibi senaryolarda risk değerlendirmesi yapabilir. Sonuca bağlı olarak platform ek doğrulama isteyebilir, işlemi geciktirebilir, bir işlemi kısıtlayabilir veya erişimi engelleyebilir.",
         },
       },
       privacy: {
         title: "Gizlilik Politikası",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}}, kişisel bilgilerinize ve hesap güvenliğinize önem verir. Bu politika, bilgilerinizi nasıl topladığımız, kullandığımız, depoladığımız, paylaştığımız ve koruduğumuzun yanı sıra sahip olduğunuz hakları açıklar.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Kayıt olduğunuzda, giriş yaptığınızda veya hesap hizmetlerini kullandığınızda, kayıt ülkesi, e-posta adresi, telefon numarası, parola karma, giriş oturumları, cihaz IP'si, yetkilendirme kayıtları ve gerekli güvenlik günlüklerini toplamayabiliriz.",
           dataCollectionP2:
             "Avatar yüklediğinizde, profili değiştirdiğinizde, telefon numarasını bağladığınızda, MFA'yi etkinleştirdiğinizde veya üçüncü parti bir uygulamaya yetkilendirdiğinizde, o işlevi sağlamak için gerekli şekilde gönderdiğiniz bilgileri işleyeceğiz.",
+dataCollectionP3:
+            "Hesap ele geçirme, credential stuffing, anormal cihazlar, anormal ağlar, otomatikleştirilmiş istekler ve yüksek riskli işlemleri tespit etmek amacıyla cihaz parmak izleri, cihaz açık anahtar tanımlayıcıları, istemci türü, cihaz risk sinyalleri, oturum açma hata nedenleri, kod doğrulama sonuçları, IP bölgesi veya bölgesel risk etiketleri, oturum açma geçmişi, risk puanları, risk seviyeleri ve alınan aksiyonlar gibi bilgileri de toplayabilir veya üretebiliriz. Hesap risk kontrolü amacıyla kişi listeleri, SMS içerikleri, arama kayıtları, fotoğraf albümleri, hassas konum, mikrofon veya kamera içeriklerini toplamayız.",
           dataUsageTitle: "2. Bilgileri Nasıl Kullanırız",
           dataUsageP1:
             "Hesap kaydı, giriş kimlik doğrulama, doğrulama kodu teslimatı, risk kontrolü, yetkilendirme onayı, geliştirici uygulaması incelemesi, hesap güvenliği bildirimleri ve hizmet güvenilirliği bakımı gibi hizmetleri sağlamak için ilgili bilgileri kullanırız.",
           dataUsageP2:
             "Ayrıca, anormal davranışları tespit etmek, ürün deneyimini iyileştirmek ve güvenliği güçlendirmek için minimum gerekli düzeyde günlükleri ve istatistiksel bilgileri analiz ederiz.",
+dataUsageP3:
+            "Risk kontrol bilgileri esas olarak oturum açmaya veya hassas işlemlere devam etmeye izin verilip verilmeyeceğine, ek e-posta veya SMS doğrulaması gerekip gerekmediğine, telefon numarası bağlamanın zorunlu olup olmadığına, başarısız denemelerin kilitlenmesinin tetiklenip tetiklenmeyeceğine, bir risk olayının kaydedilip kaydedilmeyeceğine karar vermek ve yöneticilerin güvenlik sorunlarını araştırmasına yardımcı olmak için kullanılır. İstemciden bildirilen risk bilgileri yalnızca yardımcı bir sinyal olarak kullanılır ve tek başına güvenlik kararlarını düşürmek için kullanılmaz.",
           dataSharingTitle: "3. Paylaşma ve Açıklama",
           dataSharingP1:
             "Yetkilendirme sayfasında görüntülenen kapsamları açıkça yetkilendirdiğinizda만 üçüncü parti uygulamalara kimlik bilgileri veya izinle ilgili veriler sağlayacağız.",
@@ -83,6 +89,8 @@ const locale = {
             "Kişisel bilgilerinizi ve kimlik doğrulama verilerinizi korumak için erişim kontrolleri, parola karma, doğrulama kodu sona ermesi, denetim günlükleri ve veri minimize etme önlemlerini kullanırız.",
           securityP2:
             "Yasal ve iş gereksinimlerine uygun olarak, hizmet amacını gerçekleştirmek için gereken süre boyunca yalnızca bilgilerinizi saklayacağız; hesap silindikten veya saklama süreleri dolduktan sonra, politika göre verileri sileriz veya anonim hale getiririz.",
+securityP3:
+            "Risk logları, oturum açma geçmişi, cihaz profilleri ve başarısız deneme kayıtları, güvenlik denetimleri, uyuşmazlık çözümü, saldırı soruşturması ve uyumluluk için gereken süre boyunca saklanır. Hashleme, erişim kontrolü, en az yetki ve denetim kayıtları aracılığıyla sızıntı ve kötüye kullanım riskini azaltırız.",
         },
       },
     },
@@ -103,6 +111,11 @@ const locale = {
       sendRegisterCode: "Doğrulama Kodu Gönder",
       sendRegisterCodeSuccess: "Doğrulama kodu gönderildi. Lütfen e-postanızı kontrol edin.",
       sendRegisterCodeFailed: "Doğrulama kodu gönderilemedi",
+      legalConsentPrefix: "Okudum ve kabul ediyorum",
+      legalConsentAnd: "ve",
+      accountAgreement: "Hesap Kullanım Koşulları",
+      accountPrivacyPolicy: "Hesap Gizlilik Politikası",
+      legalConsentRequired: "Lütfen Hesap Kullanım Koşulları ve Hesap Gizlilik Politikasını okuyup kabul edin",
       backToLoginWithAccount: "Hesabınız var mı? Giriş yapın",
       forgotPassword: "Parolamı unuttum",
       forgotPasswordPageTitle: "Parolayı Sıfırla",
@@ -157,6 +170,7 @@ const locale = {
       qrLoginCancelled: "QR girişi iptal edildi",
       qrLoginExpired: "QR kodun süresi doldu. Yenileyin.",
       qrLoginRefresh: "QR kodu yenile",
+      downloadApp: "Uygulamayı indir",
       passwordLogin: "Parola",
       otpLogin: "E-posta Kodu",
       phoneOtpLogin: "Telefon Kodu",
@@ -638,9 +652,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Pazartesi-Cuma 09:00 - 18:00",
-      contactOverseasPersonValue: "Doldurulacak",
-      contactOverseasPhoneValue: "Doldurulacak",
-      contactOverseasEmailValue: "Doldurulacak",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Pazartesi-Cuma 09:00 - 18:00",
       contactRegionNotice:
         "Lütfen bulunduğunuz bölgeye göre ilgili destek kanalını tercih edin; hangi bölgeye ait olduğunu belirleyemiyorsanız, yönlendirme yardımı almak için önce Çin Ana Karası iletişim bilgilerini kullanın.",

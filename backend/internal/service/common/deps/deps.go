@@ -9,6 +9,7 @@ import (
 	"mysso/backend/internal/config"
 	"mysso/backend/internal/crypto"
 	"mysso/backend/internal/domain"
+	"mysso/backend/internal/geoip"
 	"mysso/backend/internal/notify"
 	"mysso/backend/internal/store"
 )
@@ -19,6 +20,7 @@ type Deps struct {
 	JWT   *crypto.JWTManager
 	Mail  notify.Mailer
 	SMS   notify.SMSSender
+	GeoIP geoip.Locator
 }
 
 func (d *Deps) LookupUserEmailByID(userID string) string {

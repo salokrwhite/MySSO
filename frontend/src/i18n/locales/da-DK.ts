@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Sidst opdateret: {{date}}",
       agreement: {
         title: "Brugeraftale",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Velkommen til {{siteName}}. Før du registrerer dig, logger ind, integrerer eller bruger de samlede identitetstjenester, skal du læse denne aftale omhyggeligt. Ved at fortsætte med at bruge tjenesten accepterer du at være bundet af denne aftale.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Af sikkerheds-, compliance-, drifts- eller vedligeholdelsesmæssige årsager kan platformen justere, opgradere, suspendere eller afslutte visse grænseflader, processer eller funktioner og vil forsøge at give besked, når det er passende.",
           liabilityP2:
             "I det omfang loven tillader det, er platformen ikke ansvarlig ud over lovmæssige forpligtelser for afbrydelser, unormale data eller tab forårsaget af force majeure, netværksfejl, tredjepartsårsager eller forkert brug fra din side.",
+accountP3:
+            "For at beskytte bruger- og udviklerkonti kan platformen udføre risikovurderinger i scenarier som login med adgangskode, login med kode, login med passkey, login med QR-kode, binding af telefonnummer, ændring af e-mail, ændring af telefonnummer, ændring af adgangskode, MFA-opsætning, sletning af konto, dataeksport og styring af udviklerapps. Afhængigt af resultatet kan platformen kræve yderligere verifikation, forsinke behandlingen, begrænse en handling eller blokere adgangen.",
         },
       },
       privacy: {
         title: "Privatlivspolitik",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} værdsætter dine personlige oplysninger og kontosikkerhed. Denne politik forklarer, hvordan vi indsamler, bruger, gemmer, deler og beskytter dine oplysninger, samt de rettigheder, der er tilgængelige for dig.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Når du registrerer dig, logger ind eller bruger kontotjenester, kan vi indsamle dit registreringsland, e-mailadresse, telefonnummer, adgangskodehash, loginsessioner, enheds-IP, autorisationsoversigter og nødvendige sikkerhedslogfiler.",
           dataCollectionP2:
             "Når du uploader en avatar, ændrer din profil, binder et telefonnummer, aktiverer MFA eller autoriserer en tredjepartsapp, behandler vi de oplysninger, du indsender, efter behov for at levere den pågældende funktion.",
+dataCollectionP3:
+            "For at identificere kontotagning, credential stuffing, unormale enheder, unormale netværk, automatiserede anmodninger og højrisikohandlinger kan vi også indsamle eller generere enhedsfingeraftryk, offentlige nøgleidentifikatorer for enheder, klienttype, enhedsrisikosignaler, årsager til mislykkede logins, kodeverifikationsresultater, IP-region eller regionale risikomærkater, loginhistorik, risikoscores, risikoniveauer og trufne foranstaltninger. Vi indsamler ikke kontakter, SMS-indhold, opkaldslogger, fotoalbums, præcis placering, mikrofon- eller kameraindhold til kontoriskostyring.",
           dataUsageTitle: "2. Hvordan vi bruger oplysninger",
           dataUsageP1:
             "Vi bruger relevante oplysninger til at levere kontoregistrering, loginautentifikation, levering af bekræftelseskoder, risikokontrol, autorisationsbekræftelse, udviklerapp-gennemgang, kontosikkerhedsmeddelelser og vedligeholdelse af servicetilgængelighed.",
           dataUsageP2:
             "Vi analyserer også logfiler og statistikker på et minimumsnødvendigt grundlag for at opdage unormal aktivitet, forbedre produktoplevelsen og styrke sikkerheden.",
+dataUsageP3:
+            "Risikostyringsoplysninger bruges primært til at afgøre, om login eller fortsættelse af følsomme handlinger tillades, om yderligere verifikation via e-mail eller SMS kræves, om binding af telefonnummer kræves, om låsning efter mislykkede forsøg skal udløses, om en risikobegivenhed skal registreres, eller til at hjælpe administratorer med at undersøge sikkerhedsproblemer. Klientrapporterede risikoplysninger bruges kun som et hjælpesignal og bruges ikke alene til at sænke sikkerhedsbeslutninger.",
           dataSharingTitle: "3. Deling og videregivelse",
           dataSharingP1:
             "Vi giver kun identitetsoplysninger eller tilladelsesrelaterede data til tredjepartsapps, når du udtrykkeligt autoriserer de omfang, der vises på autorisationssiden.",
@@ -83,6 +89,8 @@ const locale = {
             "Vi bruger adgangskontroller, adgangskodehashing, udløb af bekræftelseskoder, revisionslogfiler og dataminimeringsforanstaltninger til at beskytte dine personlige oplysninger og autentifikationsdata.",
           securityP2:
             "Under hensyntagen til lovmæssige og forretningsmæssige krav opbevarer vi dine oplysninger kun så længe som nødvendigt for at opfylde serviceformålene; efter kontosletning eller udløb af opbevaringsperioder vil vi slette eller anonymisere data i henhold til politikken.",
+securityP3:
+            "Risikologs, loginhistorik, enhedsprofiler og registreringer af mislykkede forsøg opbevares i den periode, der er nødvendig for sikkerhedsrevision, tvistbilæggelse, angrebsundersøgelser og compliance. Vi reducerer risikoen for lækage og misbrug gennem hashing, adgangskontrol, mindste privilegium og revisionsspor.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "Bekræftelseskoden er blevet sendt. Tjek venligst din indbakke.",
       sendRegisterCodeFailed: "Kunne ikke sende bekræftelseskode",
+      legalConsentPrefix: "Jeg har læst og accepterer",
+      legalConsentAnd: "og",
+      accountAgreement: "Kontots brugsbetingelser",
+      accountPrivacyPolicy: "Kontots privatlivspolitik",
+      legalConsentRequired: "Læs og accepter Kontots brugsbetingelser og Kontots privatlivspolitik",
       backToLoginWithAccount: "Har du allerede en konto? Log ind",
       forgotPassword: "Glemt adgangskode?",
       forgotPasswordPageTitle: "Nulstil adgangskode",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "Denne QR login er blevet annulleret",
       qrLoginExpired: "QR koden er udløbet. Opdater venligst.",
       qrLoginRefresh: "Opdater QR kode",
+      downloadApp: "Download app",
       passwordLogin: "Adgangskode",
       otpLogin: "E-mail-kode",
       phoneOtpLogin: "Telefonkode",
@@ -663,9 +677,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Mandag til fredag 09:00 - 18:00",
-      contactOverseasPersonValue: "Tilføjes senere",
-      contactOverseasPhoneValue: "Tilføjes senere",
-      contactOverseasEmailValue: "Tilføjes senere",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Mandag til fredag 09:00 - 18:00",
       contactRegionNotice:
         "Kontakt venligst supportkanalen for din region først. Hvis du er usikker på, hvilken region der gælder, skal du starte med fastlandskina-kontakten for hjælp til viderestilling.",

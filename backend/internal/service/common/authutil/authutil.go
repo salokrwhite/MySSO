@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
-	"math/big"
 	"strconv"
 	"strings"
 
@@ -70,13 +69,17 @@ func AllowsAuthenticatedAccess(user domain.User) bool {
 }
 
 func GenerateNumericCode(length int) (string, error) {
+	if length <= 0 {
+		return "", nil
+	}
 	var builder strings.Builder
-	for i := 0; i < length; i++ {
-		n, err := rand.Int(rand.Reader, big.NewInt(10))
-		if err != nil {
-			return "", err
-		}
-		builder.WriteByte(byte('0' + n.Int64()))
+	digits := []byte("0123456789")
+	random := make([]byte, length)
+	if _, err := rand.Read(random); err != nil {
+		return "", err
+	}
+	for _, value := range random {
+		builder.WriteByte(digits[int(value)%len(digits)])
 	}
 	return builder.String(), nil
 }

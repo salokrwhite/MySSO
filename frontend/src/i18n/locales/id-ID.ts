@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Terakhir diperbarui: {{date}}",
       agreement: {
         title: "Syarat Layanan",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "Selamat datang di {{siteName}}. Sebelum mendaftar, masuk, mengakses, atau menggunakan layanan autentikasi terpadu yang disediakan oleh sistem ini, Anda harus membaca syarat ini dengan seksama. Dengan melanjutkan penggunaan, Anda dianggap telah memahami dan setuju untuk menggunakan layanan sesuai dengan syarat ini.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Platform dapat menyesuaikan, meningkatkan, menangguhkan, atau mengakhiri konten layanan, kemampuan antarmuka, alur autentikasi, atau halaman fungsional untuk alasan keamanan, kepatuhan, pemeliharaan operasional, dan sebagainya, dan akan berusaha memberitahukan sebelumnya.",
           liabilityP2:
             "Dalam batas yang diizinkan oleh hukum, platform tidak bertanggung jawab di luar batas hukum untuk gangguan layanan, data abnormal, atau kerugian yang disebabkan oleh force majeure, kegagalan jaringan, alasan pihak ketiga, atau penggunaan yang tidak tepat oleh Anda.",
+accountP3:
+            "Untuk melindungi akun pengguna dan pengembang, platform dapat melakukan penilaian risiko dalam skenario seperti login dengan kata sandi, login dengan kode, login dengan passkey, login dengan kode QR, pengaitan nomor telepon, perubahan email, perubahan nomor telepon, perubahan kata sandi, pengaturan MFA, penghapusan akun, ekspor data, dan pengelolaan aplikasi developer. Bergantung pada hasilnya, platform dapat meminta verifikasi tambahan, menunda pemrosesan, membatasi operasi, atau memblokir akses.",
         },
       },
       privacy: {
         title: "Kebijakan Privasi",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} menghargai informasi pribadi dan keamanan akun Anda. Kebijakan ini digunakan untuk menjelaskan bagaimana kami mengumpulkan, menggunakan, menyimpan, membagikan, dan melindungi informasi pribadi Anda, serta hak-hak yang Anda miliki.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Saat Anda mendaftar, masuk, atau menggunakan layanan akun, kami mungkin mengumpulkan negara pendaftaran, alamat email, nomor telepon, ringkasan kata sandi, sesi masuk, IP perangkat, catatan otorisasi, dan catatan log keamanan yang diperlukan.",
           dataCollectionP2:
             "Saat Anda mengunggah avatar, mengubah nama panggilan, mengikat nomor telepon, mengaktifkan verifikasi dua faktor, atau mengizinkan aplikasi ketiga, kami akan memproses informasi yang Anda kirimkan sesuai dengan kebutuhan fungsi.",
+dataCollectionP3:
+            "Untuk mengidentifikasi pengambilalihan akun, credential stuffing, perangkat abnormal, jaringan abnormal, permintaan otomatis, dan operasi berisiko tinggi, kami juga dapat mengumpulkan atau menghasilkan sidik jari perangkat, pengenal kunci publik perangkat, tipe klien, sinyal risiko perangkat, alasan login gagal, hasil verifikasi kode, wilayah IP atau label risiko regional, riwayat login, skor risiko, tingkat risiko, dan tindakan yang diambil. Kami tidak mengumpulkan kontak, konten SMS, log panggilan, album foto, lokasi tepat, konten mikrofon atau kamera untuk tujuan pengendalian risiko akun.",
           dataUsageTitle: "2. Cara Penggunaan Informasi",
           dataUsageP1:
             "Kami menggunakan informasi terkait untuk menyelesaikan pendaftaran akun, autentikasi masuk, pengiriman kode verifikasi, verifikasi risiko, konfirmasi otorisasi, pemeriksaan integrasi pengembang, pemberitahuan keamanan akun, dan pemeliharaan stabilitas layanan.",
           dataUsageP2:
             "Kami juga akan menganalisis log dan informasi statistik berdasarkan prinsip minimal yang diperlukan, untuk mendeteksi perilaku abnormal, mengoptimalkan pengalaman produk, dan meningkatkan keamanan sistem.",
+dataUsageP3:
+            "Informasi pengendalian risiko terutama digunakan untuk memutuskan apakah akan mengizinkan login atau melanjutkan operasi sensitif, apakah akan meminta verifikasi tambahan melalui email atau SMS, apakah akan meminta pengaitan nomor telepon, apakah akan memicu penguncian setelah percobaan gagal, apakah akan mencatat peristiwa risiko, atau untuk membantu administrator menyelidiki masalah keamanan. Informasi risiko yang dilaporkan klien hanya digunakan sebagai sinyal tambahan dan tidak digunakan sendiri untuk menurunkan keputusan keamanan.",
           dataSharingTitle: "3. Berbagi dan Pengungkapan Informasi",
           dataSharingP1:
             "Kami hanya akan memberikan informasi identitas atau data yang sesuai dengan cakupan izin kepada aplikasi ketiga jika Anda secara eksplisit mengizinkan.",
@@ -83,6 +89,8 @@ const locale = {
             "Kami mengambil kontrol akses, enkripsi kata sandi, kontrol waktu kedaluwarsa kode verifikasi, catatan audit, dan penyimpanan minimal untuk melindungi informasi pribadi dan data autentikasi Anda.",
           securityP2:
             "Dengan mematuhi peraturan hukum dan kebutuhan bisnis, kami hanya menyimpan informasi Anda selama periode yang diperlukan untuk mencapai tujuan layanan; setelah Anda menghapus akun atau masa penyimpanan berakhir, kami akan menghapus atau menganonimkan data sesuai aturan.",
+securityP3:
+            "Log risiko, riwayat login, profil perangkat, dan catatan percobaan gagal disimpan selama periode yang diperlukan untuk audit keamanan, penanganan sengketa, investigasi serangan, dan kepatuhan. Kami mengurangi risiko kebocoran dan penyalahgunaan melalui hashing, kontrol akses, hak istimewa minimum, dan catatan audit.",
         },
       },
     },
@@ -103,6 +111,11 @@ const locale = {
       sendRegisterCode: "Kirim Kode",
       sendRegisterCodeSuccess: "Kode verifikasi telah dikirim, silakan periksa email Anda.",
       sendRegisterCodeFailed: "Gagal mengirim kode verifikasi",
+      legalConsentPrefix: "Saya telah membaca dan menyetujui",
+      legalConsentAnd: "dan",
+      accountAgreement: "Ketentuan Penggunaan Akun",
+      accountPrivacyPolicy: "Kebijakan Privasi Akun",
+      legalConsentRequired: "Silakan baca dan setujui Ketentuan Penggunaan Akun dan Kebijakan Privasi Akun",
       backToLoginWithAccount: "Sudah punya akun, masuk",
       forgotPassword: "Lupa kata sandi",
       forgotPasswordPageTitle: "Reset Kata Sandi",
@@ -157,6 +170,7 @@ const locale = {
       qrLoginCancelled: "Login QR dibatalkan",
       qrLoginExpired: "Kode QR kedaluwarsa, segarkan",
       qrLoginRefresh: "Segarkan kode QR",
+      downloadApp: "Unduh aplikasi",
       passwordLogin: "Login dengan Kata Sandi",
       otpLogin: "Login dengan Kode Email",
       phoneOtpLogin: "Login dengan Kode SMS",
@@ -577,9 +591,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Senin hingga Jumat 09:00 - 18:00",
-      contactOverseasPersonValue: "Akan ditambahkan",
-      contactOverseasPhoneValue: "Akan ditambahkan",
-      contactOverseasEmailValue: "Akan ditambahkan",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Senin hingga Jumat 09:00 - 18:00",
       contactRegionNotice:
         "Silakan hubungi saluran dukungan yang sesuai dengan wilayah Anda terlebih dahulu; jika Anda tidak dapat menentukan wilayah Anda, Anda dapat menghubungi kontak Tiongkok Daratan terlebih dahulu untuk mendapatkan bantuan transfer.",

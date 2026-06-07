@@ -14,6 +14,12 @@ type userAttemptAuditContext struct {
 }
 
 func (s *UserService) checkUserAttempt(ctx userAttemptAuditContext) error {
+	if ctx.User != nil && ctx.User.Role == domain.RoleAdmin {
+		return nil
+	}
+	if s.risk != nil {
+		return s.risk.CheckAttempt(ctx.Identifier, ctx.IP)
+	}
 	return nil
 }
 
@@ -21,6 +27,13 @@ func (s *UserService) resetUserAttempt(ctx userAttemptAuditContext) {
 }
 
 func (s *UserService) failUserAttempt(ctx userAttemptAuditContext, reason string) error {
+	if s.risk != nil && (ctx.User == nil || ctx.User.Role != domain.RoleAdmin) {
+		userID := ""
+		if ctx.User != nil {
+			userID = ctx.User.ID
+		}
+		s.risk.RecordFailedAttemptForUser(userID, ctx.Identifier, ctx.IP, ctx.DeviceID, ctx.Kind, reason)
+	}
 	s.auditUserAttempt(ctx, "failed", reason)
 	return nil
 }

@@ -21,7 +21,7 @@ const locale = {
       updatedAt: "Oxirgi yangilanish: {{date}}",
       agreement: {
         title: "Foydalanuvchi shartnomasi",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} ga xush kelibsiz. Ro'yxatdan o'tish, kirish, ulashish yoki birlashtirilgan autentifikatsiya xizmatlaridan foydalanishdan oldin, bu shartnomani diqqat bilan o'qing. Xizmatdan foydalanishda davom etish orqali siz bu shartnomaga rozilik bildirasiz.",
         sections: {
@@ -50,11 +50,13 @@ const locale = {
             "Xavfsizlik, muvofiqlik, operatsiyalar yoki texnik yordam sabablariga ko'ra, platforma ba'zi interfeyslarni, oqimlarni yoki funktsiyalarni sozlashi, yangilashi, to'xtatishi yoki to'xtatishi mumkin va tegishli bo'lganda ogohlantirishni ta'minlashga harakat qiladi.",
           liabilityP2:
             "Qonun tomonidan ruxsat etilgan darajada, platforma qonuniy majburiyatlaridan tashqari, qasosiy holatlar, tarmoq nosozliklari, uchinchi tomon sabablari yoki sizning tomoningizdan noto'g'ri foydalanish natijasida yuzaga keladigan uzilishlar, g'ayritabiiy ma'lumotlar yoki yo'qotishlar uchun javobgar emas.",
+accountP3:
+            "Foydalanuvchi va dasturchi hisoblarini himoya qilish uchun platforma parol bilan kirish, kod bilan kirish, passkey bilan kirish, QR kod bilan kirish, telefon raqamini bog'lash, email o'zgartirish, telefon raqamini o'zgartirish, parol o'zgartirish, MFA sozlamalari, hisobni o'chirish, ma'lumotlarni eksport qilish va dasturchi ilovalarini boshqarish kabi stsenariylarda xavfni baholashni amalga oshirishi mumkin. Natijaga qarab, platforma qo'shimcha tekshirishni so'rashi, qayta ishlashni kechiktirishi, amalni cheklashi yoki kirishni bloklashi mumkin.",
         },
       },
       privacy: {
         title: "Maxfiylik siyosati",
-        updatedAt: "2026-03-16",
+        updatedAt: "2026-06-16",
         intro:
           "{{siteName}} sizning shaxsiy ma'lumotlaringiz va hisob xavfsizligingizni qadrlaydi. Bu siyosat biz qanday qilib ma'lumotlaringizni yig'ish, ishlatish, saqlash, almashish va himoya qilishni, shuningdek sizga mavjud bo'lgan huquqlarni tushuntiradi.",
         sections: {
@@ -63,11 +65,15 @@ const locale = {
             "Siz ro'yxatdan o'tganingizda, kirganingizda yoki hisob xizmatlaridan foydalaningizda, biz ro'yxatdan o'tgan mamlakat, elektron pochta manzili, telefon raqami, parol xesabi, kirish sessiyalari, qurilma IP manzili, ruxsat yozuvlari va zarur bo'lgan xavfsizlik jurnallari ma'lumotlarini to'plaishi mumkin.",
           dataCollectionP2:
             "Siz avatar yuklaganizda, profilni o'zgartirganizda, telefon raqamini bog'laganizda, MFA ni yoqganizda yoki uchinchi tomon ilovasiga ruxsat berganizda, biz o'sha funktsiyani taqdim etish uchun zarur bo'lgan miqdorda siz taqdim etgan ma'lumotlarni qayta ishlaymiz.",
+dataCollectionP3:
+            "Hisob qo'lga olish, credential stuffing, g'ayritabiiy qurilmalar, tarmoqlar, avtomatik so'rovlar va yuqori xavfli amallarni aniqlash uchun biz qurilma barmoq izlari, qurilmaning ochiq kalit identifikatorlari, mijoz turi, qurilma xavfi signallari, muvaffaqiyatsiz kirish sabablari, kod tekshirish natijalari, IP mintaqasi yoki mintaqaviy xavf yorliqlari, kirish tarixi, xavf ballari, xavf darajalari va ko'rilgan choralarni ham to'plashimiz yoki yaratishimiz mumkin. Hisob xavfini boshqarish maqsadida biz kontaktlar, SMS mazmuni, qo'ng'iroq jurnallari, foto albomlar, aniq joylashuv, mikrofon yoki kamera mazmunini to'plamaymiz.",
           dataUsageTitle: "2. Ma'lumotlarni qanday ishlatamiz",
           dataUsageP1:
             "Biz bog'liq ma'lumotlarni hisob ro'yxatdan o'tish, kirish autentifikatsiyasi, tasdiqlash kodi etkazib berish, xavf nazorati, ruxsatni tasdiqlash, dasturchi ilovasi tekshiruvi, hisob xavfsizligi bildirishnomalari va xizmat ishonchliligini saqlash uchun ishlatamiz.",
           dataUsageP2:
             "Biz, shuningdek, g'ayritabiiy faoliyatni aniqlash, mahsulot tajribasini yaxshilash va xavfsizlikni kuchaytirish uchun minimal zarurlik asosida jurnallar va statistik ma'lumotlarni tahlil qilamiz.",
+dataUsageP3:
+            "Xavfni boshqarish ma'lumotlari asosan kirish yoki sezgir amallarni davom ettirishga ruxsat berish yoki bermaslik, email yoki SMS orqali qo'shimcha tekshirish kerakmi, telefon raqamini bog'lash kerakmi, muvaffaqiyatsiz urinishlardan keyin qulflashni ishga tushirish kerakmi, xavf hodisasini qayd etish kerakmi yoki administratorlarga xavfsizlik muammolarini tekshirishda yordam berish uchun ishlatiladi. Mijoz tomonidan xabar qilingan xavf ma'lumotlari faqat yordamchi signal sifatida ishlatiladi va xavfsizlik qarorlarini pasaytirish uchun yakka ishlatilmaydi.",
           dataSharingTitle: "3. Almashish va ochish",
           dataSharingP1:
             "Biz faqat siz ruxsat sahifasida ko'rsatilgan chegaralar bo'yicha aniq ruxsat berganingizda uchinchi tomon ilovalariga identifikatsiya ma'lumotlari yoki ruxsat bilan bog'liq ma'lumotlarni taqdim etamiz.",
@@ -83,6 +89,8 @@ const locale = {
             "Biz sizning shaxsiy ma'lumotlaringiz va autentifikatsiya ma'lumotlaringizni himoya qilish uchun kirish nazorati, parol xesablanishi, tasdiqlash kodi muddati, audit jurnallari va ma'lumotlarni minimallashtirish choralarini qo'llaymiz.",
           securityP2:
             "Qonuniy va biznes talablariga rioya qilib, biz ma'lumotlaringizni faqat xizmat maqsadlarini bajarish uchun zarur bo'lgan vaqt davomida saqlaymiz; hisobni o'chirganingizdan yoki saqlash muddati tugaganidan keyin, biz siyosatga muvofiq ma'lumotlarni o'chirib tashlaymiz yoki anonimlashtiramiz.",
+securityP3:
+            "Xavf jurnallari, kirish tarixi, qurilma profillari va muvaffaqiyatsiz urinishlar yozuvlari xavfsizlik auditi, nizolarni hal qilish, hujumlarni tekshirish va muvofiqlik uchun zarur muddat davomida saqlanadi. Biz xeshlash, kirishni boshqarish, minimal imtiyozlar va audit yozuvlari orqali oqish va suiiste'mol qilish xavflarini kamaytiramiz.",
         },
       },
     },
@@ -107,6 +115,11 @@ const locale = {
       sendRegisterCodeSuccess:
         "Tasdiqlash kodi yuborildi. Iltimos, elektron pochta pochtangizni tekshiring.",
       sendRegisterCodeFailed: "Tasdiqlash kodi yuborish muvaffaqiyatsiz bo'ldi",
+      legalConsentPrefix: "O'qidim va roziman",
+      legalConsentAnd: "va",
+      accountAgreement: "Hisobdan foydalanish shartlari",
+      accountPrivacyPolicy: "Hisob maxfiylik siyosati",
+      legalConsentRequired: "Iltimos, Hisobdan foydalanish shartlari va Hisob maxfiylik siyosatini o'qib, qabul qiling",
       backToLoginWithAccount: "Allaqachon hisobingiz bormi? Kirish",
       forgotPassword: "Parolni unutdingizmi?",
       forgotPasswordPageTitle: "Parolni qayta tiklash",
@@ -166,6 +179,7 @@ const locale = {
       qrLoginCancelled: "QR kirish bekor qilindi",
       qrLoginExpired: "QR kodning muddati o'tgan. Yangilash.",
       qrLoginRefresh: "QR kodni yangilash",
+      downloadApp: "Ilovani yuklab olish",
       passwordLogin: "Parol",
       otpLogin: "Elektron pochta kodi",
       phoneOtpLogin: "Telefon kodi",
@@ -662,9 +676,9 @@ const locale = {
       contactMainlandPhoneValue: "YOUR_PHONE_NUMBER",
       contactMainlandEmailValue: "YOUR_EMAIL",
       contactMainlandHoursValue: "Dushanba - Juma 09:00 - 18:00",
-      contactOverseasPersonValue: "Ta'minlanishi kerak",
-      contactOverseasPhoneValue: "Ta'minlanishi kerak",
-      contactOverseasEmailValue: "Ta'minlanishi kerak",
+      contactOverseasPersonValue: "YOUR_NAME_Oversea",
+      contactOverseasPhoneValue: "YOUR_PHONE_Oversea",
+      contactOverseasEmailValue: "YOUR_EMAIL_Oversea",
       contactOverseasHoursValue: "Dushanba - Juma 09:00 - 18:00",
       contactRegionNotice:
         "Iltimos, avval o'zingizning mintaqangiz uchun yordam kanaliga murojaat qiling. Agar qaysi mintaqa tegishli ekanligini aniqlay olmasangiz, yo'naltirish yordami uchun Markaziy Xitoy kontaktiga murojaat qiling.",
