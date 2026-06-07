@@ -1041,6 +1041,8 @@ func (s *SettingsService) BuildSMSVerificationContent(purpose, phone, code strin
 		template = appdefaults.DefaultSMSLoginTemplate
 	case "login_step_up":
 		template = appdefaults.DefaultSMSLoginTemplate
+	case "login_mfa_enrollment":
+		template = appdefaults.DefaultSMSLoginTemplate
 	case "reset_password":
 		template = appdefaults.DefaultSMSResetPasswordTemplate
 	case "change_phone":
@@ -1060,6 +1062,8 @@ func (s *SettingsService) BuildSMSVerificationContent(purpose, phone, code strin
 		case "mfa_login":
 			template = authutil.FallbackSetting(values["sms_login_template"], appdefaults.DefaultSMSLoginTemplate)
 		case "login_step_up":
+			template = authutil.FallbackSetting(values["sms_login_template"], appdefaults.DefaultSMSLoginTemplate)
+		case "login_mfa_enrollment":
 			template = authutil.FallbackSetting(values["sms_login_template"], appdefaults.DefaultSMSLoginTemplate)
 		case "reset_password":
 			template = authutil.FallbackSetting(values["sms_reset_password_template"], appdefaults.DefaultSMSResetPasswordTemplate)
@@ -1134,7 +1138,7 @@ func (s *SettingsService) BuildVerificationEmailContent(purpose, email, country,
 	bodyTemplate := appdefaults.DefaultLoginCodeBodyTemplate
 	language := verificationEmailLanguage(country)
 
-	if purpose == "login" || purpose == "mfa_login" || purpose == "login_step_up" {
+	if purpose == "login" || purpose == "mfa_login" || purpose == "login_step_up" || purpose == "login_mfa_enrollment" {
 		if values, err := s.deps.Store.GetSettings("login_code_subject_template", "login_code_body_template", "login_code_subject_template_en", "login_code_body_template_en"); err == nil {
 			if language == "en" {
 				subjectTemplate = authutil.FallbackSetting(values["login_code_subject_template_en"], appdefaults.DefaultLoginCodeSubjectTemplateEN)

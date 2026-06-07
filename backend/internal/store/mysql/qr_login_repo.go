@@ -15,6 +15,8 @@ type qrLoginPayload struct {
 	UserDisplayName string `json:"user_display_name,omitempty"`
 	UserRole        string `json:"user_role,omitempty"`
 	SessionToken    string `json:"session_token,omitempty"`
+	FlowResultJSON  string `json:"flow_result_json,omitempty"`
+	PollNonce       string `json:"poll_nonce,omitempty"`
 	IP              string `json:"ip,omitempty"`
 	UserAgent       string `json:"user_agent,omitempty"`
 }
@@ -92,8 +94,8 @@ func (s *MySQLStore) UpdateQRLoginChallenge(challenge domain.QRLoginChallenge) e
 	result, err := s.db.Exec(`
 		UPDATE auth_challenges
 		SET status = ?, user_id = ?, payload_json = ?, updated_at = ?
-		WHERE token = ? AND challenge_type = ? AND expires_at >= UTC_TIMESTAMP()
-	`, challenge.Status, challenge.UserID, nullableJSON(payload), challenge.UpdatedAt, challenge.ChallengeToken, authChallengeTypeQRLogin)
+		WHERE token = ? AND challenge_type = ? AND status IN (?, ?) AND expires_at >= UTC_TIMESTAMP()
+	`, challenge.Status, challenge.UserID, nullableJSON(payload), challenge.UpdatedAt, challenge.ChallengeToken, authChallengeTypeQRLogin, domain.QRLoginStatusPending, domain.QRLoginStatusScanned)
 	if err != nil {
 		return err
 	}
@@ -135,6 +137,8 @@ func qrLoginPayloadJSON(challenge domain.QRLoginChallenge) (string, error) {
 		UserDisplayName: challenge.UserDisplayName,
 		UserRole:        string(challenge.UserRole),
 		SessionToken:    challenge.SessionToken,
+		FlowResultJSON:  challenge.FlowResultJSON,
+		PollNonce:       challenge.PollNonce,
 		IP:              challenge.IP,
 		UserAgent:       challenge.UserAgent,
 	}
@@ -157,6 +161,8 @@ func applyQRLoginPayload(challenge *domain.QRLoginChallenge, payloadJSON string)
 	challenge.UserDisplayName = payload.UserDisplayName
 	challenge.UserRole = domain.Role(payload.UserRole)
 	challenge.SessionToken = payload.SessionToken
+	challenge.FlowResultJSON = payload.FlowResultJSON
+	challenge.PollNonce = payload.PollNonce
 	challenge.IP = payload.IP
 	challenge.UserAgent = payload.UserAgent
 }

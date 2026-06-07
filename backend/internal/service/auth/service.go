@@ -729,7 +729,7 @@ func (s *AuthService) sendEmailVerificationCode(email, country, purpose string, 
 	if email == "" {
 		return 0, fmt.Errorf("email is required")
 	}
-	if purpose != "register" && purpose != "login" && purpose != "mfa_login" && purpose != "login_step_up" && purpose != "change_email" && purpose != "reset_password" && purpose != "delete_account" {
+	if purpose != "register" && purpose != "login" && purpose != "mfa_login" && purpose != "login_step_up" && purpose != "login_mfa_enrollment" && purpose != "change_email" && purpose != "reset_password" && purpose != "delete_account" {
 		return 0, fmt.Errorf("unsupported verification purpose")
 	}
 	if purpose == "register" {
@@ -753,7 +753,7 @@ func (s *AuthService) sendEmailVerificationCode(email, country, purpose string, 
 			country = strings.ToUpper(strings.TrimSpace(user.Country))
 		}
 	}
-	if purpose == "mfa_login" || purpose == "login_step_up" {
+	if purpose == "mfa_login" || purpose == "login_step_up" || purpose == "login_mfa_enrollment" {
 		if _, err := s.deps.Store.FindUserByEmail(email); err != nil {
 			return 0, fmt.Errorf("user not found")
 		}
@@ -843,7 +843,7 @@ func (s *AuthService) sendSMSVerificationCode(phone, purpose string, enforceCool
 	if phone == "" {
 		return 0, fmt.Errorf("phone is required")
 	}
-	if purpose != "change_phone" && purpose != "login" && purpose != "mfa_login" && purpose != "login_step_up" && purpose != "risk_phone_binding" && purpose != "delete_account" {
+	if purpose != "change_phone" && purpose != "login" && purpose != "mfa_login" && purpose != "login_step_up" && purpose != "login_mfa_enrollment" && purpose != "risk_phone_binding" && purpose != "delete_account" {
 		return 0, fmt.Errorf("unsupported sms verification purpose")
 	}
 	if purpose == "change_phone" {
@@ -856,7 +856,7 @@ func (s *AuthService) sendSMSVerificationCode(phone, purpose string, enforceCool
 			return 0, fmt.Errorf("phone already bound")
 		}
 	}
-	if purpose == "mfa_login" || purpose == "login_step_up" || purpose == "delete_account" {
+	if purpose == "mfa_login" || purpose == "login_step_up" || purpose == "login_mfa_enrollment" || purpose == "delete_account" {
 		if _, err := s.deps.Store.FindUserByPhone(phone); err != nil {
 			return 0, fmt.Errorf("user not found")
 		}

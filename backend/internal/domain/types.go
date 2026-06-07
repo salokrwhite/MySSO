@@ -268,6 +268,8 @@ type QRLoginChallenge struct {
 	UserDisplayName string
 	UserRole        Role
 	SessionToken    string
+	FlowResultJSON  string
+	PollNonce       string
 	IP              string
 	UserAgent       string
 	ExpiresAt       time.Time

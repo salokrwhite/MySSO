@@ -15,6 +15,8 @@ type qrLoginPayload struct {
 	UserDisplayName string `json:"user_display_name,omitempty"`
 	UserRole        string `json:"user_role,omitempty"`
 	SessionToken    string `json:"session_token,omitempty"`
+	FlowResultJSON  string `json:"flow_result_json,omitempty"`
+	PollNonce       string `json:"poll_nonce,omitempty"`
 	IP              string `json:"ip,omitempty"`
 	UserAgent       string `json:"user_agent,omitempty"`
 }
@@ -83,6 +85,9 @@ func (s *MemoryStore) UpdateQRLoginChallenge(challenge domain.QRLoginChallenge) 
 		return ErrNotFound
 	}
 	if existing.ExpiresAt.Before(time.Now().UTC()) {
+		return ErrNotFound
+	}
+	if existing.Status != string(domain.QRLoginStatusPending) && existing.Status != string(domain.QRLoginStatusScanned) {
 		return ErrNotFound
 	}
 	if strings.TrimSpace(challenge.ScanToken) == "" {
@@ -154,6 +159,8 @@ func qrLoginPayloadJSON(challenge domain.QRLoginChallenge) (string, error) {
 		UserDisplayName: challenge.UserDisplayName,
 		UserRole:        string(challenge.UserRole),
 		SessionToken:    challenge.SessionToken,
+		FlowResultJSON:  challenge.FlowResultJSON,
+		PollNonce:       challenge.PollNonce,
 		IP:              challenge.IP,
 		UserAgent:       challenge.UserAgent,
 	}
@@ -187,6 +194,8 @@ func authChallengeToQRLoginChallenge(item domain.AuthChallenge) domain.QRLoginCh
 	challenge.UserDisplayName = payload.UserDisplayName
 	challenge.UserRole = domain.Role(payload.UserRole)
 	challenge.SessionToken = payload.SessionToken
+	challenge.FlowResultJSON = payload.FlowResultJSON
+	challenge.PollNonce = payload.PollNonce
 	challenge.IP = payload.IP
 	challenge.UserAgent = payload.UserAgent
 	return challenge

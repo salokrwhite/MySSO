@@ -332,11 +332,10 @@ func (r ChallengeRequest) contextHash() string {
 	purpose := normalizeContextPart(r.Purpose)
 	target := normalizeContextPart(r.Target)
 	subject := normalizeContextPart(r.Subject)
-	ip := normalizeContextPart(r.IP)
-	if flow == "" || purpose == "" || target == "" || ip == "" {
+	if flow == "" || purpose == "" || target == "" {
 		return ""
 	}
-	raw := strings.Join([]string{flow, purpose, target, subject, ip}, "\x00")
+	raw := strings.Join([]string{flow, purpose, target, subject}, "\x00")
 	if len(raw) > contextMaxLength {
 		return ""
 	}

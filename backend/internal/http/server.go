@@ -150,6 +150,7 @@ func (s *Server) registerRoutes() {
 	api.POST("/auth/login-mfa/resend", s.handleResendMFALogin)
 	api.POST("/auth/login-step-up/code", s.handleSendLoginStepUpCode)
 	api.POST("/auth/login-step-up/complete", s.handleCompleteLoginStepUp)
+	api.POST("/auth/login-mfa-enrollment/code", s.handleSendLoginMFAEnrollmentCode)
 	api.POST("/auth/login-mfa-enrollment/complete", s.handleCompleteLoginMFAEnrollment)
 	api.POST("/auth/deletion-login/confirm", s.handleConfirmDeletionLogin)
 	api.POST("/auth/login-otp", s.handleOTPLogin)

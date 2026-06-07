@@ -146,9 +146,19 @@ type completeLoginStepUpRequest struct {
 	DevicePublicKey string `json:"device_public_key"`
 }
 
+type sendLoginMFAEnrollmentCodeRequest struct {
+	ChallengeToken   string `json:"challenge_token"`
+	Method           string `json:"method"`
+	Captcha          string `json:"captcha"`
+	CaptchaTicket    string `json:"captcha_ticket"`
+	CaptchaChallenge string `json:"captcha_challenge"`
+	CaptchaSign      string `json:"captcha_sign"`
+}
+
 type completeLoginMFAEnrollmentRequest struct {
 	ChallengeToken  string `json:"challenge_token"`
 	Method          string `json:"method"`
+	OTP             string `json:"otp"`
 	DeviceKeyID     string `json:"device_key_id"`
 	DevicePublicKey string `json:"device_public_key"`
 }

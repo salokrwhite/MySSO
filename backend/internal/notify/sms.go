@@ -184,7 +184,7 @@ func (s AliyunSender) Send(phone, purpose, content string, options SendOptions) 
 
 func (s AliyunSender) templateCodeForPurpose(purpose string) string {
 	switch purpose {
-	case "login", "mfa_login", "login_step_up":
+	case "login", "mfa_login", "login_step_up", "login_mfa_enrollment":
 		return strings.TrimSpace(s.cfg.AliyunLoginTemplateCode)
 	case "reset_password":
 		return strings.TrimSpace(s.cfg.AliyunResetTemplateCode)

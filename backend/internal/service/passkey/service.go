@@ -417,7 +417,18 @@ func (s *PasskeyService) CompleteLogin(challengeToken, credentialResponse, ip, d
 	})
 
 	auth := auth.New(s.deps, s.audit, s.settings, s.user, s.risk)
-	return auth.ContinuePostAuthentication(loginUser, ip, "passkey", "urn:mysso:acr:passkey", binding...)
+	return auth.ContinuePostAuthenticationWithRisk(
+		loginUser,
+		ip,
+		"passkey",
+		"urn:mysso:acr:passkey",
+		riskservice.ClientInfo{
+			ClientType:  "web",
+			Fingerprint: strings.TrimSpace(deviceID),
+			UserAgent:   strings.TrimSpace(userAgent),
+		},
+		binding...,
+	)
 }
 
 func (s *PasskeyService) enforceSecurityOperationRisk(user domain.User, ip, deviceID, operation string) error {

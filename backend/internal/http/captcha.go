@@ -98,6 +98,8 @@ func isAllowedCaptchaContext(flow, purpose string) bool {
 		return purpose == "mfa_login"
 	case "login_step_up":
 		return purpose == "login_step_up"
+	case "login_mfa_enrollment":
+		return purpose == "login_mfa_enrollment"
 	case "phone_binding":
 		return purpose == "risk_phone_binding"
 	case "current_mfa":

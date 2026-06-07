@@ -17,7 +17,7 @@ import { AccountLanguageModal } from "../../components/AccountLanguageModal";
 import { AuthPageFooter } from "../../components/AuthPageFooter";
 import { getStoredSiteName, persistSiteBranding, resolveSiteNameForLocale } from "../../siteBranding";
 import { browserSupportsPasskey, getPasskeyAssertion } from "../../utils/webauthn";
-import { handleLoginFlowResult, handleLoginSuccessResult, type LoginFlowResponse } from "./authLoginFlow";
+import { handleLoginFlowResult, type LoginFlowResponse } from "./authLoginFlow";
 import { useCaptchaGate } from "../../hooks/useCaptchaGate";
 
 type PublicSettings = {
@@ -44,8 +44,7 @@ type QRLoginChallenge = {
 type QRLoginStatus = {
   status: "pending" | "scanned" | "confirmed" | "cancelled" | "expired";
   expires_at: string;
-  user?: LoginFlowResponse["user"];
-};
+} & Partial<LoginFlowResponse>;
 
 export function LoginPage() {
   const backendOrigin = API_BASE.replace(/\/api$/, "");
@@ -329,7 +328,7 @@ export function LoginPage() {
           setQRStatus(result.status);
           if (result.status === "confirmed" && result.user) {
             window.clearInterval(timer);
-            await handleLoginSuccessResult({ user: result.user }, { locationSearch: location.search, navigate });
+            await handleLoginFlowResult(result as LoginFlowResponse, { locationSearch: location.search, navigate });
           } else if (result.status === "cancelled") {
             window.clearInterval(timer);
             setQRChallenge(null);

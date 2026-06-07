@@ -1,13 +1,16 @@
-import { Button, Card, Form, Radio, Space, Typography, message } from "antd";
-import { useMemo, useState } from "react";
+import { Button, Card, Form, Input, Radio, Space, Typography, message } from "antd";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { api } from "../../api/client";
+import { ApiError, api } from "../../api/client";
 import { handleLoginFlowResult, type LoginFlowResponse } from "./authLoginFlow";
+import { useCaptchaGate } from "../../hooks/useCaptchaGate";
 
 export function ForcedMFAEnrollmentPage() {
   const [messageApi, contextHolder] = message.useMessage();
+  const [sending, setSending] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [remainingSeconds, setRemainingSeconds] = useState(0);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,7 +23,23 @@ export function ForcedMFAEnrollmentPage() {
       .filter(Boolean);
     return raw.includes("sms") ? (raw as Array<"email" | "sms">) : ["email"];
   }, [searchParams]);
-  const [form] = Form.useForm<{ method: "email" | "sms" }>();
+  const [form] = Form.useForm<{ method: "email" | "sms"; otp: string }>();
+  const { requestCaptcha, captchaModal } = useCaptchaGate();
+  const selectedMethod = Form.useWatch("method", form) || availableMethods[0] || "email";
+
+  useEffect(() => {
+    if (remainingSeconds <= 0) {
+      return undefined;
+    }
+    const timer = window.setInterval(() => {
+      setRemainingSeconds((current) => (current > 0 ? current - 1 : 0));
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [remainingSeconds]);
+
+  useEffect(() => {
+    setRemainingSeconds(0);
+  }, [selectedMethod]);
 
   function translateError(message: string) {
     switch (message) {
@@ -34,12 +53,55 @@ export function ForcedMFAEnrollmentPage() {
         return t("errors.emailNotBound");
       case "phone is not bound":
         return t("errors.phoneNotBound");
+      case "invalid mfa enrollment verification code":
+        return t("errors.invalidMfaEnrollmentVerificationCode");
       default:
         return message;
     }
   }
 
-  async function submit(values: { method: "email" | "sms" }) {
+  async function sendCode() {
+    if (!challengeToken) {
+      messageApi.error(t("auth.forcedMfaEnrollmentExpired"));
+      return;
+    }
+    setSending(true);
+    try {
+      const captchaPayload = await requestCaptcha({
+        flow: "login_mfa_enrollment",
+        purpose: "login_mfa_enrollment",
+        target: `${challengeToken}:${selectedMethod}`,
+      });
+      const result = await api<{ cooldown_seconds?: number }>(
+        "/auth/login-mfa-enrollment/code",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            challenge_token: challengeToken,
+            method: selectedMethod,
+            ...captchaPayload,
+          }),
+        },
+      );
+      setRemainingSeconds(Number(result.cooldown_seconds || 0));
+      messageApi.success(
+        t(selectedMethod === "sms" ? "auth.sendPhoneOtpCodeSuccess" : "auth.sendOtpCodeSuccess"),
+      );
+    } catch (error) {
+      if (error instanceof ApiError) {
+        const retryAfterSeconds = Number(error.payload.retry_after_seconds || 0);
+        if (retryAfterSeconds > 0) {
+          setRemainingSeconds(retryAfterSeconds);
+          return;
+        }
+      }
+      messageApi.error(error instanceof Error ? translateError(error.message) : t("auth.loginFailed"));
+    } finally {
+      setSending(false);
+    }
+  }
+
+  async function submit(values: { method: "email" | "sms"; otp: string }) {
     if (!challengeToken) {
       messageApi.error(t("auth.forcedMfaEnrollmentExpired"));
       return;
@@ -51,6 +113,7 @@ export function ForcedMFAEnrollmentPage() {
         body: JSON.stringify({
           challenge_token: challengeToken,
           method: values.method,
+          otp: values.otp,
         }),
       });
       await handleLoginFlowResult(result, { locationSearch: location.search, navigate });
@@ -64,6 +127,7 @@ export function ForcedMFAEnrollmentPage() {
   return (
     <div className="center-page">
       {contextHolder}
+      {captchaModal}
       <Card className="auth-card">
         <Space direction="vertical" size={20} style={{ width: "100%" }}>
           <div>
@@ -93,6 +157,26 @@ export function ForcedMFAEnrollmentPage() {
                   <Radio value="sms">{t("security.mfaMethodSMS")}</Radio>
                 ) : null}
               </Radio.Group>
+            </Form.Item>
+            <Form.Item label={t(selectedMethod === "sms" ? "auth.phoneOtpCode" : "auth.otpCode")} required>
+              <Space.Compact style={{ width: "100%" }}>
+                <Form.Item
+                  name="otp"
+                  noStyle
+                  rules={[{ required: true, message: t("auth.otpCodeRequired") }]}
+                >
+                  <Input />
+                </Form.Item>
+                <Button
+                  onClick={() => void sendCode()}
+                  loading={sending}
+                  disabled={remainingSeconds > 0}
+                >
+                  {remainingSeconds > 0
+                    ? `${remainingSeconds}s`
+                    : t(selectedMethod === "sms" ? "auth.sendPhoneOtpCode" : "auth.sendOtpCode")}
+                </Button>
+              </Space.Compact>
             </Form.Item>
             <Button type="primary" htmlType="submit" block loading={submitting}>
               {t("auth.completeForcedMfaEnrollment")}

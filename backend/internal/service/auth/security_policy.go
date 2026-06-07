@@ -108,6 +108,10 @@ func (s *AuthService) ContinuePostAuthentication(user domain.User, ip, loginMeth
 	return s.continuePostAuthenticationWithRisk(user, ip, loginMethod, acr, riskservice.ClientInfo{}, binding...)
 }
 
+func (s *AuthService) ContinuePostAuthenticationWithRisk(user domain.User, ip, loginMethod, acr string, clientRisk riskservice.ClientInfo, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
+	return s.continuePostAuthenticationWithRisk(user, ip, loginMethod, acr, clientRisk, binding...)
+}
+
 func (s *AuthService) continuePostAuthenticationWithRisk(user domain.User, ip, loginMethod, acr string, clientRisk riskservice.ClientInfo, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
 	return s.continuePostAuthenticationWithRiskOptions(user, ip, loginMethod, acr, clientRisk, postAuthRiskOptions{}, binding...)
 }
@@ -134,7 +138,7 @@ func (s *AuthService) continuePostAuthenticationWithRiskOptions(user domain.User
 	if err != nil {
 		return PasswordLoginResult{}, err
 	}
-	if result, enforced, err := s.maybeRequireLoginStepUp(user, policy, loginMethod, acr); err != nil {
+	if result, enforced, err := s.maybeRequireLoginStepUp(user, policy, loginMethod, acr, clientRisk); err != nil {
 		return PasswordLoginResult{}, err
 	} else if enforced {
 		return result, nil
@@ -289,14 +293,6 @@ func (s *AuthService) maybeRequireMFAEnrollment(user domain.User, policy domain.
 		}
 		return PasswordLoginResult{}, false, nil
 	}
-	if loginMethod == "passkey" {
-		if err := s.clearUserSecurityPolicy(user.ID, false, false, true); err != nil {
-			return PasswordLoginResult{}, false, err
-		}
-		s.audit.Record(user.ID, user.Role, "user.security_policy.force_mfa_enrollment_skipped_by_passkey", user.ID, nil)
-		s.deps.AppendUserOperationLog(user.ID, "user.security_policy.force_mfa_enrollment_skipped_by_passkey", user.ID, nil)
-		return PasswordLoginResult{}, false, nil
-	}
 	if authutil.EffectiveUserMFAEnabled(user) {
 		if err := s.clearUserSecurityPolicy(user.ID, false, false, true); err != nil {
 			return PasswordLoginResult{}, false, err
@@ -445,25 +441,72 @@ func (s *AuthService) SendLoginStepUpCode(challengeToken, channel string) (int, 
 	}
 }
 
-func (s *AuthService) CompleteLoginStepUp(challengeToken, emailOTP, smsOTP, ip string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
+func (s *AuthService) SendLoginMFAEnrollmentCode(challengeToken, method string) (int, string, error) {
+	challenge, user, err := s.loadLoginMFAEnrollmentChallenge(challengeToken)
+	if err != nil {
+		return 0, "", err
+	}
+	_ = challenge
+	method = strings.TrimSpace(method)
+	switch method {
+	case "email":
+		if strings.TrimSpace(user.Email) == "" {
+			return 0, "", fmt.Errorf("email is not bound")
+		}
+		cooldownSeconds, err := s.SendEmailVerificationCode(user.Email, user.Country, "login_mfa_enrollment")
+		return cooldownSeconds, maskMFATarget("email", user.Email), err
+	case "sms":
+		if strings.TrimSpace(user.Phone) == "" {
+			return 0, "", fmt.Errorf("phone is not bound")
+		}
+		cooldownSeconds, err := s.SendSMSVerificationCode(user.Phone, "login_mfa_enrollment")
+		return cooldownSeconds, maskMFATarget("sms", user.Phone), err
+	default:
+		return 0, "", fmt.Errorf("unsupported mfa method")
+	}
+}
+
+func (s *AuthService) CompleteLoginStepUp(challengeToken, emailOTP, smsOTP, ip, deviceID string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
 	challenge, user, err := s.loadLoginStepUpChallenge(challengeToken)
 	if err != nil {
+		return PasswordLoginResult{}, err
+	}
+	attempt := authAttemptAuditContext{
+		Kind:       "login_step_up",
+		Identifier: user.ID,
+		IP:         strings.TrimSpace(ip),
+		DeviceID:   strings.TrimSpace(deviceID),
+		User:       &user,
+	}
+	if err := s.checkAuthAttempt(attempt); err != nil {
 		return PasswordLoginResult{}, err
 	}
 	switch challenge.EffectiveMode {
 	case domain.LoginStepUpModeEmail:
 		if err := s.verifyLoginStepUpEmail(challenge.EmailTarget, emailOTP); err != nil {
+			if limitErr := s.failAuthAttempt(attempt, "invalid_code"); limitErr != nil {
+				return PasswordLoginResult{}, limitErr
+			}
 			return PasswordLoginResult{}, err
 		}
 	case domain.LoginStepUpModeSMS:
 		if err := s.verifyLoginStepUpSMS(challenge.PhoneTarget, smsOTP); err != nil {
+			if limitErr := s.failAuthAttempt(attempt, "invalid_code"); limitErr != nil {
+				return PasswordLoginResult{}, limitErr
+			}
 			return PasswordLoginResult{}, err
 		}
 	case domain.LoginStepUpModeEmailAndSMS:
 		if err := s.verifyLoginStepUpEmail(challenge.EmailTarget, emailOTP); err != nil {
+			if limitErr := s.failAuthAttempt(attempt, "invalid_code"); limitErr != nil {
+				return PasswordLoginResult{}, limitErr
+			}
 			return PasswordLoginResult{}, err
 		}
 		if err := s.verifyLoginStepUpSMS(challenge.PhoneTarget, smsOTP); err != nil {
+			if limitErr := s.failAuthAttempt(attempt, "invalid_code"); limitErr != nil {
+				return PasswordLoginResult{}, limitErr
+			}
 			return PasswordLoginResult{}, err
 		}
 	default:
@@ -476,15 +519,17 @@ func (s *AuthService) CompleteLoginStepUp(challengeToken, emailOTP, smsOTP, ip s
 	if err := s.clearUserSecurityPolicy(user.ID, false, true, false); err != nil {
 		return PasswordLoginResult{}, err
 	}
+	s.resetAuthAttempt(attempt)
 	return s.continuePostAuthenticationWithRiskOptions(user, ip, challenge.LoginMethod, challenge.ACR, decodeRiskClient(challenge.RiskClientJSON), postAuthRiskOptions{RiskStepUpSatisfied: true}, binding...)
 }
 
-func (s *AuthService) CompleteForcedMFAEnrollment(challengeToken, method, ip string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
+func (s *AuthService) CompleteForcedMFAEnrollment(challengeToken, method, otp, ip, deviceID string, binding ...settings.DeviceBindingInput) (PasswordLoginResult, error) {
 	challenge, user, err := s.loadLoginMFAEnrollmentChallenge(challengeToken)
 	if err != nil {
 		return PasswordLoginResult{}, err
 	}
 	method = strings.TrimSpace(method)
+	otp = strings.TrimSpace(otp)
 	if method != "email" && method != "sms" {
 		return PasswordLoginResult{}, fmt.Errorf("unsupported mfa method")
 	}
@@ -496,6 +541,32 @@ func (s *AuthService) CompleteForcedMFAEnrollment(challengeToken, method, ip str
 	}
 	if !authutil.SupportsUserMFA(user) {
 		return PasswordLoginResult{}, fmt.Errorf("mfa is disabled for admin accounts")
+	}
+	attempt := authAttemptAuditContext{
+		Kind:       "login_mfa_enrollment",
+		Identifier: user.ID,
+		IP:         strings.TrimSpace(ip),
+		DeviceID:   strings.TrimSpace(deviceID),
+		User:       &user,
+	}
+	if err := s.checkAuthAttempt(attempt); err != nil {
+		return PasswordLoginResult{}, err
+	}
+	switch method {
+	case "email":
+		if err := s.verifyLoginMFAEnrollmentEmail(user.Email, otp); err != nil {
+			if limitErr := s.failAuthAttempt(attempt, "invalid_code"); limitErr != nil {
+				return PasswordLoginResult{}, limitErr
+			}
+			return PasswordLoginResult{}, err
+		}
+	case "sms":
+		if err := s.verifyLoginMFAEnrollmentSMS(user.Phone, otp); err != nil {
+			if limitErr := s.failAuthAttempt(attempt, "invalid_code"); limitErr != nil {
+				return PasswordLoginResult{}, limitErr
+			}
+			return PasswordLoginResult{}, err
+		}
 	}
 	if err := s.deps.Store.ConsumeLoginMFAEnrollmentChallenge(challenge.Token, time.Now().UTC()); err != nil {
 		return PasswordLoginResult{}, err
@@ -516,7 +587,24 @@ func (s *AuthService) CompleteForcedMFAEnrollment(challengeToken, method, ip str
 	s.deps.AppendUserOperationLog(user.ID, "user.security_policy.force_mfa_enrollment_completed", user.ID, map[string]any{
 		"method": method,
 	})
+	s.resetAuthAttempt(attempt)
 	return s.continuePostAuthenticationWithRiskOptions(user, ip, challenge.LoginMethod, challenge.ACR, decodeRiskClient(challenge.RiskClientJSON), postAuthRiskOptions{RiskStepUpSatisfied: challenge.RiskStepUpSatisfied}, binding...)
+}
+
+func (s *AuthService) verifyLoginMFAEnrollmentEmail(email, otp string) error {
+	verification, err := s.deps.Store.GetEmailVerificationCode(strings.TrimSpace(email), "login_mfa_enrollment", strings.TrimSpace(otp))
+	if err != nil {
+		return fmt.Errorf("invalid mfa enrollment verification code")
+	}
+	return s.deps.Store.ConsumeEmailVerificationCode(verification.ID)
+}
+
+func (s *AuthService) verifyLoginMFAEnrollmentSMS(phone, otp string) error {
+	verification, err := s.deps.Store.GetSMSVerificationCode(strings.TrimSpace(phone), "login_mfa_enrollment", strings.TrimSpace(otp))
+	if err != nil {
+		return fmt.Errorf("invalid mfa enrollment verification code")
+	}
+	return s.deps.Store.ConsumeSMSVerificationCode(verification.ID)
 }
 
 func (s *AuthService) verifyLoginStepUpEmail(email, otp string) error {
