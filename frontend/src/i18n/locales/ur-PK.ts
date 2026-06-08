@@ -386,6 +386,7 @@ securityP3:
       passkeyBrowserUnsupported: "فی الحال کا براؤزر یا آلہ پاسکے کو سپورٹ نہیں کرتا",
       passkeyUserHandleInvalid: "پاسکے سے متعلق اکاؤنٹ کی شناخت نہیں ہو سکی",
       invalidLoginStepUpVerificationCode: "اضافی تصدیق کوڈ غلط ہے یا ختم ہو چکا ہے",
+      invalidMfaEnrollmentVerificationCode: "دو مرحلے کی تصدیق فعال کرنے کا تصدیقی کوڈ غلط ہے یا ختم ہو چکا ہے",
       loginStepUpChallengeExpiredOrInvalid: "اضافی تصدیق سیشن ختم ہو چکا ہے، براہ کرم دوبارہ لاگ ان کریں",
       mfaEnrollmentChallengeExpiredOrInvalid: "جبروطے سے دو مرحلے کی تصدیق سیشن ختم ہو چکا ہے، براہ کرم دوبارہ لاگ ان کریں",
       noAvailableMfaMethodForCurrentAccount: "موجودہ اکاؤنٹ کے لیے کوئی دو مرحلے کی تصدیق کا طریقہ دستیاب نہیں ہے",

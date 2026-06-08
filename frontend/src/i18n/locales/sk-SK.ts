@@ -384,6 +384,7 @@ securityP3:
       passkeyBrowserUnsupported: "Tento prehliadač alebo zariadenie nepodporuje passkey",
       passkeyUserHandleInvalid: "Nepodarilo sa identifikovať účet pre tento passkey",
       invalidLoginStepUpVerificationCode: "Extra overovací kód je nesprávny alebo expiroval",
+      invalidMfaEnrollmentVerificationCode: "Overovací kód na zapnutie dvojfaktorového overenia je nesprávny alebo expiroval",
       loginStepUpChallengeExpiredOrInvalid: "Sesia extra overenia vypršala, prosím, prihláste sa znova",
       mfaEnrollmentChallengeExpiredOrInvalid: "Sesia povinného registrovania MFA vypršala, prosím, prihláste sa znova",
       noAvailableMfaMethodForCurrentAccount: "Pre tento účet nie je k dispozícii žiadny spôsob dvojfaktorového overenia",

@@ -384,6 +384,7 @@ const locale = {
       passkeyBrowserUnsupported: "當前瀏覽器或設備不支援通行密鑰",
       passkeyUserHandleInvalid: "無法識別通行密鑰對應的帳號",
       invalidLoginStepUpVerificationCode: "附加驗證驗證碼錯誤或已過期",
+      invalidMfaEnrollmentVerificationCode: "二級驗證開啟驗證碼錯誤或已過期",
       loginStepUpChallengeExpiredOrInvalid: "附加驗證會話已失效，請重新登入",
       mfaEnrollmentChallengeExpiredOrInvalid: "強制開啟二級驗證會話已失效，請重新登入",
       noAvailableMfaMethodForCurrentAccount: "當前帳號沒有可用的二級驗證方式",

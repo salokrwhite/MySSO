@@ -436,6 +436,7 @@ securityP3:
         "حساب مربوط به این کلید عبوری قابل شناسایی نیست.",
       invalidLoginStepUpVerificationCode:
         "کد تایید اضافی نامعتبر یا منقضی شده.",
+      invalidMfaEnrollmentVerificationCode: "کد تأیید برای فعال‌سازی احراز هویت دو عاملی نامعتبر یا منقضی شده است",
       loginStepUpChallengeExpiredOrInvalid:
         "جلسه تایید اضافی منقضی شده است. لطفاً دوباره وارد شوید.",
       mfaEnrollmentChallengeExpiredOrInvalid:

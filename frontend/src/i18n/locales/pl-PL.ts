@@ -435,6 +435,7 @@ securityP3:
         "Nie można zidentyfikować konta dla tego passkey.",
       invalidLoginStepUpVerificationCode:
         "Kod dodatkowej weryfikacji jest nieprawidłowy lub wygasł.",
+      invalidMfaEnrollmentVerificationCode: "Kod weryfikacyjny do włączenia uwierzytelniania dwuskładnikowego jest nieprawidłowy lub wygasł",
       loginStepUpChallengeExpiredOrInvalid:
         "Sesja dodatkowej weryfikacji wygasła. Zaloguj się ponownie.",
       mfaEnrollmentChallengeExpiredOrInvalid:

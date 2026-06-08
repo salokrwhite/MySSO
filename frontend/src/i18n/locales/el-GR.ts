@@ -372,6 +372,7 @@ securityP3:
       passkeyBrowserUnsupported: "Το τρέχον πρόγραμμα περιήγησης ή συσκευή δεν υποστηρίζει passkeys",
       passkeyUserHandleInvalid: "Δεν ήταν δυνατή η αναγνώριση του λογαριασμού για αυτό το passkey",
       invalidLoginStepUpVerificationCode: "Ο πρόσθετος κωδικός επαλήθευσης είναι λανθασμένος ή έχει λήξει",
+      invalidMfaEnrollmentVerificationCode: "Ο κωδικός επαλήθευσης για την ενεργοποίηση της δευτερεύουσας επαλήθευσης είναι λανθασμένος ή έχει λήξει",
       loginStepUpChallengeExpiredOrInvalid: "Η πρόσθετη συνεδρία επαλήθευσης έχει λήξει. Παρακαλώ συνδεθείτε ξανά.",
       mfaEnrollmentChallengeExpiredOrInvalid: "Η συνεδρία εξαναγκασμένης ενεργοποίησης δευτερεύουσας επαλήθευσης έχει λήξει. Παρακαλώ συνδεθείτε ξανά.",
       noAvailableMfaMethodForCurrentAccount: "Δεν υπάρχει διαθέσιμη μέθοδος δευτερεύουσας επαλήθευσης για αυτόν τον λογαριασμό",

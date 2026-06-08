@@ -384,6 +384,7 @@ securityP3:
       passkeyBrowserUnsupported: "এই ব্ৰাউজাৰ বা ডিভাইছে পাছকীক সমৰ্থন নকৰে।",
       passkeyUserHandleInvalid: "এই পাছকীৰ বাবে একাউণ্ট চিনাক্ত কৰিব পৰা হোৱা নাই।",
       invalidLoginStepUpVerificationCode: "অতিৰিক্ত ভেৰিফিকেশ্যন ক'ড অবৈধ বা সময়সীমা শেষ হৈছে।",
+      invalidMfaEnrollmentVerificationCode: "দুই-কাৰক প্ৰমাণীকৰণ সক্ৰিয়কৰণৰ ভেৰিফিকেশ্যন ক’ড অবৈধ বা সময়সীমা শেষ হৈছে",
       loginStepUpChallengeExpiredOrInvalid: "অতিৰিক্ত ভেৰিফিকেশ্যন ছেচনৰ সময়সীমা শেষ হৈছে। অনুগ্ৰহ কৰি পুনৰ লগইন কৰক।",
       mfaEnrollmentChallengeExpiredOrInvalid: "বাধ্যতামূলক MFA নামভুক্তি ছেচনৰ সময়সীমা শেষ হৈছে। অনুগ্ৰহ কৰি পুনৰ লগইন কৰক।",
       noAvailableMfaMethodForCurrentAccount: "এই একাউণ্টৰ বাবে কোনো MFA পদ্ধতি উপলব্ধ নহয়।",

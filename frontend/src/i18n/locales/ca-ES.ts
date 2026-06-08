@@ -372,6 +372,7 @@ securityP3:
       passkeyBrowserUnsupported: "Aquest navegador o dispositiu no admet claus d'accés.",
       passkeyUserHandleInvalid: "No s'ha pogut identificar el compte per a aquesta clau d'accés.",
       invalidLoginStepUpVerificationCode: "El codi de verificació addicional no és vàlid o ha caducat.",
+      invalidMfaEnrollmentVerificationCode: "El codi de verificació per activar l’autenticació de dos factors no és vàlid o ha caducat",
       loginStepUpChallengeExpiredOrInvalid: "La sessió de verificació addicional ha caducat. Inicieu sessió de nou.",
       mfaEnrollmentChallengeExpiredOrInvalid: "La sessió de registre MFA obligatori ha caducat. Inicieu sessió de nou.",
       noAvailableMfaMethodForCurrentAccount: "No hi ha cap mètode MFA disponible per a aquest compte.",

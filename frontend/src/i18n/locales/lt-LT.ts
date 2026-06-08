@@ -436,6 +436,7 @@ securityP3:
         "Nepavyko nustatyti paskyros, atitinkančios šį passkey.",
       invalidLoginStepUpVerificationCode:
         "Papildomo patvirtinimo kodas neteisingas arba pasibaigęs galiojimas.",
+      invalidMfaEnrollmentVerificationCode: "Dviejų veiksnių autentifikavimo įjungimo patvirtinimo kodas neteisingas arba baigė galioti",
       loginStepUpChallengeExpiredOrInvalid:
         "Papildomo patvirtinimo sesija baigėsi. Prašome prisijungti dar kartą.",
       mfaEnrollmentChallengeExpiredOrInvalid:

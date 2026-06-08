@@ -436,6 +436,7 @@ securityP3:
         "Не може да се идентифицира сметката за овој паскей.",
       invalidLoginStepUpVerificationCode:
         "Кодот за дополнителна верификација е неважечки или истекол.",
+      invalidMfaEnrollmentVerificationCode: "Кодот за потврда за вклучување двофакторска автентикација е неважечки или истечен",
       loginStepUpChallengeExpiredOrInvalid:
         "Сесијата за дополнителна верификација истекла. Ве молиме најавете се повторно.",
       mfaEnrollmentChallengeExpiredOrInvalid:

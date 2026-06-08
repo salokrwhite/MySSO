@@ -384,6 +384,7 @@ securityP3:
       passkeyBrowserUnsupported: "მიმდინარე ბრაუზერი ან მოწყობილობა არ მხარს უჭერს პასკებს",
       passkeyUserHandleInvalid: "პასკის შესაბამისი ანგარიში ვერ იდენტიფიცირდა",
       invalidLoginStepUpVerificationCode: "დამატებითი ვერიფიკაციის კოდი არასწორია ან გასულია",
+      invalidMfaEnrollmentVerificationCode: "ორფაქტორიანი ავთენტიფიკაციის ჩართვის დამადასტურებელი კოდი არასწორია ან ვადა გაუვიდა",
       loginStepUpChallengeExpiredOrInvalid: "დამატებითი ვერიფიკაციის სესია გას hạnდა, გთხოვთ კვლავ შეამოწმოთ",
       mfaEnrollmentChallengeExpiredOrInvalid: "ორჯერ ნდებადი ავტორიზაციის ჩართვის სესია გას hạnდა, გთხოვთ კვლავ შეამოწმოთ",
       noAvailableMfaMethodForCurrentAccount: "მიმდინარე ანგარიშისთვის ორჯერ ნდებადი ავტორიზაციის მეთოდი არ არის ხელმისაწვდომი",

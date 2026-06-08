@@ -436,6 +436,7 @@ securityP3:
         "Selle pääsuklahvi kontot ei õnnestunud tuvastada.",
       invalidLoginStepUpVerificationCode:
         "Lisa kinnituskood on vale või aegunud.",
+      invalidMfaEnrollmentVerificationCode: "Kaheastmelise autentimise lubamise kinnituskood on vale või aegunud",
       loginStepUpChallengeExpiredOrInvalid:
         "Lisa kinnitamise sessioon aegus. Palun logige uuesti sisse.",
       mfaEnrollmentChallengeExpiredOrInvalid:

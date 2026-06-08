@@ -438,6 +438,7 @@ const locale = {
         "לא ניתן לזהות את החשבון עבור מפתח גישה זה.",
       invalidLoginStepUpVerificationCode:
         "קוד האימות הנוסף אינו חוקי או פג.",
+      invalidMfaEnrollmentVerificationCode: "קוד האימות להפעלת אימות דו-שלבי אינו חוקי או פג תוקף",
       loginStepUpChallengeExpiredOrInvalid:
         "פגישת האימות הנוסף פגה. בבקשה התחבר שוב.",
       mfaEnrollmentChallengeExpiredOrInvalid:

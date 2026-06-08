@@ -436,6 +436,7 @@ securityP3:
         "Llogaria për këtë çelës qasje nuk mund të identifikohej.",
       invalidLoginStepUpVerificationCode:
         "Kodi i verifikimit shtesë është i pavlefshëm ose ka skaduar.",
+      invalidMfaEnrollmentVerificationCode: "Kodi i verifikimit për aktivizimin e verifikimit me dy faktorë është i pavlefshëm ose ka skaduar",
       loginStepUpChallengeExpiredOrInvalid:
         "Sesioni i verifikimit shtesë ka skaduar. Ju lutem hyni përsëri.",
       mfaEnrollmentChallengeExpiredOrInvalid:

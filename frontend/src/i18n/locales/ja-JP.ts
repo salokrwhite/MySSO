@@ -384,6 +384,7 @@ const locale = {
       passkeyBrowserUnsupported: "現在のブラウザまたはデバイスはパスキーをサポートしていません",
       passkeyUserHandleInvalid: "パスキーに対応するアカウントを識別することができません",
       invalidLoginStepUpVerificationCode: "追加認証コードが無効または期限切れです",
+      invalidMfaEnrollmentVerificationCode: "二要素認証を有効化するための確認コードが無効、または期限切れです",
       loginStepUpChallengeExpiredOrInvalid: "追加認証セッションが期限切れになりました。もう一度ログインしてください",
       mfaEnrollmentChallengeExpiredOrInvalid: "強制的な二段階認証登録セッションが期限切れになりました。もう一度ログインしてください",
       noAvailableMfaMethodForCurrentAccount: "現在のアカウントには使用可能な二段階認証方法がありません",

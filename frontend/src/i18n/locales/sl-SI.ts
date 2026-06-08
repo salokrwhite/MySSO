@@ -384,6 +384,7 @@ securityP3:
       passkeyBrowserUnsupported: "Ta brskalnik ali naprava ne podpira passkey",
       passkeyUserHandleInvalid: "Ni mogoče identificirati računa za ta passkey",
       invalidLoginStepUpVerificationCode: "Dodatna potrditvena koda je napačna ali je potekla",
+      invalidMfaEnrollmentVerificationCode: "Koda za preverjanje pri omogočanju dvojne overitve je napačna ali je potekla",
       loginStepUpChallengeExpiredOrInvalid: "Seja dodatne overovitve je potekla, prosimo, prijavite se znova",
       mfaEnrollmentChallengeExpiredOrInvalid: "Seja prisilne registracije MFA je potekla, prosimo, prijavite se znova",
       noAvailableMfaMethodForCurrentAccount: "Za ta račun ni na voljo noben način dvojne overovitve",

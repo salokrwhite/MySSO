@@ -370,6 +370,7 @@ securityP3:
       passkeyBrowserUnsupported: "Ce navigateur ou appareil ne prend pas en charge les clés d'accès.",
       passkeyUserHandleInvalid: "Le compte associé à cette clé d'accès n'a pas pu être identifié.",
       invalidLoginStepUpVerificationCode: "Le code de vérification supplémentaire est invalide ou a expiré.",
+      invalidMfaEnrollmentVerificationCode: "Le code de vérification pour activer l’authentification à deux facteurs est invalide ou expiré",
       loginStepUpChallengeExpiredOrInvalid: "La session de vérification supplémentaire a expiré. Veuillez vous reconnecter.",
       mfaEnrollmentChallengeExpiredOrInvalid: "La session d'activation forcée de l'authentification à deux facteurs a expiré. Veuillez vous reconnecter.",
       noAvailableMfaMethodForCurrentAccount: "Aucune méthode MFA n'est disponible pour ce compte.",

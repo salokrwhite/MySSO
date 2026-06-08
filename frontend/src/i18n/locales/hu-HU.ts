@@ -438,6 +438,7 @@ securityP3:
         "A passkey-hez tartozó fiók nem azonosítható.",
       invalidLoginStepUpVerificationCode:
         "A további hitelesítő kód érvénytelen vagy lejárt.",
+      invalidMfaEnrollmentVerificationCode: "A kétlépcsős hitelesítés bekapcsolásához használt ellenőrző kód érvénytelen vagy lejárt",
       loginStepUpChallengeExpiredOrInvalid:
         "A további hitelesítési munkamenet lejárt. Kérjük, jelentkezzen be újra.",
       mfaEnrollmentChallengeExpiredOrInvalid:

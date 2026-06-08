@@ -436,6 +436,7 @@ securityP3:
         "Не удалось определить аккаунт для данного ключа доступа.",
       invalidLoginStepUpVerificationCode:
         "Код дополнительной проверки недействителен или истёк.",
+      invalidMfaEnrollmentVerificationCode: "Код подтверждения для включения двухфакторной аутентификации недействителен или истёк",
       loginStepUpChallengeExpiredOrInvalid:
         "Сессия дополнительной проверки истекла. Войдите снова.",
       mfaEnrollmentChallengeExpiredOrInvalid:

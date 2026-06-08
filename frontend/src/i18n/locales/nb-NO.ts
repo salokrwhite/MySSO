@@ -438,6 +438,7 @@ securityP3:
         "Kontoen for denne passordnøkkelen kunne ikke identifiseres.",
       invalidLoginStepUpVerificationCode:
         "Den ekstra verifiseringskoden er ugyldig eller utløpt.",
+      invalidMfaEnrollmentVerificationCode: "Bekreftelseskoden for å aktivere tofaktorautentisering er ugyldig eller utløpt",
       loginStepUpChallengeExpiredOrInvalid:
         "Den ekstra verifiseringsøkten utløp. Vennligst logg inn igjen.",
       mfaEnrollmentChallengeExpiredOrInvalid:

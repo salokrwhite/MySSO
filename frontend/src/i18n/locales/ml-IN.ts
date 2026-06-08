@@ -436,6 +436,7 @@ securityP3:
         "ഈ പാസ്കിക്കുള്ള അക്കൗണ്ട് തിരിച്ചറിയാൻ കഴിഞ്ഞില്ല.",
       invalidLoginStepUpVerificationCode:
         "അധിക വെരിഫിക്കേഷൻ കോഡ് അസാധുവാണ് അല്ലെങ്കിൽ കാലഹരണപ്പെട്ടു.",
+      invalidMfaEnrollmentVerificationCode: "രണ്ടു-ഘടക പ്രാമാണീകരണം പ്രവർത്തനക്ഷമമാക്കാനുള്ള പരിശോധനാ കോഡ് അസാധുവാണ് അല്ലെങ്കിൽ കാലഹരണപ്പെട്ടു",
       loginStepUpChallengeExpiredOrInvalid:
         "അധിക വെരിഫിക്കേഷൻ സെഷൻ കാലഹരണപ്പെട്ടു. ദയവായി വീണ്ടും സൈൻ ഇൻ ചെയ്യുക.",
       mfaEnrollmentChallengeExpiredOrInvalid:

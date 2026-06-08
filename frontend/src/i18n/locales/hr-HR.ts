@@ -438,6 +438,7 @@ securityP3:
         "Nije moguće prepoznati račun za ovaj passkey.",
       invalidLoginStepUpVerificationCode:
         "Dodatni verifikacijski kod je nevažeći ili je istekao.",
+      invalidMfaEnrollmentVerificationCode: "Kod za potvrdu pri uključivanju dvofaktorske autentifikacije nije valjan ili je istekao",
       loginStepUpChallengeExpiredOrInvalid:
         "Sesija dodatne provjere je istekla. Molimo se ponovno prijavite.",
       mfaEnrollmentChallengeExpiredOrInvalid:

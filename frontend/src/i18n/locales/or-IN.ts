@@ -372,6 +372,7 @@ securityP3:
       passkeyBrowserUnsupported: "ଏହି ବ୍ରାଉଜର କିମ୍ବା ଡିଭାଇସ୍ ପାସକି ସମର୍ଥନ କରେ ନାହିଁ।",
       passkeyUserHandleInvalid: "ଏହି ପାସକି ପାଇଁ ଆକାଉଣ୍ଟ ଚିହ୍ନଟ ହୋଇପାରିଲା ନାହିଁ।",
       invalidLoginStepUpVerificationCode: "ଅତିରିକ୍ତ ଯାଞ୍ଚ କୋଡ ଅବୈଧ କିମ୍ବା ମିଆଦୀ ପୂର୍ଣ୍ଣ।",
+      invalidMfaEnrollmentVerificationCode: "ଦୁଇ-ଫ୍ୟାକ୍ଟର ପ୍ରମାଣୀକରଣ ସକ୍ଷମ କରିବା ପାଇଁ ଯାଞ୍ଚ କୋଡ ଅବୈଧ କିମ୍ବା ମିଆଦୀ ପୂର୍ଣ୍ଣ ହୋଇଛି",
       loginStepUpChallengeExpiredOrInvalid: "ଅତିରିକ୍ତ ଯାଞ୍ଚ ସେସନ୍ ମିଆଦୀ ପୂର୍ଣ୍ଣ ହୋଇଛି। ଦୟାକରି ପୁଣି ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।",
       mfaEnrollmentChallengeExpiredOrInvalid: "ବାଧ୍ୟତାମୂଳକ MFA ନାମାଙ୍କନ ସେସନ୍ ମିଆଦୀ ପୂର୍ଣ୍ଣ ହୋଇଛି। ଦୟାକରି ପୁଣି ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।",
       noAvailableMfaMethodForCurrentAccount: "ଏହି ଆକାଉଣ୍ଟ ପାଇଁ କୌଣସି MFA ପଦ୍ଧତି ଉପଲବ୍ଧ ନାହିଁ।",

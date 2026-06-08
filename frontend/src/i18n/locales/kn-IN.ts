@@ -436,6 +436,7 @@ securityP3:
         "ಈ ಪಾಸ್‌ಕೀಗೆ ಸಂಬಂಧಿಸಿದ ಖಾತೆಯನ್ನು ಗುರುತಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.",
       invalidLoginStepUpVerificationCode:
         "ಹೆಚ್ಚುವರಿ ಪರಿಶೀಲನಾ ಕೋಡ್ ಅಮಾನ್ಯವಾಗಿದೆ ಅಥವಾ ಅವಧಿ ಮುಗಿದಿದೆ.",
+      invalidMfaEnrollmentVerificationCode: "ಎರಡು-ಘಟಕ ದೃಢೀಕರಣವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುವ ಪರಿಶೀಲನಾ ಕೋಡ್ ಅಮಾನ್ಯವಾಗಿದೆ ಅಥವಾ ಅವಧಿ ಮೀರಿದೆ",
       loginStepUpChallengeExpiredOrInvalid:
         "ಹೆಚ್ಚುವರಿ ಪರಿಶೀಲನಾ ಸೆಷನ್ ಅವಧಿ ಮುಗಿದಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.",
       mfaEnrollmentChallengeExpiredOrInvalid:

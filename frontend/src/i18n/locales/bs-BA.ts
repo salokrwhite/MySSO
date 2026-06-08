@@ -372,6 +372,7 @@ securityP3:
       passkeyBrowserUnsupported: "Ovaj preglednik ili uređaj ne podržava pristupne ključeve.",
       passkeyUserHandleInvalid: "Račun za ovaj pristupni ključ nije moguće identificirati.",
       invalidLoginStepUpVerificationCode: "Kod dodatne verifikacije je nevažeći ili istekao.",
+      invalidMfaEnrollmentVerificationCode: "Verifikacijski kod za omogućavanje dvofaktorske autentifikacije je nevažeći ili je istekao",
       loginStepUpChallengeExpiredOrInvalid: "Sesija dodatne verifikacije je istekla. Prijavite se ponovo.",
       mfaEnrollmentChallengeExpiredOrInvalid: "Sesija prisilne MFA registracije je istekla. Prijavite se ponovo.",
       noAvailableMfaMethodForCurrentAccount: "Nijedna MFA metoda nije dostupna za ovaj račun.",

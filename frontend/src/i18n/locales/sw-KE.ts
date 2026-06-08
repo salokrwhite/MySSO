@@ -438,6 +438,7 @@ securityP3:
         "Akaunti ya ufunguo huu wa kuingia haikuweza kutambuliwa.",
       invalidLoginStepUpVerificationCode:
         "Nambari ya uthibitishaji wa ziada si sahihi au imeisha.",
+      invalidMfaEnrollmentVerificationCode: "Nambari ya uthibitishaji ya kuwasha uthibitishaji wa hatua mbili si sahihi au imeisha",
       loginStepUpChallengeExpiredOrInvalid:
         "Kikao cha uthibitishaji wa ziada kimeisha. Tafadhali ingia tena.",
       mfaEnrollmentChallengeExpiredOrInvalid:

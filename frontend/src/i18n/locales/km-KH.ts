@@ -436,6 +436,7 @@ securityP3:
         "គណនីសម្រាប់កូដចូលនេះមិនអាចត្រូវបានអត្តសញ្ញាណ។",
       invalidLoginStepUpVerificationCode:
         "កូដផ្ទៀងផ្ទាត់បន្ថែមមិនត្រឹមត្រូវ ឬបានផុតកំណត់។",
+      invalidMfaEnrollmentVerificationCode: "លេខកូដផ្ទៀងផ្ទាត់សម្រាប់បើកការផ្ទៀងផ្ទាត់ពីរកត្តា មិនត្រឹមត្រូវ ឬផុតកំណត់",
       loginStepUpChallengeExpiredOrInvalid:
         "សម័យការផ្ទៀងផ្ទាត់បន្ថែមបានផុតកំណត់។ សូមចូលម្តងទៀត។",
       mfaEnrollmentChallengeExpiredOrInvalid:

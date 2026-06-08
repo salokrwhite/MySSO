@@ -384,6 +384,7 @@ securityP3:
       passkeyBrowserUnsupported: "Pelayar atau peranti semasa tidak menyokong kunci akses",
       passkeyUserHandleInvalid: "Tidak dapat mengenal pasti akaun yang sepadan dengan kunci akses",
       invalidLoginStepUpVerificationCode: "Kod verifikasi tambahan salah atau telah tamat tempoh",
+      invalidMfaEnrollmentVerificationCode: "Kod pengesahan untuk mengaktifkan pengesahan dua faktor tidak sah atau telah tamat tempoh",
       loginStepUpChallengeExpiredOrInvalid: "Sesi verifikasi tambahan telah tamat tempoh, sila log masuk semula",
       mfaEnrollmentChallengeExpiredOrInvalid: "Sesi membuka verifikasi tahap kedua secara paksa telah tamat tempoh, sila log masuk semula",
       noAvailableMfaMethodForCurrentAccount: "Tiada kaedah MFA yang boleh digunakan untuk akaun semasa",

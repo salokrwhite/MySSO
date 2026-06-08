@@ -436,6 +436,7 @@ securityP3:
         "Бұл passkey үшін аккаунт анықталмады.",
       invalidLoginStepUpVerificationCode:
         "Қосымша растау коды жарамсыз немесе мерзімі аяқталған.",
+      invalidMfaEnrollmentVerificationCode: "Екі факторлы аутентификацияны қосу растау коды жарамсыз немесе мерзімі өткен",
       loginStepUpChallengeExpiredOrInvalid:
         "Қосымша растау сеансының мерзімі аяқталды. Қайта кіріңіз.",
       mfaEnrollmentChallengeExpiredOrInvalid:

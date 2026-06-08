@@ -386,6 +386,7 @@ securityP3:
       passkeyBrowserUnsupported: "المتصفح أو الجهاز الحالي لا يدعم مفاتيح المرور",
       passkeyUserHandleInvalid: "لا يمكن التعرف على الحساب对应的 لمفتاح المرور",
       invalidLoginStepUpVerificationCode: "رمز التحقق الإضافي غير صحيح أو منتهي الصلاحية",
+      invalidMfaEnrollmentVerificationCode: "رمز التحقق لتفعيل المصادقة الثنائية غير صحيح أو منتهي الصلاحية",
       loginStepUpChallengeExpiredOrInvalid: "انتهت صلاحية جلسة التحقق الإضافي، يرجى تسجيل الدخول مرة أخرى",
       mfaEnrollmentChallengeExpiredOrInvalid: "انتهت صلاحية جلسة فرض التحقق الثنائي، يرجى تسجيل الدخول مرة أخرى",
       noAvailableMfaMethodForCurrentAccount: "لا توجد طريقة تحقق ثنائي متاحة للحساب الحالي",

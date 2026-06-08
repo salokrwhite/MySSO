@@ -438,6 +438,7 @@ securityP3:
         "Het account voor deze passkey kon niet worden geïdentificeerd.",
       invalidLoginStepUpVerificationCode:
         "De extra verificatiecode is ongeldig of verlopen.",
+      invalidMfaEnrollmentVerificationCode: "De verificatiecode om tweefactorauthenticatie in te schakelen is ongeldig of verlopen",
       loginStepUpChallengeExpiredOrInvalid:
         "De extra verificatiesessie is verlopen. Log opnieuw in.",
       mfaEnrollmentChallengeExpiredOrInvalid:

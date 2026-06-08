@@ -370,6 +370,7 @@ securityP3:
       passkeyBrowserUnsupported: "Este navegador ou dispositivo non é compatible coas claves de acceso.",
       passkeyUserHandleInvalid: "Non se puido identificar a conta asociada a esta clave de acceso.",
       invalidLoginStepUpVerificationCode: "O código de verificación adicional non é válido ou caducou.",
+      invalidMfaEnrollmentVerificationCode: "O código de verificación para activar a autenticación de dous factores non é válido ou caducou",
       loginStepUpChallengeExpiredOrInvalid: "A sesión de verificación adicional caducou. Conéctate de novo.",
       mfaEnrollmentChallengeExpiredOrInvalid: "A sesión de activación forzada da autenticación de dous factores caducou. Conéctate de novo.",
       noAvailableMfaMethodForCurrentAccount: "Non hai ningún método MFA dispoñíbel para esta conta.",

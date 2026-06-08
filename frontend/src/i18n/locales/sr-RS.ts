@@ -436,6 +436,7 @@ securityP3:
         "Nije moguće prepoznati nalog za ovaj passkey.",
       invalidLoginStepUpVerificationCode:
         "Dodatni verifikacioni kod je nevažeći ili je istekao.",
+      invalidMfaEnrollmentVerificationCode: "Verifikacioni kod za omogućavanje dvostruke autentifikacije je nevažeći ili je istekao",
       loginStepUpChallengeExpiredOrInvalid:
         "Sesija dodatne verifikacije je istekla. Molimo prijavite se ponovo.",
       mfaEnrollmentChallengeExpiredOrInvalid:

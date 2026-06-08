@@ -438,6 +438,7 @@ securityP3:
         "Ba a iya gane asusu na wannan passkey ba.",
       invalidLoginStepUpVerificationCode:
         "Lambar tabbatarwa na ƙari ba daidai ba ko ta ƙare.",
+      invalidMfaEnrollmentVerificationCode: "Lambar tabbatarwa don kunna shaida mai mataki biyu ba daidai ba ce ko ta ƙare",
       loginStepUpChallengeExpiredOrInvalid:
         "Sesshin tabbatarwa na ƙari ya ƙare. Lura da shiga kuma.",
       mfaEnrollmentChallengeExpiredOrInvalid:

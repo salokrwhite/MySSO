@@ -386,6 +386,7 @@ securityP3:
       passkeyBrowserUnsupported: "हालको ब्राउजर वा डेभाइसले पासकी समर्थन गर्दैन",
       passkeyUserHandleInvalid: "पासकी सँग सम्बन्धित खाता पहिचान गर्न सकिएन",
       invalidLoginStepUpVerificationCode: "अतिरिक्त प्रमाणीकरण कोड गलत वा समाप्त भएको छ",
+      invalidMfaEnrollmentVerificationCode: "दुई-कारक प्रमाणीकरण सक्षम गर्ने प्रमाणिकरण कोड अमान्य वा म्याद सकिएको छ",
       loginStepUpChallengeExpiredOrInvalid: "अतिरिक्त प्रमाणीकरण सत्र समाप्त भएको छ, कृपया फेरि लगइन गर्नुहोस्",
       mfaEnrollmentChallengeExpiredOrInvalid: "बाध्यकारी दोस्रो चरण प्रमाणीकरण सत्र समाप्त भएको छ, कृपया फेरि लगइन गर्नुहोस्",
       noAvailableMfaMethodForCurrentAccount: "हालको खातामा उपलब्ध दोस्रो चरण प्रमाणीकरण विधि छैन",

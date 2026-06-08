@@ -437,6 +437,7 @@ securityP3:
         "Ushbu passkey uchun hisob aniqlanmadi.",
       invalidLoginStepUpVerificationCode:
         "Qo'shimcha tasdiqlash kodi noto'g'ri yoki muddati tugagan.",
+      invalidMfaEnrollmentVerificationCode: "Ikki faktorli autentifikatsiyani yoqish tasdiqlash kodi noto‘g‘ri yoki muddati tugagan",
       loginStepUpChallengeExpiredOrInvalid:
         "Qo'shimcha tasdiqlash sessiyasi muddati tugadi. Iltimos, qaytadan kirishni amalga oshiring.",
       mfaEnrollmentChallengeExpiredOrInvalid:

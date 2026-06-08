@@ -436,6 +436,7 @@ securityP3:
         "ఈ పాస్‌కీ కోసం ఖాతాను గుర్తించలేము.",
       invalidLoginStepUpVerificationCode:
         "అదనపు ధృవీకరణ కోడ్ చెల్లదు లేదా గడువు ముగిసింది.",
+      invalidMfaEnrollmentVerificationCode: "రెండు-కారక ప్రామాణీకరణను ప్రారంభించే ధృవీకరణ కోడ్ చెల్లదు లేదా గడువు ముగిసింది",
       loginStepUpChallengeExpiredOrInvalid:
         "అదనపు ధృవీకరణ సెషన్ గడువు ముగిసింది. దయచేసి మళ్ళీ సైన్ ఇన్ చేయండి.",
       mfaEnrollmentChallengeExpiredOrInvalid:

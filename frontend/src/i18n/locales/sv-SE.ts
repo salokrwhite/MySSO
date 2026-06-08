@@ -387,6 +387,7 @@ securityP3:
       passkeyBrowserUnsupported: "Den aktuella webbläsaren eller enheten stödjer inte passkeys.",
       passkeyUserHandleInvalid: "Kan inte identifiera kontot som motsvarar passkey.",
       invalidLoginStepUpVerificationCode: "Tilläggsverifieringskoden är felaktig eller har utgått.",
+      invalidMfaEnrollmentVerificationCode: "Verifieringskoden för att aktivera tvåfaktorsautentisering är felaktig eller har gått ut",
       loginStepUpChallengeExpiredOrInvalid: "Tilläggsverifieringssessionen har utgått. Vänligen logga in igen.",
       mfaEnrollmentChallengeExpiredOrInvalid: "Tvingad dubbelverifieringsregistrering har utgått. Vänligen logga in igen.",
       noAvailableMfaMethodForCurrentAccount: "Det aktuella kontot har ingen tillgänglig dubbelverifieringsmetod.",

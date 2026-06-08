@@ -436,6 +436,7 @@ securityP3:
         "Sarbide-gako honen kontua ezin izan da identifikatu.",
       invalidLoginStepUpVerificationCode:
         "Egiaztapen-kode gehigarria baliogabea da edo iraungi da.",
+      invalidMfaEnrollmentVerificationCode: "Bi faktoreko autentifikazioa gaitzeko egiaztapen-kodea baliogabea da edo iraungi da",
       loginStepUpChallengeExpiredOrInvalid:
         "Egiaztapen gehigarriaren saioa iraungi da. Hasi saioa berriro.",
       mfaEnrollmentChallengeExpiredOrInvalid:

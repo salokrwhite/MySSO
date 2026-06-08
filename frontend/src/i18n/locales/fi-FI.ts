@@ -436,6 +436,7 @@ securityP3:
         "Passkeyä vastaavaa tiliä ei voitu tunnistaa.",
       invalidLoginStepUpVerificationCode:
         "Lisätodentamisen koodi on virheellinen tai vanhentunut.",
+      invalidMfaEnrollmentVerificationCode: "Kaksivaiheisen todentamisen käyttöönoton vahvistuskoodi on virheellinen tai vanhentunut",
       loginStepUpChallengeExpiredOrInvalid:
         "Lisätodentamisen sessio on vanhentunut. Kirjaudu sisään uudelleen.",
       mfaEnrollmentChallengeExpiredOrInvalid:

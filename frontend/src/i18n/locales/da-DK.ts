@@ -438,6 +438,7 @@ securityP3:
         "Kontoen for denne adgangsnøgle kunne ikke identificeres.",
       invalidLoginStepUpVerificationCode:
         "Ekstra bekræftelseskoden er ugyldig eller udløbet.",
+      invalidMfaEnrollmentVerificationCode: "Bekræftelseskoden til aktivering af tofaktorgodkendelse er ugyldig eller udløbet",
       loginStepUpChallengeExpiredOrInvalid:
         "Ekstra bekræftelsessessionen er udløbet. Log venligst ind igen.",
       mfaEnrollmentChallengeExpiredOrInvalid:

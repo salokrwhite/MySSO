@@ -438,6 +438,7 @@ securityP3:
         "ਇਸ ਪਾਸਕੀ ਲਈ ਖਾਤਾ ਪਛਾਣਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ।",
       invalidLoginStepUpVerificationCode:
         "ਵਾਧੂ ਪੁਸ਼ਟੀਕਰਨ ਕੋਡ ਅਵੈਧ ਹੈ ਜਾਂ ਮਿਆਦ ਮੁਕਤੀ ਹੋ ਗਈ ਹੈ।",
+      invalidMfaEnrollmentVerificationCode: "ਦੋ-ਫੈਕਟਰ ਪ੍ਰਮਾਣੀਕਰਨ ਚਾਲੂ ਕਰਨ ਲਈ ਪੁਸ਼ਟੀਕਰਨ ਕੋਡ ਅਵੈਧ ਹੈ ਜਾਂ ਮਿਆਦ ਪੁੱਗ ਗਈ ਹੈ",
       loginStepUpChallengeExpiredOrInvalid:
         "ਵਾਧੂ ਪੁਸ਼ਟੀ ਸੈਸ਼ਨ ਦੀ ਮਿਆਦ ਮੁਕਤੀ ਹੋ ਗਈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਸਾਈਨ ਇਨ ਕਰੋ।",
       mfaEnrollmentChallengeExpiredOrInvalid:

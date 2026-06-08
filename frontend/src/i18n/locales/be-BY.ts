@@ -386,6 +386,7 @@ securityP3:
       passkeyBrowserUnsupported: "Гэты браўзер або прылада не падтрымлівае passkey.",
       passkeyUserHandleInvalid: "Не ўдалося ідэнтыфікаваць уліковы запіс для гэтага passkey.",
       invalidLoginStepUpVerificationCode: "Код дадатковага пацверджання несапраўдны або сышоў.",
+      invalidMfaEnrollmentVerificationCode: "Код пацверджання для ўключэння двухфактарнай аўтэнтыфікацыі несапраўдны або сышоў",
       loginStepUpChallengeExpiredOrInvalid: "Сеанс дадатковага пацверджання сышоў. Калі ласка, увайдзіце зноў.",
       mfaEnrollmentChallengeExpiredOrInvalid: "Сеанс абавязковага падключэння MFA сышоў. Калі ласка, увайдзіце зноў.",
       noAvailableMfaMethodForCurrentAccount: "Для гэтага ўліковага запісу недаступны метад MFA.",

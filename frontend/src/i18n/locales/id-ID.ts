@@ -384,6 +384,7 @@ securityP3:
       passkeyBrowserUnsupported: "Browser atau perangkat saat ini tidak mendukung passkey",
       passkeyUserHandleInvalid: "Tidak dapat mengidentifikasi akun yang sesuai dengan passkey",
       invalidLoginStepUpVerificationCode: "Kode verifikasi tambahan salah atau telah kedaluwarsa",
+      invalidMfaEnrollmentVerificationCode: "Kode verifikasi untuk mengaktifkan autentikasi dua faktor tidak valid atau telah kedaluwarsa",
       loginStepUpChallengeExpiredOrInvalid: "Sesi verifikasi tambahan telah kedaluwarsa, silakan login kembali",
       mfaEnrollmentChallengeExpiredOrInvalid: "Sesi pengaktifan verifikasi dua langkah paksa telah kedaluwarsa, silakan login kembali",
       noAvailableMfaMethodForCurrentAccount: "Tidak ada metode verifikasi dua langkah yang tersedia untuk akun saat ini",

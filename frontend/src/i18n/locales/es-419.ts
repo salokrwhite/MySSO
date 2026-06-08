@@ -436,6 +436,7 @@ securityP3:
         "No se pudo identificar la cuenta para esta clave de acceso.",
       invalidLoginStepUpVerificationCode:
         "El código de verificación adicional es inválido o ha expirado.",
+      invalidMfaEnrollmentVerificationCode: "El código de verificación para habilitar la autenticación de dos factores es inválido o ha expirado",
       loginStepUpChallengeExpiredOrInvalid:
         "La sesión de verificación adicional ha expirado. Por favor inicie sesión nuevamente.",
       mfaEnrollmentChallengeExpiredOrInvalid:

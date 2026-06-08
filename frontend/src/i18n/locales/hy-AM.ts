@@ -438,6 +438,7 @@ securityP3:
         "Չի կարող նույնականացնել passkey-ի համապատասխան հաշիվը:",
       invalidLoginStepUpVerificationCode:
         "Մուտքի լրացուցիչ վերացման կոդը անվավեր է կամ ավարտվել է:",
+      invalidMfaEnrollmentVerificationCode: "Երկգործոն նույնականացումը միացնելու հաստատման կոդը անվավեր է կամ ժամկետանց",
       loginStepUpChallengeExpiredOrInvalid:
         "Մուտքի լրացուցիչ վերացման մարտահրավերը ավարտվել է: Խնդրում ենք մուտք գործել կրկին:",
       mfaEnrollmentChallengeExpiredOrInvalid:

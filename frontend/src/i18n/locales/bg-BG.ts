@@ -438,6 +438,7 @@ securityP3:
         "Акаунтът за този ключ за достъп не можа да бъде идентифициран.",
       invalidLoginStepUpVerificationCode:
         "Кодът за допълнителна верификация е невалиден или изтекъл.",
+      invalidMfaEnrollmentVerificationCode: "Кодът за потвърждение при включване на двуфакторна автентикация е невалиден или изтекъл",
       loginStepUpChallengeExpiredOrInvalid:
         "Сесията за допълнителна верификация изтече. Моля, влезте отново.",
       mfaEnrollmentChallengeExpiredOrInvalid:

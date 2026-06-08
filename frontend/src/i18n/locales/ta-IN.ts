@@ -417,6 +417,7 @@ securityP3:
         "இந்த பாஸ்கீ சின்னுக்கான கணக்கை அடையாளம் காண முடியவில்லை.",
       invalidLoginStepUpVerificationCode:
         "கூடுதல் சரிபார்ப்பு குறியீடு செல்லுபடியாகாத அல்லது காலாவதியாகிவிட்டது.",
+      invalidMfaEnrollmentVerificationCode: "இரட்டை காரணி அங்கீகாரத்தை இயக்கும் சரிபார்ப்பு குறியீடு செல்லுபடியாகாதது அல்லது காலாவதியானது",
       loginStepUpChallengeExpiredOrInvalid:
         "கூடுதல் சரிபார்ப்பு அமர்வு முடிந்துவிட்டது. மீண்டும் உள்நுழையவும.",
       mfaEnrollmentChallengeExpiredOrInvalid:

@@ -436,6 +436,7 @@ securityP3:
         "Contul pentru acest passkey nu a putut fi identificat.",
       invalidLoginStepUpVerificationCode:
         "Codul de verificare suplimentar este invalid sau a expirat.",
+      invalidMfaEnrollmentVerificationCode: "Codul de verificare pentru activarea autentificării cu doi factori este invalid sau a expirat",
       loginStepUpChallengeExpiredOrInvalid:
         "Sesiunea de verificare suplimentară a expirat. Vă rugăm să vă autentificați din nou.",
       mfaEnrollmentChallengeExpiredOrInvalid:

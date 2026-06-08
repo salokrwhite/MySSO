@@ -384,6 +384,7 @@ const locale = {
       passkeyBrowserUnsupported: "현재 브라우저 또는 기기가 패스키를 지원하지 않습니다",
       passkeyUserHandleInvalid: "패스키에 해당하는 계정을 식별할 수 없습니다",
       invalidLoginStepUpVerificationCode: "추가 인증 코드가 잘못되었거나 만료되었습니다",
+      invalidMfaEnrollmentVerificationCode: "2단계 인증 활성화 인증 코드가 잘못되었거나 만료되었습니다",
       loginStepUpChallengeExpiredOrInvalid: "추가 인증 세션이 만료되었습니다. 다시 로그인하세요",
       mfaEnrollmentChallengeExpiredOrInvalid: "강제 2단계 인증 설정 세션이 만료되었습니다. 다시 로그인하세요",
       noAvailableMfaMethodForCurrentAccount: "현재 계정에 사용할 수 있는 2단계 인증 방식이 없습니다",

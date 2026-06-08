@@ -417,6 +417,7 @@ securityP3:
         "Не вдалося ідентифікувати обліковий запис для цього пасскей.",
       invalidLoginStepUpVerificationCode:
         "Додатковий код верифікації недійсний або застарів.",
+      invalidMfaEnrollmentVerificationCode: "Код підтвердження для ввімкнення двофакторної автентифікації недійсний або прострочений",
       loginStepUpChallengeExpiredOrInvalid:
         "Сесія додаткової верифікації закінчила термін дії. Будь ласка, увійдіть знову.",
       mfaEnrollmentChallengeExpiredOrInvalid:

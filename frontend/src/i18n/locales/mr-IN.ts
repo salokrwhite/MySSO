@@ -384,6 +384,7 @@ securityP3:
       passkeyBrowserUnsupported: "सध्याचा ब्राउझर किंवा डिव्हाइस पासकी सपोर्ट करत नाही.",
       passkeyUserHandleInvalid: "पासकीशी संबंधित खाता ओळखता आला नाही.",
       invalidLoginStepUpVerificationCode: "अतिरिक्त सत्यापन कोड चुकीचा किंवा कालबाह्य झाला आहे.",
+      invalidMfaEnrollmentVerificationCode: "दोन-घटक प्रमाणीकरण सुरू करण्याचा पडताळणी कोड अवैध आहे किंवा कालबाह्य झाला आहे",
       loginStepUpChallengeExpiredOrInvalid: "अतिरिक्त सत्यापन सत्र कालबाह्य झाला आहे, कृपया पुन्हा लॉगिन करा.",
       mfaEnrollmentChallengeExpiredOrInvalid: "强制 दुहेरी प्रमाणीकरण सत्र कालबाह्य झाला आहे, कृपया पुन्हा लॉगिन करा.",
       noAvailableMfaMethodForCurrentAccount: "सध्याच्या खात्यासाठी कोणतीही MFA पद्धत उपलब्ध नाही.",

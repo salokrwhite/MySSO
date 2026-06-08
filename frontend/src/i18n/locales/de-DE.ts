@@ -372,6 +372,7 @@ const locale = {
       passkeyBrowserUnsupported: "Aktueller Browser oder Gerät unterstützt keine Passkeys",
       passkeyUserHandleInvalid: "Konto für diesen Passkey nicht erkannt",
       invalidLoginStepUpVerificationCode: "Zusätzlicher Verifizierungscode ungültig oder abgelaufen",
+      invalidMfaEnrollmentVerificationCode: "Der Bestätigungscode zum Aktivieren der Zwei-Faktor-Authentifizierung ist ungültig oder abgelaufen",
       loginStepUpChallengeExpiredOrInvalid: "Zusätzliche Verifizierungs-Sitzung abgelaufen. Bitte melden Sie sich erneut an.",
       mfaEnrollmentChallengeExpiredOrInvalid: "Sitzung für erzwungene Zwei-Faktor-Authentifizierung abgelaufen. Bitte melden Sie sich erneut an.",
       noAvailableMfaMethodForCurrentAccount: "Keine verfügbare Zwei-Faktor-Authentifizierungsmethode für dieses Konto",

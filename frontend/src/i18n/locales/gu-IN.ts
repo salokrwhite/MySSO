@@ -436,6 +436,7 @@ securityP3:
         "આ પાસકી માટેનો એકાઉન્ટ ઓળખી શકાતો નથી.",
       invalidLoginStepUpVerificationCode:
         "વધારાનો વેરિફિકેશન કોડ અમાન્ય છે અથવા સમાપ્ત થઈ ગયો છે.",
+      invalidMfaEnrollmentVerificationCode: "ટુ-ફેક્ટર ઓથેન્ટિકેશન સક્ષમ કરવા માટેનો વેરિફિકેશન કોડ અમાન્ય છે અથવા સમાપ્ત થઈ ગયો છે",
       loginStepUpChallengeExpiredOrInvalid:
         "વધારાનું વેરિફિકેશન સેસન્સ સમાપ્ત થઈ ગયું. કૃપા કરીને ફરીથી સાઇન ઇન કરો.",
       mfaEnrollmentChallengeExpiredOrInvalid:

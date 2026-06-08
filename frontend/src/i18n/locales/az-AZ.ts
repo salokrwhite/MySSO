@@ -384,6 +384,7 @@ securityP3:
       passkeyBrowserUnsupported: "Bu brauzer və ya cihaz keçid açarlarını dəstəkləmir.",
       passkeyUserHandleInvalid: "Bu keçid açarı üçün hesab müəyyən edilə bilmədi.",
       invalidLoginStepUpVerificationCode: "Əlavə doğrulama kodu yanlış və ya vaxtı bitib.",
+      invalidMfaEnrollmentVerificationCode: "İki faktorlu doğrulamanı aktivləşdirmə təsdiq kodu yanlışdır və ya vaxtı bitib",
       loginStepUpChallengeExpiredOrInvalid: "Əlavə doğrulama sessiyasının vaxtı bitdi. Yenidən daxil olun.",
       mfaEnrollmentChallengeExpiredOrInvalid: "Məcburi MFA qeydiyyat sessiyasının vaxtı bitdi. Yenidən daxil olun.",
       noAvailableMfaMethodForCurrentAccount: "Bu hesab üçün MFA üsulu mövcud deyil.",

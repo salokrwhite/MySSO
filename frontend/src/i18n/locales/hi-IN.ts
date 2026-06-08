@@ -438,6 +438,7 @@ securityP3:
         "इस पासकी से संबंधित खाता पहचानने योग्य नहीं है।",
       invalidLoginStepUpVerificationCode:
         "अतिरिक्त पुष्टि कोड अमान्य या समाप्त।",
+      invalidMfaEnrollmentVerificationCode: "दो-कारक प्रमाणीकरण चालू करने का सत्यापन कोड अमान्य है या समाप्त हो गया है",
       loginStepUpChallengeExpiredOrInvalid:
         "अतिरिक्त पुष्टि चैलेंज समाप्त हो गया है। कृपया फिर से लॉगिन करें.",
       mfaEnrollmentChallengeExpiredOrInvalid:

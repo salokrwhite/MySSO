@@ -384,6 +384,7 @@ securityP3:
       passkeyBrowserUnsupported: "Trình duyệt hoặc thiết bị hiện tại không hỗ trợ khóa truy cập",
       passkeyUserHandleInvalid: "Không thể nhận dạng tài khoản tương ứng với khóa truy cập",
       invalidLoginStepUpVerificationCode: "Mã xác thực bổ sung sai hoặc đã hết hạn",
+      invalidMfaEnrollmentVerificationCode: "Mã xác minh để bật xác thực hai lớp không đúng hoặc đã hết hạn",
       loginStepUpChallengeExpiredOrInvalid: "Phiên xác thực bổ sung đã hết hạn, vui lòng đăng nhập lại",
       mfaEnrollmentChallengeExpiredOrInvalid: "Phiên bật bắt buộc xác thực hai lớp đã hết hạn, vui lòng đăng nhập lại",
       noAvailableMfaMethodForCurrentAccount: "Tài khoản hiện tại không có phương thức xác thực hai lớp khả dụng",

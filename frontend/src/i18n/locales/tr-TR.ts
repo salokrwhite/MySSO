@@ -417,6 +417,7 @@ securityP3:
         "Bu passkey için hesabı tanımlayamıyorum.",
       invalidLoginStepUpVerificationCode:
         "Ek doğrulama kodu geçersiz veya süresi dolmuş.",
+      invalidMfaEnrollmentVerificationCode: "İki faktörlü doğrulamayı etkinleştirme doğrulama kodu geçersiz veya süresi dolmuş",
       loginStepUpChallengeExpiredOrInvalid:
         "Ek doğrulama oturumu süresi doldu. Lütfen tekrar giriş yapın.",
       mfaEnrollmentChallengeExpiredOrInvalid:

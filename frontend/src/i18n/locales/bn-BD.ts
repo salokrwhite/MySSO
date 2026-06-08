@@ -396,6 +396,7 @@ securityP3:
       passkeyBrowserUnsupported: "এই ব্রাউজার বা ডিভাইস পাসকি সমর্থন করে না।",
       passkeyUserHandleInvalid: "এই পাসকির জন্য অ্যাকাউন্ট সনাক্ত করা যায়নি।",
       invalidLoginStepUpVerificationCode: "অতিরিক্ত যাচাই কোড অবৈধ বা মেয়াদোত্তীর্ণ।",
+      invalidMfaEnrollmentVerificationCode: "দুই-ফ্যাক্টর প্রমাণীকরণ চালু করার যাচাইকরণ কোড অবৈধ বা মেয়াদোত্তীর্ণ",
       loginStepUpChallengeExpiredOrInvalid: "অতিরিক্ত যাচাই সেশনের মেয়াদ শেষ। অনুগ্রহ করে আবার সাইন ইন করুন।",
       mfaEnrollmentChallengeExpiredOrInvalid: "বাধ্যতামূলক MFA এনরোলমেন্ট সেশনের মেয়াদ শেষ। অনুগ্রহ করে আবার সাইন ইন করুন।",
       noAvailableMfaMethodForCurrentAccount: "এই অ্যাকাউন্টের জন্য কোনো MFA পদ্ধতি উপলব্ধ নয়।",

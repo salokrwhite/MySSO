@@ -387,6 +387,7 @@ const locale = {
       passkeyBrowserUnsupported: "当前浏览器或设备不支持通行密钥",
       passkeyUserHandleInvalid: "无法识别通行密钥对应的账号",
       invalidLoginStepUpVerificationCode: "附加验证验证码错误或已过期",
+      invalidMfaEnrollmentVerificationCode: "二级验证开启验证码错误或已过期",
       loginStepUpChallengeExpiredOrInvalid: "附加验证会话已失效，请重新登录",
       mfaEnrollmentChallengeExpiredOrInvalid: "强制开启二级验证会话已失效，请重新登录",
       noAvailableMfaMethodForCurrentAccount: "当前账号没有可用的二级验证方式",

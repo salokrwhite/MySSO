@@ -384,6 +384,7 @@ securityP3:
       passkeyBrowserUnsupported: "Questo browser o dispositivo non supporta le passkey.",
       passkeyUserHandleInvalid: "Impossibile identificare l'account per questa passkey.",
       invalidLoginStepUpVerificationCode: "Il codice di verifica aggiuntivo non è valido o è scaduto.",
+      invalidMfaEnrollmentVerificationCode: "Il codice di verifica per abilitare l’autenticazione a due fattori non è valido o è scaduto",
       loginStepUpChallengeExpiredOrInvalid: "La sessione di verifica aggiuntiva è scaduta. Accedi di nuovo.",
       mfaEnrollmentChallengeExpiredOrInvalid: "La sessione di iscrizione forzata MFA è scaduta. Accedi di nuovo.",
       noAvailableMfaMethodForCurrentAccount: "Nessun metodo MFA è disponibile per questo account.",

@@ -445,6 +445,8 @@ const locale = {
         "The account for this passkey could not be identified.",
       invalidLoginStepUpVerificationCode:
         "The extra verification code is invalid or expired.",
+      invalidMfaEnrollmentVerificationCode:
+        "The MFA enrollment verification code is invalid or expired.",
       loginStepUpChallengeExpiredOrInvalid:
         "The extra verification session expired. Please sign in again.",
       mfaEnrollmentChallengeExpiredOrInvalid:

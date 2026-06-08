@@ -384,6 +384,7 @@ securityP3:
       passkeyBrowserUnsupported: "දැනටමත් බ්‍රවුසරය හෝ උපාංගය පාස් කීය නොසපයා",
       passkeyUserHandleInvalid: "පාස් කීය සම්බන්ධයෙන් ගිණුම හැඳුනා ගැනීමට නොහැක",
       invalidLoginStepUpVerificationCode: "අතිරේක සත්‍යාපන කේත වැරදි හෝ කාලය ඉකුත් වී ඇත",
+      invalidMfaEnrollmentVerificationCode: "ද්විත්ව සත්‍යාපනය සක්‍රීය කිරීමේ සත්‍යාපන කේතය වැරදි හෝ කල් ඉකුත් වී ඇත",
       loginStepUpChallengeExpiredOrInvalid: "අතිරේක සත්‍යාපන සැසිය ඉකුත් වී ඇත, කරුණාකර නැවත ලොගින් වන්න",
       mfaEnrollmentChallengeExpiredOrInvalid: "ව王铮ණ්ඩ ද්විත්ව සත්‍යාපන සැසිය ඉකුත් වී ඇත, කරුණාකර නැවත ලොගින් වන්න",
       noAvailableMfaMethodForCurrentAccount: "මෙම ගිණුම සඳහා පවතින ද්විත්ව සත්‍යාපන ක්රමයක් නොමැත",

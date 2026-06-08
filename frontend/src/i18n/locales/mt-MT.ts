@@ -438,6 +438,7 @@ securityP3:
         "L-akkont għal dan il-passkey ma setgħetx tkun identifikat.",
       invalidLoginStepUpVerificationCode:
         "Il-kodiċi ta' verifika żejda huwa invalid jew skadut.",
+      invalidMfaEnrollmentVerificationCode: "Il-kodiċi ta’ verifika biex tattiva l-awtentikazzjoni b’żewġ fatturi mhuwiex validu jew skada",
       loginStepUpChallengeExpiredOrInvalid:
         "Is-sessjoni ta' verifika żejda skadiet. Jekk jogħġbok idħol mill-ġdid.",
       mfaEnrollmentChallengeExpiredOrInvalid:

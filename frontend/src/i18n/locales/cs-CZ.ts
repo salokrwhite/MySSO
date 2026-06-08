@@ -438,6 +438,7 @@ securityP3:
         "Účet pro tento přístupový klíč nelze identifikovat.",
       invalidLoginStepUpVerificationCode:
         "Kód dodatečného ověření je neplatný nebo vypršel.",
+      invalidMfaEnrollmentVerificationCode: "Ověřovací kód pro zapnutí dvoufaktorového ověření je neplatný nebo vypršel",
       loginStepUpChallengeExpiredOrInvalid:
         "Relace dodatečného ověření vypršela. Přihlaste se prosím znovu.",
       mfaEnrollmentChallengeExpiredOrInvalid:

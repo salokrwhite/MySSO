@@ -436,6 +436,7 @@ securityP3:
         "Nevarēja identificēt kontu šai piekļuves atslēgas.",
       invalidLoginStepUpVerificationCode:
         "Papildu verifikācijas kods ir nepareizs vai beidzies derīguma termiņš.",
+      invalidMfaEnrollmentVerificationCode: "Divfaktoru autentifikācijas iespējošanas verifikācijas kods nav derīgs vai ir beidzies",
       loginStepUpChallengeExpiredOrInvalid:
         "Papildu verifikācijas sesija beidzies. Lūdzu, piesakieties vēlreiz.",
       mfaEnrollmentChallengeExpiredOrInvalid:

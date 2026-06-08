@@ -417,6 +417,7 @@ securityP3:
         "ไม่สามารถระบุบัญชีสำหรับ Passkey นี้",
       invalidLoginStepUpVerificationCode:
         "รหัสการตรวจสอบเพิ่มเติมไม่ถูกต้องหรือหมดอายุแล้ว",
+      invalidMfaEnrollmentVerificationCode: "รหัสยืนยันสำหรับเปิดใช้งานการตรวจสอบสองขั้นตอนไม่ถูกต้องหรือหมดอายุแล้ว",
       loginStepUpChallengeExpiredOrInvalid:
         "เซสชันการตรวจสอบเพิ่มเติมหมดอายุแล้ว โปรดเข้าสู่ระบบอีกครั้ง",
       mfaEnrollmentChallengeExpiredOrInvalid:
