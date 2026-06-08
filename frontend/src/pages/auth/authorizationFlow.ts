@@ -102,7 +102,7 @@ export async function shouldAutoApproveAuthorization(params: AuthorizationParams
 export async function authorizeAndRedirect(params: AuthorizationParams) {
   const result = await api<{ redirect_url?: string }>("/auth/authorize", {
     method: "POST",
-    body: JSON.stringify(params)
+    body: JSON.stringify({ ...params, consent_accepted: true })
   });
   if (!result.redirect_url) {
     throw new Error("authorize failed");
