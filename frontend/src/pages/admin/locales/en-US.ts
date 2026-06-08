@@ -46,7 +46,7 @@ const enUS: Record<string, string> = {
   "账号风险画像": "Account Risk Profile",
   "综合评分": "Risk Score",
   "综合评分统计周期（天）": "Risk Score Window (days)",
-  "综合评分只统计该周期内的处置风险和失败登录。": "The comprehensive score only counts actionable risk and failed logins in this window.",
+  "综合评分统计该周期内事件最高评分，并与失败登录折算分取较高值。": "The comprehensive score uses the higher of the highest event score in this window and the folded failed-login score.",
   "每次失败登录加分": "Score per Failed Login",
   "请输入加分": "Enter score",
   "周期内失败登录会按次数折算进综合评分。": "Failed logins in the window are converted into the comprehensive score by count.",

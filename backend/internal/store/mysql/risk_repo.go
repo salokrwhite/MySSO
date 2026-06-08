@@ -89,8 +89,7 @@ func (s *MySQLStore) ListRiskAccountSummaries(page, pageSize int, userID, level 
 		failedLoginScoreCap = 0
 	}
 	windowStart := time.Now().UTC().AddDate(0, 0, -scoreWindowDays)
-	actionableScoreSQL := "CASE WHEN action_taken <> 'allow' OR event_type IN ('login_failed', 'login_blocked') THEN risk_score ELSE 0 END"
-	comprehensiveScoreSQL := "CAST(ROUND(GREATEST(MAX(" + actionableScoreSQL + "), LEAST(SUM(CASE WHEN event_type IN ('login_failed', 'login_blocked') THEN 1 ELSE 0 END) * ?, ?))) AS SIGNED)"
+	comprehensiveScoreSQL := "CAST(ROUND(GREATEST(MAX(risk_score), LEAST(SUM(CASE WHEN event_type IN ('login_failed', 'login_blocked') THEN 1 ELSE 0 END) * ?, ?))) AS SIGNED)"
 
 	where := "WHERE u.role <> ? AND (? = '' OR u.id = ?) AND (? = '' OR COALESCE(agg.risk_level, 'none') = ?)"
 	args := []any{string(domain.RoleAdmin), userID, userID, level, level}

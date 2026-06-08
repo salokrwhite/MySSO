@@ -58,7 +58,7 @@ export function RiskControlSettings({ form, initialValues, saving, onSave }: Ris
               label={t("综合评分统计周期（天）")}
               name="risk_score_window_days"
               rules={[{ required: true, message: t("请输入天数") }]}
-              extra={t("综合评分只统计该周期内的处置风险和失败登录。")}
+              extra={t("综合评分统计该周期内事件最高评分，并与失败登录折算分取较高值。")}
             >
               <InputNumber min={1} max={365} precision={0} style={{ width: "100%" }} />
             </Form.Item>

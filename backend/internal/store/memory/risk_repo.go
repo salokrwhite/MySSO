@@ -148,7 +148,7 @@ func (s *MemoryStore) ListRiskAccountSummaries(page, pageSize int, userID, level
 			continue
 		}
 		summary.EventCount++
-		if isActionableRiskEvent(event) && event.RiskScore > summary.ComprehensiveScore {
+		if event.RiskScore > summary.ComprehensiveScore {
 			summary.ComprehensiveScore = event.RiskScore
 		}
 		switch event.EventType {
@@ -260,10 +260,6 @@ func riskLevelFromScore(score, eventCount, mediumThreshold, highThreshold, criti
 	default:
 		return "none"
 	}
-}
-
-func isActionableRiskEvent(event domain.RiskEvent) bool {
-	return event.ActionTaken != "allow" || event.EventType == "login_failed" || event.EventType == "login_blocked"
 }
 
 func (s *MemoryStore) CountRiskEventsSince(eventType, identifierHash, ip string, since time.Time) (int, error) {
