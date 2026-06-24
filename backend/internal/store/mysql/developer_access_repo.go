@@ -15,7 +15,7 @@ func mysqlAppUserKey(appID, userID string) []any {
 
 func (s *MySQLStore) ListDeveloperGroups(ownerUserID string) ([]domain.DeveloperGroup, error) {
 	// #nosec G202 -- app/email/group SQL fragments are fixed predicates; all values are bound parameters.
-	rows, err := s.db.Query(` // #nosec G202 -- app/email/group SQL fragments are fixed predicates; all values are bound parameters.
+	rows, err := s.db.Query(`
 		SELECT id, owner_user_id, name, description, created_at, updated_at
 		FROM developer_groups
 		WHERE owner_user_id = ?
