@@ -55,7 +55,7 @@ func (m SMTPMailer) Send(to, subject, body string) error {
 		return fmt.Errorf("invalid recipient address: %w", err)
 	}
 
-	addr := fmt.Sprintf("%s:%s", m.host, m.port)
+	addr := net.JoinHostPort(m.host, m.port)
 	conn, err := net.DialTimeout("tcp", addr, m.timeout)
 	if err != nil {
 		return err

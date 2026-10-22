@@ -28,6 +28,7 @@ LOCALE_CDN_BASE="${LOCALE_CDN_BASE:-}"
 VITE_API_ORIGIN="${VITE_API_ORIGIN:-}"
 PUBLIC_BASE_URL="${PUBLIC_BASE_URL:-}"
 FRONTEND_BASE_URL="${FRONTEND_BASE_URL:-}"
+BACKEND_ONLY="${BACKEND_ONLY:-0}"
 ARCHIVE_NAME_CLI_SET=0
 
 print_usage() {
@@ -35,6 +36,7 @@ print_usage() {
 Usage: ./build.sh [options]
 
 Options:
+  --backend-only                 Build and package the backend only (skips frontend requirements).
   --app-name <name>              Backend binary name.
   --target-os <os>               Go target OS. Default: linux.
   --target-arch <arch>           Go target architecture. Default: amd64.
@@ -95,6 +97,7 @@ while [ "$#" -gt 0 ]; do
     --asset-cdn-base) ASSET_CDN_BASE="$(read_option_value "$1" "${2:-}")"; shift ;;
     --locale-cdn-base=*) LOCALE_CDN_BASE="${1#*=}" ;;
     --locale-cdn-base) LOCALE_CDN_BASE="$(read_option_value "$1" "${2:-}")"; shift ;;
+    --backend-only) BACKEND_ONLY="1" ;;
     --public-base-url=*) PUBLIC_BASE_URL="${1#*=}" ;;
     --public-base-url) PUBLIC_BASE_URL="$(read_option_value "$1" "${2:-}")"; shift ;;
     --frontend-base-url=*) FRONTEND_BASE_URL="${1#*=}" ;;
@@ -113,7 +116,11 @@ while [ "$#" -gt 0 ]; do
 done
 
 if [ -z "$ARCHIVE_NAME_FROM_ENV" ] && [ "$ARCHIVE_NAME_CLI_SET" != "1" ]; then
-  ARCHIVE_NAME="mysso-${TARGET_OS}-${TARGET_ARCH}-${VERSION}.tar.gz"
+  if [ "$BACKEND_ONLY" = "1" ]; then
+    ARCHIVE_NAME="mysso-backend-${TARGET_OS}-${TARGET_ARCH}-${VERSION}.tar.gz"
+  else
+    ARCHIVE_NAME="mysso-${TARGET_OS}-${TARGET_ARCH}-${VERSION}.tar.gz"
+  fi
 fi
 
 require_cmd() {
@@ -125,13 +132,18 @@ require_cmd() {
 
 echo "==> Checking build dependencies"
 require_cmd go
-require_cmd npm
 require_cmd tar
-require_cmd node
+if [ "$BACKEND_ONLY" != "1" ]; then
+  require_cmd npm
+  require_cmd node
+fi
 
 echo "==> Preparing release directory"
 rm -rf "$RELEASE_DIR"
-mkdir -p "$BACKEND_OUT" "$FRONTEND_OUT" "$PACKAGE_ROOT"
+mkdir -p "$BACKEND_OUT" "$PACKAGE_ROOT"
+if [ "$BACKEND_ONLY" != "1" ]; then
+  mkdir -p "$FRONTEND_OUT"
+fi
 
 echo "==> Building backend binary for ${TARGET_OS}/${TARGET_ARCH}"
 (
@@ -158,6 +170,27 @@ PUBLIC_BASE_URL=$PUBLIC_BASE_URL
 FRONTEND_BASE_URL=$FRONTEND_BASE_URL
 EOF
 cp -R "$BACKEND_DIR/migrations" "$BACKEND_OUT/migrations"
+
+if [ "$BACKEND_ONLY" = "1" ]; then
+  echo "==> Assembling backend-only package"
+  mkdir -p "$PACKAGE_ROOT/backend"
+  cp -R "$BACKEND_OUT/." "$PACKAGE_ROOT/backend/"
+  cp "$ROOT_DIR/README.md" "$PACKAGE_ROOT/README.md"
+  tar -czf "$RELEASE_DIR/$ARCHIVE_NAME" -C "$PACKAGE_ROOT" .
+
+  echo "==> Build completed (backend only)"
+  echo "Backend binary: $BACKEND_OUT/$APP_NAME"
+  echo "Backend env: $BACKEND_OUT/.env"
+  echo "Backend migrations: $BACKEND_OUT/migrations"
+  if [ -n "$PUBLIC_BASE_URL" ]; then
+    echo "Backend public base URL: $PUBLIC_BASE_URL"
+  fi
+  if [ -n "$FRONTEND_BASE_URL" ]; then
+    echo "Frontend public base URL: $FRONTEND_BASE_URL"
+  fi
+  echo "Release archive: $RELEASE_DIR/$ARCHIVE_NAME"
+  exit 0
+fi
 
 echo "==> Installing frontend dependencies"
 (

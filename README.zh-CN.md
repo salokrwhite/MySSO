@@ -164,6 +164,18 @@ http://localhost:5173
 - `release/*.tar.gz`
   - 最终发布压缩包
 
+### 仅打包后端
+
+```bash
+./build.sh --backend-only \
+  --public-base-url https://backend-sso.example.com \
+  --frontend-base-url https://frontend-sso.example.com
+```
+
+`--backend-only` 会跳过全部前端步骤（无需 `npm` / `node`），只输出 `release/backend`
+与 `release/mysso-backend-<os>-<arch>-<version>.tar.gz`，包内包含后端二进制、
+数据库迁移文件、`README.md` 和最小 `.env`。
+
 ### 指定前端 API 地址
 
 ```bash

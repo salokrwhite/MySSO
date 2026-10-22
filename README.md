@@ -164,6 +164,18 @@ This produces:
 - `release/*.tar.gz`
   - final release archive
 
+### Backend-only build
+
+```bash
+./build.sh --backend-only \
+  --public-base-url https://backend-sso.example.com \
+  --frontend-base-url https://frontend-sso.example.com
+```
+
+`--backend-only` skips every frontend step (no `npm` / `node` required) and only
+produces `release/backend` plus `release/mysso-backend-<os>-<arch>-<version>.tar.gz`,
+which contains the backend binary, database migrations, `README.md` and a minimal `.env`.
+
 ### Override frontend API origin
 
 ```bash
